@@ -1,0 +1,92 @@
+import 'package:private_deals/src/shared/app_exports.dart';
+
+class ForgotPasswordPageCtrl extends GetxController {
+  RxBool isLoading = false.obs;
+  RxBool passObscure = true.obs;
+  RxBool confirmPassObscure = true.obs;
+  Rx<ForgotPassEnum> flag = ForgotPassEnum.mobile.obs;
+  int otp = 0;
+  String password = '';
+  final TextEditingController phoneNoCTRL = TextEditingController();
+  final TextEditingController otpCTRL = TextEditingController();
+  final TextEditingController passwordCTRL = TextEditingController();
+  final TextEditingController confirmPasswordCTRL = TextEditingController();
+
+  ///MOBILE FORM KEY
+  final mMobileKey = GlobalKey<FormState>();
+  final mOtpKey = GlobalKey<FormState>();
+  final mPassKey = GlobalKey<FormState>();
+
+  final dMobileKey = GlobalKey<FormState>();
+  final dOtpKey = GlobalKey<FormState>();
+  final dPassKey = GlobalKey<FormState>();
+
+  String get image {
+    switch (flag()) {
+      case ForgotPassEnum.mobile:
+        return AppAssets.mobileNumberBg;
+      case ForgotPassEnum.otp:
+        return AppAssets.otpPageBg;
+      case ForgotPassEnum.password:
+        return AppAssets.createPasswordBgPage;
+    }
+  }
+
+  Future<void> verifyOTP() async {
+    isLoading(true);
+    var res = await WAuthApi.verifyOtp(otpCTRL.text);
+    isLoading(false);
+    if (res.isSuccess) {
+      toast(res.m, MessageEnum.success);
+      flag(ForgotPassEnum.password);
+    } else {
+      toast(res.m, MessageEnum.error);
+    }
+  }
+
+  Future<void> createPassword() async {
+    isLoading(true);
+    var res = await WAuthApi.forgotChangePassword(
+      password: confirmPasswordCTRL.text.trim(),
+    );
+    isLoading(false);
+    if (res.isSuccess) {
+      app.recoveryPartnerId = null;
+      Get.offAllNamed(Routes.signIn);
+      toast(res.m, MessageEnum.success);
+    } else {
+      toast(res.m, MessageEnum.error);
+    }
+  }
+
+  Future<void> resendOTP() async {
+    var res = await WAuthApi.resendOtp();
+    if (res.isSuccess) {
+      toast(res.m, MessageEnum.success);
+    } else {
+      toast(res.m, MessageEnum.error);
+    }
+  }
+
+  Future<void> forgotPassword() async {
+    isLoading(true);
+    var res = await WAuthApi.forgotPassword(phoneNo: phoneNoCTRL.text);
+    isLoading(false);
+    if (res.isSuccess && res.r != null) {
+      flag(ForgotPassEnum.otp);
+      // toast(res.m, MessageEnum.success);
+    } else {
+      toast(res.m, MessageEnum.error);
+    }
+  }
+
+  @override
+  void onClose() {
+    app.recoveryPartnerId = null;
+    phoneNoCTRL.dispose();
+    otpCTRL.dispose();
+    passwordCTRL.dispose();
+    confirmPasswordCTRL.dispose();
+    super.onClose();
+  }
+}

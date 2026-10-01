@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "749470263169",
+    "project_id": "private-deals-e672b",
+    "storage_bucket": "private-deals-e672b.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:749470263169:android:915811d415ebd57a4e2a80",
+        "android_client_info": {
+          "package_name": "com.privatedeals.partner"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCj3w1cUteGoEqxxDn06cP6jzEfbFKeQbk"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

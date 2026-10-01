@@ -1,0 +1,22 @@
+PODS:
+  - FlutterMacOS (1.0.0)
+  - pdfx (1.0.0):
+    - FlutterMacOS
+
+DEPENDENCIES:
+  - FlutterMacOS (from `Flutter/ephemeral`)
+  - pdfx (from `Flutter/ephemeral/.symlinks/plugins/pdfx/macos`)
+
+EXTERNAL SOURCES:
+  FlutterMacOS:
+    :path: Flutter/ephemeral
+  pdfx:
+    :path: Flutter/ephemeral/.symlinks/plugins/pdfx/macos
+
+SPEC CHECKSUMS:
+  FlutterMacOS: c232990155153907050900a2e175c7773903ba4e
+  pdfx: 1e79f57f7a6ce2f4a4c30f21fa54d3dc82441b51
+
+PODFILE CHECKSUM: a635a3f3fd1d41fe8160e89198d25573acf8cd00
+
+COCOAPODS: 1.16.2

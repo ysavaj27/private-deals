@@ -1,0 +1,2582 @@
+[
+  {
+    "source": "partner/lib/firebase_options.dart",
+    "destination": "lib/firebase_options.dart",
+    "action": "migrated"
+  },
+  {
+    "source": "partner/lib/main.dart",
+    "destination": "lib/main.dart",
+    "action": "migrated"
+  },
+  {
+    "source": "partner/lib/src/configuration/app_config.dart",
+    "destination": "lib/src/core/session/auth_session.dart",
+    "action": "migrated"
+  },
+  {
+    "source": "partner/lib/src/configuration/master_config.dart",
+    "destination": "lib/src/core/configuration/master_config.dart",
+    "action": "migrated"
+  },
+  {
+    "source": "partner/lib/src/configuration/init_config.dart",
+    "destination": "lib/src/core/configuration/init_config.dart",
+    "action": "migrated"
+  },
+  {
+    "source": "partner/lib/src/configuration/pref_config.dart",
+    "destination": "lib/src/core/configuration/pref_config.dart",
+    "action": "migrated"
+  },
+  {
+    "source": "partner/lib/src/configuration/connectivity_config.dart",
+    "destination": "lib/src/core/configuration/connectivity_config.dart",
+    "action": "migrated"
+  },
+  {
+    "source": "partner/lib/src/configuration/notification_config.dart",
+    "destination": "lib/src/core/configuration/notification_config.dart",
+    "action": "migrated"
+  },
+  {
+    "source": "partner/lib/src/configuration/network_service.dart",
+    "destination": "lib/src/core/configuration/network_service.dart",
+    "action": "migrated"
+  },
+  {
+    "source": "partner/lib/src/configuration/dio_config.dart",
+    "destination": "lib/src/core/configuration/dio_config.dart",
+    "action": "migrated"
+  },
+  {
+    "source": "partner/lib/src/translation/translation_english.dart",
+    "destination": "lib/src/shared/translation/translation_english.dart",
+    "action": "migrated"
+  },
+  {
+    "source": "partner/lib/src/translation/translation_model.dart",
+    "destination": "lib/src/shared/translation/translation_model.dart",
+    "action": "migrated"
+  },
+  {
+    "source": "partner/lib/src/translation/translation.dart",
+    "destination": "lib/src/shared/translation/translation.dart",
+    "action": "migrated"
+  },
+  {
+    "source": "partner/lib/src/translation/translation_german.dart",
+    "destination": "lib/src/shared/translation/translation_german.dart",
+    "action": "migrated"
+  },
+  {
+    "source": "partner/lib/src/utils/app_exports.dart",
+    "destination": "lib/src/shared/app_exports.dart",
+    "action": "migrated"
+  },
+  {
+    "source": "partner/lib/src/utils/plugins/video_player.dart",
+    "destination": "lib/src/shared/plugins/video_player.dart",
+    "action": "migrated"
+  },
+  {
+    "source": "partner/lib/src/utils/plugins/open_file.dart",
+    "destination": "lib/src/shared/plugins/open_file.dart",
+    "action": "migrated"
+  },
+  {
+    "source": "partner/lib/src/utils/plugins/device_info.dart",
+    "destination": "lib/src/shared/plugins/device_info.dart",
+    "action": "migrated"
+  },
+  {
+    "source": "partner/lib/src/utils/plugins/luncher.dart",
+    "destination": "lib/src/shared/plugins/luncher.dart",
+    "action": "migrated"
+  },
+  {
+    "source": "partner/lib/src/utils/plugins/lottie_image.dart",
+    "destination": "lib/src/shared/plugins/lottie_image.dart",
+    "action": "migrated"
+  },
+  {
+    "source": "partner/lib/src/utils/plugins/pdf_viewer.dart",
+    "destination": "lib/src/shared/plugins/pdf_viewer.dart",
+    "action": "migrated"
+  },
+  {
+    "source": "partner/lib/src/utils/plugins/logger.dart",
+    "destination": "lib/src/shared/plugins/logger.dart",
+    "action": "migrated"
+  },
+  {
+    "source": "partner/lib/src/utils/plugins/loader.dart",
+    "destination": "lib/src/shared/plugins/loader.dart",
+    "action": "migrated"
+  },
+  {
+    "source": "partner/lib/src/utils/plugins/otp_text_field.dart",
+    "destination": "lib/src/shared/plugins/otp_text_field.dart",
+    "action": "migrated"
+  },
+  {
+    "source": "partner/lib/src/utils/plugins/dotted_borders.dart",
+    "destination": "lib/src/shared/plugins/dotted_borders.dart",
+    "action": "migrated"
+  },
+  {
+    "source": "partner/lib/src/utils/plugins/file_picker.dart",
+    "destination": "lib/src/shared/plugins/file_picker.dart",
+    "action": "migrated"
+  },
+  {
+    "source": "partner/lib/src/utils/plugins/desktop_notification.dart",
+    "destination": "lib/src/shared/plugins/desktop_notification.dart",
+    "action": "migrated"
+  },
+  {
+    "source": "partner/lib/src/utils/plugins/svg_image.dart",
+    "destination": "lib/src/shared/plugins/svg_image.dart",
+    "action": "migrated"
+  },
+  {
+    "source": "partner/lib/src/utils/plugins/cache_image.dart",
+    "destination": "lib/src/shared/plugins/cache_image.dart",
+    "action": "migrated"
+  },
+  {
+    "source": "partner/lib/src/utils/plugins/toast.dart",
+    "destination": "lib/src/shared/plugins/toast.dart",
+    "action": "migrated"
+  },
+  {
+    "source": "partner/lib/src/utils/plugins/download_file/download_file_native.dart",
+    "destination": "lib/src/shared/plugins/download_file/download_file_native.dart",
+    "action": "migrated"
+  },
+  {
+    "source": "partner/lib/src/utils/plugins/download_file/download_file.dart",
+    "destination": "lib/src/shared/plugins/download_file/download_file.dart",
+    "action": "migrated"
+  },
+  {
+    "source": "partner/lib/src/utils/plugins/download_file/download_file_web.dart",
+    "destination": "lib/src/shared/plugins/download_file/download_file_web.dart",
+    "action": "migrated"
+  },
+  {
+    "source": "partner/lib/src/utils/extensions/list_extendtions.dart",
+    "destination": "lib/src/shared/extensions/list_extendtions.dart",
+    "action": "migrated"
+  },
+  {
+    "source": "partner/lib/src/utils/extensions/duration_extensions.dart",
+    "destination": "lib/src/shared/extensions/duration_extensions.dart",
+    "action": "migrated"
+  },
+  {
+    "source": "partner/lib/src/utils/extensions/date_extensions.dart",
+    "destination": "lib/src/shared/extensions/date_extensions.dart",
+    "action": "migrated"
+  },
+  {
+    "source": "partner/lib/src/utils/extensions/num_extensions.dart",
+    "destination": "lib/src/shared/extensions/num_extensions.dart",
+    "action": "migrated"
+  },
+  {
+    "source": "partner/lib/src/utils/extensions/string_extensions.dart",
+    "destination": "lib/src/shared/extensions/string_extensions.dart",
+    "action": "migrated"
+  },
+  {
+    "source": "partner/lib/src/utils/constant/app_url.dart",
+    "destination": "lib/src/core/config/api_endpoints.dart",
+    "action": "migrated"
+  },
+  {
+    "source": "partner/lib/src/utils/constant/app_colors.dart",
+    "destination": "lib/src/shared/constant/app_colors.dart",
+    "action": "migrated"
+  },
+  {
+    "source": "partner/lib/src/utils/constant/app_validator.dart",
+    "destination": "lib/src/shared/constant/app_validator.dart",
+    "action": "migrated"
+  },
+  {
+    "source": "partner/lib/src/utils/constant/app_assets.dart",
+    "destination": "lib/src/shared/constant/app_assets.dart",
+    "action": "migrated"
+  },
+  {
+    "source": "partner/lib/src/utils/constant/app_key.dart",
+    "destination": "lib/src/core/config/app_key.dart",
+    "action": "migrated"
+  },
+  {
+    "source": "partner/lib/src/utils/functions/platform_helper.dart",
+    "destination": "lib/src/shared/functions/platform_helper.dart",
+    "action": "migrated"
+  },
+  {
+    "source": "partner/lib/src/utils/functions/on_back_logic.dart",
+    "destination": "lib/src/shared/functions/on_back_logic.dart",
+    "action": "migrated"
+  },
+  {
+    "source": "partner/lib/src/utils/functions/dialog.dart",
+    "destination": "lib/src/shared/functions/dialog.dart",
+    "action": "migrated"
+  },
+  {
+    "source": "partner/lib/src/utils/functions/parse.dart",
+    "destination": "lib/src/shared/functions/parse.dart",
+    "action": "migrated"
+  },
+  {
+    "source": "partner/lib/src/utils/widgets/gradient_text.dart",
+    "destination": "lib/src/shared/widgets/gradient_text.dart",
+    "action": "migrated"
+  },
+  {
+    "source": "partner/lib/src/utils/widgets/app_popup.dart",
+    "destination": "lib/src/shared/widgets/app_popup.dart",
+    "action": "migrated"
+  },
+  {
+    "source": "partner/lib/src/utils/widgets/metric_card.dart",
+    "destination": "lib/src/shared/widgets/metric_card.dart",
+    "action": "migrated"
+  },
+  {
+    "source": "partner/lib/src/utils/widgets/custom_card_widget.dart",
+    "destination": "lib/src/shared/widgets/custom_card_widget.dart",
+    "action": "migrated"
+  },
+  {
+    "source": "partner/lib/src/utils/widgets/no_data_view.dart",
+    "destination": "lib/src/shared/widgets/no_data_view.dart",
+    "action": "migrated"
+  },
+  {
+    "source": "partner/lib/src/utils/widgets/investor_chip.dart",
+    "destination": "lib/src/shared/widgets/investor_chip.dart",
+    "action": "migrated"
+  },
+  {
+    "source": "partner/lib/src/utils/widgets/deal_section_header.dart",
+    "destination": "lib/src/shared/widgets/deal_section_header.dart",
+    "action": "migrated"
+  },
+  {
+    "source": "partner/lib/src/utils/widgets/status_pipeline.dart",
+    "destination": "lib/src/shared/widgets/status_pipeline.dart",
+    "action": "migrated"
+  },
+  {
+    "source": "partner/lib/src/utils/widgets/company_deal_card.dart",
+    "destination": "lib/src/shared/widgets/company_deal_card.dart",
+    "action": "migrated"
+  },
+  {
+    "source": "partner/lib/src/utils/widgets/custom_appbar.dart",
+    "destination": "lib/src/shared/widgets/custom_appbar.dart",
+    "action": "migrated"
+  },
+  {
+    "source": "partner/lib/src/utils/widgets/custom_drop_down.dart",
+    "destination": "lib/src/shared/widgets/custom_drop_down.dart",
+    "action": "migrated"
+  },
+  {
+    "source": "partner/lib/src/utils/widgets/error_view.dart",
+    "destination": "lib/src/shared/widgets/error_view.dart",
+    "action": "migrated"
+  },
+  {
+    "source": "partner/lib/src/utils/widgets/custom_progressbar.dart",
+    "destination": "lib/src/shared/widgets/custom_progressbar.dart",
+    "action": "migrated"
+  },
+  {
+    "source": "partner/lib/src/utils/widgets/clickable.dart",
+    "destination": "lib/src/shared/widgets/clickable.dart",
+    "action": "migrated"
+  },
+  {
+    "source": "partner/lib/src/utils/widgets/heading_text.dart",
+    "destination": "lib/src/shared/widgets/heading_text.dart",
+    "action": "migrated"
+  },
+  {
+    "source": "partner/lib/src/utils/widgets/detail_information_row.dart",
+    "destination": "lib/src/shared/widgets/detail_information_row.dart",
+    "action": "migrated"
+  },
+  {
+    "source": "partner/lib/src/utils/widgets/title_text.dart",
+    "destination": "lib/src/shared/widgets/title_text.dart",
+    "action": "migrated"
+  },
+  {
+    "source": "partner/lib/src/utils/widgets/searchable_text_field.dart",
+    "destination": "lib/src/shared/widgets/searchable_text_field.dart",
+    "action": "migrated"
+  },
+  {
+    "source": "partner/lib/src/utils/widgets/action_menu.dart",
+    "destination": "lib/src/shared/widgets/action_menu.dart",
+    "action": "migrated"
+  },
+  {
+    "source": "partner/lib/src/utils/widgets/custom_text_field.dart",
+    "destination": "lib/src/shared/widgets/custom_text_field.dart",
+    "action": "migrated"
+  },
+  {
+    "source": "partner/lib/src/utils/widgets/auth_background.dart",
+    "destination": "lib/src/shared/widgets/auth_background.dart",
+    "action": "migrated"
+  },
+  {
+    "source": "partner/lib/src/utils/widgets/info_card.dart",
+    "destination": "lib/src/shared/widgets/info_card.dart",
+    "action": "migrated"
+  },
+  {
+    "source": "partner/lib/src/utils/widgets/dialog_widget/delete_dialog_widget.dart",
+    "destination": "lib/src/shared/widgets/dialog_widget/delete_dialog_widget.dart",
+    "action": "migrated"
+  },
+  {
+    "source": "partner/lib/src/utils/widgets/dialog_widget/no_internet_dialog.dart",
+    "destination": "lib/src/shared/widgets/dialog_widget/no_internet_dialog.dart",
+    "action": "migrated"
+  },
+  {
+    "source": "partner/lib/src/utils/widgets/dialog_widget/force_update_dialog.dart",
+    "destination": "lib/src/shared/widgets/dialog_widget/force_update_dialog.dart",
+    "action": "migrated"
+  },
+  {
+    "source": "partner/lib/src/utils/widgets/dialog_widget/logout_dialog.dart",
+    "destination": "lib/src/shared/widgets/dialog_widget/logout_dialog.dart",
+    "action": "migrated"
+  },
+  {
+    "source": "partner/lib/src/utils/widgets/buttons/custom_outlined_button.dart",
+    "destination": "lib/src/shared/widgets/buttons/custom_outlined_button.dart",
+    "action": "migrated"
+  },
+  {
+    "source": "partner/lib/src/utils/widgets/buttons/custom_text_button.dart",
+    "destination": "lib/src/shared/widgets/buttons/custom_text_button.dart",
+    "action": "migrated"
+  },
+  {
+    "source": "partner/lib/src/utils/widgets/buttons/action_button.dart",
+    "destination": "lib/src/shared/widgets/buttons/action_button.dart",
+    "action": "migrated"
+  },
+  {
+    "source": "partner/lib/src/utils/widgets/buttons/custom_elevated_button.dart",
+    "destination": "lib/src/shared/widgets/buttons/custom_elevated_button.dart",
+    "action": "migrated"
+  },
+  {
+    "source": "partner/lib/src/utils/widgets/buttons/custom_like_button.dart",
+    "destination": "lib/src/shared/widgets/buttons/custom_like_button.dart",
+    "action": "migrated"
+  },
+  {
+    "source": "partner/lib/src/utils/widgets/buttons/download_button.dart",
+    "destination": "lib/src/shared/widgets/buttons/download_button.dart",
+    "action": "migrated"
+  },
+  {
+    "source": "partner/lib/src/utils/widgets/buttons/tab_button.dart",
+    "destination": "lib/src/shared/widgets/buttons/tab_button.dart",
+    "action": "migrated"
+  },
+  {
+    "source": "partner/lib/src/backend/firebase/test_api.dart",
+    "destination": "lib/src/devtools/test_api.dart",
+    "action": "migrated"
+  },
+  {
+    "source": "partner/lib/src/backend/api/master_api.dart",
+    "destination": "lib/src/core/config/master_api.dart",
+    "action": "migrated"
+  },
+  {
+    "source": "partner/lib/src/backend/api/config_api.dart",
+    "destination": "lib/src/core/config/config_api.dart",
+    "action": "migrated"
+  },
+  {
+    "source": "partner/lib/src/backend/api/3rd_party/address_api.dart",
+    "destination": "lib/src/features/wealth_manager/data/api/3rd_party/address_api.dart",
+    "action": "migrated"
+  },
+  {
+    "source": "partner/lib/src/backend/api/transaction/w_primary_transaction_api.dart",
+    "destination": "lib/src/features/wealth_manager/data/api/transaction/w_primary_transaction_api.dart",
+    "action": "migrated"
+  },
+  {
+    "source": "partner/lib/src/backend/api/transaction/w_pre_ipo_transaction_api.dart",
+    "destination": "lib/src/features/wealth_manager/data/api/transaction/w_pre_ipo_transaction_api.dart",
+    "action": "migrated"
+  },
+  {
+    "source": "partner/lib/src/backend/api/transaction/w_secondary_transaction_api.dart",
+    "destination": "lib/src/features/wealth_manager/data/api/transaction/w_secondary_transaction_api.dart",
+    "action": "migrated"
+  },
+  {
+    "source": "partner/lib/src/backend/api/transaction/i_pre_ipo_transaction_api.dart",
+    "destination": "lib/src/features/wealth_manager/data/api/transaction/i_pre_ipo_transaction_api.dart",
+    "action": "migrated"
+  },
+  {
+    "source": "partner/lib/src/backend/api/transaction/i_primary_transaction_api.dart",
+    "destination": "lib/src/features/wealth_manager/data/api/transaction/i_primary_transaction_api.dart",
+    "action": "migrated"
+  },
+  {
+    "source": "partner/lib/src/backend/api/transaction/i_secondary_transaction_api.dart",
+    "destination": "lib/src/features/wealth_manager/data/api/transaction/i_secondary_transaction_api.dart",
+    "action": "migrated"
+  },
+  {
+    "source": "partner/lib/src/backend/api/inquiry/inquiry_api.dart",
+    "destination": "lib/src/features/wealth_manager/data/api/inquiry/inquiry_api.dart",
+    "action": "migrated"
+  },
+  {
+    "source": "partner/lib/src/backend/api/kyc/w_kyc_api.dart",
+    "destination": "lib/src/features/wealth_manager/data/api/kyc/w_kyc_api.dart",
+    "action": "migrated"
+  },
+  {
+    "source": "partner/lib/src/backend/api/kyc/i_kyc_api.dart",
+    "destination": "lib/src/features/wealth_manager/data/api/kyc/i_kyc_api.dart",
+    "action": "migrated"
+  },
+  {
+    "source": "partner/lib/src/backend/api/my_earning/my_earning_api.dart",
+    "destination": "lib/src/features/wealth_manager/data/api/my_earning/my_earning_api.dart",
+    "action": "migrated"
+  },
+  {
+    "source": "partner/lib/src/backend/api/w_investors/w_investors_api.dart",
+    "destination": "lib/src/features/investors/data/w_investors_api.dart",
+    "action": "migrated"
+  },
+  {
+    "source": "partner/lib/src/backend/api/auth/w_auth_api.dart",
+    "destination": "lib/src/features/auth/data/w_auth_api.dart",
+    "action": "migrated"
+  },
+  {
+    "source": "partner/lib/src/backend/api/auth/i_auth_api.dart",
+    "destination": "lib/src/features/auth/data/i_auth_api.dart",
+    "action": "migrated"
+  },
+  {
+    "source": "partner/lib/src/backend/api/notification/notification_api.dart",
+    "destination": "lib/src/features/wealth_manager/data/api/notification/notification_api.dart",
+    "action": "migrated"
+  },
+  {
+    "source": "partner/lib/src/backend/api/my_family/my_family_api.dart",
+    "destination": "lib/src/features/wealth_manager/data/api/my_family/my_family_api.dart",
+    "action": "migrated"
+  },
+  {
+    "source": "partner/lib/src/backend/api/bank_accounts/mandate_api.dart",
+    "destination": "lib/src/features/wealth_manager/data/api/bank_accounts/mandate_api.dart",
+    "action": "migrated"
+  },
+  {
+    "source": "partner/lib/src/backend/api/bank_accounts/bank_accounts_api.dart",
+    "destination": "lib/src/features/wealth_manager/data/api/bank_accounts/bank_accounts_api.dart",
+    "action": "migrated"
+  },
+  {
+    "source": "partner/lib/src/backend/api/favorite/favorite_api.dart",
+    "destination": "lib/src/features/wealth_manager/data/api/favorite/favorite_api.dart",
+    "action": "migrated"
+  },
+  {
+    "source": "partner/lib/src/backend/api/document/document_api.dart",
+    "destination": "lib/src/features/wealth_manager/data/api/document/document_api.dart",
+    "action": "migrated"
+  },
+  {
+    "source": "partner/lib/src/backend/api/demat_account/demat_account_api.dart",
+    "destination": "lib/src/features/wealth_manager/data/api/demat_account/demat_account_api.dart",
+    "action": "migrated"
+  },
+  {
+    "source": "partner/lib/src/backend/api/dashboard/dashboard_api.dart",
+    "destination": "lib/src/features/wealth_manager/data/api/dashboard/dashboard_api.dart",
+    "action": "migrated"
+  },
+  {
+    "source": "partner/lib/src/backend/api/pending_task/pending_task_api.dart",
+    "destination": "lib/src/features/wealth_manager/data/api/pending_task/pending_task_api.dart",
+    "action": "migrated"
+  },
+  {
+    "source": "partner/lib/src/backend/api/live_pitch/live_pitch_api.dart",
+    "destination": "lib/src/features/wealth_manager/data/api/live_pitch/live_pitch_api.dart",
+    "action": "migrated"
+  },
+  {
+    "source": "partner/lib/src/backend/api/portfolio/portfolio_api.dart",
+    "destination": "lib/src/features/wealth_manager/data/api/portfolio/portfolio_api.dart",
+    "action": "migrated"
+  },
+  {
+    "source": "partner/lib/src/backend/api/landing_page/landing_page_api.dart",
+    "destination": "lib/src/features/wealth_manager/data/api/landing_page/landing_page_api.dart",
+    "action": "migrated"
+  },
+  {
+    "source": "partner/lib/src/backend/api/landing_page/unlisted_landing_page_api.dart",
+    "destination": "lib/src/features/wealth_manager/data/api/landing_page/unlisted_landing_page_api.dart",
+    "action": "migrated"
+  },
+  {
+    "source": "partner/lib/src/backend/api/channel_partner/channel_partner_api.dart",
+    "destination": "lib/src/features/wealth_manager/data/api/channel_partner/channel_partner_api.dart",
+    "action": "migrated"
+  },
+  {
+    "source": "partner/lib/src/backend/api/mis/mis_api.dart",
+    "destination": "lib/src/features/wealth_manager/data/api/mis/mis_api.dart",
+    "action": "migrated"
+  },
+  {
+    "source": "partner/lib/src/models/transaction/secondary_transaction_list_model.dart",
+    "destination": "lib/src/features/wealth_manager/data/models/transaction/secondary_transaction_list_model.dart",
+    "action": "migrated"
+  },
+  {
+    "source": "partner/lib/src/models/transaction/enquiry_model.dart",
+    "destination": "lib/src/features/wealth_manager/data/models/transaction/enquiry_model.dart",
+    "action": "migrated"
+  },
+  {
+    "source": "partner/lib/src/models/transaction/secondary_transaction_model.dart",
+    "destination": "lib/src/features/wealth_manager/data/models/transaction/secondary_transaction_model.dart",
+    "action": "migrated"
+  },
+  {
+    "source": "partner/lib/src/models/transaction/secondary_opportunities_model.dart",
+    "destination": "lib/src/features/wealth_manager/data/models/transaction/secondary_opportunities_model.dart",
+    "action": "migrated"
+  },
+  {
+    "source": "partner/lib/src/models/transaction/primary_transaction_model.dart",
+    "destination": "lib/src/features/wealth_manager/data/models/transaction/primary_transaction_model.dart",
+    "action": "migrated"
+  },
+  {
+    "source": "partner/lib/src/models/transaction/sell_request_model.dart",
+    "destination": "lib/src/features/wealth_manager/data/models/transaction/sell_request_model.dart",
+    "action": "migrated"
+  },
+  {
+    "source": "partner/lib/src/models/landing/blog_model.dart",
+    "destination": "lib/src/features/wealth_manager/data/models/landing/blog_model.dart",
+    "action": "migrated"
+  },
+  {
+    "source": "partner/lib/src/models/landing/statistics_model.dart",
+    "destination": "lib/src/features/wealth_manager/data/models/landing/statistics_model.dart",
+    "action": "migrated"
+  },
+  {
+    "source": "partner/lib/src/models/landing/landing_page_model.dart",
+    "destination": "lib/src/features/wealth_manager/data/models/landing/landing_page_model.dart",
+    "action": "migrated"
+  },
+  {
+    "source": "partner/lib/src/models/earning/partner_earning_model.dart",
+    "destination": "lib/src/features/wealth_manager/data/models/earning/partner_earning_model.dart",
+    "action": "migrated"
+  },
+  {
+    "source": "partner/lib/src/models/earning/investor_earning_model.dart",
+    "destination": "lib/src/features/wealth_manager/data/models/earning/investor_earning_model.dart",
+    "action": "migrated"
+  },
+  {
+    "source": "partner/lib/src/models/sector/sector_model.dart",
+    "destination": "lib/src/features/wealth_manager/data/models/sector/sector_model.dart",
+    "action": "migrated"
+  },
+  {
+    "source": "partner/lib/src/models/notification/notification_model.dart",
+    "destination": "lib/src/features/wealth_manager/data/models/notification/notification_model.dart",
+    "action": "migrated"
+  },
+  {
+    "source": "partner/lib/src/models/e_kyc/e_kyc_model.dart",
+    "destination": "lib/src/features/wealth_manager/data/models/e_kyc/e_kyc_model.dart",
+    "action": "migrated"
+  },
+  {
+    "source": "partner/lib/src/models/favorite/favorite_model.dart",
+    "destination": "lib/src/features/wealth_manager/data/models/favorite/favorite_model.dart",
+    "action": "migrated"
+  },
+  {
+    "source": "partner/lib/src/models/user/w_investor_model.dart",
+    "destination": "lib/src/features/investors/data/w_investor_model.dart",
+    "action": "migrated"
+  },
+  {
+    "source": "partner/lib/src/models/user/wealth_manager_model.dart",
+    "destination": "lib/src/core/session/partner_user.dart",
+    "action": "migrated"
+  },
+  {
+    "source": "partner/lib/src/models/user/investor_detail_model.dart",
+    "destination": "lib/src/features/wealth_manager/data/models/user/investor_detail_model.dart",
+    "action": "migrated"
+  },
+  {
+    "source": "partner/lib/src/models/user/investor_model.dart",
+    "destination": "lib/src/features/investors/data/investor_model.dart",
+    "action": "migrated"
+  },
+  {
+    "source": "partner/lib/src/models/user/aif_model.dart",
+    "destination": "lib/src/features/wealth_manager/data/models/user/aif_model.dart",
+    "action": "migrated"
+  },
+  {
+    "source": "partner/lib/src/models/user/kyc_model.dart",
+    "destination": "lib/src/features/wealth_manager/data/models/user/kyc_model.dart",
+    "action": "migrated"
+  },
+  {
+    "source": "partner/lib/src/models/document/document_model.dart",
+    "destination": "lib/src/features/wealth_manager/data/models/document/document_model.dart",
+    "action": "migrated"
+  },
+  {
+    "source": "partner/lib/src/models/demat_account/demat_account_model.dart",
+    "destination": "lib/src/features/wealth_manager/data/models/demat_account/demat_account_model.dart",
+    "action": "migrated"
+  },
+  {
+    "source": "partner/lib/src/models/dashboard/i_dashboard_model.dart",
+    "destination": "lib/src/features/wealth_manager/data/models/dashboard/i_dashboard_model.dart",
+    "action": "migrated"
+  },
+  {
+    "source": "partner/lib/src/models/dashboard/w_dashboard_model.dart",
+    "destination": "lib/src/features/wealth_manager/data/models/dashboard/w_dashboard_model.dart",
+    "action": "migrated"
+  },
+  {
+    "source": "partner/lib/src/models/pre_ipo/pre_ipo_landing_page_model.dart",
+    "destination": "lib/src/features/wealth_manager/data/models/pre_ipo/pre_ipo_landing_page_model.dart",
+    "action": "migrated"
+  },
+  {
+    "source": "partner/lib/src/models/pre_ipo/pre_ipo_transaction_model.dart",
+    "destination": "lib/src/features/wealth_manager/data/models/pre_ipo/pre_ipo_transaction_model.dart",
+    "action": "migrated"
+  },
+  {
+    "source": "partner/lib/src/models/pre_ipo/company_model.dart",
+    "destination": "lib/src/features/wealth_manager/data/models/pre_ipo/company_model.dart",
+    "action": "migrated"
+  },
+  {
+    "source": "partner/lib/src/models/pre_ipo/pre_ipo_sell_transaction_model.dart",
+    "destination": "lib/src/features/wealth_manager/data/models/pre_ipo/pre_ipo_sell_transaction_model.dart",
+    "action": "migrated"
+  },
+  {
+    "source": "partner/lib/src/models/common/media_model.dart",
+    "destination": "lib/src/shared/models/media_model.dart",
+    "action": "migrated"
+  },
+  {
+    "source": "partner/lib/src/models/common/config_model.dart",
+    "destination": "lib/src/shared/models/config_model.dart",
+    "action": "migrated"
+  },
+  {
+    "source": "partner/lib/src/models/common/master_type_model.dart",
+    "destination": "lib/src/shared/models/master_type_model.dart",
+    "action": "migrated"
+  },
+  {
+    "source": "partner/lib/src/models/common/enums.dart",
+    "destination": "lib/src/shared/models/enums.dart",
+    "action": "migrated"
+  },
+  {
+    "source": "partner/lib/src/models/common/base_model.dart",
+    "destination": "lib/src/shared/models/base_model.dart",
+    "action": "migrated"
+  },
+  {
+    "source": "partner/lib/src/models/common/deep_link_model.dart",
+    "destination": "lib/src/shared/models/deep_link_model.dart",
+    "action": "migrated"
+  },
+  {
+    "source": "partner/lib/src/models/pending_task/pending_task_model.dart",
+    "destination": "lib/src/features/wealth_manager/data/models/pending_task/pending_task_model.dart",
+    "action": "migrated"
+  },
+  {
+    "source": "partner/lib/src/models/3ed_party/pincode_model.dart",
+    "destination": "lib/src/features/wealth_manager/data/models/3ed_party/pincode_model.dart",
+    "action": "migrated"
+  },
+  {
+    "source": "partner/lib/src/models/bank_account/mandate_model.dart",
+    "destination": "lib/src/features/wealth_manager/data/models/bank_account/mandate_model.dart",
+    "action": "migrated"
+  },
+  {
+    "source": "partner/lib/src/models/bank_account/bank_account_model.dart",
+    "destination": "lib/src/features/wealth_manager/data/models/bank_account/bank_account_model.dart",
+    "action": "migrated"
+  },
+  {
+    "source": "partner/lib/src/models/live_pitch/live_pitch_model.dart",
+    "destination": "lib/src/features/wealth_manager/data/models/live_pitch/live_pitch_model.dart",
+    "action": "migrated"
+  },
+  {
+    "source": "partner/lib/src/models/portfolio/portfolio_model.dart",
+    "destination": "lib/src/features/wealth_manager/data/models/portfolio/portfolio_model.dart",
+    "action": "migrated"
+  },
+  {
+    "source": "partner/lib/src/models/portfolio/pre_ipo_portfolio_model.dart",
+    "destination": "lib/src/features/wealth_manager/data/models/portfolio/pre_ipo_portfolio_model.dart",
+    "action": "migrated"
+  },
+  {
+    "source": "partner/lib/src/models/startup/startup_round_model.dart",
+    "destination": "lib/src/features/wealth_manager/data/models/startup/startup_round_model.dart",
+    "action": "migrated"
+  },
+  {
+    "source": "partner/lib/src/models/startup/pitch_model.dart",
+    "destination": "lib/src/features/wealth_manager/data/models/startup/pitch_model.dart",
+    "action": "migrated"
+  },
+  {
+    "source": "partner/lib/src/models/startup/startup_fund_raise_model.dart",
+    "destination": "lib/src/features/wealth_manager/data/models/startup/startup_fund_raise_model.dart",
+    "action": "migrated"
+  },
+  {
+    "source": "partner/lib/src/models/startup/startup_model.dart",
+    "destination": "lib/src/features/wealth_manager/data/models/startup/startup_model.dart",
+    "action": "migrated"
+  },
+  {
+    "source": "partner/lib/src/models/startup/legal_info_model.dart",
+    "destination": "lib/src/features/wealth_manager/data/models/startup/legal_info_model.dart",
+    "action": "migrated"
+  },
+  {
+    "source": "partner/lib/src/models/startup/company_statup_list.dart",
+    "destination": "lib/src/features/wealth_manager/data/models/startup/company_statup_list.dart",
+    "action": "migrated"
+  },
+  {
+    "source": "partner/lib/src/models/startup/last_round_model.dart",
+    "destination": "lib/src/features/wealth_manager/data/models/startup/last_round_model.dart",
+    "action": "migrated"
+  },
+  {
+    "source": "partner/lib/src/models/startup/startup_investor_model.dart",
+    "destination": "lib/src/features/wealth_manager/data/models/startup/startup_investor_model.dart",
+    "action": "migrated"
+  },
+  {
+    "source": "partner/lib/src/models/startup/startup_detail_model.dart",
+    "destination": "lib/src/features/wealth_manager/data/models/startup/startup_detail_model.dart",
+    "action": "migrated"
+  },
+  {
+    "source": "partner/lib/src/models/startup/team_member_model.dart",
+    "destination": "lib/src/features/wealth_manager/data/models/startup/team_member_model.dart",
+    "action": "migrated"
+  },
+  {
+    "source": "partner/lib/src/models/startup/raising_round_model.dart",
+    "destination": "lib/src/features/wealth_manager/data/models/startup/raising_round_model.dart",
+    "action": "migrated"
+  },
+  {
+    "source": "partner/lib/src/models/startup/startup_other_one_model.dart",
+    "destination": "lib/src/features/wealth_manager/data/models/startup/startup_other_one_model.dart",
+    "action": "migrated"
+  },
+  {
+    "source": "partner/lib/src/models/startup/faq_model.dart",
+    "destination": "lib/src/features/wealth_manager/data/models/startup/faq_model.dart",
+    "action": "migrated"
+  },
+  {
+    "source": "partner/lib/src/models/startup/update_model.dart",
+    "destination": "lib/src/features/wealth_manager/data/models/startup/update_model.dart",
+    "action": "migrated"
+  },
+  {
+    "source": "partner/lib/src/models/startup/social_media_model.dart",
+    "destination": "lib/src/features/wealth_manager/data/models/startup/social_media_model.dart",
+    "action": "migrated"
+  },
+  {
+    "source": "partner/lib/src/models/mis/mis_list_model.dart",
+    "destination": "lib/src/features/wealth_manager/data/models/mis/mis_list_model.dart",
+    "action": "migrated"
+  },
+  {
+    "source": "partner/lib/src/models/mis/mis_model.dart",
+    "destination": "lib/src/features/wealth_manager/data/models/mis/mis_model.dart",
+    "action": "migrated"
+  },
+  {
+    "source": "partner/lib/src/models/mis/w_mis_model.dart",
+    "destination": "lib/src/features/wealth_manager/data/models/mis/w_mis_model.dart",
+    "action": "migrated"
+  },
+  {
+    "source": "partner/lib/src/theme/section_accents.dart",
+    "destination": "lib/src/shared/theme/section_accents.dart",
+    "action": "migrated"
+  },
+  {
+    "source": "partner/lib/src/theme/partner_theme.dart",
+    "destination": "lib/src/shared/theme/partner_theme.dart",
+    "action": "migrated"
+  },
+  {
+    "source": "partner/lib/src/theme/brand_colors.dart",
+    "destination": "lib/src/shared/theme/brand_colors.dart",
+    "action": "migrated"
+  },
+  {
+    "source": "partner/lib/src/theme/app_theme.dart",
+    "destination": "lib/src/shared/theme/app_theme.dart",
+    "action": "migrated"
+  },
+  {
+    "source": "partner/lib/src/theme/app_tokens.dart",
+    "destination": "lib/src/shared/theme/app_tokens.dart",
+    "action": "migrated"
+  },
+  {
+    "source": "partner/lib/src/modules/init/init_screen.dart",
+    "destination": "lib/src/app/bootstrap/init_screen.dart",
+    "action": "migrated"
+  },
+  {
+    "source": "partner/lib/src/modules/init/init_screen_ctrl.dart",
+    "destination": "lib/src/app/bootstrap/init_screen_ctrl.dart",
+    "action": "migrated"
+  },
+  {
+    "source": "partner/lib/src/modules/home/home_page_ctrl.dart",
+    "destination": "lib/src/features/wealth_manager/presentation/home_page_ctrl.dart",
+    "action": "migrated"
+  },
+  {
+    "source": "partner/lib/src/modules/home/desktop_sidebar.dart",
+    "destination": "lib/src/features/wealth_manager/presentation/desktop_sidebar.dart",
+    "action": "migrated"
+  },
+  {
+    "source": "partner/lib/src/modules/home/phone_home_page_view.dart",
+    "destination": "lib/src/features/wealth_manager/presentation/phone_home_page_view.dart",
+    "action": "migrated"
+  },
+  {
+    "source": "partner/lib/src/modules/home/desktop_home_page_view.dart",
+    "destination": "lib/src/features/wealth_manager/presentation/desktop_home_page_view.dart",
+    "action": "migrated"
+  },
+  {
+    "source": "partner/lib/src/modules/home/home_page.dart",
+    "destination": "lib/src/features/wealth_manager/presentation/home_page.dart",
+    "action": "migrated"
+  },
+  {
+    "source": "partner/lib/src/modules/home/phone_sidebar.dart",
+    "destination": "lib/src/features/wealth_manager/presentation/phone_sidebar.dart",
+    "action": "migrated"
+  },
+  {
+    "source": "partner/lib/src/modules/home/send_document/send_document_page_ctrl.dart",
+    "destination": "lib/src/features/wealth_manager/presentation/send_document/send_document_page_ctrl.dart",
+    "action": "migrated"
+  },
+  {
+    "source": "partner/lib/src/modules/home/send_document/desktop_send_document_view.dart",
+    "destination": "lib/src/features/wealth_manager/presentation/send_document/desktop_send_document_view.dart",
+    "action": "migrated"
+  },
+  {
+    "source": "partner/lib/src/modules/home/send_document/phone_send_document_view.dart",
+    "destination": "lib/src/features/wealth_manager/presentation/send_document/phone_send_document_view.dart",
+    "action": "migrated"
+  },
+  {
+    "source": "partner/lib/src/modules/home/send_document/send_document_page.dart",
+    "destination": "lib/src/features/wealth_manager/presentation/send_document/send_document_page.dart",
+    "action": "migrated"
+  },
+  {
+    "source": "partner/lib/src/modules/home/my_earning/my_earning_page_ctrl.dart",
+    "destination": "lib/src/features/wealth_manager/presentation/my_earning/my_earning_page_ctrl.dart",
+    "action": "migrated"
+  },
+  {
+    "source": "partner/lib/src/modules/home/my_earning/phone_my_earning_view.dart",
+    "destination": "lib/src/features/wealth_manager/presentation/my_earning/phone_my_earning_view.dart",
+    "action": "migrated"
+  },
+  {
+    "source": "partner/lib/src/modules/home/my_earning/desktop_my_earning_view.dart",
+    "destination": "lib/src/features/wealth_manager/presentation/my_earning/desktop_my_earning_view.dart",
+    "action": "migrated"
+  },
+  {
+    "source": "partner/lib/src/modules/home/my_earning/my_earning_page.dart",
+    "destination": "lib/src/features/wealth_manager/presentation/my_earning/my_earning_page.dart",
+    "action": "migrated"
+  },
+  {
+    "source": "partner/lib/src/modules/home/notification/notification_page.dart",
+    "destination": "lib/src/features/wealth_manager/presentation/notification/notification_page.dart",
+    "action": "migrated"
+  },
+  {
+    "source": "partner/lib/src/modules/home/kyc_pending_investor/phone_kyc_pending_investor_view.dart",
+    "destination": "lib/src/features/wealth_manager/presentation/kyc_pending_investor/phone_kyc_pending_investor_view.dart",
+    "action": "migrated"
+  },
+  {
+    "source": "partner/lib/src/modules/home/kyc_pending_investor/kyc_pending_investor_page_ctrl.dart",
+    "destination": "lib/src/features/wealth_manager/presentation/kyc_pending_investor/kyc_pending_investor_page_ctrl.dart",
+    "action": "migrated"
+  },
+  {
+    "source": "partner/lib/src/modules/home/kyc_pending_investor/desktop_kyc_pending_investor_view.dart",
+    "destination": "lib/src/features/wealth_manager/presentation/kyc_pending_investor/desktop_kyc_pending_investor_view.dart",
+    "action": "migrated"
+  },
+  {
+    "source": "partner/lib/src/modules/home/kyc_pending_investor/kyc_pending_investor_page.dart",
+    "destination": "lib/src/features/wealth_manager/presentation/kyc_pending_investor/kyc_pending_investor_page.dart",
+    "action": "migrated"
+  },
+  {
+    "source": "partner/lib/src/modules/home/kyc_pending_investor/add_kyc/add_kyc_dialog.dart",
+    "destination": "lib/src/features/wealth_manager/presentation/kyc_pending_investor/add_kyc/add_kyc_dialog.dart",
+    "action": "migrated"
+  },
+  {
+    "source": "partner/lib/src/modules/home/kyc_pending_investor/add_kyc/add_kyc_dialog_ctrl.dart",
+    "destination": "lib/src/features/wealth_manager/presentation/kyc_pending_investor/add_kyc/add_kyc_dialog_ctrl.dart",
+    "action": "migrated"
+  },
+  {
+    "source": "partner/lib/src/modules/home/kyc_pending_investor/add_kyc/phone_add_kyc_view.dart",
+    "destination": "lib/src/features/wealth_manager/presentation/kyc_pending_investor/add_kyc/phone_add_kyc_view.dart",
+    "action": "migrated"
+  },
+  {
+    "source": "partner/lib/src/modules/home/kyc_pending_investor/add_kyc/desktop_add_kyc_view.dart",
+    "destination": "lib/src/features/wealth_manager/presentation/kyc_pending_investor/add_kyc/desktop_add_kyc_view.dart",
+    "action": "migrated"
+  },
+  {
+    "source": "partner/lib/src/modules/home/investor_transaction/desktop_investor_transaction_view.dart",
+    "destination": "lib/src/features/wealth_manager/presentation/investor_transaction/desktop_investor_transaction_view.dart",
+    "action": "migrated"
+  },
+  {
+    "source": "partner/lib/src/modules/home/investor_transaction/investor_transaction_page_ctrl.dart",
+    "destination": "lib/src/features/wealth_manager/presentation/investor_transaction/investor_transaction_page_ctrl.dart",
+    "action": "migrated"
+  },
+  {
+    "source": "partner/lib/src/modules/home/investor_transaction/phone_investor_transaction_view.dart",
+    "destination": "lib/src/features/wealth_manager/presentation/investor_transaction/phone_investor_transaction_view.dart",
+    "action": "migrated"
+  },
+  {
+    "source": "partner/lib/src/modules/home/investor_transaction/investor_transaction_page.dart",
+    "destination": "lib/src/features/wealth_manager/presentation/investor_transaction/investor_transaction_page.dart",
+    "action": "migrated"
+  },
+  {
+    "source": "partner/lib/src/modules/home/investor_transaction/pre_ipo/pre_ipo_sell_transaction/desktop_pre_ipo_sell_transaction_view.dart",
+    "destination": "lib/src/features/wealth_manager/presentation/investor_transaction/pre_ipo/pre_ipo_sell_transaction/desktop_pre_ipo_sell_transaction_view.dart",
+    "action": "migrated"
+  },
+  {
+    "source": "partner/lib/src/modules/home/investor_transaction/pre_ipo/pre_ipo_sell_transaction/phone_pre_ipo_sell_transaction_view.dart",
+    "destination": "lib/src/features/wealth_manager/presentation/investor_transaction/pre_ipo/pre_ipo_sell_transaction/phone_pre_ipo_sell_transaction_view.dart",
+    "action": "migrated"
+  },
+  {
+    "source": "partner/lib/src/modules/home/investor_transaction/pre_ipo/pre_ipo_sell_transaction/pre_ipo_sell_transaction_page_ctrl.dart",
+    "destination": "lib/src/features/wealth_manager/presentation/investor_transaction/pre_ipo/pre_ipo_sell_transaction/pre_ipo_sell_transaction_page_ctrl.dart",
+    "action": "migrated"
+  },
+  {
+    "source": "partner/lib/src/modules/home/investor_transaction/pre_ipo/pre_ipo_buy_transaction/desktop_pre_ipo_buy_transaction_view.dart",
+    "destination": "lib/src/features/wealth_manager/presentation/investor_transaction/pre_ipo/pre_ipo_buy_transaction/desktop_pre_ipo_buy_transaction_view.dart",
+    "action": "migrated"
+  },
+  {
+    "source": "partner/lib/src/modules/home/investor_transaction/pre_ipo/pre_ipo_buy_transaction/pre_ipo_buy_transaction_page_ctrl.dart",
+    "destination": "lib/src/features/wealth_manager/presentation/investor_transaction/pre_ipo/pre_ipo_buy_transaction/pre_ipo_buy_transaction_page_ctrl.dart",
+    "action": "migrated"
+  },
+  {
+    "source": "partner/lib/src/modules/home/investor_transaction/pre_ipo/pre_ipo_buy_transaction/phone_pre_ipo_buy_transaction_view.dart",
+    "destination": "lib/src/features/wealth_manager/presentation/investor_transaction/pre_ipo/pre_ipo_buy_transaction/phone_pre_ipo_buy_transaction_view.dart",
+    "action": "migrated"
+  },
+  {
+    "source": "partner/lib/src/modules/home/investor_transaction/primary/payment_receipt_dialog.dart",
+    "destination": "lib/src/features/wealth_manager/presentation/investor_transaction/primary/payment_receipt_dialog.dart",
+    "action": "migrated"
+  },
+  {
+    "source": "partner/lib/src/modules/home/investor_transaction/primary/desktop_primary_transaction_view.dart",
+    "destination": "lib/src/features/wealth_manager/presentation/investor_transaction/primary/desktop_primary_transaction_view.dart",
+    "action": "migrated"
+  },
+  {
+    "source": "partner/lib/src/modules/home/investor_transaction/primary/primary_transaction_page_ctrl.dart",
+    "destination": "lib/src/features/wealth_manager/presentation/investor_transaction/primary/primary_transaction_page_ctrl.dart",
+    "action": "migrated"
+  },
+  {
+    "source": "partner/lib/src/modules/home/investor_transaction/primary/phone_primary_transaction_view.dart",
+    "destination": "lib/src/features/wealth_manager/presentation/investor_transaction/primary/phone_primary_transaction_view.dart",
+    "action": "migrated"
+  },
+  {
+    "source": "partner/lib/src/modules/home/investor_transaction/widgets/transaction_card_widgets.dart",
+    "destination": "lib/src/features/wealth_manager/presentation/investor_transaction/widgets/transaction_card_widgets.dart",
+    "action": "migrated"
+  },
+  {
+    "source": "partner/lib/src/modules/home/investor_transaction/secondary/phone_secondary_transaction_view.dart",
+    "destination": "lib/src/features/wealth_manager/presentation/investor_transaction/secondary/phone_secondary_transaction_view.dart",
+    "action": "migrated"
+  },
+  {
+    "source": "partner/lib/src/modules/home/investor_transaction/secondary/secondary_transaction_page_ctrl.dart",
+    "destination": "lib/src/features/wealth_manager/presentation/investor_transaction/secondary/secondary_transaction_page_ctrl.dart",
+    "action": "migrated"
+  },
+  {
+    "source": "partner/lib/src/modules/home/investor_transaction/secondary/secondary_transaction_page.dart",
+    "destination": "lib/src/features/wealth_manager/presentation/investor_transaction/secondary/secondary_transaction_page.dart",
+    "action": "migrated"
+  },
+  {
+    "source": "partner/lib/src/modules/home/investor_transaction/secondary/desktop_secondary_transaction_view.dart",
+    "destination": "lib/src/features/wealth_manager/presentation/investor_transaction/secondary/desktop_secondary_transaction_view.dart",
+    "action": "migrated"
+  },
+  {
+    "source": "partner/lib/src/modules/home/investor_transaction/secondary/sell_request/sell_request_page.dart",
+    "destination": "lib/src/features/wealth_manager/presentation/investor_transaction/secondary/sell_request/sell_request_page.dart",
+    "action": "migrated"
+  },
+  {
+    "source": "partner/lib/src/modules/home/investor_transaction/secondary/sell_request/desktop_sell_request_view.dart",
+    "destination": "lib/src/features/wealth_manager/presentation/investor_transaction/secondary/sell_request/desktop_sell_request_view.dart",
+    "action": "migrated"
+  },
+  {
+    "source": "partner/lib/src/modules/home/investor_transaction/secondary/sell_request/phone_sell_request_view.dart",
+    "destination": "lib/src/features/wealth_manager/presentation/investor_transaction/secondary/sell_request/phone_sell_request_view.dart",
+    "action": "migrated"
+  },
+  {
+    "source": "partner/lib/src/modules/home/investor_transaction/secondary/sell_request/sell_request_page_ctrl.dart",
+    "destination": "lib/src/features/wealth_manager/presentation/investor_transaction/secondary/sell_request/sell_request_page_ctrl.dart",
+    "action": "migrated"
+  },
+  {
+    "source": "partner/lib/src/modules/home/investor_transaction/secondary/transaction_slip_dialog/phone_transaction_slip_dialog_view.dart",
+    "destination": "lib/src/features/wealth_manager/presentation/investor_transaction/secondary/transaction_slip_dialog/phone_transaction_slip_dialog_view.dart",
+    "action": "migrated"
+  },
+  {
+    "source": "partner/lib/src/modules/home/investor_transaction/secondary/transaction_slip_dialog/transaction_slip_dialog.dart",
+    "destination": "lib/src/features/wealth_manager/presentation/investor_transaction/secondary/transaction_slip_dialog/transaction_slip_dialog.dart",
+    "action": "migrated"
+  },
+  {
+    "source": "partner/lib/src/modules/home/investor_transaction/secondary/transaction_slip_dialog/desktop_transaction_slip_dialog_view.dart",
+    "destination": "lib/src/features/wealth_manager/presentation/investor_transaction/secondary/transaction_slip_dialog/desktop_transaction_slip_dialog_view.dart",
+    "action": "migrated"
+  },
+  {
+    "source": "partner/lib/src/modules/home/investor_transaction/secondary/transaction_slip_dialog/transaction_slip_dialog_ctrl.dart",
+    "destination": "lib/src/features/wealth_manager/presentation/investor_transaction/secondary/transaction_slip_dialog/transaction_slip_dialog_ctrl.dart",
+    "action": "migrated"
+  },
+  {
+    "source": "partner/lib/src/modules/home/investor_transaction/secondary/widgets/lp_secondary_list.dart",
+    "destination": "lib/src/features/wealth_manager/presentation/investor_transaction/secondary/widgets/lp_secondary_list.dart",
+    "action": "migrated"
+  },
+  {
+    "source": "partner/lib/src/modules/home/investor_transaction/secondary/buy_request/desktop_buy_request_view.dart",
+    "destination": "lib/src/features/wealth_manager/presentation/investor_transaction/secondary/buy_request/desktop_buy_request_view.dart",
+    "action": "migrated"
+  },
+  {
+    "source": "partner/lib/src/modules/home/investor_transaction/secondary/buy_request/buy_request_page_ctrl.dart",
+    "destination": "lib/src/features/wealth_manager/presentation/investor_transaction/secondary/buy_request/buy_request_page_ctrl.dart",
+    "action": "migrated"
+  },
+  {
+    "source": "partner/lib/src/modules/home/investor_transaction/secondary/buy_request/phone_buy_request_view.dart",
+    "destination": "lib/src/features/wealth_manager/presentation/investor_transaction/secondary/buy_request/phone_buy_request_view.dart",
+    "action": "migrated"
+  },
+  {
+    "source": "partner/lib/src/modules/home/investor_transaction/secondary/buy_request/buy_request_page.dart",
+    "destination": "lib/src/features/wealth_manager/presentation/investor_transaction/secondary/buy_request/buy_request_page.dart",
+    "action": "migrated"
+  },
+  {
+    "source": "partner/lib/src/modules/home/dashboard/desktop_dashboard_view.dart",
+    "destination": "lib/src/features/wealth_manager/presentation/dashboard/desktop_dashboard_view.dart",
+    "action": "migrated"
+  },
+  {
+    "source": "partner/lib/src/modules/home/dashboard/investor_dialog.dart",
+    "destination": "lib/src/features/wealth_manager/presentation/dashboard/investor_dialog.dart",
+    "action": "migrated"
+  },
+  {
+    "source": "partner/lib/src/modules/home/dashboard/dashboard_sections.dart",
+    "destination": "lib/src/features/wealth_manager/presentation/dashboard/dashboard_sections.dart",
+    "action": "migrated"
+  },
+  {
+    "source": "partner/lib/src/modules/home/dashboard/startup_dialog.dart",
+    "destination": "lib/src/features/wealth_manager/presentation/dashboard/startup_dialog.dart",
+    "action": "migrated"
+  },
+  {
+    "source": "partner/lib/src/modules/home/dashboard/dashboard_page_ctrl.dart",
+    "destination": "lib/src/features/wealth_manager/presentation/dashboard/dashboard_page_ctrl.dart",
+    "action": "migrated"
+  },
+  {
+    "source": "partner/lib/src/modules/home/dashboard/startup_list.dart",
+    "destination": "lib/src/features/wealth_manager/presentation/dashboard/startup_list.dart",
+    "action": "migrated"
+  },
+  {
+    "source": "partner/lib/src/modules/home/dashboard/phone_dashboard_view.dart",
+    "destination": "lib/src/features/wealth_manager/presentation/dashboard/phone_dashboard_view.dart",
+    "action": "migrated"
+  },
+  {
+    "source": "partner/lib/src/modules/home/dashboard/dashboard_page.dart",
+    "destination": "lib/src/features/wealth_manager/presentation/dashboard/dashboard_page.dart",
+    "action": "migrated"
+  },
+  {
+    "source": "partner/lib/src/modules/home/portfolio/phone_portfolio_view.dart",
+    "destination": "lib/src/features/wealth_manager/presentation/portfolio/phone_portfolio_view.dart",
+    "action": "migrated"
+  },
+  {
+    "source": "partner/lib/src/modules/home/portfolio/portfolio_page.dart",
+    "destination": "lib/src/features/wealth_manager/presentation/portfolio/portfolio_page.dart",
+    "action": "migrated"
+  },
+  {
+    "source": "partner/lib/src/modules/home/portfolio/portfolio_page_ctrl.dart",
+    "destination": "lib/src/features/wealth_manager/presentation/portfolio/portfolio_page_ctrl.dart",
+    "action": "migrated"
+  },
+  {
+    "source": "partner/lib/src/modules/home/portfolio/desktop_portfolio_view.dart",
+    "destination": "lib/src/features/wealth_manager/presentation/portfolio/desktop_portfolio_view.dart",
+    "action": "migrated"
+  },
+  {
+    "source": "partner/lib/src/modules/home/portfolio/pre_ipo_sell_share_dialog/desktop_pre_ipo_sell_share_dialog_view.dart",
+    "destination": "lib/src/features/wealth_manager/presentation/portfolio/pre_ipo_sell_share_dialog/desktop_pre_ipo_sell_share_dialog_view.dart",
+    "action": "migrated"
+  },
+  {
+    "source": "partner/lib/src/modules/home/portfolio/pre_ipo_sell_share_dialog/pre_ipo_sell_share_dialog_ctrl.dart",
+    "destination": "lib/src/features/wealth_manager/presentation/portfolio/pre_ipo_sell_share_dialog/pre_ipo_sell_share_dialog_ctrl.dart",
+    "action": "migrated"
+  },
+  {
+    "source": "partner/lib/src/modules/home/portfolio/pre_ipo_sell_share_dialog/pre_ipo_sell_share_dialog.dart",
+    "destination": "lib/src/features/wealth_manager/presentation/portfolio/pre_ipo_sell_share_dialog/pre_ipo_sell_share_dialog.dart",
+    "action": "migrated"
+  },
+  {
+    "source": "partner/lib/src/modules/home/portfolio/pre_ipo_sell_share_dialog/phone_pre_ipo_sell_share_dialog_view.dart",
+    "destination": "lib/src/features/wealth_manager/presentation/portfolio/pre_ipo_sell_share_dialog/phone_pre_ipo_sell_share_dialog_view.dart",
+    "action": "migrated"
+  },
+  {
+    "source": "partner/lib/src/modules/home/portfolio/primary_sell_share_dialog/primary_sell_share_dialog.dart",
+    "destination": "lib/src/features/wealth_manager/presentation/portfolio/primary_sell_share_dialog/primary_sell_share_dialog.dart",
+    "action": "migrated"
+  },
+  {
+    "source": "partner/lib/src/modules/home/portfolio/primary_sell_share_dialog/desktop_primary_sell_share_dialog_view.dart",
+    "destination": "lib/src/features/wealth_manager/presentation/portfolio/primary_sell_share_dialog/desktop_primary_sell_share_dialog_view.dart",
+    "action": "migrated"
+  },
+  {
+    "source": "partner/lib/src/modules/home/portfolio/primary_sell_share_dialog/primary_sell_share_dialog_ctrl.dart",
+    "destination": "lib/src/features/wealth_manager/presentation/portfolio/primary_sell_share_dialog/primary_sell_share_dialog_ctrl.dart",
+    "action": "migrated"
+  },
+  {
+    "source": "partner/lib/src/modules/home/portfolio/primary_sell_share_dialog/phone_primary_sell_share_dialog_view.dart",
+    "destination": "lib/src/features/wealth_manager/presentation/portfolio/primary_sell_share_dialog/phone_primary_sell_share_dialog_view.dart",
+    "action": "migrated"
+  },
+  {
+    "source": "partner/lib/src/modules/home/channel_partner/phone_channel_partner_view.dart",
+    "destination": "lib/src/features/wealth_manager/presentation/channel_partner/phone_channel_partner_view.dart",
+    "action": "migrated"
+  },
+  {
+    "source": "partner/lib/src/modules/home/channel_partner/channel_partner_page_ctrl.dart",
+    "destination": "lib/src/features/wealth_manager/presentation/channel_partner/channel_partner_page_ctrl.dart",
+    "action": "migrated"
+  },
+  {
+    "source": "partner/lib/src/modules/home/channel_partner/desktop_channel_partner_view.dart",
+    "destination": "lib/src/features/wealth_manager/presentation/channel_partner/desktop_channel_partner_view.dart",
+    "action": "migrated"
+  },
+  {
+    "source": "partner/lib/src/modules/home/channel_partner/channel_partner_page.dart",
+    "destination": "lib/src/features/wealth_manager/presentation/channel_partner/channel_partner_page.dart",
+    "action": "migrated"
+  },
+  {
+    "source": "partner/lib/src/modules/home/channel_partner/add_channel_partner/phone_add_channel_partner_view.dart",
+    "destination": "lib/src/features/wealth_manager/presentation/channel_partner/add_channel_partner/phone_add_channel_partner_view.dart",
+    "action": "migrated"
+  },
+  {
+    "source": "partner/lib/src/modules/home/channel_partner/add_channel_partner/add_channel_partner_dialog_ctrl.dart",
+    "destination": "lib/src/features/wealth_manager/presentation/channel_partner/add_channel_partner/add_channel_partner_dialog_ctrl.dart",
+    "action": "migrated"
+  },
+  {
+    "source": "partner/lib/src/modules/home/channel_partner/add_channel_partner/add_channel_partner_dialog.dart",
+    "destination": "lib/src/features/wealth_manager/presentation/channel_partner/add_channel_partner/add_channel_partner_dialog.dart",
+    "action": "migrated"
+  },
+  {
+    "source": "partner/lib/src/modules/home/channel_partner/add_channel_partner/desktop_add_channel_partner_view.dart",
+    "destination": "lib/src/features/wealth_manager/presentation/channel_partner/add_channel_partner/desktop_add_channel_partner_view.dart",
+    "action": "migrated"
+  },
+  {
+    "source": "partner/lib/src/modules/home/mis/mis_page.dart",
+    "destination": "lib/src/features/wealth_manager/presentation/mis/mis_page.dart",
+    "action": "migrated"
+  },
+  {
+    "source": "partner/lib/src/modules/home/mis/desktop_mis_view.dart",
+    "destination": "lib/src/features/wealth_manager/presentation/mis/desktop_mis_view.dart",
+    "action": "migrated"
+  },
+  {
+    "source": "partner/lib/src/modules/home/mis/phone_mis_view.dart",
+    "destination": "lib/src/features/wealth_manager/presentation/mis/phone_mis_view.dart",
+    "action": "migrated"
+  },
+  {
+    "source": "partner/lib/src/modules/home/mis/mis_page_ctrl.dart",
+    "destination": "lib/src/features/wealth_manager/presentation/mis/mis_page_ctrl.dart",
+    "action": "migrated"
+  },
+  {
+    "source": "partner/lib/src/modules/home/investors/investors_page.dart",
+    "destination": "lib/src/features/investors/presentation/legacy/investors_page.dart",
+    "action": "migrated"
+  },
+  {
+    "source": "partner/lib/src/modules/home/investors/phone_investors_view.dart",
+    "destination": "lib/src/features/investors/presentation/legacy/phone_investors_view.dart",
+    "action": "migrated"
+  },
+  {
+    "source": "partner/lib/src/modules/home/investors/show_more_dialog.dart",
+    "destination": "lib/src/features/investors/presentation/legacy/show_more_dialog.dart",
+    "action": "migrated"
+  },
+  {
+    "source": "partner/lib/src/modules/home/investors/investors_page_ctrl.dart",
+    "destination": "lib/src/features/investors/presentation/legacy/investors_page_ctrl.dart",
+    "action": "migrated"
+  },
+  {
+    "source": "partner/lib/src/modules/home/investors/desktop_investors_view.dart",
+    "destination": "lib/src/features/investors/presentation/legacy/desktop_investors_view.dart",
+    "action": "migrated"
+  },
+  {
+    "source": "partner/lib/src/modules/home/investors/add_investor/add_investor_page.dart",
+    "destination": "lib/src/features/investors/presentation/legacy/add_investor/add_investor_page.dart",
+    "action": "migrated"
+  },
+  {
+    "source": "partner/lib/src/modules/home/investors/add_investor/desktop_add_investor_view.dart",
+    "destination": "lib/src/features/investors/presentation/legacy/add_investor/desktop_add_investor_view.dart",
+    "action": "migrated"
+  },
+  {
+    "source": "partner/lib/src/modules/home/investors/add_investor/phone_add_investor_view.dart",
+    "destination": "lib/src/features/investors/presentation/legacy/add_investor/phone_add_investor_view.dart",
+    "action": "migrated"
+  },
+  {
+    "source": "partner/lib/src/modules/home/investors/add_investor/add_investor_page_ctrl.dart",
+    "destination": "lib/src/features/investors/presentation/legacy/add_investor/add_investor_page_ctrl.dart",
+    "action": "migrated"
+  },
+  {
+    "source": "partner/lib/src/modules/home/investors/investor_filter/investor_filter_dialog.dart",
+    "destination": "lib/src/features/investors/presentation/legacy/investor_filter/investor_filter_dialog.dart",
+    "action": "migrated"
+  },
+  {
+    "source": "partner/lib/src/modules/home/investors/investor_filter/desktop_investor_filter_view.dart",
+    "destination": "lib/src/features/investors/presentation/legacy/investor_filter/desktop_investor_filter_view.dart",
+    "action": "migrated"
+  },
+  {
+    "source": "partner/lib/src/modules/home/investors/investor_filter/phone_investor_filter_view.dart",
+    "destination": "lib/src/features/investors/presentation/legacy/investor_filter/phone_investor_filter_view.dart",
+    "action": "migrated"
+  },
+  {
+    "source": "partner/lib/src/modules/home/upload_portfolio/upload_portfolio_page.dart",
+    "destination": "lib/src/features/wealth_manager/presentation/upload_portfolio/upload_portfolio_page.dart",
+    "action": "migrated"
+  },
+  {
+    "source": "partner/lib/src/modules/home/upload_portfolio/phone_upload_portfolio_view.dart",
+    "destination": "lib/src/features/wealth_manager/presentation/upload_portfolio/phone_upload_portfolio_view.dart",
+    "action": "migrated"
+  },
+  {
+    "source": "partner/lib/src/modules/home/upload_portfolio/upload_portfolio_ctrl.dart",
+    "destination": "lib/src/features/wealth_manager/presentation/upload_portfolio/upload_portfolio_ctrl.dart",
+    "action": "migrated"
+  },
+  {
+    "source": "partner/lib/src/modules/home/upload_portfolio/desktop_upload_portfolio_view.dart",
+    "destination": "lib/src/features/wealth_manager/presentation/upload_portfolio/desktop_upload_portfolio_view.dart",
+    "action": "migrated"
+  },
+  {
+    "source": "partner/lib/src/modules/test/test_page_ctrl.dart",
+    "destination": "lib/src/devtools/test_page_ctrl.dart",
+    "action": "migrated"
+  },
+  {
+    "source": "partner/lib/src/modules/test/test_page.dart",
+    "destination": "lib/src/devtools/test_page.dart",
+    "action": "migrated"
+  },
+  {
+    "source": "partner/lib/src/modules/auth/inquiry/inquiry_page_ctrl.dart",
+    "destination": "lib/src/features/auth/presentation/inquiry/inquiry_page_ctrl.dart",
+    "action": "migrated"
+  },
+  {
+    "source": "partner/lib/src/modules/auth/inquiry/phone_Inquiry_view.dart",
+    "destination": "lib/src/features/auth/presentation/inquiry/phone_Inquiry_view.dart",
+    "action": "migrated"
+  },
+  {
+    "source": "partner/lib/src/modules/auth/inquiry/inquiry_page.dart",
+    "destination": "lib/src/features/auth/presentation/inquiry/inquiry_page.dart",
+    "action": "migrated"
+  },
+  {
+    "source": "partner/lib/src/modules/auth/inquiry/desktop_Inquiry_view.dart",
+    "destination": "lib/src/features/auth/presentation/inquiry/desktop_Inquiry_view.dart",
+    "action": "migrated"
+  },
+  {
+    "source": "partner/lib/src/modules/auth/kyc/kyc_page.dart",
+    "destination": "lib/src/features/investors/presentation/legacy_kyc/kyc_page.dart",
+    "action": "migrated"
+  },
+  {
+    "source": "partner/lib/src/modules/auth/kyc/desktop_kyc_view.dart",
+    "destination": "lib/src/features/investors/presentation/legacy_kyc/desktop_kyc_view.dart",
+    "action": "migrated"
+  },
+  {
+    "source": "partner/lib/src/modules/auth/kyc/kyc_page_ctrl.dart",
+    "destination": "lib/src/features/investors/presentation/legacy_kyc/kyc_page_ctrl.dart",
+    "action": "migrated"
+  },
+  {
+    "source": "partner/lib/src/modules/auth/kyc/phone_kyc_view.dart",
+    "destination": "lib/src/features/investors/presentation/legacy_kyc/phone_kyc_view.dart",
+    "action": "migrated"
+  },
+  {
+    "source": "partner/lib/src/modules/auth/forgot_password/phone_forgot_password_view.dart",
+    "destination": "lib/src/features/auth/presentation/forgot_password/phone_forgot_password_view.dart",
+    "action": "migrated"
+  },
+  {
+    "source": "partner/lib/src/modules/auth/forgot_password/forgot_password_page_ctrl.dart",
+    "destination": "lib/src/features/auth/presentation/forgot_password/forgot_password_page_ctrl.dart",
+    "action": "migrated"
+  },
+  {
+    "source": "partner/lib/src/modules/auth/forgot_password/forgot_password_page.dart",
+    "destination": "lib/src/features/auth/presentation/forgot_password/forgot_password_page.dart",
+    "action": "migrated"
+  },
+  {
+    "source": "partner/lib/src/modules/auth/forgot_password/desktop_forgot_password_view.dart",
+    "destination": "lib/src/features/auth/presentation/forgot_password/desktop_forgot_password_view.dart",
+    "action": "migrated"
+  },
+  {
+    "source": "partner/lib/src/modules/auth/change_password/phone_change_password_view.dart",
+    "destination": "lib/src/features/auth/presentation/change_password/phone_change_password_view.dart",
+    "action": "migrated"
+  },
+  {
+    "source": "partner/lib/src/modules/auth/change_password/desktop_change_password_view.dart",
+    "destination": "lib/src/features/auth/presentation/change_password/desktop_change_password_view.dart",
+    "action": "migrated"
+  },
+  {
+    "source": "partner/lib/src/modules/auth/change_password/change_password_page.dart",
+    "destination": "lib/src/features/auth/presentation/change_password/change_password_page.dart",
+    "action": "migrated"
+  },
+  {
+    "source": "partner/lib/src/modules/auth/change_password/change_password_page_ctrl.dart",
+    "destination": "lib/src/features/auth/presentation/change_password/change_password_page_ctrl.dart",
+    "action": "migrated"
+  },
+  {
+    "source": "partner/lib/src/modules/auth/profile/phone_profile_view.dart",
+    "destination": "lib/src/features/account/presentation/phone_profile_view.dart",
+    "action": "migrated"
+  },
+  {
+    "source": "partner/lib/src/modules/auth/profile/profile_page_ctrl.dart",
+    "destination": "lib/src/features/account/presentation/profile_page_ctrl.dart",
+    "action": "migrated"
+  },
+  {
+    "source": "partner/lib/src/modules/auth/profile/desktop_profile_view.dart",
+    "destination": "lib/src/features/account/presentation/desktop_profile_view.dart",
+    "action": "migrated"
+  },
+  {
+    "source": "partner/lib/src/modules/auth/profile/profile_page.dart",
+    "destination": "lib/src/features/account/presentation/profile_page.dart",
+    "action": "migrated"
+  },
+  {
+    "source": "partner/lib/src/modules/auth/aif_onboarding/desktop_aif_onboarding_view.dart",
+    "destination": "lib/src/features/auth/presentation/aif_onboarding/desktop_aif_onboarding_view.dart",
+    "action": "migrated"
+  },
+  {
+    "source": "partner/lib/src/modules/auth/aif_onboarding/aif_onboarding_page_ctrl.dart",
+    "destination": "lib/src/features/auth/presentation/aif_onboarding/aif_onboarding_page_ctrl.dart",
+    "action": "migrated"
+  },
+  {
+    "source": "partner/lib/src/modules/auth/aif_onboarding/phone_aif_onboarding_view.dart",
+    "destination": "lib/src/features/auth/presentation/aif_onboarding/phone_aif_onboarding_view.dart",
+    "action": "migrated"
+  },
+  {
+    "source": "partner/lib/src/modules/auth/aif_onboarding/aif_onboarding_page.dart",
+    "destination": "lib/src/features/auth/presentation/aif_onboarding/aif_onboarding_page.dart",
+    "action": "migrated"
+  },
+  {
+    "source": "partner/lib/src/modules/auth/login/login_page_ctrl.dart",
+    "destination": "lib/src/features/auth/presentation/login/login_page_ctrl.dart",
+    "action": "migrated"
+  },
+  {
+    "source": "partner/lib/src/modules/auth/login/login_page.dart",
+    "destination": "lib/src/features/auth/presentation/login/login_page.dart",
+    "action": "migrated"
+  },
+  {
+    "source": "partner/lib/src/modules/auth/login/phone_login_view.dart",
+    "destination": "lib/src/features/auth/presentation/login/phone_login_view.dart",
+    "action": "migrated"
+  },
+  {
+    "source": "partner/lib/src/modules/auth/login/desktop_login_view.dart",
+    "destination": "lib/src/features/auth/presentation/login/desktop_login_view.dart",
+    "action": "migrated"
+  },
+  {
+    "source": "partner/lib/src/modules/primary_landing_page/primary_landing_stats_strip.dart",
+    "destination": "lib/src/features/catalog/presentation/primary/primary_landing_stats_strip.dart",
+    "action": "migrated"
+  },
+  {
+    "source": "partner/lib/src/modules/primary_landing_page/dashboard_drawer.dart",
+    "destination": "lib/src/features/catalog/presentation/primary/dashboard_drawer.dart",
+    "action": "migrated"
+  },
+  {
+    "source": "partner/lib/src/modules/primary_landing_page/primary_landing_page.dart",
+    "destination": "lib/src/features/catalog/presentation/primary/primary_landing_page.dart",
+    "action": "migrated"
+  },
+  {
+    "source": "partner/lib/src/modules/primary_landing_page/primary_landing_page_ctrl.dart",
+    "destination": "lib/src/features/catalog/presentation/primary/primary_landing_page_ctrl.dart",
+    "action": "migrated"
+  },
+  {
+    "source": "partner/lib/src/modules/primary_landing_page/desktop_primary_landing_view.dart",
+    "destination": "lib/src/features/catalog/presentation/primary/desktop_primary_landing_view.dart",
+    "action": "migrated"
+  },
+  {
+    "source": "partner/lib/src/modules/primary_landing_page/phone_primary_landing_view.dart",
+    "destination": "lib/src/features/catalog/presentation/primary/phone_primary_landing_view.dart",
+    "action": "migrated"
+  },
+  {
+    "source": "partner/lib/src/modules/primary_landing_page/sector_startup_dialog.dart",
+    "destination": "lib/src/features/catalog/presentation/primary/sector_startup_dialog.dart",
+    "action": "migrated"
+  },
+  {
+    "source": "partner/lib/src/modules/primary_landing_page/primary_list_page/primary_list_page.dart",
+    "destination": "lib/src/features/catalog/presentation/primary/primary_list_page/primary_list_page.dart",
+    "action": "migrated"
+  },
+  {
+    "source": "partner/lib/src/modules/primary_landing_page/primary_list_page/primary_list_page_ctrl.dart",
+    "destination": "lib/src/features/catalog/presentation/primary/primary_list_page/primary_list_page_ctrl.dart",
+    "action": "migrated"
+  },
+  {
+    "source": "partner/lib/src/modules/primary_landing_page/primary_list_page/commit_now_dialog.dart",
+    "destination": "lib/src/features/catalog/presentation/primary/primary_list_page/commit_now_dialog.dart",
+    "action": "migrated"
+  },
+  {
+    "source": "partner/lib/src/modules/primary_landing_page/blog_detail/blog_detail_page_ctrl.dart",
+    "destination": "lib/src/features/catalog/presentation/primary/blog_detail/blog_detail_page_ctrl.dart",
+    "action": "migrated"
+  },
+  {
+    "source": "partner/lib/src/modules/primary_landing_page/blog_detail/blog_detail_page.dart",
+    "destination": "lib/src/features/catalog/presentation/primary/blog_detail/blog_detail_page.dart",
+    "action": "migrated"
+  },
+  {
+    "source": "partner/lib/src/modules/primary_landing_page/primary_detail_page/phone_primary_detail_view.dart",
+    "destination": "lib/src/features/catalog/presentation/primary/primary_detail_page/phone_primary_detail_view.dart",
+    "action": "migrated"
+  },
+  {
+    "source": "partner/lib/src/modules/primary_landing_page/primary_detail_page/desktop_primary_detail_view.dart",
+    "destination": "lib/src/features/catalog/presentation/primary/primary_detail_page/desktop_primary_detail_view.dart",
+    "action": "migrated"
+  },
+  {
+    "source": "partner/lib/src/modules/primary_landing_page/primary_detail_page/primary_detail_page_ctrl.dart",
+    "destination": "lib/src/features/catalog/presentation/primary/primary_detail_page/primary_detail_page_ctrl.dart",
+    "action": "migrated"
+  },
+  {
+    "source": "partner/lib/src/modules/primary_landing_page/primary_detail_page/primary_detail_page.dart",
+    "destination": "lib/src/features/catalog/presentation/primary/primary_detail_page/primary_detail_page.dart",
+    "action": "migrated"
+  },
+  {
+    "source": "partner/lib/src/modules/primary_landing_page/primary_detail_page/primary_investment/primary_investment_page_ctrl.dart",
+    "destination": "lib/src/features/catalog/presentation/primary/primary_detail_page/primary_investment/primary_investment_page_ctrl.dart",
+    "action": "migrated"
+  },
+  {
+    "source": "partner/lib/src/modules/primary_landing_page/primary_detail_page/primary_investment/phone_primary_investment_view.dart",
+    "destination": "lib/src/features/catalog/presentation/primary/primary_detail_page/primary_investment/phone_primary_investment_view.dart",
+    "action": "migrated"
+  },
+  {
+    "source": "partner/lib/src/modules/primary_landing_page/primary_detail_page/primary_investment/primary_investment_page.dart",
+    "destination": "lib/src/features/catalog/presentation/primary/primary_detail_page/primary_investment/primary_investment_page.dart",
+    "action": "migrated"
+  },
+  {
+    "source": "partner/lib/src/modules/primary_landing_page/primary_detail_page/primary_investment/desktop_primary_investment_view.dart",
+    "destination": "lib/src/features/catalog/presentation/primary/primary_detail_page/primary_investment/desktop_primary_investment_view.dart",
+    "action": "migrated"
+  },
+  {
+    "source": "partner/lib/src/modules/primary_landing_page/primary_detail_page/investor_list_dialog/investor_list_dialog_ctrl.dart",
+    "destination": "lib/src/features/catalog/presentation/primary/primary_detail_page/investor_list_dialog/investor_list_dialog_ctrl.dart",
+    "action": "migrated"
+  },
+  {
+    "source": "partner/lib/src/modules/primary_landing_page/primary_detail_page/investor_list_dialog/investor_list_dialog.dart",
+    "destination": "lib/src/features/catalog/presentation/primary/primary_detail_page/investor_list_dialog/investor_list_dialog.dart",
+    "action": "migrated"
+  },
+  {
+    "source": "partner/lib/src/modules/primary_landing_page/blog_list/blog_list_page.dart",
+    "destination": "lib/src/features/catalog/presentation/primary/blog_list/blog_list_page.dart",
+    "action": "migrated"
+  },
+  {
+    "source": "partner/lib/src/modules/primary_landing_page/blog_list/blog_list_page_ctrl.dart",
+    "destination": "lib/src/features/catalog/presentation/primary/blog_list/blog_list_page_ctrl.dart",
+    "action": "migrated"
+  },
+  {
+    "source": "partner/lib/src/modules/option/phone_option_view.dart",
+    "destination": "lib/src/features/wealth_manager/presentation/option/phone_option_view.dart",
+    "action": "migrated"
+  },
+  {
+    "source": "partner/lib/src/modules/option/desktop_option_view.dart",
+    "destination": "lib/src/features/wealth_manager/presentation/option/desktop_option_view.dart",
+    "action": "migrated"
+  },
+  {
+    "source": "partner/lib/src/modules/option/option_page.dart",
+    "destination": "lib/src/features/wealth_manager/presentation/option/option_page.dart",
+    "action": "migrated"
+  },
+  {
+    "source": "partner/lib/src/modules/option/option_page_ctrl.dart",
+    "destination": "lib/src/features/wealth_manager/presentation/option/option_page_ctrl.dart",
+    "action": "migrated"
+  },
+  {
+    "source": "partner/lib/src/modules/pre_ipo/pre_ipo_list_page/pre_ipo_list_page.dart",
+    "destination": "lib/src/features/catalog/presentation/pre_ipo/pre_ipo_list_page/pre_ipo_list_page.dart",
+    "action": "migrated"
+  },
+  {
+    "source": "partner/lib/src/modules/pre_ipo/pre_ipo_list_page/phone_pre_ipo_list_view.dart",
+    "destination": "lib/src/features/catalog/presentation/pre_ipo/pre_ipo_list_page/phone_pre_ipo_list_view.dart",
+    "action": "migrated"
+  },
+  {
+    "source": "partner/lib/src/modules/pre_ipo/pre_ipo_list_page/desktop_pre_ipo_list_view.dart",
+    "destination": "lib/src/features/catalog/presentation/pre_ipo/pre_ipo_list_page/desktop_pre_ipo_list_view.dart",
+    "action": "migrated"
+  },
+  {
+    "source": "partner/lib/src/modules/pre_ipo/pre_ipo_list_page/pre_ipo_list_page_ctrl.dart",
+    "destination": "lib/src/features/catalog/presentation/pre_ipo/pre_ipo_list_page/pre_ipo_list_page_ctrl.dart",
+    "action": "migrated"
+  },
+  {
+    "source": "partner/lib/src/modules/pre_ipo/pre_ipo_landing_page/pre_ipo_landing_page.dart",
+    "destination": "lib/src/features/catalog/presentation/pre_ipo/pre_ipo_landing_page/pre_ipo_landing_page.dart",
+    "action": "migrated"
+  },
+  {
+    "source": "partner/lib/src/modules/pre_ipo/pre_ipo_landing_page/desktop_pre_ipo_landing_view.dart",
+    "destination": "lib/src/features/catalog/presentation/pre_ipo/pre_ipo_landing_page/desktop_pre_ipo_landing_view.dart",
+    "action": "migrated"
+  },
+  {
+    "source": "partner/lib/src/modules/pre_ipo/pre_ipo_landing_page/phone_pre_ipo_landing_view.dart",
+    "destination": "lib/src/features/catalog/presentation/pre_ipo/pre_ipo_landing_page/phone_pre_ipo_landing_view.dart",
+    "action": "migrated"
+  },
+  {
+    "source": "partner/lib/src/modules/pre_ipo/pre_ipo_landing_page/pre_ipo_landing_page_ctrl.dart",
+    "destination": "lib/src/features/catalog/presentation/pre_ipo/pre_ipo_landing_page/pre_ipo_landing_page_ctrl.dart",
+    "action": "migrated"
+  },
+  {
+    "source": "partner/lib/src/modules/pre_ipo/pre_ipo_investment/seller_profile_widget.dart",
+    "destination": "lib/src/features/catalog/presentation/pre_ipo/pre_ipo_investment/seller_profile_widget.dart",
+    "action": "migrated"
+  },
+  {
+    "source": "partner/lib/src/modules/pre_ipo/pre_ipo_investment/select_investor_dialog.dart",
+    "destination": "lib/src/features/catalog/presentation/pre_ipo/pre_ipo_investment/select_investor_dialog.dart",
+    "action": "migrated"
+  },
+  {
+    "source": "partner/lib/src/modules/pre_ipo/pre_ipo_investment/desktop_pre_ipo_investment_view.dart",
+    "destination": "lib/src/features/catalog/presentation/pre_ipo/pre_ipo_investment/desktop_pre_ipo_investment_view.dart",
+    "action": "migrated"
+  },
+  {
+    "source": "partner/lib/src/modules/pre_ipo/pre_ipo_investment/pre_ipo_investment_page_ctrl.dart",
+    "destination": "lib/src/features/catalog/presentation/pre_ipo/pre_ipo_investment/pre_ipo_investment_page_ctrl.dart",
+    "action": "migrated"
+  },
+  {
+    "source": "partner/lib/src/modules/pre_ipo/pre_ipo_investment/pre_ipo_investment_page.dart",
+    "destination": "lib/src/features/catalog/presentation/pre_ipo/pre_ipo_investment/pre_ipo_investment_page.dart",
+    "action": "migrated"
+  },
+  {
+    "source": "partner/lib/src/modules/pre_ipo/pre_ipo_investment/pre_ipo_offer.dart",
+    "destination": "lib/src/features/catalog/presentation/pre_ipo/pre_ipo_investment/pre_ipo_offer.dart",
+    "action": "migrated"
+  },
+  {
+    "source": "partner/lib/src/modules/pre_ipo/pre_ipo_investment/phone_pre_ipo_investment_view.dart",
+    "destination": "lib/src/features/catalog/presentation/pre_ipo/pre_ipo_investment/phone_pre_ipo_investment_view.dart",
+    "action": "migrated"
+  },
+  {
+    "source": "partner/lib/src/modules/pre_ipo/news_list/news_list_page.dart",
+    "destination": "lib/src/features/catalog/presentation/pre_ipo/news_list/news_list_page.dart",
+    "action": "migrated"
+  },
+  {
+    "source": "partner/lib/src/modules/pre_ipo/news_list/news_list_page_ctrl.dart",
+    "destination": "lib/src/features/catalog/presentation/pre_ipo/news_list/news_list_page_ctrl.dart",
+    "action": "migrated"
+  },
+  {
+    "source": "partner/lib/src/modules/pre_ipo/news_list/news_detail_dialog.dart",
+    "destination": "lib/src/features/catalog/presentation/pre_ipo/news_list/news_detail_dialog.dart",
+    "action": "migrated"
+  },
+  {
+    "source": "partner/lib/src/modules/pre_ipo/pre_ipo_detail_page/pre_ipo_detail_page.dart",
+    "destination": "lib/src/features/catalog/presentation/pre_ipo/pre_ipo_detail_page/pre_ipo_detail_page.dart",
+    "action": "migrated"
+  },
+  {
+    "source": "partner/lib/src/modules/pre_ipo/pre_ipo_detail_page/pre_ipo_detail_page_ctrl.dart",
+    "destination": "lib/src/features/catalog/presentation/pre_ipo/pre_ipo_detail_page/pre_ipo_detail_page_ctrl.dart",
+    "action": "migrated"
+  },
+  {
+    "source": "partner/lib/src/modules/pre_ipo/pre_ipo_detail_page/desktop_pre_ipo_detail_view.dart",
+    "destination": "lib/src/features/catalog/presentation/pre_ipo/pre_ipo_detail_page/desktop_pre_ipo_detail_view.dart",
+    "action": "migrated"
+  },
+  {
+    "source": "partner/lib/src/modules/pre_ipo/pre_ipo_detail_page/phone_pre_ipo_detail_view.dart",
+    "destination": "lib/src/features/catalog/presentation/pre_ipo/pre_ipo_detail_page/phone_pre_ipo_detail_view.dart",
+    "action": "migrated"
+  },
+  {
+    "source": "partner/lib/src/modules/pre_ipo/pre_ipo_detail_page/seller_slots_widget.dart",
+    "destination": "lib/src/features/catalog/presentation/pre_ipo/pre_ipo_detail_page/seller_slots_widget.dart",
+    "action": "migrated"
+  },
+  {
+    "source": "partner/lib/src/modules/secondary/secondary_landing_page_ctrl.dart",
+    "destination": "lib/src/features/catalog/presentation/secondary/secondary_landing_page_ctrl.dart",
+    "action": "migrated"
+  },
+  {
+    "source": "partner/lib/src/modules/secondary/secondary_landing_page.dart",
+    "destination": "lib/src/features/catalog/presentation/secondary/secondary_landing_page.dart",
+    "action": "migrated"
+  },
+  {
+    "source": "partner/lib/src/modules/secondary/secondary_filter_dialog.dart",
+    "destination": "lib/src/features/catalog/presentation/secondary/secondary_filter_dialog.dart",
+    "action": "migrated"
+  },
+  {
+    "source": "partner/lib/src/modules/secondary/phone_secondary_landing_view.dart",
+    "destination": "lib/src/features/catalog/presentation/secondary/phone_secondary_landing_view.dart",
+    "action": "migrated"
+  },
+  {
+    "source": "partner/lib/src/modules/secondary/desktop_secondary_landing_view.dart",
+    "destination": "lib/src/features/catalog/presentation/secondary/desktop_secondary_landing_view.dart",
+    "action": "migrated"
+  },
+  {
+    "source": "partner/lib/src/modules/secondary/secondary_transaction_dialog/secondary_transaction_dialog.dart",
+    "destination": "lib/src/features/catalog/presentation/secondary/secondary_transaction_dialog/secondary_transaction_dialog.dart",
+    "action": "migrated"
+  },
+  {
+    "source": "partner/lib/src/modules/secondary/secondary_transaction_dialog/phone_secondary_transaction_dialog_view.dart",
+    "destination": "lib/src/features/catalog/presentation/secondary/secondary_transaction_dialog/phone_secondary_transaction_dialog_view.dart",
+    "action": "migrated"
+  },
+  {
+    "source": "partner/lib/src/modules/secondary/secondary_transaction_dialog/secondary_transaction_dialog_ctrl.dart",
+    "destination": "lib/src/features/catalog/presentation/secondary/secondary_transaction_dialog/secondary_transaction_dialog_ctrl.dart",
+    "action": "migrated"
+  },
+  {
+    "source": "partner/lib/src/modules/secondary/secondary_transaction_dialog/desktop_secondary_transaction_dialog_view.dart",
+    "destination": "lib/src/features/catalog/presentation/secondary/secondary_transaction_dialog/desktop_secondary_transaction_dialog_view.dart",
+    "action": "migrated"
+  },
+  {
+    "source": "partner/lib/src/modules/secondary/secondary_detail_page/secondary_detail_page_ctrl.dart",
+    "destination": "lib/src/features/catalog/presentation/secondary/secondary_detail_page/secondary_detail_page_ctrl.dart",
+    "action": "migrated"
+  },
+  {
+    "source": "partner/lib/src/modules/secondary/secondary_detail_page/desktop_secondary_detail_view.dart",
+    "destination": "lib/src/features/catalog/presentation/secondary/secondary_detail_page/desktop_secondary_detail_view.dart",
+    "action": "migrated"
+  },
+  {
+    "source": "partner/lib/src/modules/secondary/secondary_detail_page/phone_secondary_detail_view.dart",
+    "destination": "lib/src/features/catalog/presentation/secondary/secondary_detail_page/phone_secondary_detail_view.dart",
+    "action": "migrated"
+  },
+  {
+    "source": "partner/lib/src/modules/secondary/secondary_detail_page/secondary_detail_page.dart",
+    "destination": "lib/src/features/catalog/presentation/secondary/secondary_detail_page/secondary_detail_page.dart",
+    "action": "migrated"
+  },
+  {
+    "source": "partner/lib/src/modules/secondary/enquiry/desktop_enquiry_dialog_view.dart",
+    "destination": "lib/src/features/catalog/presentation/secondary/enquiry/desktop_enquiry_dialog_view.dart",
+    "action": "migrated"
+  },
+  {
+    "source": "partner/lib/src/modules/secondary/enquiry/enquiry_dialog_ctrl.dart",
+    "destination": "lib/src/features/catalog/presentation/secondary/enquiry/enquiry_dialog_ctrl.dart",
+    "action": "migrated"
+  },
+  {
+    "source": "partner/lib/src/routes/routes.dart",
+    "destination": "lib/src/app/routing/routes.dart",
+    "action": "migrated"
+  },
+  {
+    "source": "partner/lib/src/routes/pages.dart",
+    "destination": "lib/src/app/routing/pages.dart",
+    "action": "migrated"
+  },
+  {
+    "source": "partner/lib/src/routes/module_access_middleware.dart",
+    "destination": "lib/src/app/routing/module_access_middleware.dart",
+    "action": "migrated"
+  },
+  {
+    "source": "partner/lib/src/routes/middleware/auth_middleware.dart",
+    "destination": "lib/src/app/routing/middleware/auth_middleware.dart",
+    "action": "migrated"
+  },
+  {
+    "source": "seller/lib/src/backend/api/company_api.dart",
+    "destination": "lib/src/features/institution/data/api/company_api.dart",
+    "action": "migrated_supported_dependency"
+  },
+  {
+    "source": "seller/lib/src/backend/api/deal_api.dart",
+    "destination": "lib/src/features/institution/data/api/deal_api.dart",
+    "action": "migrated_supported_dependency"
+  },
+  {
+    "source": "seller/lib/src/backend/model/common/enums.dart",
+    "destination": "lib/src/features/institution/data/models/common/enums.dart",
+    "action": "migrated_supported_dependency"
+  },
+  {
+    "source": "seller/lib/src/backend/model/common/media_model.dart",
+    "destination": "lib/src/features/institution/data/models/common/media_model.dart",
+    "action": "migrated_supported_dependency"
+  },
+  {
+    "source": "seller/lib/src/backend/model/company/company_model.dart",
+    "destination": "lib/src/features/institution/data/models/company/company_model.dart",
+    "action": "migrated_supported_dependency"
+  },
+  {
+    "source": "seller/lib/src/backend/model/company/lite_company_model.dart",
+    "destination": "lib/src/features/institution/data/models/company/lite_company_model.dart",
+    "action": "migrated_supported_dependency"
+  },
+  {
+    "source": "seller/lib/src/backend/model/deal/deal_model.dart",
+    "destination": "lib/src/features/institution/data/models/deal/deal_model.dart",
+    "action": "migrated_supported_dependency"
+  },
+  {
+    "source": "seller/lib/src/features/company/company_list/company_list_page.dart",
+    "destination": "lib/src/features/institution/companies/presentation/company_list/company_list_page.dart",
+    "action": "migrated_supported_dependency"
+  },
+  {
+    "source": "seller/lib/src/features/company/company_list/company_list_page_ctrl.dart",
+    "destination": "lib/src/features/institution/companies/presentation/company_list/company_list_page_ctrl.dart",
+    "action": "migrated_supported_dependency"
+  },
+  {
+    "source": "seller/lib/src/features/company/company_list/desktop_company_list_view.dart",
+    "destination": "lib/src/features/institution/companies/presentation/company_list/desktop_company_list_view.dart",
+    "action": "migrated_supported_dependency"
+  },
+  {
+    "source": "seller/lib/src/features/company/company_list/phone_company_list_view.dart",
+    "destination": "lib/src/features/institution/companies/presentation/company_list/phone_company_list_view.dart",
+    "action": "migrated_supported_dependency"
+  },
+  {
+    "source": "seller/lib/src/features/company/create_company/create_company_page.dart",
+    "destination": "lib/src/features/institution/companies/presentation/create_company/create_company_page.dart",
+    "action": "migrated_supported_dependency"
+  },
+  {
+    "source": "seller/lib/src/features/company/create_company/create_company_page_ctrl.dart",
+    "destination": "lib/src/features/institution/companies/presentation/create_company/create_company_page_ctrl.dart",
+    "action": "migrated_supported_dependency"
+  },
+  {
+    "source": "seller/lib/src/features/company/manage_promoters/manage_promoters_page.dart",
+    "destination": "lib/src/features/institution/companies/presentation/manage_promoters/manage_promoters_page.dart",
+    "action": "migrated_supported_dependency"
+  },
+  {
+    "source": "seller/lib/src/features/company/manage_promoters/manage_promoters_page_ctrl.dart",
+    "destination": "lib/src/features/institution/companies/presentation/manage_promoters/manage_promoters_page_ctrl.dart",
+    "action": "migrated_supported_dependency"
+  },
+  {
+    "source": "seller/lib/src/features/company/manage_shareholders/manage_shareholders_page.dart",
+    "destination": "lib/src/features/institution/companies/presentation/manage_shareholders/manage_shareholders_page.dart",
+    "action": "migrated_supported_dependency"
+  },
+  {
+    "source": "seller/lib/src/features/company/manage_shareholders/manage_shareholders_page_ctrl.dart",
+    "destination": "lib/src/features/institution/companies/presentation/manage_shareholders/manage_shareholders_page_ctrl.dart",
+    "action": "migrated_supported_dependency"
+  },
+  {
+    "source": "seller/lib/src/features/deal/create_deal/create_deal_page.dart",
+    "destination": "lib/src/features/institution/deals/presentation/create_deal/create_deal_page.dart",
+    "action": "migrated_supported_dependency"
+  },
+  {
+    "source": "seller/lib/src/features/deal/create_deal/create_deal_page_ctrl.dart",
+    "destination": "lib/src/features/institution/deals/presentation/create_deal/create_deal_page_ctrl.dart",
+    "action": "migrated_supported_dependency"
+  },
+  {
+    "source": "seller/lib/src/features/deal/deal_list/deal_list_page.dart",
+    "destination": "lib/src/features/institution/deals/presentation/deal_list/deal_list_page.dart",
+    "action": "migrated_supported_dependency"
+  },
+  {
+    "source": "seller/lib/src/features/deal/deal_list/deal_list_page_ctrl.dart",
+    "destination": "lib/src/features/institution/deals/presentation/deal_list/deal_list_page_ctrl.dart",
+    "action": "migrated_supported_dependency"
+  },
+  {
+    "source": "seller/lib/src/features/deal/deal_list/desktop_deal_list_view.dart",
+    "destination": "lib/src/features/institution/deals/presentation/deal_list/desktop_deal_list_view.dart",
+    "action": "migrated_supported_dependency"
+  },
+  {
+    "source": "seller/lib/src/features/deal/deal_list/phone_deal_list_view.dart",
+    "destination": "lib/src/features/institution/deals/presentation/deal_list/phone_deal_list_view.dart",
+    "action": "migrated_supported_dependency"
+  },
+  {
+    "source": "seller/lib/src/utils/constant/app_colors.dart",
+    "destination": "lib/src/features/institution/support/constant/app_colors.dart",
+    "action": "migrated_supported_dependency"
+  },
+  {
+    "source": "seller/lib/src/utils/extensions/date_extensions.dart",
+    "destination": "lib/src/features/institution/support/extensions/date_extensions.dart",
+    "action": "migrated_supported_dependency"
+  },
+  {
+    "source": "seller/lib/src/utils/extensions/num_extensions.dart",
+    "destination": "lib/src/features/institution/support/extensions/num_extensions.dart",
+    "action": "migrated_supported_dependency"
+  },
+  {
+    "source": "seller/lib/src/utils/functions/on_back_logic.dart",
+    "destination": "lib/src/features/institution/support/functions/on_back_logic.dart",
+    "action": "migrated_supported_dependency"
+  },
+  {
+    "source": "seller/lib/src/utils/functions/parse.dart",
+    "destination": "lib/src/features/institution/support/functions/parse.dart",
+    "action": "migrated_supported_dependency"
+  },
+  {
+    "source": "seller/lib/src/utils/plugins/cache_image.dart",
+    "destination": "lib/src/features/institution/support/plugins/cache_image.dart",
+    "action": "migrated_supported_dependency"
+  },
+  {
+    "source": "seller/lib/src/utils/plugins/file_picker.dart",
+    "destination": "lib/src/features/institution/support/plugins/file_picker.dart",
+    "action": "migrated_supported_dependency"
+  },
+  {
+    "source": "seller/lib/src/utils/plugins/loader.dart",
+    "destination": "lib/src/features/institution/support/plugins/loader.dart",
+    "action": "migrated_supported_dependency"
+  },
+  {
+    "source": "seller/lib/src/utils/plugins/logger.dart",
+    "destination": "lib/src/features/institution/support/plugins/logger.dart",
+    "action": "migrated_supported_dependency"
+  },
+  {
+    "source": "seller/lib/src/utils/plugins/svg_image.dart",
+    "destination": "lib/src/features/institution/support/plugins/svg_image.dart",
+    "action": "migrated_supported_dependency"
+  },
+  {
+    "source": "seller/lib/src/utils/plugins/toast.dart",
+    "destination": "lib/src/features/institution/support/plugins/toast.dart",
+    "action": "migrated_supported_dependency"
+  },
+  {
+    "source": "seller/lib/src/utils/theme/app_spacing.dart",
+    "destination": "lib/src/features/institution/support/theme/app_spacing.dart",
+    "action": "migrated_supported_dependency"
+  },
+  {
+    "source": "seller/lib/src/utils/widgets/app_button.dart",
+    "destination": "lib/src/shared/institution_widgets/app_button.dart",
+    "action": "migrated_supported_dependency"
+  },
+  {
+    "source": "seller/lib/src/utils/widgets/app_text_field.dart",
+    "destination": "lib/src/shared/institution_widgets/app_text_field.dart",
+    "action": "migrated_supported_dependency"
+  },
+  {
+    "source": "seller/lib/src/utils/widgets/app_title_dropdown.dart",
+    "destination": "lib/src/shared/institution_widgets/app_title_dropdown.dart",
+    "action": "migrated_supported_dependency"
+  },
+  {
+    "source": "seller/lib/src/utils/widgets/custom_card_widget.dart",
+    "destination": "lib/src/shared/institution_widgets/custom_card_widget.dart",
+    "action": "migrated_supported_dependency"
+  },
+  {
+    "source": "seller/lib/src/utils/widgets/gap.dart",
+    "destination": "lib/src/shared/institution_widgets/gap.dart",
+    "action": "migrated_supported_dependency"
+  },
+  {
+    "source": "seller/lib/main.dart",
+    "destination": null,
+    "action": "retained_in_original_seller"
+  },
+  {
+    "source": "seller/lib/src/features/init/init_screen.dart",
+    "destination": null,
+    "action": "retained_in_original_seller"
+  },
+  {
+    "source": "seller/lib/src/features/init/init_screen_ctrl.dart",
+    "destination": null,
+    "action": "retained_in_original_seller"
+  },
+  {
+    "source": "seller/lib/src/features/transaction/pre_ipo_transaction/pre_ipo_transaction_page.dart",
+    "destination": "lib/src/features/institution/legacy/features/transaction/pre_ipo_transaction/pre_ipo_transaction_page.dart",
+    "action": "restored_seller_ui_with_partner_theme"
+  },
+  {
+    "source": "seller/lib/src/features/transaction/pre_ipo_transaction/pre_ipo_transaction_dialog.dart",
+    "destination": "lib/src/features/institution/legacy/features/transaction/pre_ipo_transaction/pre_ipo_transaction_dialog.dart",
+    "action": "restored_seller_ui_with_partner_theme"
+  },
+  {
+    "source": "seller/lib/src/features/transaction/pre_ipo_transaction/pre_ipo_transaction_page_ctrl.dart",
+    "destination": "lib/src/features/institution/legacy/features/transaction/pre_ipo_transaction/pre_ipo_transaction_page_ctrl.dart",
+    "action": "restored_seller_ui_with_partner_theme"
+  },
+  {
+    "source": "seller/lib/src/features/home/home_page_ctrl.dart",
+    "destination": "lib/src/features/institution/legacy/features/home/home_page_ctrl.dart",
+    "action": "restored_seller_ui_with_partner_theme"
+  },
+  {
+    "source": "seller/lib/src/features/home/desktop_sidebar.dart",
+    "destination": "lib/src/features/institution/legacy/features/home/desktop_sidebar.dart",
+    "action": "restored_seller_ui_with_partner_theme"
+  },
+  {
+    "source": "seller/lib/src/features/home/custom_appbar.dart",
+    "destination": "lib/src/features/institution/legacy/features/home/custom_appbar.dart",
+    "action": "restored_seller_ui_with_partner_theme"
+  },
+  {
+    "source": "seller/lib/src/features/home/phone_home_page_view.dart",
+    "destination": "lib/src/features/institution/legacy/features/home/phone_home_page_view.dart",
+    "action": "restored_seller_ui_with_partner_theme"
+  },
+  {
+    "source": "seller/lib/src/features/home/desktop_home_page_view.dart",
+    "destination": "lib/src/features/institution/legacy/features/home/desktop_home_page_view.dart",
+    "action": "restored_seller_ui_with_partner_theme"
+  },
+  {
+    "source": "seller/lib/src/features/home/home_page.dart",
+    "destination": "lib/src/features/institution/legacy/features/home/home_page.dart",
+    "action": "restored_seller_ui_with_partner_theme"
+  },
+  {
+    "source": "seller/lib/src/features/home/phone_sidebar.dart",
+    "destination": "lib/src/features/institution/legacy/features/home/phone_sidebar.dart",
+    "action": "restored_seller_ui_with_partner_theme"
+  },
+  {
+    "source": "seller/lib/src/features/auth/forgot_password/phone_forgot_password_view.dart",
+    "destination": null,
+    "action": "retained_in_original_seller"
+  },
+  {
+    "source": "seller/lib/src/features/auth/forgot_password/forgot_password_page_ctrl.dart",
+    "destination": null,
+    "action": "retained_in_original_seller"
+  },
+  {
+    "source": "seller/lib/src/features/auth/forgot_password/forgot_password_page.dart",
+    "destination": null,
+    "action": "retained_in_original_seller"
+  },
+  {
+    "source": "seller/lib/src/features/auth/forgot_password/desktop_forgot_password_view.dart",
+    "destination": null,
+    "action": "retained_in_original_seller"
+  },
+  {
+    "source": "seller/lib/src/features/auth/change_password/change_password_page.dart",
+    "destination": null,
+    "action": "retained_in_original_seller"
+  },
+  {
+    "source": "seller/lib/src/features/auth/profile/phone_profile_view.dart",
+    "destination": "lib/src/features/institution/legacy/features/auth/profile/phone_profile_view.dart",
+    "action": "restored_seller_ui_with_partner_theme"
+  },
+  {
+    "source": "seller/lib/src/features/auth/profile/profile_page_ctrl.dart",
+    "destination": "lib/src/features/institution/legacy/features/auth/profile/profile_page_ctrl.dart",
+    "action": "restored_seller_ui_with_partner_theme"
+  },
+  {
+    "source": "seller/lib/src/features/auth/profile/profile_page.dart",
+    "destination": "lib/src/features/institution/legacy/features/auth/profile/profile_page.dart",
+    "action": "restored_seller_ui_with_partner_theme"
+  },
+  {
+    "source": "seller/lib/src/features/auth/login/login_page_ctrl.dart",
+    "destination": null,
+    "action": "retained_in_original_seller"
+  },
+  {
+    "source": "seller/lib/src/features/auth/login/login_page.dart",
+    "destination": null,
+    "action": "retained_in_original_seller"
+  },
+  {
+    "source": "seller/lib/src/features/auth/login/phone_login_view.dart",
+    "destination": null,
+    "action": "retained_in_original_seller"
+  },
+  {
+    "source": "seller/lib/src/features/auth/login/desktop_login_view.dart",
+    "destination": null,
+    "action": "retained_in_original_seller"
+  },
+  {
+    "source": "seller/lib/src/features/dashboard/phone_dashboard_view.dart",
+    "destination": "lib/src/features/institution/legacy/features/dashboard/phone_dashboard_view.dart",
+    "action": "restored_seller_ui_with_partner_theme"
+  },
+  {
+    "source": "seller/lib/src/features/dashboard/dashboard_page.dart",
+    "destination": "lib/src/features/institution/legacy/features/dashboard/dashboard_page.dart",
+    "action": "restored_seller_ui_with_partner_theme"
+  },
+  {
+    "source": "seller/lib/src/features/sell_enquiries/sell_enquiries_page.dart",
+    "destination": "lib/src/features/institution/legacy/features/sell_enquiries/sell_enquiries_page.dart",
+    "action": "restored_seller_ui_with_partner_theme"
+  },
+  {
+    "source": "seller/lib/src/features/company/update_share_price/update_share_price_page.dart",
+    "destination": "lib/src/features/institution/legacy/features/company/update_share_price/update_share_price_page.dart",
+    "action": "restored_seller_ui_with_partner_theme"
+  },
+  {
+    "source": "seller/lib/src/features/company/update_share_price/update_share_price_ctrl.dart",
+    "destination": "lib/src/features/institution/legacy/features/company/update_share_price/update_share_price_ctrl.dart",
+    "action": "restored_seller_ui_with_partner_theme"
+  },
+  {
+    "source": "seller/lib/src/utils/configuration/app_config.dart",
+    "destination": "lib/src/core/session/auth_session.dart",
+    "action": "shared_adapter"
+  },
+  {
+    "source": "seller/lib/src/utils/configuration/master_config.dart",
+    "destination": null,
+    "action": "retained_in_original_seller"
+  },
+  {
+    "source": "seller/lib/src/utils/configuration/init_config.dart",
+    "destination": "lib/src/core/configuration/init_config.dart",
+    "action": "shared_adapter"
+  },
+  {
+    "source": "seller/lib/src/utils/configuration/pref_config.dart",
+    "destination": null,
+    "action": "retained_in_original_seller"
+  },
+  {
+    "source": "seller/lib/src/utils/configuration/connectivity_config.dart",
+    "destination": null,
+    "action": "retained_in_original_seller"
+  },
+  {
+    "source": "seller/lib/src/utils/configuration/notification_config.dart",
+    "destination": null,
+    "action": "retained_in_original_seller"
+  },
+  {
+    "source": "seller/lib/src/utils/configuration/network_service.dart",
+    "destination": null,
+    "action": "retained_in_original_seller"
+  },
+  {
+    "source": "seller/lib/src/utils/configuration/dio_config.dart",
+    "destination": "lib/src/core/configuration/dio_config.dart",
+    "action": "shared_adapter"
+  },
+  {
+    "source": "seller/lib/src/utils/plugins/video_player.dart",
+    "destination": null,
+    "action": "retained_in_original_seller"
+  },
+  {
+    "source": "seller/lib/src/utils/plugins/open_file.dart",
+    "destination": null,
+    "action": "retained_in_original_seller"
+  },
+  {
+    "source": "seller/lib/src/utils/plugins/device_info.dart",
+    "destination": null,
+    "action": "retained_in_original_seller"
+  },
+  {
+    "source": "seller/lib/src/utils/plugins/luncher.dart",
+    "destination": null,
+    "action": "retained_in_original_seller"
+  },
+  {
+    "source": "seller/lib/src/utils/plugins/lottie_image.dart",
+    "destination": null,
+    "action": "retained_in_original_seller"
+  },
+  {
+    "source": "seller/lib/src/utils/plugins/otp_text_field.dart",
+    "destination": null,
+    "action": "retained_in_original_seller"
+  },
+  {
+    "source": "seller/lib/src/utils/plugins/dotted_borders.dart",
+    "destination": null,
+    "action": "retained_in_original_seller"
+  },
+  {
+    "source": "seller/lib/src/utils/plugins/app_logger.dart",
+    "destination": null,
+    "action": "retained_in_original_seller"
+  },
+  {
+    "source": "seller/lib/src/utils/plugins/download_file/download_file_native.dart",
+    "destination": null,
+    "action": "retained_in_original_seller"
+  },
+  {
+    "source": "seller/lib/src/utils/plugins/download_file/download_file.dart",
+    "destination": null,
+    "action": "retained_in_original_seller"
+  },
+  {
+    "source": "seller/lib/src/utils/plugins/download_file/download_file_web.dart",
+    "destination": null,
+    "action": "retained_in_original_seller"
+  },
+  {
+    "source": "seller/lib/src/utils/extensions/list_extendtions.dart",
+    "destination": null,
+    "action": "retained_in_original_seller"
+  },
+  {
+    "source": "seller/lib/src/utils/extensions/duration_extensions.dart",
+    "destination": null,
+    "action": "retained_in_original_seller"
+  },
+  {
+    "source": "seller/lib/src/utils/extensions/string_extensions.dart",
+    "destination": null,
+    "action": "retained_in_original_seller"
+  },
+  {
+    "source": "seller/lib/src/utils/constant/app_url.dart",
+    "destination": "lib/src/features/institution/legacy/utils/constant/app_url.dart",
+    "action": "restored_seller_ui_with_partner_theme"
+  },
+  {
+    "source": "seller/lib/src/utils/constant/app_assets.dart",
+    "destination": null,
+    "action": "retained_in_original_seller"
+  },
+  {
+    "source": "seller/lib/src/utils/constant/app_key.dart",
+    "destination": null,
+    "action": "retained_in_original_seller"
+  },
+  {
+    "source": "seller/lib/src/utils/theme/light_theme.dart",
+    "destination": null,
+    "action": "retained_in_original_seller"
+  },
+  {
+    "source": "seller/lib/src/utils/theme/app_theme.dart",
+    "destination": null,
+    "action": "retained_in_original_seller"
+  },
+  {
+    "source": "seller/lib/src/utils/theme/dark_theme.dart",
+    "destination": null,
+    "action": "retained_in_original_seller"
+  },
+  {
+    "source": "seller/lib/src/utils/functions/platform_helper.dart",
+    "destination": null,
+    "action": "retained_in_original_seller"
+  },
+  {
+    "source": "seller/lib/src/utils/functions/dialog.dart",
+    "destination": "lib/src/features/institution/legacy/utils/functions/dialog.dart",
+    "action": "restored_seller_ui_with_partner_theme"
+  },
+  {
+    "source": "seller/lib/src/utils/functions/app_validator.dart",
+    "destination": null,
+    "action": "retained_in_original_seller"
+  },
+  {
+    "source": "seller/lib/src/utils/functions/result.dart",
+    "destination": null,
+    "action": "retained_in_original_seller"
+  },
+  {
+    "source": "seller/lib/src/utils/error/failure.dart",
+    "destination": null,
+    "action": "retained_in_original_seller"
+  },
+  {
+    "source": "seller/lib/src/utils/error/exceptions.dart",
+    "destination": null,
+    "action": "retained_in_original_seller"
+  },
+  {
+    "source": "seller/lib/src/utils/widgets/widgets.dart",
+    "destination": null,
+    "action": "retained_in_original_seller"
+  },
+  {
+    "source": "seller/lib/src/utils/widgets/delete_dialog_widget.dart",
+    "destination": "lib/src/features/institution/legacy/utils/widgets/delete_dialog_widget.dart",
+    "action": "restored_seller_ui_with_partner_theme"
+  },
+  {
+    "source": "seller/lib/src/utils/widgets/empty_view.dart",
+    "destination": "lib/src/features/institution/legacy/utils/widgets/empty_view.dart",
+    "action": "restored_seller_ui_with_partner_theme"
+  },
+  {
+    "source": "seller/lib/src/utils/widgets/confirm_dialog.dart",
+    "destination": null,
+    "action": "retained_in_original_seller"
+  },
+  {
+    "source": "seller/lib/src/utils/widgets/error_view.dart",
+    "destination": null,
+    "action": "retained_in_original_seller"
+  },
+  {
+    "source": "seller/lib/src/utils/widgets/loading_overlay.dart",
+    "destination": null,
+    "action": "retained_in_original_seller"
+  },
+  {
+    "source": "seller/lib/src/utils/widgets/section_header.dart",
+    "destination": null,
+    "action": "retained_in_original_seller"
+  },
+  {
+    "source": "seller/lib/src/utils/widgets/app_card.dart",
+    "destination": null,
+    "action": "retained_in_original_seller"
+  },
+  {
+    "source": "seller/lib/src/utils/widgets/clickable.dart",
+    "destination": null,
+    "action": "retained_in_original_seller"
+  },
+  {
+    "source": "seller/lib/src/utils/widgets/app_avatar.dart",
+    "destination": null,
+    "action": "retained_in_original_seller"
+  },
+  {
+    "source": "seller/lib/src/utils/widgets/app_snack_bar.dart",
+    "destination": null,
+    "action": "retained_in_original_seller"
+  },
+  {
+    "source": "seller/lib/src/utils/widgets/dialog_widget/no_internet_dialog.dart",
+    "destination": null,
+    "action": "retained_in_original_seller"
+  },
+  {
+    "source": "seller/lib/src/utils/widgets/dialog_widget/force_update_dialog.dart",
+    "destination": null,
+    "action": "retained_in_original_seller"
+  },
+  {
+    "source": "seller/lib/src/utils/widgets/dialog_widget/logout_dialog.dart",
+    "destination": "lib/src/features/institution/legacy/utils/widgets/dialog_widget/logout_dialog.dart",
+    "action": "restored_seller_ui_with_partner_theme"
+  },
+  {
+    "source": "seller/lib/src/backend/model/transaction/pre_ipo_transaction_model.dart",
+    "destination": "lib/src/features/institution/legacy/backend/model/transaction/pre_ipo_transaction_model.dart",
+    "action": "restored_seller_ui_with_partner_theme"
+  },
+  {
+    "source": "seller/lib/src/backend/model/deal/sell_enquiry_model.dart",
+    "destination": "lib/src/features/institution/legacy/backend/model/deal/sell_enquiry_model.dart",
+    "action": "restored_seller_ui_with_partner_theme"
+  },
+  {
+    "source": "seller/lib/src/backend/model/user/user_model.dart",
+    "destination": "lib/src/features/institution/legacy/backend/model/user/user_model.dart",
+    "action": "restored_seller_ui_with_partner_theme"
+  },
+  {
+    "source": "seller/lib/src/backend/model/dashboard/dashboard_model.dart",
+    "destination": "lib/src/features/institution/legacy/backend/model/dashboard/dashboard_model.dart",
+    "action": "restored_seller_ui_with_partner_theme"
+  },
+  {
+    "source": "seller/lib/src/backend/model/common/config_model.dart",
+    "destination": null,
+    "action": "retained_in_original_seller"
+  },
+  {
+    "source": "seller/lib/src/backend/model/common/base_model.dart",
+    "destination": "lib/src/shared/models/base_model.dart",
+    "action": "shared_adapter"
+  },
+  {
+    "source": "seller/lib/src/backend/model/common/deep_link_model.dart",
+    "destination": null,
+    "action": "retained_in_original_seller"
+  },
+  {
+    "source": "seller/lib/src/backend/model/company/share_price_model.dart",
+    "destination": null,
+    "action": "retained_in_original_seller"
+  },
+  {
+    "source": "seller/lib/src/backend/api/auth_api.dart",
+    "destination": null,
+    "action": "retained_in_original_seller"
+  },
+  {
+    "source": "seller/lib/src/backend/api/sell_enquiry_api.dart",
+    "destination": "lib/src/features/institution/legacy/backend/api/sell_enquiry_api.dart",
+    "action": "restored_seller_ui_with_partner_theme"
+  },
+  {
+    "source": "seller/lib/src/backend/api/config_api.dart",
+    "destination": null,
+    "action": "retained_in_original_seller"
+  },
+  {
+    "source": "seller/lib/src/backend/api/dashboard_api.dart",
+    "destination": "lib/src/features/institution/legacy/backend/api/dashboard_api.dart",
+    "action": "restored_seller_ui_with_partner_theme"
+  },
+  {
+    "source": "seller/lib/src/backend/api/pre_ipo_transaction_api.dart",
+    "destination": "lib/src/features/institution/legacy/backend/api/pre_ipo_transaction_api.dart",
+    "action": "restored_seller_ui_with_partner_theme"
+  },
+  {
+    "source": "seller/lib/src/router/routes/routes.dart",
+    "destination": "lib/src/features/institution/legacy/router/routes/routes.dart",
+    "action": "restored_seller_ui_with_partner_theme"
+  },
+  {
+    "source": "seller/lib/src/router/routes/pages.dart",
+    "destination": null,
+    "action": "retained_in_original_seller"
+  },
+  {
+    "source": "seller/lib/src/router/routes/middleware/auth_middleware.dart",
+    "destination": null,
+    "action": "retained_in_original_seller"
+  }
+]
