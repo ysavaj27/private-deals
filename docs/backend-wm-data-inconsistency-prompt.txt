@@ -1,0 +1,156 @@
+Subject: Wealth Manager API – dashboard / pending tasks / send documents / MIS counts not staying in sync
+
+Hi team,
+
+We audited the Private Deals Wealth Manager mobile/web client against the live API contracts. Several screens show wrong or stale counts/lists. Please verify the following from the backend side and align response contracts + aggregation logic.
+
+Base URL pattern: https://www.privatedeals.in/api/
+Auth: existing WM business token (same as app).
+Success envelope the app expects:
+{ "status": 1, "message": "...", "data": <object|array> }
+
+------------------------------------------------------------
+1) DASHBOARD vs PENDING TASKS – COUNT MISMATCH (HIGH)
+------------------------------------------------------------
+
+The Dashboard and Pending Tasks screens use TWO different APIs for the same UI concepts (KYC / document sign / fund transfer). Users report numbers that do not match across screens and do not update after actions.
+
+A) GET v1/business/dashboard
+   (also: GET v1/business/dashboard-pre-ipo)
+
+   App reads from `data`:
+   - total_startups (int)
+   - total_investors (int)
+   - total_amount_invested (number)
+   - average_ticket_size (number)
+   - pending_kyc (int)                    → shown as "KYC" count
+   - pending_document_sign (int)          → shown as "Documents" count
+   - pending_payment (number)             → shown as "Fund transfer" count via toInt()
+   - top_investors[], sectors[], investment_growth[]
+   - investments.monthly[] / investments.quarterly[]
+   - investor_chart.kyc[] / investor_chart.active[]
+
+   Hero "Pending" total on UI =
+     pending_kyc + pending_document_sign + int(pending_payment)
+
+B) GET v1/business/pending-tasks
+
+   App reads from `data`:
+   - pending_kyc (int)
+   - document_sign (int)                  ← DIFFERENT KEY than dashboard
+   - pending_payment (int)                ← typed as COUNT here
+   - pending_aif (int)
+
+Please confirm and fix:
+1. Dashboard `pending_*` counts and `/pending-tasks` counts MUST use the same business definition for the logged-in WM (same scope: primary vs pre-ipo if applicable).
+2. Align field names OR document the canonical contract:
+   - document sign: `pending_document_sign` (dashboard) vs `document_sign` (pending-tasks)
+3. Clarify `pending_payment` semantics on dashboard:
+   - Is it a COUNT of pending fund-transfer tasks, or an AMOUNT (rupees)?
+   - Pending-tasks treats it as int count; dashboard model treats it as double then casts to int for UI. If it is an amount, dashboard Fund Transfer count will be wrong.
+4. After KYC completion / document send / fund-transfer status change, both endpoints must return updated counts on the next GET (no stale cache / denormalized counters lagging).
+5. Please share sample JSON for both endpoints for one test WM account where:
+   - pending KYC > 0
+   - document sign > 0
+   - fund transfer > 0
+   and confirm dashboard counts == pending-tasks counts for the same bucket.
+
+List endpoints used to render Pending Tasks tabs (counts must match list lengths for same filters):
+- KYC list: GET v2/business/investor?is_kyc=No&is_active=All&is_aif=All
+- Document sign list: GET v1/business/primary-transactions?pending_doc_sign=true
+- Fund transfer list: GET v1/business/primary-transactions?pending_payment=true
+
+Please confirm filter semantics:
+- is_kyc / is_aif / is_active accepted values: "All" | "Yes" | "No"
+- pending_doc_sign / pending_payment: boolean query flags
+- Count on /pending-tasks for each bucket MUST equal the number of rows returned by the matching list filter for that WM.
+
+------------------------------------------------------------
+2) SEND DOCUMENTS (HIGH)
+------------------------------------------------------------
+
+List: GET v1/business/primary-transactions (no filters)
+Send: POST v1/business/send-document
+Body the app sends:
+{
+  "transaction_id": <int>,
+  "document_type": "<string>"
+}
+
+Please confirm and document:
+1. `transaction_id` must be the PRIMARY TRANSACTION id (not nested document id).
+2. Exact allowed `document_type` values. Config keys the app knows:
+   ssa, offer, mgtzip, mgtchallan, pas, sha, rtgsreceipt, chequecounterslip, ...
+   (Please return the authoritative enum list from backend.)
+3. After a successful send:
+   - Does the transaction payload change (e.g. document cleared / status updated)?
+   - Should pending document-sign counts on dashboard + /pending-tasks decrement?
+   - Any server-side cache that could delay that update?
+4. Is GET v1/business/document still used for WM Send Documents, or is it deprecated? (App currently lists via primary-transactions only.)
+
+Please provide a successful send example request/response and the before/after pending counts for that transaction.
+
+------------------------------------------------------------
+3) MIS (MEDIUM)
+------------------------------------------------------------
+
+GET v1/business/invested-startup-mis
+
+App expects `data` = array of startups, each shaped like:
+{
+  "startup_id": int,
+  "startup_name": string,
+  "logo": string|url,
+  "approved_mis": [
+    {
+      "id": int,
+      "title": string,
+      "document": string|url,
+      "description": string,
+      "created_at": datetime
+    }
+  ]
+}
+
+UI count per startup = length of `approved_mis` only.
+
+Please confirm:
+1. Response is always startup-grouped with `approved_mis` (not a flat list / not key `mis` / `pending_mis`).
+2. Newly approved MIS appears on the next GET for that WM (no cache TTL issue).
+3. If pending/unapproved MIS exists, under which key? (App currently ignores anything except `approved_mis`.)
+4. Share one real sample payload with at least one startup that has MIS files.
+
+------------------------------------------------------------
+4) DASHBOARD CHART / KEY CONTRACT NITS (MEDIUM)
+------------------------------------------------------------
+
+1. Quarterly investment series: app reads label from typo key `quater` under
+   data.investments.quarterly[].
+   Other surfaces use `quarter`. Please standardize on `quarter` (or send both).
+2. investor_chart.active[] items include both `is_active` and `kyc_status`.
+   Confirm intended meaning of each field so Active vs Inactive pie is correct.
+3. Missing numeric fields are shown as 0 in the app. Prefer always sending the keys
+   with explicit 0 rather than omitting them, and avoid nulls for count fields.
+
+------------------------------------------------------------
+5) ACCEPTANCE CRITERIA (please validate on staging)
+------------------------------------------------------------
+
+For one Wealth Manager test account:
+[ ] GET /v1/business/dashboard pending_kyc == GET /v1/business/pending-tasks pending_kyc
+[ ] dashboard pending_document_sign == pending-tasks document_sign
+[ ] dashboard pending_payment (as COUNT) == pending-tasks pending_payment
+[ ] pending-tasks.pending_kyc == len(GET /v2/business/investor?is_kyc=No&is_active=All&is_aif=All)
+[ ] pending-tasks.document_sign == len(GET /v1/business/primary-transactions?pending_doc_sign=true)
+[ ] pending-tasks.pending_payment == len(GET /v1/business/primary-transactions?pending_payment=true)
+[ ] After completing a KYC / sending a document / clearing a fund-transfer pending item,
+    re-GET dashboard + pending-tasks within ~1s shows updated counts
+[ ] GET /v1/business/invested-startup-mis returns `approved_mis` arrays and updates when MIS is approved
+[ ] Documented enum for POST /v1/business/send-document document_type + confirmation that transaction_id is TX id
+
+Please reply with:
+- Confirmed contracts (sample JSON)
+- Any intentional differences between dashboard and pending-tasks
+- Fixes deployed / ETA if counters were stale or keys mismatched
+
+Thanks.

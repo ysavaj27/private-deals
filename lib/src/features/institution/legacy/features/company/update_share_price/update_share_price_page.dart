@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:get/get.dart';
 import 'package:private_deals/src/features/institution/data/models/common/enums.dart';
+import 'package:private_deals/src/features/institution/deals/presentation/price_excel/update_prices_excel_dialog.dart';
 import 'package:private_deals/src/features/institution/support/plugins/cache_image.dart';
 import 'package:private_deals/src/features/institution/support/plugins/loader.dart';
 import 'package:private_deals/src/features/institution/support/plugins/toast.dart';
@@ -254,7 +255,14 @@ class SharePriceFixedHeader extends StatelessWidget {
                 const SizedBox(width: 8),
                 PopupMenuButton<String>(
                   tooltip: 'More actions',
-                  onSelected: (value) {
+                  onSelected: (value) async {
+                    if (value == 'Update from Excel') {
+                      final saved = await showUpdatePricesExcelDialog(context);
+                      if (saved == true) {
+                        await controller.fetchCompanies();
+                      }
+                      return;
+                    }
                     toast('$value are Coming soon', MessageEnum.info);
                   },
                   itemBuilder: (_) => const [
@@ -338,7 +346,17 @@ class SharePriceFixedHeader extends StatelessWidget {
                 runSpacing: 8,
                 crossAxisAlignment: WrapCrossAlignment.center,
                 children: [
-                  _futureAction('Update from Excel'),
+                  AppButton(
+                    label: 'Update from Excel',
+                    icon: Icons.table_view_rounded,
+                    variant: AppButtonVariant.outline,
+                    onPressed: () async {
+                      final saved = await showUpdatePricesExcelDialog(context);
+                      if (saved == true) {
+                        await controller.fetchCompanies();
+                      }
+                    },
+                  ),
                   _futureAction('Update from image'),
                   _futureAction('Update using API'),
                   Obx(() {

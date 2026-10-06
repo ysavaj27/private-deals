@@ -97,6 +97,28 @@ flutter analyze --no-pub --no-fatal-infos
 flutter build web --release --no-pub
 ```
 
+### API smoke checklist
+
+Contract path checks (no credentials; FakeAdapter) always run:
+
+```sh
+flutter test test/api_smoke_matrix_test.dart test/api_smoke_contract_test.dart test/api_smoke_live_test.dart --no-pub
+```
+
+Optional live read-only GETs against staging (never commit credentials):
+
+```sh
+flutter test test/api_smoke_live_test.dart --no-pub \
+  --dart-define=SMOKE_LIVE=true \
+  --dart-define=PRIVATE_DEALS_BASE_URL=https://your-staging-host/ \
+  --dart-define=SMOKE_WM_MOBILE=... \
+  --dart-define=SMOKE_WM_PASSWORD=... \
+  --dart-define=SMOKE_INSTITUTION_MOBILE=... \
+  --dart-define=SMOKE_INSTITUTION_PASSWORD=...
+```
+
+Destructive POSTs stay off unless `SMOKE_ALLOW_WRITES=true` (still not auto-executed). Latest matrix artifact: `test/api_smoke/last_run_matrix.json`.
+
 See [validation.md](docs/validation.md) for the verified checks and remaining integration work. Tests use fake responses and never authenticate against production. Style-level analyzer suggestions remain in migrated and new files; they are distinct from errors/warnings.
 
 The web server must serve `index.html` for application routes so browser refresh and pasted deep links work. See [web-deployment.md](docs/web-deployment.md). No hosting or backend was changed. Native runner files and Firebase configuration were inherited from Partner; new native app registrations, signing and store releases are not part of this web merge.

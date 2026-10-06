@@ -99,6 +99,15 @@ class DioConfig {
     bool isCustomUrl = false,
   }) => dio.get(url, queryParameters: params);
 
+  Future<Response> getBytes(
+    String url,
+    Map<String, dynamic> params,
+  ) => dio.get(
+    url,
+    queryParameters: params,
+    options: Options(responseType: ResponseType.bytes),
+  );
+
   Future<Response> post(
     String url,
     Map<String, dynamic> body, [

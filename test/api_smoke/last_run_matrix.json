@@ -1,0 +1,565 @@
+{
+  "generated_at": "2026-10-06T07:52:30.801302Z",
+  "config": "baseUrl=https://www.privatedeals.in/ live=false allowWrites=false roles=none stagingHint=no",
+  "mode": "contract_path_alignment+interceptor_findings",
+  "roles_env": {
+    "PRIVATE_DEALS_BASE_URL": "https://www.privatedeals.in/",
+    "SMOKE_LIVE": false,
+    "SMOKE_ALLOW_WRITES": false,
+    "has_wm_creds": false,
+    "has_institution_creds": false,
+    "staging_hint": false
+  },
+  "live_hint": "Re-run with SMOKE_LIVE=true and staging credentials for live Pass/Fail",
+  "mismatch_flags": [
+    {
+      "id": 1,
+      "note": "WM UI calls investor path; Dio interceptor rejects /investor/ for partners — use wSellNow"
+    },
+    {
+      "id": 4,
+      "note": "Body maps is_*_access from password field; verify server accepts"
+    },
+    {
+      "id": 5,
+      "note": "Pre-IPO list builds investor_ids but may call get(..., {}); also smoke pre-ipo path"
+    },
+    {
+      "id": 15,
+      "note": "WM uses investor upload-payment-receipt; Dio interceptor rejects /investor/ for partners"
+    },
+    {
+      "id": 20,
+      "note": "No WM UI caller found; API exists but may be dead"
+    },
+    {
+      "id": 26,
+      "note": "WM notifications tab is empty Container(); use /notification"
+    }
+  ],
+  "interceptor_blocked": [
+    {
+      "id": 1,
+      "detail": "Client blocks iPrimarySellNow; WM sell UI cannot reach network"
+    },
+    {
+      "id": 15,
+      "detail": "Client blocks iUploadPaymentReceipt; WM receipt UI cannot reach network"
+    }
+  ],
+  "results": [
+    {
+      "id": 1,
+      "feature": "Portfolio → Primary sell share",
+      "api": "InvestorSecondaryTransactionApi.primarySellRequest",
+      "method": "POST",
+      "expected_path": "v1/investor/secondary-invest/sell-now",
+      "actual_path": "v1/investor/secondary-invest/sell-now",
+      "priority": "p1",
+      "status": "FAIL",
+      "detail": "Client blocks iPrimarySellNow; WM sell UI cannot reach network",
+      "mismatch_note": "WM UI calls investor path; Dio interceptor rejects /investor/ for partners — use wSellNow"
+    },
+    {
+      "id": 2,
+      "feature": "Portfolio → Pre-IPO sell share",
+      "api": "WPreIpoTransactionApi.preIPOSellRequest",
+      "method": "POST",
+      "expected_path": "v1/business/pre-ipo/sell",
+      "actual_path": "v1/business/pre-ipo/sell",
+      "priority": "p1",
+      "status": "PASS",
+      "detail": "path constant aligned"
+    },
+    {
+      "id": 3,
+      "feature": "Channel Partner → List",
+      "api": "ChannelPartnerApi.channelPartnerList",
+      "method": "GET",
+      "expected_path": "v1/business/channel-partner",
+      "actual_path": "v1/business/channel-partner",
+      "priority": "p1",
+      "status": "PASS",
+      "detail": "path constant aligned"
+    },
+    {
+      "id": 4,
+      "feature": "Channel Partner → Add",
+      "api": "ChannelPartnerApi.addChannelPartner",
+      "method": "POST",
+      "expected_path": "v1/business/channel-partner",
+      "actual_path": "v1/business/channel-partner",
+      "priority": "p1",
+      "status": "PASS",
+      "detail": "Body maps is_*_access from password field; verify server accepts",
+      "mismatch_note": "Body maps is_*_access from password field; verify server accepts"
+    },
+    {
+      "id": 5,
+      "feature": "Portfolio → List primary / pre-IPO",
+      "api": "PortfolioApi.wPortfolioAPi / wPreIpoPortfolioAPi",
+      "method": "GET",
+      "expected_path": "v2/business/portfolio/startup",
+      "actual_path": "v2/business/portfolio/startup",
+      "priority": "p1",
+      "status": "PASS",
+      "detail": "Pre-IPO list builds investor_ids but may call get(..., {}); also smoke pre-ipo path",
+      "mismatch_note": "Pre-IPO list builds investor_ids but may call get(..., {}); also smoke pre-ipo path"
+    },
+    {
+      "id": 6,
+      "feature": "Upload portfolio",
+      "api": "PortfolioApi.getCompanyStartupApi / wAddPortfolioApi",
+      "method": "GET",
+      "expected_path": "v1/business/company-startup-list",
+      "actual_path": "v1/business/company-startup-list",
+      "priority": "p2",
+      "status": "PASS",
+      "detail": "path constant aligned"
+    },
+    {
+      "id": 7,
+      "feature": "Investors → list / filters",
+      "api": "WInvestorsApi.investorsList",
+      "method": "GET",
+      "expected_path": "v2/business/investor",
+      "actual_path": "v2/business/investor",
+      "priority": "p2",
+      "status": "PASS",
+      "detail": "path constant aligned"
+    },
+    {
+      "id": 8,
+      "feature": "Investors → add / update",
+      "api": "WInvestorsApi.addInvestor",
+      "method": "POST",
+      "expected_path": "v2/business/investor",
+      "actual_path": "v2/business/investor",
+      "priority": "p2",
+      "status": "PASS",
+      "detail": "path constant aligned"
+    },
+    {
+      "id": 9,
+      "feature": "Investors → detail",
+      "api": "WInvestorsApi.getInvestor",
+      "method": "GET",
+      "expected_path": "v2/business/investor/detail",
+      "actual_path": "v2/business/investor/detail",
+      "priority": "p2",
+      "status": "PASS",
+      "detail": "path constant aligned"
+    },
+    {
+      "id": 10,
+      "feature": "KYC → CML read/save",
+      "api": "CmlApi.read / save",
+      "method": "POST",
+      "expected_path": "v2/business/investor/kyc/cml/read",
+      "actual_path": "v2/business/investor/kyc/cml/read",
+      "priority": "p2",
+      "status": "PASS",
+      "detail": "path constant aligned"
+    },
+    {
+      "id": 11,
+      "feature": "KYC → legacy doc upload",
+      "api": "WealthManagerKycApi.kycUpdate",
+      "method": "POST",
+      "expected_path": "v1/business/investor-kyc",
+      "actual_path": "v1/business/investor-kyc",
+      "priority": "p2",
+      "status": "PASS",
+      "detail": "path constant aligned"
+    },
+    {
+      "id": 12,
+      "feature": "Pending tasks",
+      "api": "PendingTaskApi.pendingTasks",
+      "method": "GET",
+      "expected_path": "v1/business/pending-tasks",
+      "actual_path": "v1/business/pending-tasks",
+      "priority": "p2",
+      "status": "PASS",
+      "detail": "path constant aligned"
+    },
+    {
+      "id": 13,
+      "feature": "Primary TX list",
+      "api": "WPrimaryTransactionApi.transactionList",
+      "method": "GET",
+      "expected_path": "v1/business/primary-transactions",
+      "actual_path": "v1/business/primary-transactions",
+      "priority": "p2",
+      "status": "PASS",
+      "detail": "path constant aligned"
+    },
+    {
+      "id": 14,
+      "feature": "Primary invest-now",
+      "api": "InvestorPrimaryTransactionApi.wealthManagerInvestment",
+      "method": "POST",
+      "expected_path": "v1/business/primary-invest/invest-now",
+      "actual_path": "v1/business/primary-invest/invest-now",
+      "priority": "p2",
+      "status": "PASS",
+      "detail": "path constant aligned"
+    },
+    {
+      "id": 15,
+      "feature": "Primary payment receipt",
+      "api": "InvestorPrimaryTransactionApi.paymentReceipt",
+      "method": "POST",
+      "expected_path": "v1/investor/primary-invest/upload-payment-receipt",
+      "actual_path": "v1/investor/primary-invest/upload-payment-receipt",
+      "priority": "p2",
+      "status": "FAIL",
+      "detail": "Client blocks iUploadPaymentReceipt; WM receipt UI cannot reach network",
+      "mismatch_note": "WM uses investor upload-payment-receipt; Dio interceptor rejects /investor/ for partners"
+    },
+    {
+      "id": 16,
+      "feature": "Secondary TX list",
+      "api": "WSecondaryTransactionApi.secondaryTransactionList",
+      "method": "GET",
+      "expected_path": "v1/business/secondary-invest/transactions/list",
+      "actual_path": "v1/business/secondary-invest/transactions/list",
+      "priority": "p2",
+      "status": "PASS",
+      "detail": "path constant aligned"
+    },
+    {
+      "id": 17,
+      "feature": "Secondary sell-request list",
+      "api": "WSecondaryTransactionApi.sellRequestList",
+      "method": "GET",
+      "expected_path": "v1/business/secondary-invest/sell-request",
+      "actual_path": "v1/business/secondary-invest/sell-request",
+      "priority": "p2",
+      "status": "PASS",
+      "detail": "path constant aligned"
+    },
+    {
+      "id": 18,
+      "feature": "Secondary opportunities + ROFR",
+      "api": "WSecondaryTransactionApi.opportunitiesList",
+      "method": "GET",
+      "expected_path": "v1/business/secondary-invest/related-oppotunities",
+      "actual_path": "v1/business/secondary-invest/related-oppotunities",
+      "priority": "p2",
+      "status": "PASS",
+      "detail": "path constant aligned"
+    },
+    {
+      "id": 19,
+      "feature": "Secondary receipt upload / approve",
+      "api": "WSecondaryTransactionApi.shareReceiptApprove",
+      "method": "POST",
+      "expected_path": "v1/business/secondary-invest/transactions/share-receipt-approve",
+      "actual_path": "v1/business/secondary-invest/transactions/share-receipt-approve",
+      "priority": "p2",
+      "status": "PASS",
+      "detail": "path constant aligned"
+    },
+    {
+      "id": 20,
+      "feature": "Secondary buy (if wired)",
+      "api": "WSecondaryTransactionApi.buyRequest",
+      "method": "POST",
+      "expected_path": "v1/business/secondary-invest/buy-now",
+      "actual_path": "v1/business/secondary-invest/buy-now",
+      "priority": "p2",
+      "status": "PASS",
+      "detail": "No WM UI caller found; API exists but may be dead",
+      "mismatch_note": "No WM UI caller found; API exists but may be dead"
+    },
+    {
+      "id": 21,
+      "feature": "Pre-IPO sell TX list",
+      "api": "WPreIpoTransactionApi.sellTransactionList",
+      "method": "GET",
+      "expected_path": "v1/business/pre-ipo/sell-transaction",
+      "actual_path": "v1/business/pre-ipo/sell-transaction",
+      "priority": "p2",
+      "status": "PASS",
+      "detail": "path constant aligned"
+    },
+    {
+      "id": 22,
+      "feature": "Pre-IPO buy TX lifecycle",
+      "api": "WPreIpoTransactionApi.transactionList",
+      "method": "GET",
+      "expected_path": "v2/business/pre-ipo/transaction-list",
+      "actual_path": "v2/business/pre-ipo/transaction-list",
+      "priority": "p2",
+      "status": "PASS",
+      "detail": "path constant aligned"
+    },
+    {
+      "id": 23,
+      "feature": "Send document",
+      "api": "DocumentApi.sendDocument",
+      "method": "POST",
+      "expected_path": "v1/business/send-document",
+      "actual_path": "v1/business/send-document",
+      "priority": "p2",
+      "status": "PASS",
+      "detail": "path constant aligned"
+    },
+    {
+      "id": 24,
+      "feature": "My earnings",
+      "api": "MyEarningApi.wInvestorEarningList",
+      "method": "GET",
+      "expected_path": "v1/business/earning/investor",
+      "actual_path": "v1/business/earning/investor",
+      "priority": "p2",
+      "status": "PASS",
+      "detail": "path constant aligned"
+    },
+    {
+      "id": 25,
+      "feature": "MIS",
+      "api": "MisApi.wMisList",
+      "method": "GET",
+      "expected_path": "v1/business/invested-startup-mis",
+      "actual_path": "v1/business/invested-startup-mis",
+      "priority": "p2",
+      "status": "PASS",
+      "detail": "path constant aligned"
+    },
+    {
+      "id": 26,
+      "feature": "Notifications",
+      "api": "NotificationApi.wNotificationList",
+      "method": "GET",
+      "expected_path": "v1/business/notifications",
+      "actual_path": "v1/business/notifications",
+      "priority": "p2",
+      "status": "PASS",
+      "detail": "WM notifications tab is empty Container(); use /notification",
+      "mismatch_note": "WM notifications tab is empty Container(); use /notification"
+    },
+    {
+      "id": 27,
+      "feature": "Dashboard",
+      "api": "DashboardApi.wealthManagerDashboard",
+      "method": "GET",
+      "expected_path": "v1/business/dashboard",
+      "actual_path": "v1/business/dashboard",
+      "priority": "p2",
+      "status": "PASS",
+      "detail": "path constant aligned"
+    },
+    {
+      "id": 28,
+      "feature": "Catalog enquiry create",
+      "api": "WPreIpoTransactionApi.inquiry",
+      "method": "POST",
+      "expected_path": "v2/business/enquiries/deals",
+      "actual_path": "v2/business/enquiries/deals",
+      "priority": "p2",
+      "status": "PASS",
+      "detail": "path constant aligned"
+    },
+    {
+      "id": 29,
+      "feature": "My inquiries list",
+      "api": "EnquiryApi.list",
+      "method": "GET",
+      "expected_path": "v2/business/enquiries/deals",
+      "actual_path": "v2/business/enquiries/deals",
+      "priority": "p2",
+      "status": "PASS",
+      "detail": "path constant aligned"
+    },
+    {
+      "id": 30,
+      "feature": "Pre-IPO buy place order",
+      "api": "WPreIpoTransactionApi.buy",
+      "method": "POST",
+      "expected_path": "v2/business/pre-ipo/buy",
+      "actual_path": "v2/business/pre-ipo/buy",
+      "priority": "p2",
+      "status": "PASS",
+      "detail": "path constant aligned"
+    },
+    {
+      "id": 31,
+      "feature": "Auth login",
+      "api": "WAuthApi.login",
+      "method": "POST",
+      "expected_path": "v1/business/login",
+      "actual_path": "v1/business/login",
+      "priority": "p2",
+      "status": "PASS",
+      "detail": "path constant aligned"
+    },
+    {
+      "id": 32,
+      "feature": "Inquiry (public lead)",
+      "api": "IAuthApi.verifyMobileNumber",
+      "method": "POST",
+      "expected_path": "verify-mobile-number",
+      "actual_path": "verify-mobile-number",
+      "priority": "p2",
+      "status": "PASS",
+      "detail": "path constant aligned"
+    },
+    {
+      "id": 33,
+      "feature": "Institution dashboard",
+      "api": "DashboardApi.getDashboard",
+      "method": "GET",
+      "expected_path": "v2/business/institution/dashboard",
+      "actual_path": "v2/business/institution/dashboard",
+      "priority": "p3",
+      "status": "PASS",
+      "detail": "path constant aligned"
+    },
+    {
+      "id": 34,
+      "feature": "Company list",
+      "api": "CompanyApi.getCompanyList",
+      "method": "GET",
+      "expected_path": "v2/business/institution/company/list",
+      "actual_path": "v2/business/institution/company/list",
+      "priority": "p3",
+      "status": "PASS",
+      "detail": "path constant aligned"
+    },
+    {
+      "id": 35,
+      "feature": "Create company sectors",
+      "api": "CompanyApi.getSectorList",
+      "method": "GET",
+      "expected_path": "v2/business/institution/company/sectors",
+      "actual_path": "v2/business/institution/company/sectors",
+      "priority": "p3",
+      "status": "PASS",
+      "detail": "path constant aligned"
+    },
+    {
+      "id": 36,
+      "feature": "Promoters",
+      "api": "CompanyApi.savePromoters",
+      "method": "POST",
+      "expected_path": "v2/business/institution/company/promoters",
+      "actual_path": "v2/business/institution/company/promoters",
+      "priority": "p3",
+      "status": "PASS",
+      "detail": "path constant aligned"
+    },
+    {
+      "id": 37,
+      "feature": "Deal list",
+      "api": "DealApi.getDealList",
+      "method": "GET",
+      "expected_path": "v2/business/institution/company/deals",
+      "actual_path": "v2/business/institution/company/deals",
+      "priority": "p3",
+      "status": "PASS",
+      "detail": "path constant aligned"
+    },
+    {
+      "id": 38,
+      "feature": "Bulk / update share price",
+      "api": "DealApi.bulkDeals",
+      "method": "POST",
+      "expected_path": "v2/business/institution/company/deals/bulk",
+      "actual_path": "v2/business/institution/company/deals/bulk",
+      "priority": "p3",
+      "status": "PASS",
+      "detail": "path constant aligned"
+    },
+    {
+      "id": 39,
+      "feature": "Unlisted TX list",
+      "api": "PreIPOTransactionApi.getTransactions",
+      "method": "GET",
+      "expected_path": "v2/business/institution/pre-ipo/transaction",
+      "actual_path": "v2/business/institution/pre-ipo/transaction",
+      "priority": "p3",
+      "status": "PASS",
+      "detail": "path constant aligned"
+    },
+    {
+      "id": 40,
+      "feature": "Institution sell enquiries",
+      "api": "EnquiryApi.list(institution: true)",
+      "method": "GET",
+      "expected_path": "v2/business/institution/enquiries",
+      "actual_path": "v2/business/institution/enquiries",
+      "priority": "p3",
+      "status": "PASS",
+      "detail": "path constant aligned"
+    },
+    {
+      "id": 41,
+      "feature": "Institution public profile",
+      "api": "InstitutionProfileApi.getProfile",
+      "method": "GET",
+      "expected_path": "v2/business/institution/profile",
+      "actual_path": "v2/business/institution/profile",
+      "priority": "p3",
+      "status": "PASS",
+      "detail": "path constant aligned"
+    },
+    {
+      "id": 42,
+      "feature": "LP secondary transactions UI",
+      "api": "(none)",
+      "method": "GET",
+      "expected_path": "(none)",
+      "actual_path": "",
+      "priority": "skip",
+      "status": "SKIP",
+      "detail": "Placeholder UI — no API",
+      "skip_reason": "Placeholder UI — no API"
+    },
+    {
+      "id": 43,
+      "feature": "Primary home",
+      "api": "LandingPageApi.wHomePage",
+      "method": "GET",
+      "expected_path": "v1/get-home",
+      "actual_path": "v1/get-home",
+      "priority": "catalog",
+      "status": "PASS",
+      "detail": "path constant aligned"
+    },
+    {
+      "id": 44,
+      "feature": "Pre-IPO home",
+      "api": "PreIpoLandingPageApi.wPreIPOHome",
+      "method": "GET",
+      "expected_path": "v2/business/home/pre-ipo",
+      "actual_path": "v2/business/home/pre-ipo",
+      "priority": "catalog",
+      "status": "PASS",
+      "detail": "path constant aligned"
+    },
+    {
+      "id": 45,
+      "feature": "Secondary home",
+      "api": "PreIpoLandingPageApi.wSecondaryHome",
+      "method": "GET",
+      "expected_path": "v2/business/home/secondary",
+      "actual_path": "v2/business/home/secondary",
+      "priority": "catalog",
+      "status": "PASS",
+      "detail": "path constant aligned"
+    },
+    {
+      "id": 46,
+      "feature": "News / sectors",
+      "api": "PreIpoLandingPageApi.newsSectors",
+      "method": "GET",
+      "expected_path": "v2/business/home/pre-ipo/news-sectors",
+      "actual_path": "v2/business/home/pre-ipo/news-sectors",
+      "priority": "catalog",
+      "status": "PASS",
+      "detail": "path constant aligned"
+    }
+  ]
+}

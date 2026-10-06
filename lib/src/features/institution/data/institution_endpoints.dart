@@ -17,6 +17,7 @@ abstract final class InstitutionEndpoints {
   static const updateDeal = '$dealList/update';
   static const deleteDeal = '$dealList/delete';
   static const bulkDeals = '$dealList/bulk';
+  static const companyPricesExcel = '$company/prices/excel';
 
   static const preIpoTransaction = 'v2/business/institution/pre-ipo/transaction';
   static const preIpoTransactionDetail = '$preIpoTransaction/detail';
