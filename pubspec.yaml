@@ -51,6 +51,7 @@ dependencies:
   logger: ^2.7.0
   fluttertoast: ^10.0.0
   cached_network_image: ^3.4.1
+  cached_network_image_platform_interface: ^4.1.1
   intl: ^0.20.3
   flutter_svg: ^2.3.0
   lottie: ^3.3.0
@@ -132,6 +133,7 @@ dependencies:
 
 
 dev_dependencies:
+  flutter_cache_manager: ^3.4.1
   flutter_test:
     sdk: flutter
 

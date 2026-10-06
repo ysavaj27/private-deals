@@ -95,6 +95,7 @@ enum WTabBarEnum {
   preIPOList,
   profile,
   priceUpdate,
+  manageDeals,
   changePassword,
   preIPOTransactions,
   secondaryTransactions,

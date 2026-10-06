@@ -38,7 +38,7 @@ class AuthSession extends GetxService {
   double get profileComplete =>
       ((iUser.isKycSuccess ? 1 : 0) +
           (iUser.aifStatus ? 1 : 0) +
-          (iUser.cityId != 0 && iUser.address.isNotEmpty ? 1 : 0)) /
+          (iUser.isPreIpoKycComplete ? 1 : 0)) /
       3;
 
   AccessSnapshot get access => AccessSnapshot(
@@ -93,6 +93,15 @@ class AuthSession extends GetxService {
       return;
     }
     final next = PartnerUser.fromJson(prefUser);
+    // #region agent log
+    agentLog('D', 'auth_session.dart:setUser', 'session candidate', {
+      'hasId': next.id > 0,
+      'hasToken': next.token.isNotEmpty,
+      'type': next.type,
+      'role': next.role.apiValue,
+      'accepted': next.id > 0 && next.token.isNotEmpty,
+    });
+    // #endregion
     if (next.id <= 0 || next.token.isEmpty) return;
     if (next.id != userId || next.token != token || next.type != wUser.type)
       revision++;
@@ -114,6 +123,13 @@ class AuthSession extends GetxService {
   }
 
   Future<bool> expire(int requestRevision) async {
+    // #region agent log
+    agentLog('G', 'auth_session.dart:expire', 'expire requested', {
+      'revisionMatch': requestRevision == revision,
+      'hasToken': token.isNotEmpty,
+      'role': role.apiValue,
+    });
+    // #endregion
     if (requestRevision != revision || token.isEmpty) return false;
     await clear();
     return true;

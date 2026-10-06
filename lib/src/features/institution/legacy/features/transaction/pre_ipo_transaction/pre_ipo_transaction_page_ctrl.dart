@@ -1,43 +1,30 @@
-import 'dart:async';
-import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:private_deals/src/features/institution/legacy/backend/api/pre_ipo_transaction_api.dart';
 import 'package:private_deals/src/shared/models/base_model.dart';
-import 'package:private_deals/src/features/institution/legacy/backend/model/transaction/pre_ipo_transaction_model.dart';
+import 'package:private_deals/src/shared/models/enums.dart';
+import 'package:private_deals/src/shared/models/pre_ipo_order_model.dart';
+import 'package:private_deals/src/shared/plugins/luncher.dart';
+import 'package:private_deals/src/shared/plugins/toast.dart';
+import 'package:private_deals/src/shared/widgets/pre_ipo_order/pre_ipo_order_widgets.dart';
 
 enum PreIPOTransactionFilter {
   pending('Pending'),
   processing('Processing'),
-  completed('Completed');
+  completed('Completed'),
+  cancelled('Cancelled');
 
   const PreIPOTransactionFilter(this.label);
   final String label;
 }
 
-typedef TransactionLoader =
-    Future<BaseModel<List<PreIPOTransactionModel>>> Function({
-      required String status,
-      String company,
-      required int skip,
-      int take,
-    });
-
 class PreIPOTransactionPageCtrl extends GetxController {
-  PreIPOTransactionPageCtrl({TransactionLoader? loader})
-    : _loader = loader ?? PreIPOTransactionApi.getTransactions;
-  final TransactionLoader _loader;
-  static const pageSize = 20;
-  final searchController = TextEditingController();
-  final transactions = <PreIPOTransactionModel>[].obs;
-  final filter = PreIPOTransactionFilter.pending.obs;
+  final transactions = <PreIpoOrderModel>[].obs;
+  final filtered = <PreIpoOrderModel>[].obs;
   final loading = false.obs;
+  final actionLoadingId = 0.obs;
   final error = ''.obs;
-  final page = 0.obs;
-  final hasNext = false.obs;
-  String _company = '';
-  Timer? _debounce;
-  int _requestId = 0;
-  int _retryPage = 0;
+  final searchQuery = ''.obs;
+  final filter = PreIPOTransactionFilter.pending.obs;
 
   @override
   void onInit() {
@@ -47,83 +34,201 @@ class PreIPOTransactionPageCtrl extends GetxController {
 
   void selectFilter(PreIPOTransactionFilter value) {
     if (value == filter.value) return;
-    _debounce?.cancel();
     filter.value = value;
-    _reset();
-    fetch();
+    _applySearch();
   }
 
   void search(String value) {
-    final query = value.trim();
-    if (_company == query) return;
-    _company = query;
-    _debounce?.cancel();
-    _reset();
-    loading.value = true;
-    _debounce = Timer(const Duration(milliseconds: 350), fetch);
+    searchQuery.value = value.trim().toLowerCase();
+    _applySearch();
   }
 
-  void _reset() {
-    _requestId++;
-    page.value = 0;
-    hasNext.value = false;
-    transactions.clear();
-    error.value = '';
+  void _applySearch() {
+    final q = searchQuery.value;
+    filtered.assignAll(
+      transactions.where((item) {
+        final inFilter = switch (filter.value) {
+          PreIPOTransactionFilter.pending =>
+            item.orderStep == 'share_confirmation_pending',
+          PreIPOTransactionFilter.processing =>
+            !item.isCompleted &&
+                !item.isCancelled &&
+                item.orderStep != 'share_confirmation_pending',
+          PreIPOTransactionFilter.completed => item.isCompleted,
+          PreIPOTransactionFilter.cancelled => item.isCancelled,
+        };
+        return inFilter &&
+            (q.isEmpty ||
+                item.company.brandName.toLowerCase().contains(q) ||
+                item.investor.name.toLowerCase().contains(q) ||
+                item.orderStep.toLowerCase().contains(q) ||
+                item.current.toLowerCase().contains(q) ||
+                item.tradeSide.contains(q));
+      }),
+    );
   }
 
-  Future<void> fetch({int? targetPage}) async {
-    final target = targetPage ?? page.value;
-    if (target < 0) return;
-    final requestId = ++_requestId;
-    _retryPage = target;
+  Future<void> fetch() async {
     loading.value = true;
     error.value = '';
     try {
-      final res = await _loader(
-        status: filter.value.name,
-        company: _company,
-        skip: target * pageSize,
-        take: pageSize,
-      );
-      if (isClosed || requestId != _requestId) return;
+      final res = await PreIPOTransactionApi.getTransactions();
+      if (isClosed) return;
       if (!res.isSuccess) {
-        error.value = 'Unable to load transactions. Please retry.';
+        error.value = res.m.isEmpty
+            ? 'Unable to load transactions. Please retry.'
+            : res.m;
+        transactions.clear();
+        filtered.clear();
         return;
       }
-      final items = res.r ?? <PreIPOTransactionModel>[];
-      if (items.isEmpty && target > page.value && transactions.isNotEmpty) {
-        hasNext.value = false;
-        return;
-      }
-      transactions.assignAll(items);
-      page.value = target;
-      hasNext.value = items.length == pageSize;
+      transactions.assignAll(res.r ?? <PreIpoOrderModel>[]);
+      _applySearch();
     } catch (_) {
-      if (!isClosed && requestId == _requestId) {
+      if (!isClosed) {
         error.value = 'Unable to load transactions. Please retry.';
       }
     } finally {
-      if (!isClosed && requestId == _requestId) loading.value = false;
+      if (!isClosed) loading.value = false;
     }
   }
 
-  void nextPage() {
-    if (!loading.value && hasNext.value) fetch(targetPage: page.value + 1);
-  }
-
-  void previousPage() {
-    if (!loading.value && page.value > 0) fetch(targetPage: page.value - 1);
-  }
-
   void retry() {
-    if (!loading.value) fetch(targetPage: _retryPage);
+    if (!loading.value) fetch();
   }
 
-  @override
-  void onClose() {
-    _requestId++;
-    _debounce?.cancel();
-    searchController.dispose();
-    super.onClose();
+  void _replaceOrder(PreIpoOrderModel order) {
+    final index = transactions.indexWhere((e) => e.id == order.id);
+    if (index >= 0) {
+      transactions[index] = order;
+      transactions.refresh();
+      _applySearch();
+    }
+  }
+
+  Future<PreIpoOrderModel?> loadDetail(int transactionId) async {
+    final res = await PreIPOTransactionApi.detail(transactionId: transactionId);
+    if (res.isSuccess && res.r != null) {
+      _replaceOrder(res.r!);
+      return res.r;
+    }
+    toast(res.m, MessageEnum.error);
+    return null;
+  }
+
+  Future<void> handleAction(PreIpoOrderModel order, String action) async {
+    if (actionLoadingId.value != 0) return;
+    switch (action) {
+      case PreIpoOrderAction.approve:
+        await _runMutation(
+          order.id,
+          () => PreIPOTransactionApi.approve(transactionId: order.id),
+        );
+        break;
+      case PreIpoOrderAction.reject:
+        final reason = await showPreIpoReasonDialog(
+          title: 'Reject transaction',
+          hint: 'Why are you rejecting?',
+          confirmLabel: 'Reject',
+        );
+        if (reason == null) return;
+        await _runMutation(
+          order.id,
+          () => PreIPOTransactionApi.reject(
+            transactionId: order.id,
+            reason: reason,
+          ),
+        );
+        break;
+      case PreIpoOrderAction.showDealSlipSignLink:
+        final detail = await loadDetail(order.id);
+        if (detail == null) return;
+        if (!detail.hasActionNamed(action) ||
+            detail.signLink == null ||
+            detail.signLink!.isEmpty) {
+          toast('Sign link is not available', MessageEnum.alert);
+          return;
+        }
+        await Launcher.openNewTab(detail.signLink!);
+        await fetch();
+        break;
+      case PreIpoOrderAction.viewPaymentDetails:
+        final detail = await loadDetail(order.id);
+        if (detail == null) return;
+        if (detail.paymentDetails == null) {
+          toast('Payment details are not available', MessageEnum.alert);
+          return;
+        }
+        await showPreIpoPaymentDetailsDialog(detail.paymentDetails!);
+        break;
+      case PreIpoOrderAction.uploadPaymentReceipt:
+        final file = await showPreIpoReceiptUploadDialog(
+          title: 'Upload payment receipt',
+        );
+        if (file == null) return;
+        await _runMutation(
+          order.id,
+          () => PreIPOTransactionApi.uploadPaymentReceipt(
+            transactionId: order.id,
+            file: file,
+          ),
+        );
+        break;
+      case PreIpoOrderAction.viewPaymentReceipt:
+        await _openPaymentReceipt(order);
+        break;
+      case PreIpoOrderAction.confirmPayment:
+        await _runMutation(
+          order.id,
+          () => PreIPOTransactionApi.confirmPayment(transactionId: order.id),
+        );
+        break;
+      case PreIpoOrderAction.uploadShareTransferReceipt:
+        final file = await showPreIpoReceiptUploadDialog(
+          title: 'Upload share-transfer receipt',
+        );
+        if (file == null) return;
+        await _runMutation(
+          order.id,
+          () => PreIPOTransactionApi.uploadShareTransferReceipt(
+            transactionId: order.id,
+            file: file,
+          ),
+        );
+        break;
+      default:
+        toast('Unsupported action', MessageEnum.alert);
+    }
+  }
+
+  Future<void> _openPaymentReceipt(PreIpoOrderModel order) async {
+    var current = order;
+    if (current.paymentReceipt == null) {
+      final detail = await loadDetail(order.id);
+      if (detail == null) return;
+      current = detail;
+    }
+    final url = current.paymentReceipt?.url;
+    if (url == null || url.isEmpty) {
+      toast('Receipt is not available', MessageEnum.alert);
+      return;
+    }
+    await Launcher.openNewTab(url);
+  }
+
+  Future<void> _runMutation(
+    int id,
+    Future<BaseModel<PreIpoOrderModel>> Function() request,
+  ) async {
+    actionLoadingId(id);
+    final res = await request();
+    actionLoadingId(0);
+    if (res.isSuccess && res.r != null) {
+      toast(res.m, MessageEnum.success);
+      _replaceOrder(res.r!);
+    } else {
+      toast(res.m, MessageEnum.error);
+      await loadDetail(id);
+    }
   }
 }

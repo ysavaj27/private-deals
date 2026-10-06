@@ -10,11 +10,15 @@ class DealListPageCtrl extends GetxController {
   DealRouteContext? _dealRoute;
 
   CompanyType get type => _dealRoute!.type;
+  bool get isHotDeal => _dealRoute!.isHotDeal;
   String get title => _dealRoute!.title;
 
   Future<void> getData() async {
     final route = DealRouteContext.fromPath(Get.currentRoute);
-    if (_dealRoute?.type == route.type) return;
+    if (_dealRoute?.type == route.type &&
+        _dealRoute?.isHotDeal == route.isHotDeal) {
+      return;
+    }
 
     _dealRoute = route;
     _requestId++;
@@ -164,6 +168,7 @@ class DealListPageCtrl extends GetxController {
         search: query.value,
         type: type,
         skip: targetPage * pageSize,
+        isHotDeal: isHotDeal,
       );
       // logger.d('Deal Length :${res.r?.length}');
 
@@ -227,23 +232,51 @@ class DealListPageCtrl extends GetxController {
 }
 
 class DealRouteContext {
-  const DealRouteContext({required this.type});
+  const DealRouteContext({required this.type, required this.isHotDeal});
 
   final CompanyType type;
+  final bool isHotDeal;
 
   factory DealRouteContext.fromPath(String path) {
     final segments = Uri.parse(path).pathSegments;
+    if (segments.length >= 4 &&
+        segments[0] == 'institution' &&
+        segments[1] == 'deals' &&
+        (segments[2] == 'hot' || segments[2] == 'manage')) {
+      final type = _companyTypeFromSegment(segments[3]);
+      if (type != null) {
+        return DealRouteContext(
+          type: type,
+          isHotDeal: segments[2] == 'hot',
+        );
+      }
+    }
+
+    // Legacy `/institution/deals/{type}` paths default to hot deals.
     if (segments.length >= 3 &&
         segments[0] == 'institution' &&
         segments[1] == 'deals') {
-      if (segments[2] == 'unlisted')
-        return const DealRouteContext(type: CompanyType.unlisted);
-      if (segments[2] == 'secondary')
-        return const DealRouteContext(type: CompanyType.secondary);
+      final type = _companyTypeFromSegment(segments[2]);
+      if (type != null) {
+        return DealRouteContext(type: type, isHotDeal: true);
+      }
     }
-    throw StateError('This route is not a hot deals section: $path');
+
+    throw StateError('This route is not a deals section: $path');
   }
 
-  String get title =>
-      type == CompanyType.unlisted ? 'Unlisted Deals' : 'LP Secondary Deals';
+  static CompanyType? _companyTypeFromSegment(String segment) {
+    if (segment == 'unlisted') return CompanyType.unlisted;
+    if (segment == 'secondary') return CompanyType.secondary;
+    return null;
+  }
+
+  String get title {
+    if (isHotDeal) {
+      return type == CompanyType.unlisted
+          ? 'Unlisted · Deal of the day'
+          : 'LP Secondary · Deal of the day';
+    }
+    return 'LP Secondary · Manage Deals';
+  }
 }

@@ -2,7 +2,6 @@ import 'package:private_deals/src/shared/app_exports.dart';
 
 import 'package:private_deals/src/features/wealth_manager/presentation/investor_transaction/investor_transaction_page_ctrl.dart';
 import 'package:private_deals/src/features/wealth_manager/presentation/investor_transaction/pre_ipo/pre_ipo_buy_transaction/desktop_pre_ipo_buy_transaction_view.dart';
-import 'package:private_deals/src/features/wealth_manager/presentation/investor_transaction/pre_ipo/pre_ipo_sell_transaction/desktop_pre_ipo_sell_transaction_view.dart';
 import 'package:private_deals/src/features/wealth_manager/presentation/investor_transaction/primary/desktop_primary_transaction_view.dart';
 import 'package:private_deals/src/features/wealth_manager/presentation/investor_transaction/secondary/desktop_secondary_transaction_view.dart';
 
@@ -26,40 +25,9 @@ class DesktopInvestorTransactionView extends StatelessWidget {
                 const TitleText("Investor Transaction"),
                 const Spacer(),
                 Visibility(
-                  visible: app.wUser.isPrimaryAccess,
-                  child: TabButton(
-                    title: "Private Equity",
-                    type: TransactionTypeEnum.primary,
-                    onTap: () {
-                      c.changeTab(TransactionTypeEnum.primary);
-                    },
-                    currentIndex: c.currentIndex,
-                    // size: context,
-                  ),
-                ),
-                Visibility(
-                  visible: app.wUser.isPrimaryAccess,
-                  child: const SizedBox(width: 10),
-                ),
-                Visibility(
-                  visible: app.wUser.isSecondaryAccess,
-                  child: TabButton(
-                    title: "Lp Secondary",
-                    type: TransactionTypeEnum.secondary,
-                    onTap: () {
-                      c.changeTab(TransactionTypeEnum.secondary);
-                    },
-                    currentIndex: c.currentIndex,
-                  ),
-                ),
-                Visibility(
-                  visible: app.wUser.isSecondaryAccess,
-                  child: const SizedBox(width: 10),
-                ),
-                Visibility(
                   visible: app.wUser.isPreIpoAccess,
                   child: TabButton(
-                    title: "Unlisted Shares Buy",
+                    title: "Unlisted",
                     type: TransactionTypeEnum.preIpoBuy,
                     onTap: () {
                       c.changeTab(TransactionTypeEnum.preIpoBuy);
@@ -72,12 +40,27 @@ class DesktopInvestorTransactionView extends StatelessWidget {
                   child: const SizedBox(width: 10),
                 ),
                 Visibility(
-                  visible: app.wUser.isPreIpoAccess,
+                  visible: app.wUser.isSecondaryAccess,
                   child: TabButton(
-                    title: "Unlisted Shares Sell",
-                    type: TransactionTypeEnum.preIpoSell,
+                    title: "Secondary",
+                    type: TransactionTypeEnum.secondary,
                     onTap: () {
-                      c.changeTab(TransactionTypeEnum.preIpoSell);
+                      c.changeTab(TransactionTypeEnum.secondary);
+                    },
+                    currentIndex: c.currentIndex,
+                  ),
+                ),
+                Visibility(
+                  visible: app.wUser.isSecondaryAccess,
+                  child: const SizedBox(width: 10),
+                ),
+                Visibility(
+                  visible: app.wUser.isPrimaryAccess,
+                  child: TabButton(
+                    title: "Private Equity",
+                    type: TransactionTypeEnum.primary,
+                    onTap: () {
+                      c.changeTab(TransactionTypeEnum.primary);
                     },
                     currentIndex: c.currentIndex,
                   ),
@@ -100,19 +83,17 @@ class MainView extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Obx(
-      () {
-        switch (c.currentIndex()) {
-          case TransactionTypeEnum.primary:
-            return DesktopPrimaryTransactionView();
-          case TransactionTypeEnum.secondary:
-            return DesktopSecondaryTransactionView();
-          case TransactionTypeEnum.preIpoBuy:
-            return DesktopPreIPOBuyTransactionView();
-          case TransactionTypeEnum.preIpoSell:
-            return DesktopPreIPOSellTransactionView();
-        }
-      },
-    );
+    return Obx(() {
+      switch (c.currentIndex()) {
+        case TransactionTypeEnum.primary:
+          return DesktopPrimaryTransactionView();
+        case TransactionTypeEnum.secondary:
+          return DesktopSecondaryTransactionView();
+        case TransactionTypeEnum.preIpoBuy:
+          return DesktopPreIPOBuyTransactionView();
+        case TransactionTypeEnum.preIpoSell:
+          return const SizedBox.shrink();
+      }
+    });
   }
 }

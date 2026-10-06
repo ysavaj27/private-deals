@@ -37,7 +37,7 @@ lib/
     features/
       auth/                  # Shared business login, recovery, password change
       account/               # Existing Partner profile views
-      investors/             # Shared v2 clients, self identification and CML
+      investors/             # v2 clients, self identification and investor KYC
       institution/
         companies/           # Catalog, creation, promoters and shareholders
         deals/               # Single create, edit, delete and bulk deals
@@ -58,8 +58,8 @@ The exact `data.type` values are `Wealth Manager`, `Distributor`, `Retailer`, `R
 
 - Institution lands at `/institution/dashboard` and can manage Institution companies and deals.
 - Wealth Manager, Distributor, Retailer and Relation Manager use the Partner workspace at `/wealth-manager/dashboard`. Existing backend permissions still govern their individual operations.
-- `/investors` and `/investors/:id/cml` are shared by all recognized partner roles. Relation Managers receive their parent-client scope from the backend.
-- `/account` and `/changePassword` are shared account pages. Institution account information is read-only; no unsupported Seller profile-update endpoint is called.
+- Investor KYC opens in a dialog from `/wealth-manager/investors`; the standalone `/investors` and CML detail routes are removed. Relation Managers receive their parent-client scope from the backend. Completion uses `preipo_kyc_status == 1`.
+- `/account` and `/changePassword` are shared account pages. Every partner role loads and updates the display photo via `GET`/`POST v2/business/profile` (form-data field `logo` only). Other account fields stay read-only. Institution seller text profile stays on `GET`/`POST v2/business/institution/profile` and appears on company-detail deal dialogs for partners. Session restore still uses `GET v1/business/profile`.
 - Primary, secondary and unlisted catalog routes also require the matching product access flag. Flags never grant Institution access. Relation Managers cannot open channel-partner management.
 - Checkout URLs preserve their product section. Refreshing a quote-based checkout asks the user to reselect an available offer rather than reconstructing a price from the URL.
 - Company/deal routes enumerate `unlisted` and `secondary`; invalid types do not silently select another dashboard.
@@ -78,16 +78,16 @@ Browser persistence currently uses the inherited GetStorage bearer-token design.
 
 ## API boundaries and supported workflows
 
-Auth remains v1; shared investors/CML and Institution endpoints explicitly use v2. `get-config.current_api_version` does not rewrite these endpoints. Every backend request carries `headtoken`; authenticated requests also carry the Partner bearer token. These headers are not sent to unrelated third-party URLs.
+Auth remains v1; investor KYC and Institution endpoints explicitly use v2. `get-config.current_api_version` does not rewrite these endpoints. Every backend request carries `headtoken`; authenticated requests also carry the Partner bearer token. These headers are not sent to unrelated third-party URLs.
 
 - Company catalog and **Only my submissions**, sectors, duplicate checking, create, promoters, and shareholders use `v2/business/institution/company/...`.
 - Company creation goes live immediately; commission and processing fee are server-managed. Company logo is optional; the retained image picker caps it at 2 MB. Ownership is taken from `is_editable` before promoter/shareholder editing; those APIs replace complete lists, including clearing them with `[]`.
 - Single deal creation sends a **base** `share_price`; the response contains the original `base_price` and final customer `share_price`. Deal editing sends the **final** price without adding a second fee or changing company/base price. Bulk buy/sell input validates every priced row before submitting one request.
-- Shared investor listing uses `v2/business/investor` with independent KYC, active and AIF filters. Self identification uses `is_self` or the profile's `self_investor_id`, never list position.
+- Investor listing uses `v2/business/investor` with active and AIF filters. The wealth manager KYC filter uses the returned `preipo_kyc_status` in the model. Self identification uses `is_self` or the profile's `self_investor_id`, never list position.
 - New clients send only investor type, name, mobile number and optional email/gender. Legacy investor-update contracts remain separate.
-- CML read accepts a PDF up to 10 MB and prefills fields; it does not mark KYC complete. Client save confirms KYC and updates the investor name. Self-CML read is supported; **self-CML save remains disabled** until the backend contract is confirmed. Direct CML links reload the accessible investor list rather than trusting a URL-provided self flag.
+- Investor KYC uses multipart `v2/business/investor/kyc/cml/read` and `/save` from the investor-list dialog. Read accepts a PDF up to 10 MB and maps `account_holder_name` into the editable name; it does not mark KYC complete. Save requires DP ID, client ID, PAN, name, account number and IFSC; bank name, DOB (`dd-mm-yyyy`) and the PDF are optional. Both client and self-investor saving are supported. After a successful save, the list reloads the server name and `preipo_kyc_status`. Business failures keep the dialog open with the returned message.
 
-The Institution dashboard contains supported workflow links. No financial totals are fabricated. Seller dashboard metrics, standalone company price updates, Seller transactions, sell enquiries and Seller profile editing were intentionally left in the original Seller project because the handoff has no Institution replacements. There is no role switcher and no active `/seller/` endpoint in the new app.
+The Institution dashboard contains supported workflow links. No financial totals are fabricated. Seller dashboard metrics, standalone company price updates, Seller transactions and sell enquiries were intentionally left in the original Seller project because the handoff has no Institution replacements. Institution seller profile editing uses `v2/business/institution/profile`. There is no role switcher and no active `/seller/` endpoint in the new app.
 
 ## Validation and deployment
 
@@ -109,3 +109,16 @@ The web server must serve `index.html` for application routes so browser refresh
 - [architecture-plan.md](docs/architecture-plan.md) preserves the pre-implementation plan. This README and the changelog describe the implemented result.
 
 For every future behavior/API/routing change, update this README or the relevant document and add a changelog entry with validation and any unresolved backend dependency. Do not claim a new role or endpoint is supported without a confirmed contract and a role/ownership regression test.
+
+
+
+# Pending Tasks
+- New investor add, kyc flow on partner/wealth manager side
+- [x] cache image issue logo are replace dynamically
+- [x] if self for transaction then can’t edit price
+- [x] next and step missing on transaction
+- [x] also, bank detail are copy and selectable
+- [x] wealth manager app no logo are display
+- [x] Pre-IPO detail page completely redegin
+- [x] Seller view on listtile
+- [ ] Mandate/deal slip date need to change

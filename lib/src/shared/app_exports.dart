@@ -63,6 +63,7 @@ export 'package:private_deals/src/shared/models/config_model.dart';
 export 'package:private_deals/src/shared/models/enums.dart';
 export 'package:private_deals/src/shared/models/master_type_model.dart';
 export 'package:private_deals/src/shared/models/media_model.dart';
+export 'package:private_deals/src/shared/models/pre_ipo_order_model.dart';
 export 'package:private_deals/src/features/wealth_manager/data/models/dashboard/i_dashboard_model.dart';
 export 'package:private_deals/src/features/wealth_manager/data/models/dashboard/w_dashboard_model.dart';
 export 'package:private_deals/src/features/wealth_manager/data/models/document/document_model.dart';

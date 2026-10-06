@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:private_deals/src/features/institution/data/models/common/enums.dart';
 import 'package:private_deals/src/features/institution/institution_routes.dart';
+import 'package:private_deals/src/features/institution/legacy/features/home/home_page_ctrl.dart';
 import 'package:private_deals/src/features/institution/support/plugins/cache_image.dart';
 import 'package:private_deals/src/features/institution/support/plugins/loader.dart';
 import 'package:private_deals/src/features/institution/support/plugins/logger.dart';
@@ -17,38 +19,47 @@ class DesktopCompanyListView extends StatelessWidget {
 
   const DesktopCompanyListView({super.key, required this.c});
 
+  void _openUpdateSharePrice() {
+    if (Get.isRegistered<SellerHomePageCtrl>()) {
+      Get.find<SellerHomePageCtrl>().onTap(WTabBarEnum.priceUpdate);
+    } else {
+      Get.offNamed('/institution/bulk-deals');
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
+    final showPriceUpdate = c.companyType == CompanyType.unlisted;
     return ListView(
       padding: const EdgeInsets.all(28),
       children: [
         Text(c.companyRoute.title, style: context.textTheme.headlineSmall),
         const SizedBox(height: 6),
-        Text(
-          'Browse and manage your companies.',
-          style: context.textTheme.bodyMedium?.copyWith(
-            color: context.theme.colorScheme.onSurface.withValues(alpha: 0.8),
+        Obx(
+          () => Text(
+            c.mySubmissions()
+                ? 'Companies you created.'
+                : 'Browse and manage your companies.',
+            style: context.textTheme.bodyMedium?.copyWith(
+              color: context.theme.colorScheme.onSurface.withValues(alpha: 0.8),
+            ),
           ),
         ),
         const SizedBox(height: 24),
-        Row(
-          children: [
-            Expanded(
-              child: Align(
-                alignment: Alignment.centerLeft,
-                child: ConstrainedBox(
-                  constraints: const BoxConstraints(maxWidth: 420),
-                  child: AppTextField(
-                    // controller: c.searchController,
-                    onChanged: c.updateSearch,
-                    hint: 'Search companies...',
-                    prefixIcon: Icons.search_rounded,
-                  ),
-                ),
-              ),
-            ),
-            const SizedBox(width: 16),
-            AppButton(
+        LayoutBuilder(
+          builder: (context, constraints) {
+            final search = AppTextField(
+              onChanged: c.updateSearch,
+              hint: 'Search companies...',
+              prefixIcon: Icons.search_rounded,
+            );
+            final priceUpdate = AppButton(
+              onPressed: _openUpdateSharePrice,
+              icon: Icons.edit_outlined,
+              label: 'Update share price',
+              variant: AppButtonVariant.outline,
+            );
+            final create = AppButton(
               onPressed: () {
                 var routes = InstitutionRoutes.createCompany(Get.currentRoute);
                 logger.d(routes);
@@ -56,8 +67,50 @@ class DesktopCompanyListView extends StatelessWidget {
               },
               icon: Icons.add_rounded,
               label: 'Create company',
-            ),
-          ],
+            );
+
+            if (constraints.maxWidth < 860) {
+              return Column(
+                crossAxisAlignment: CrossAxisAlignment.stretch,
+                children: [
+                  search,
+                  if (showPriceUpdate) ...[
+                    const SizedBox(height: 12),
+                    Align(alignment: Alignment.centerLeft, child: priceUpdate),
+                  ],
+                  const SizedBox(height: 12),
+                  Align(
+                    alignment: Alignment.centerLeft,
+                    child: CompanySubmissionFilter(c: c),
+                  ),
+                  const SizedBox(height: 12),
+                  Align(alignment: Alignment.centerLeft, child: create),
+                ],
+              );
+            }
+
+            return Row(
+              children: [
+                Expanded(
+                  child: Align(
+                    alignment: Alignment.centerLeft,
+                    child: ConstrainedBox(
+                      constraints: const BoxConstraints(maxWidth: 420),
+                      child: search,
+                    ),
+                  ),
+                ),
+                if (showPriceUpdate) ...[
+                  const SizedBox(width: 12),
+                  priceUpdate,
+                ],
+                const SizedBox(width: 12),
+                CompanySubmissionFilter(c: c),
+                const SizedBox(width: 16),
+                create,
+              ],
+            );
+          },
         ),
         const SizedBox(height: 20),
         Card(
@@ -89,14 +142,22 @@ class DesktopCompanyListView extends StatelessWidget {
                 Padding(
                   padding: const EdgeInsets.all(20),
                   child: Text(
-                    '${companies.length} companies',
+                    c.mySubmissions()
+                        ? '${companies.length} created by you'
+                        : '${companies.length} companies',
                     style: context.textTheme.titleMedium,
                   ),
                 ),
                 if (companies.isEmpty)
-                  const Padding(
-                    padding: EdgeInsets.all(40),
-                    child: Center(child: Text('No companies found')),
+                  Padding(
+                    padding: const EdgeInsets.all(40),
+                    child: Center(
+                      child: Text(
+                        c.mySubmissions()
+                            ? 'No companies created by you'
+                            : 'No companies found',
+                      ),
+                    ),
                   )
                 else
                   LayoutBuilder(
@@ -211,7 +272,9 @@ class DesktopCompanyListView extends StatelessWidget {
                                   DataCell(Text(company.category)),
                                   DataCell(
                                     Text(
-                                      '₹${company.sharePrice.toStringAsFixed(2)}',
+                                      c.companyType == CompanyType.unlisted
+                                          ? company.myBasePriceLabel
+                                          : '₹${company.sharePrice.toStringAsFixed(2)}',
                                       style: context.textTheme.titleSmall,
                                     ),
                                   ),

@@ -85,6 +85,7 @@ enum ITabBarEnum {
 }
 
 enum WTabBarEnum {
+  myInquiries,
   dashboard,
   investorTransactions,
   myEarnings,
@@ -152,7 +153,7 @@ extension UnListedShareTabEnumX on UnListedShareTabEnum {
   String get label {
     switch (this) {
       case UnListedShareTabEnum.hotDeals:
-        return 'Hot Deals';
+        return 'Deal Of the Day';
       case UnListedShareTabEnum.trending:
         return 'Trending';
       case UnListedShareTabEnum.exclusiveDeals:

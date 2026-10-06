@@ -8,6 +8,7 @@ import 'package:private_deals/src/features/institution/data/models/common/enums.
 import 'package:private_deals/src/features/institution/legacy/backend/model/dashboard/dashboard_model.dart';
 import 'package:private_deals/src/features/institution/legacy/utils/constant/app_url.dart';
 import 'package:private_deals/src/features/institution/legacy/utils/functions/dialog.dart';
+import 'package:private_deals/src/features/institution/support/plugins/loader.dart';
 import 'package:private_deals/src/shared/institution_widgets/custom_card_widget.dart';
 
 import 'package:private_deals/src/features/institution/legacy/features/home/home_page_ctrl.dart';
@@ -83,7 +84,7 @@ class _PhoneDashboardViewState extends State<PhoneDashboardView> {
     if (data == null) {
       return Center(
         child: loading
-            ? const CircularProgressIndicator(color: _purple)
+            ? const Loader(size: 36, color: _purple)
             : Padding(
                 padding: const EdgeInsets.all(24),
                 child: Column(

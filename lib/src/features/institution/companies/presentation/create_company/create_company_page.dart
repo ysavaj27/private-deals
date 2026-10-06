@@ -311,7 +311,7 @@ class _DuplicateNotice extends StatelessWidget {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             if (state == DuplicateState.checking)
-              const SizedBox(width: 20, height: 20, child: Loader())
+              const SizedBox(width: 20, height: 20, child: Loader(size: 20))
             else
               Icon(
                 hasError

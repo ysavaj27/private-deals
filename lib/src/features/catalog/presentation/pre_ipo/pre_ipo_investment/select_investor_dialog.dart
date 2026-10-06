@@ -232,7 +232,7 @@ class _SelectInvestorDialogState extends State<SelectInvestorDialog> {
                               );
                             },
                             title: Text(
-                              model.name,
+                              model.displayName,
                               style: TextStyle(
                                 fontSize: isPhone ? 14 : 16,
                               ),
@@ -271,6 +271,7 @@ class _SelectInvestorDialogState extends State<SelectInvestorDialog> {
                 child: CustomElevatedButton(
                   width: isPhone ? 120 : 120,
                   height: isPhone ? 35 : 40,
+                  backgroundColor: AppColors.preIpoButton(context),
                   text: 'Register',
                   onPressed: _registerInvestor,
                 ),
@@ -281,6 +282,7 @@ class _SelectInvestorDialogState extends State<SelectInvestorDialog> {
                 child: CustomElevatedButton(
                   width: isPhone ? 120 : 120,
                   height: isPhone ? 35 : 40,
+                  backgroundColor: AppColors.preIpoButton(context),
                   text: "Select",
                   onPressed: _selectInvestors,
                 ),

@@ -191,6 +191,7 @@ class _DealListViewState extends State<DealListView> {
                                     label: Text('Min qty'),
                                     numeric: true,
                                   ),
+                                  DataColumn(label: Text('Settlement')),
                                   DataColumn(label: Text('Active until (IST)')),
                                   DataColumn(label: Text('Status')),
                                   DataColumn(
@@ -219,6 +220,9 @@ class _DealListViewState extends State<DealListView> {
                                         ),
                                       ),
                                       DataCell(Text('${deal.minimumQty}')),
+                                      DataCell(
+                                        Text(deal.settlementLabel ?? '—'),
+                                      ),
                                       DataCell(
                                         Text(
                                           deal.isExpiryDate
@@ -358,6 +362,13 @@ class _MobileDealItem extends StatelessWidget {
                     '₹${deal.sharePrice.toStringAsFixed(2)} (final)\nBase: ${deal.basePrice?.toStringAsFixed(2) ?? '—'}',
                   ),
                   _field(context, width, 'Min qty', '${deal.minimumQty}'),
+                  if (deal.settlementLabel != null)
+                    _field(
+                      context,
+                      width,
+                      'Settlement',
+                      deal.settlementLabel!,
+                    ),
                   _field(
                     context,
                     width,
@@ -505,11 +516,7 @@ class DealDeleteButton extends StatelessWidget {
                           Navigator.of(dialogContext).pop(true);
                         },
                   child: deleting
-                      ? const SizedBox(
-                          width: 18,
-                          height: 18,
-                          child: CircularProgressIndicator(strokeWidth: 2),
-                        )
+                      ? const Loader(size: 18)
                       : const Text('Delete'),
                 ),
               ],

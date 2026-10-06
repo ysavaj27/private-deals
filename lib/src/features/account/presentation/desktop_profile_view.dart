@@ -1,7 +1,7 @@
+import 'package:private_deals/src/features/account/presentation/profile_page_ctrl.dart';
+import 'package:private_deals/src/features/account/presentation/profile_photo_section.dart';
 import 'package:private_deals/src/features/wealth_manager/presentation/home_page_ctrl.dart';
 import 'package:private_deals/src/shared/app_exports.dart';
-
-import 'package:private_deals/src/features/account/presentation/profile_page_ctrl.dart';
 
 class DesktopProfileView extends StatelessWidget {
   final ProfilePageCtrl c = Get.find<ProfilePageCtrl>();
@@ -38,6 +38,18 @@ class DesktopProfileView extends StatelessWidget {
                 children: [
                   Text('Account', style: context.textTheme.titleMedium),
                   const SizedBox(height: 24),
+                  Obx(() => ProfilePhotoSection(controller: c)),
+                  Obx(() {
+                    if (c.error.value.isEmpty) return const SizedBox.shrink();
+                    return Padding(
+                      padding: const EdgeInsets.only(top: 12),
+                      child: Text(
+                        c.error.value,
+                        style: TextStyle(color: scheme.error),
+                      ),
+                    );
+                  }),
+                  const SizedBox(height: 28),
                   Row(
                     children: [
                       Expanded(

@@ -316,7 +316,7 @@ class DashboardPendingStrip extends StatelessWidget {
 
   void _open(PendingTaskEnum type) {
     final home = Get.find<HomePageCtrl>();
-    home.currentTab(WTabBarEnum.pendingTasks);
+    home.onTap(WTabBarEnum.pendingTasks);
     final taskCtrl = Get.put(KycPendingInvestorPageCtrl());
     taskCtrl.type(type);
   }

@@ -1,3 +1,4 @@
+import 'package:private_deals/src/shared/widgets/header_action.dart';
 import 'package:private_deals/src/app/routing/session_navigation.dart';
 import 'package:private_deals/src/features/wealth_manager/presentation/home_page_ctrl.dart';
 import 'package:private_deals/src/shared/app_exports.dart';
@@ -41,7 +42,7 @@ class CustomAppBar extends StatelessWidget {
         ),
       ),
       width: context.width,
-      padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 11),
+      padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
       child: Row(
         // mainAxisAlignment: MainAxisAlignment.end,
         children: [
@@ -87,63 +88,44 @@ class CustomAppBar extends StatelessWidget {
           // SizedBox(width: 10),
           WAppbarOptionSegmented(),
           const Spacer(),
-          Clickable(
-            onTap: onPressed,
-            // borderRadius: BorderRadius.circular(50),
-            child: CustomCardWidget(
-              radius: 12,
-              color: context.theme.scaffoldBackgroundColor,
-              child: Padding(
-                padding: const EdgeInsets.all(8.0),
-                child: Icon(
-                  Icons.notifications_outlined,
-                  color: context.theme.colorScheme.onSurfaceVariant,
-                ),
-              ),
-            ),
+          HeaderAction(
+            icon: Icons.notifications_outlined,
+            tooltip: 'Notifications',
+            onPressed: onPressed,
           ),
-          const SizedBox(width: 15),
+          const SizedBox(width: 12),
           Obx(() {
-            return Clickable(
-              onTap: () async {
+            final mode = init.themeModes();
+            return HeaderAction(
+              icon: mode == ThemeMode.light
+                  ? Icons.dark_mode_outlined
+                  : mode == ThemeMode.dark
+                  ? Icons.light_mode_outlined
+                  : Icons.brightness_auto_outlined,
+              tooltip: 'Change theme · currently ${mode.name}',
+              onPressed: () async {
                 await init.changeTheme();
                 if (init.themeModes() == ThemeMode.dark) {
                   await AppTheme.getTheme();
                 }
               },
-              // borderRadius: BorderRadius.circular(50),
-              child: CustomCardWidget(
-                radius: 12,
-                color: context.theme.scaffoldBackgroundColor,
-                child: Padding(
-                  padding: const EdgeInsets.all(8.0),
-                  child: SVGImage(
-                    icon,
-                    colorFilter: ColorFilter.mode(
-                      context.textTheme.titleMedium?.color ?? Colors.white,
-                      BlendMode.srcIn,
-                    ),
-                  ),
-                ),
-              ),
             );
           }),
-          const SizedBox(width: 15),
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 16),
+            child: SizedBox(
+              height: 24,
+              child: VerticalDivider(
+                width: 1,
+                thickness: 1,
+                color: context.theme.colorScheme.outlineVariant,
+              ),
+            ),
+          ),
           DropdownMenuWidget(),
         ],
       ),
     );
-  }
-
-  String get icon {
-    switch (init.themeModes()) {
-      case ThemeMode.light:
-        return AppAssets.darkModeBg;
-      case ThemeMode.system:
-        return AppAssets.lightModeBg;
-      case ThemeMode.dark:
-        return AppAssets.lightModeBg;
-    }
   }
 }
 
@@ -157,6 +139,15 @@ class DropdownMenuWidget extends StatelessWidget {
     return PopupMenuButton<MenuItemEnum>(
       // enabled: !context.isPhone,
       position: PopupMenuPosition.under,
+      tooltip: 'Account menu',
+      color: context.theme.colorScheme.surfaceContainer,
+      surfaceTintColor: Colors.transparent,
+      elevation: 8,
+      offset: const Offset(0, 8),
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(16),
+        side: BorderSide(color: context.theme.colorScheme.outlineVariant),
+      ),
       style: ButtonStyle(
         mouseCursor: WidgetStatePropertyAll(SystemMouseCursors.click),
       ),
@@ -262,42 +253,35 @@ class DropdownMenuWidget extends StatelessWidget {
           ),
         ),
       ],
-      child: Obx(() {
-        // logger.d("Logo :${app.user.startup.logoFile}");
-        return SizedBox(
-          height: 54,
-          width: 54,
-          child: app.wUser.profilePhoto.isEmpty
-              ? SVGImage(app.wUser.placeholderImage)
-              : CacheImage(
-                  imageBuilder: (p0, p1) {
-                    return Container(
-                      decoration: BoxDecoration(
-                        shape: BoxShape.circle,
-                        color: AppColors.logoBgColor(context),
-                        image: DecorationImage(image: p1, fit: BoxFit.contain),
-                      ),
-                    );
-                  },
-                  url: app.wUser.profile,
-                  errorWidget: (p0, p1, p2) {
-                    return DecoratedBox(
-                      decoration: BoxDecoration(
-                        shape: BoxShape.circle,
-                        color: AppColors.logoBgColor(context),
-                      ),
-                      child: SVGImage(app.wUser.placeholderImage),
-                    );
-                  },
-                ),
-        );
-
-        // return CircleAvatar(
-        //     radius: 27,
-        //     foregroundImage: CachedNetworkImageProvider(
-        //       app.user.photo,
-        //     ));
-      }),
+      child: Container(
+        width: 48,
+        height: 48,
+        padding: const EdgeInsets.all(4),
+        decoration: BoxDecoration(
+          color: context.theme.colorScheme.primaryContainer,
+          borderRadius: BorderRadius.circular(14),
+          border: Border.all(color: context.theme.colorScheme.outlineVariant),
+        ),
+        child: ClipRRect(
+          borderRadius: BorderRadius.circular(10),
+          child: Obx(() {
+            Widget fallback() => Center(
+              child: Icon(
+                Icons.person_outline_rounded,
+                color: context.theme.colorScheme.onPrimaryContainer,
+                size: 23,
+              ),
+            );
+            if (app.wUser.profilePhoto.isEmpty) return fallback();
+            return CacheImage(
+              url: app.wUser.profile,
+              placeHolderImage: app.wUser.placeholderImage,
+              fit: BoxFit.cover,
+              errorWidget: (_, _, _) => fallback(),
+            );
+          }),
+        ),
+      ),
     );
   }
 }

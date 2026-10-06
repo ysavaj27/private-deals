@@ -26,7 +26,6 @@ class DesktopHomePageView extends StatelessWidget {
               const SizedBox(height: 66),
               Expanded(
                 child: Stack(
-                  alignment: Alignment.centerLeft,
                   children: [
                     Row(
                       children: [
@@ -34,7 +33,13 @@ class DesktopHomePageView extends StatelessWidget {
                         Expanded(child: child ?? MainWidgets()),
                       ],
                     ),
-                    DSideBarWidget(),
+                    Positioned(
+                      left: 0,
+                      top: 0,
+                      bottom: 0,
+                      width: 260,
+                      child: DSideBarWidget(),
+                    ),
                   ],
                 ),
               ),

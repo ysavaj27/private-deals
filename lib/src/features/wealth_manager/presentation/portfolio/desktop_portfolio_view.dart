@@ -1,10 +1,9 @@
+import 'unlisted_portfolio_view.dart';
 import 'package:private_deals/src/features/wealth_manager/presentation/portfolio/primary_sell_share_dialog/primary_sell_share_dialog.dart';
 import 'package:private_deals/src/features/wealth_manager/presentation/portfolio/primary_sell_share_dialog/primary_sell_share_dialog_ctrl.dart';
 import 'package:private_deals/src/shared/app_exports.dart';
 
 import 'package:private_deals/src/features/wealth_manager/presentation/portfolio/portfolio_page_ctrl.dart';
-import 'package:private_deals/src/features/wealth_manager/presentation/portfolio/pre_ipo_sell_share_dialog/pre_ipo_sell_share_dialog.dart';
-import 'package:private_deals/src/features/wealth_manager/presentation/portfolio/pre_ipo_sell_share_dialog/pre_ipo_sell_share_dialog_ctrl.dart';
 
 class DesktopPortfolioView extends StatelessWidget {
   final PortfolioPageCtrl c = Get.find<PortfolioPageCtrl>();
@@ -25,6 +24,21 @@ class DesktopPortfolioView extends StatelessWidget {
               children: [
                 const TitleText("Portfolio"),
                 const Spacer(),
+                Visibility(
+                  visible: app.wUser.isPreIpoAccess,
+                  child: TabButton(
+                    title: "Unlisted",
+                    type: EquityTypeEnum.preIpo,
+                    onTap: () {
+                      c.changeTab(EquityTypeEnum.preIpo);
+                    },
+                    currentIndex: c.currentIndex,
+                  ),
+                ),
+                Visibility(
+                  visible: app.wUser.isPreIpoAccess,
+                  child: const SizedBox(width: 10),
+                ),
                 Visibility(
                   visible:
                       app.wUser.isPrimaryAccess || app.wUser.isSecondaryAccess,
@@ -77,17 +91,6 @@ class DesktopPortfolioView extends StatelessWidget {
                       app.wUser.isPrimaryAccess || app.wUser.isSecondaryAccess,
                   child: const SizedBox(width: 10),
                 ),
-                Visibility(
-                  visible: app.wUser.isPreIpoAccess,
-                  child: TabButton(
-                    title: "Unlisted Shares",
-                    type: EquityTypeEnum.preIpo,
-                    onTap: () {
-                      c.changeTab(EquityTypeEnum.preIpo);
-                    },
-                    currentIndex: c.currentIndex,
-                  ),
-                ),
               ],
             ),
             Visibility(
@@ -95,68 +98,67 @@ class DesktopPortfolioView extends StatelessWidget {
               child: const SizedBox(height: 10),
             ),
             const SizedBox(height: 8),
-            Row(
-              children: [
-                Expanded(child: Obx(() {
-                  return SearchBarTextField(
-                    onChanged: (p0) => c.search(p0),
-                    hintText: c.currentIndex() == EquityTypeEnum.preIpo
-                        ? "Search company's"
-                        : null,
-                  );
-                })),
-                SizedBox(width: 6),
-                Obx(() {
-                  return Visibility(
-                    visible: c.currentIndex.value != EquityTypeEnum.preIpo,
-                    child: InkWell(
-                      mouseCursor: SystemMouseCursors.click,
-                      onTap: () {
-                        showCustomDialog(PortfolioFilterWidget());
-                      },
-                      borderRadius: BorderRadius.circular(45),
-                      child: Container(
-                        height: 50,
-                        width: 50,
-                        decoration: BoxDecoration(
-                          shape: BoxShape.circle,
-                          border:
-                              Border.all(color: AppColors.borderColor(context)),
+            Obx(
+              () => c.currentIndex() == EquityTypeEnum.preIpo
+                  ? const SizedBox.shrink()
+                  : Row(
+                      children: [
+                        Expanded(
+                          child: Obx(() {
+                            return SearchBarTextField(
+                              onChanged: (p0) => c.search(p0),
+                              hintText:
+                                  c.currentIndex() == EquityTypeEnum.preIpo
+                                  ? "Search company's"
+                                  : null,
+                            );
+                          }),
                         ),
-                        child: Icon(
-                          Icons.filter_alt_outlined,
-                          color: context.theme.dividerColor,
-                        ),
-                      ),
+                        SizedBox(width: 6),
+                        Obx(() {
+                          return Visibility(
+                            visible:
+                                c.currentIndex.value != EquityTypeEnum.preIpo,
+                            child: InkWell(
+                              mouseCursor: SystemMouseCursors.click,
+                              onTap: () {
+                                showCustomDialog(PortfolioFilterWidget());
+                              },
+                              borderRadius: BorderRadius.circular(45),
+                              child: Container(
+                                height: 50,
+                                width: 50,
+                                decoration: BoxDecoration(
+                                  shape: BoxShape.circle,
+                                  border: Border.all(
+                                    color: AppColors.borderColor(context),
+                                  ),
+                                ),
+                                child: Icon(
+                                  Icons.filter_alt_outlined,
+                                  color: context.theme.dividerColor,
+                                ),
+                              ),
+                            ),
+                          );
+                        }),
+                      ],
                     ),
-                  );
-                }),
-              ],
             ),
             Expanded(
               child: Obx(() {
                 if (c.isLoading.isFalse) {
                   if (c.currentIndex() == EquityTypeEnum.preIpo) {
-                    List<PreIPOPortfolioListModel> list = [];
-                    if (c.isSearching.isFalse) {
-                      list = c.preIpoList;
-                    } else {
-                      list = c.preIpoSearchList;
-                    }
-                    if (list.isNotEmpty) {
-                      return PreIPOPortfolioWidget(
-                          list: list, onRefresh: c.getStartupPortfolio);
-                    } else {
-                      return NoDataView(
-                        onPressed: c.getStartupPortfolio,
-                        isRefreshButton: c.isSearching.isTrue ? false : true,
-                      );
-                    }
+                    return UnlistedPortfolioView(
+                      list: c.preIpoList.toList(),
+                      onRefresh: c.getStartupPortfolio,
+                    );
                   } else {
                     if (c.startUpList.isNotEmpty) {
                       return StartUpPortfolioWidget(
-                          onRefresh: c.getStartupPortfolio,
-                          list: c.startUpList);
+                        onRefresh: c.getStartupPortfolio,
+                        list: c.startUpList,
+                      );
                     } else {
                       return NoDataView(
                         onPressed: c.getStartupPortfolio,
@@ -574,359 +576,6 @@ class StartUpPortfolioCard extends StatelessWidget {
                         const SizedBox(height: 8),
                         Text(
                           model.availableShares.formattedDecimal,
-                          style: const TextStyle(
-                            fontSize: 16,
-                            fontWeight: FontWeight.w500,
-                          ),
-                        ),
-                      ],
-                    ),
-                    Column(
-                      children: [
-                        Text(
-                          "Current Share Price",
-                          style: TextStyle(
-                            fontSize: 16,
-                            color: context.theme.disabledColor,
-                          ),
-                        ),
-                        const SizedBox(height: 8),
-                        Text(
-                          model.currentSharePrice.toCurrency,
-                          style: const TextStyle(
-                            fontSize: 16,
-                            fontWeight: FontWeight.w500,
-                          ),
-                        ),
-                      ],
-                    ),
-                    Column(
-                      children: [
-                        Text(
-                          "Avg share price",
-                          style: TextStyle(
-                            fontSize: 16,
-                            color: context.theme.disabledColor,
-                          ),
-                        ),
-                        const SizedBox(height: 8),
-                        SizedBox(
-                          child: Text(
-                            model.purchasePrice.toCurrency,
-                            maxLines: 1,
-                            style: const TextStyle(
-                              fontSize: 16,
-                              fontWeight: FontWeight.w500,
-                            ),
-                          ),
-                        ),
-                      ],
-                    ),
-                  ],
-                ),
-              ),
-            ),
-            const SizedBox(height: 13),
-            CustomCardWidget(
-              radius: 6,
-              child: Padding(
-                padding: const EdgeInsets.fromLTRB(15, 16, 33, 16),
-                child: Column(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
-                        Text(
-                          "Amount Invested",
-                          style: TextStyle(
-                              color: context.theme.disabledColor, fontSize: 16),
-                        ),
-                        Text(
-                          model.investmentAmount.toCurrency,
-                          style: const TextStyle(
-                              fontSize: 18, fontWeight: FontWeight.w500),
-                        ),
-                      ],
-                    ),
-                    const SizedBox(height: 20),
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
-                        Text(
-                          "Increase/Decrease (Amt)",
-                          style: TextStyle(
-                              color: context.theme.disabledColor, fontSize: 16),
-                        ),
-                        Text(
-                          model.profitAmount.toCurrency,
-                          style: TextStyle(
-                              fontSize: 18,
-                              color: model.profitColor,
-                              fontWeight: FontWeight.w500),
-                        ),
-                      ],
-                    ),
-                    SizedBox(height: 20),
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
-                        Text(
-                          "Increase/Decrease(%)",
-                          style: TextStyle(
-                              color: context.theme.disabledColor, fontSize: 16),
-                        ),
-                        Text(
-                          model.profitPercentage,
-                          style: TextStyle(
-                              fontSize: 18,
-                              color: model.profitColor,
-                              fontWeight: FontWeight.w500),
-                        ),
-                      ],
-                    ),
-                  ],
-                ),
-              ),
-            )
-          ],
-        ),
-      ),
-    );
-  }
-}
-
-class PreIPOPortfolioWidget extends StatelessWidget {
-  final List<PreIPOPortfolioListModel> list;
-  final Future<void> Function() onRefresh;
-
-  const PreIPOPortfolioWidget(
-      {super.key, required this.list, required this.onRefresh});
-
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      decoration: BoxDecoration(
-        color: context.theme.scaffoldBackgroundColor,
-        borderRadius: BorderRadius.circular(5),
-      ),
-      child: Obx(() {
-        if (list.isNotEmpty) {
-          return ListView.separated(
-            padding: const EdgeInsets.symmetric(vertical: 20),
-            physics: const BouncingScrollPhysics(),
-            itemCount: list.length,
-            itemBuilder: (context, index) {
-              var model = list[index];
-              return ExpansionTile(
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(20),
-                  side: BorderSide(color: AppColors.borderColor(context)),
-                ),
-                collapsedShape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(20),
-                  side: BorderSide(color: AppColors.borderColor(context)),
-                ),
-                childrenPadding: const EdgeInsets.fromLTRB(20, 20, 40, 20),
-                textColor: context.textTheme.titleMedium?.color,
-                collapsedTextColor: context.textTheme.titleMedium?.color,
-                iconColor: context.iconColor,
-                collapsedIconColor: context.iconColor,
-                collapsedBackgroundColor: context.theme.scaffoldBackgroundColor,
-                dense: false,
-                tilePadding: const EdgeInsets.fromLTRB(20, 20, 40, 20),
-                backgroundColor: context.theme.scaffoldBackgroundColor,
-                visualDensity: VisualDensity.comfortable,
-                expandedCrossAxisAlignment: CrossAxisAlignment.start,
-                leading: LogoImage(
-                  url: model.investor.profilePhoto,
-                  height: 50,
-                  width: 50,
-                  radius: 25, // circular for a profile photo
-                ),
-                title: Row(
-                  children: [
-                    Expanded(
-                      flex: 3,
-                      child: Text(
-                        model.investor.name,
-                        style: const TextStyle(
-                          fontSize: 18,
-                          fontWeight: FontWeight.w600,
-                        ),
-                      ),
-                    ),
-                    Expanded(
-                      flex: 2,
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Row(
-                            mainAxisAlignment: MainAxisAlignment.start,
-                            children: [
-                              Text(
-                                "Companies :  ",
-                                style: TextStyle(
-                                  fontSize: 14,
-                                  color: context.theme.disabledColor,
-                                ),
-                              ),
-                              Text("${model.totalCompanyCount}"),
-                            ],
-                          ),
-                          Row(
-                            mainAxisAlignment: MainAxisAlignment.start,
-                            children: [
-                              Text(
-                                "Total Investment :  ",
-                                style: TextStyle(
-                                  fontSize: 14,
-                                  color: context.theme.disabledColor,
-                                ),
-                              ),
-                              Text(model.totalInvestmentAmount.toCurrency),
-                            ],
-                          ),
-                        ],
-                      ),
-                    ),
-                  ],
-                ),
-                children: [
-                  ...model.holdings.map((e) =>
-                      PreIPOPortfolioCard(model: e, onRefresh: onRefresh))
-                ],
-              );
-            },
-            separatorBuilder: (BuildContext context, int index) =>
-                const SizedBox(height: 10),
-          );
-        } else {}
-        return NoDataView(onPressed: onRefresh);
-      }),
-    );
-  }
-}
-
-class PreIPOPortfolioCard extends StatelessWidget {
-  final PreIPOPortfolioModel model;
-  final Future<void> Function() onRefresh;
-
-  const PreIPOPortfolioCard(
-      {super.key, required this.model, required this.onRefresh});
-
-  @override
-  Widget build(BuildContext context) {
-    return CustomCardWidget(
-      margin: const EdgeInsets.symmetric(vertical: 13),
-      radius: 20,
-      child: Padding(
-        padding: const EdgeInsets.fromLTRB(37, 6, 37, 38),
-        child: Column(
-          children: [
-            Row(
-              children: [
-                LogoImage(
-                  url: model.company.logo,
-                  height: 75,
-                  width: 75,
-                  radius: 4,
-                ),
-                const SizedBox(width: 15),
-                Expanded(
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(
-                        model.company.brandName,
-                        style: const TextStyle(
-                            fontWeight: FontWeight.w600, fontSize: 20),
-                      ),
-                      Text(
-                        model.investor.name,
-                        style: const TextStyle(
-                          fontWeight: FontWeight.w500,
-                          fontSize: 16,
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-                Column(
-                  children: [
-                    Visibility(
-                      visible: model.onSellShares != 0,
-                      child: Row(
-                        children: [
-                          Container(
-                            height: 12,
-                            width: 12,
-                            decoration: const BoxDecoration(
-                              color: Colors.green,
-                              shape: BoxShape.circle,
-                            ),
-                          ),
-                          const SizedBox(width: 5),
-                          Text(
-                            "${model.onSellShares.toInt()} Share On Sell",
-                            style: TextStyle(
-                              fontSize: 12,
-                              fontWeight: FontWeight.w600,
-                              color: context.theme.colorScheme.onSurfaceVariant,
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
-                    const SizedBox(height: 6),
-                    Visibility(
-                      visible: model.isAvailableShare,
-                      child: CustomElevatedButton(
-                        onPressed: () async {
-                          // logger.d(model.toJson());
-                          var res = await showCustomDialog(
-                              PreIPOSellShareDialog(model));
-                          Get.delete<PreIPOSellShareDialogCtrl>();
-                          if (res == true) {
-                            onRefresh();
-                          }
-                        },
-                        text: 'Sell',
-                        size: const Size(150, 44),
-                        style: const TextStyle(
-                            fontSize: 18, fontWeight: FontWeight.w600),
-                        // width: 187,
-                        // height: 44,
-                        radius: 14,
-                      ),
-                    ),
-                  ],
-                ),
-              ],
-            ),
-            const SizedBox(
-              height: 23,
-            ),
-            CustomCardWidget(
-              radius: 6,
-              child: Padding(
-                padding: const EdgeInsets.symmetric(vertical: 29),
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceAround,
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Column(
-                      children: [
-                        Text(
-                          "Shares",
-                          style: TextStyle(
-                            fontSize: 16,
-                            color: context.theme.disabledColor,
-                          ),
-                        ),
-                        const SizedBox(height: 8),
-                        Text(
-                          model.shares.formattedDecimal,
                           style: const TextStyle(
                             fontSize: 16,
                             fontWeight: FontWeight.w500,

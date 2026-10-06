@@ -15,20 +15,23 @@ class CmlDocument {
         String.fromCharCodes(bytes.take(5)) != '%PDF-') {
       throw const FormatException('Choose a valid PDF document.');
     }
-    if (bytes.length > 10 * 1024 * 1024)
+    if (bytes.length > 10 * 1024 * 1024) {
       throw const FormatException('CML must be 10 MB or smaller.');
+    }
   }
 }
 
 class CmlApi {
   static const base = 'v2/business/investor/kyc/cml';
-  static const requiredFields = ['dp_id', 'client_id', 'pan_no', 'name'];
-  static const optionalFields = [
+  static const requiredFields = [
+    'dp_id',
+    'client_id',
+    'pan_no',
+    'name',
     'account_number',
     'ifsc_code',
-    'bank_name',
-    'dob',
   ];
+  static const optionalFields = ['bank_name', 'dob'];
   static bool isSelf(InvestorModel investor) =>
       investor.isSelf ||
       (app.wUser.selfInvestorId != null &&
@@ -41,7 +44,11 @@ class CmlApi {
       document.validate();
       final response = await dioConfig.post('$base/read', {
         'investor_id': investorId,
-        'cml': MultipartFile.fromBytes(document.bytes, filename: document.name),
+        'cml': MultipartFile.fromBytes(
+          document.bytes,
+          filename: document.name,
+          contentType: DioMediaType('application', 'pdf'),
+        ),
       }, false);
       return BaseModel.fromJson(response.data, (data) => data);
     } catch (e) {
@@ -54,11 +61,10 @@ class CmlApi {
     Map<String, String> fields,
     CmlDocument? document,
   ) async {
-    if (isSelf(investor))
-      return BaseModel.fromError('Saving your own CML is not available yet.');
     try {
-      if (requiredFields.any((field) => (fields[field] ?? '').trim().isEmpty))
+      if (requiredFields.any((field) => (fields[field] ?? '').trim().isEmpty)) {
         throw const FormatException('Complete all required fields.');
+      }
       document?.validate();
       final payload = <String, dynamic>{
         'investor_id': investor.id,
@@ -69,6 +75,7 @@ class CmlApi {
           'cml_file': MultipartFile.fromBytes(
             document.bytes,
             filename: document.name,
+            contentType: DioMediaType('application', 'pdf'),
           ),
       };
       final response = await dioConfig.post('$base/save', payload, false);

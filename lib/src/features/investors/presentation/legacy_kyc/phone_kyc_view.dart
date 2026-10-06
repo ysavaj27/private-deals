@@ -169,7 +169,7 @@ class MainWidget extends StatelessWidget {
                       ),
                       const SizedBox(height: 18),
                       Text(
-                        "Address :${app.iUser.address}",
+                        "Email :${app.iUser.email.isEmpty ? '—' : app.iUser.email}",
                         style: const TextStyle(
                           fontSize: 12,
                           fontWeight: FontWeight.w400,

@@ -9,6 +9,8 @@ class DealModel {
   double sharePrice;
   double? basePrice;
   double minimumQty;
+  int? settlementDays;
+  String? settlementLabel;
   double processingFeePercentage;
   String status;
   bool isHotDeal;
@@ -27,6 +29,8 @@ class DealModel {
 
   String get priceLabel => isBuyDeal ? 'Offer price' : 'Share price';
 
+  bool get isUnlisted => company.type.toLowerCase() == 'unlisted';
+
   DealModel({
     this.uuid = "",
     this.dealType = "",
@@ -34,6 +38,8 @@ class DealModel {
     this.sharePrice = 0.0,
     this.basePrice,
     this.minimumQty = 0.0,
+    this.settlementDays,
+    this.settlementLabel,
     this.processingFeePercentage = 0.0,
     this.status = "",
     this.isHotDeal = false,
@@ -45,6 +51,9 @@ class DealModel {
        company = company ?? LiteCompanyModel();
 
   factory DealModel.fromJson(Map<String, dynamic> json) {
+    final days = json['settlement_days'];
+    final parsedDays = days == null ? null : Parse.toInt(days);
+    final label = Parse.toStrings(json['settlement_label']);
     return DealModel(
       uuid: Parse.toStrings(json['uuid']),
       dealType: Parse.toStrings(json['deal_type']),
@@ -52,6 +61,8 @@ class DealModel {
       sharePrice: Parse.toDouble(json['share_price']),
       basePrice: double.tryParse(json['base_price']?.toString() ?? ''),
       minimumQty: Parse.toDouble(json['minimum_qty']),
+      settlementDays: parsedDays == 0 ? null : parsedDays,
+      settlementLabel: label.isEmpty ? null : label,
       processingFeePercentage: Parse.toDouble(
         json['processing_fee_percentage'],
       ),
@@ -74,6 +85,8 @@ class DealModel {
       "share_price": sharePrice,
       "base_price": basePrice,
       "minimum_qty": minimumQty,
+      "settlement_days": settlementDays,
+      "settlement_label": settlementLabel,
       "processing_fee_percentage": processingFeePercentage,
       "status": status,
       "is_hot_deal": isHotDeal,

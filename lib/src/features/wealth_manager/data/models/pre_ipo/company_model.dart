@@ -522,6 +522,8 @@ class DealModel {
   final int availableQuantity;
   final double sharePrice;
   final int minimumQty;
+  final int? settlementDays;
+  final String? settlementLabel;
   final double processingFeePercentage;
   final String status;
 
@@ -536,6 +538,8 @@ class DealModel {
     this.availableQuantity = 0,
     this.sharePrice = 0,
     this.minimumQty = 0,
+    this.settlementDays,
+    this.settlementLabel,
     this.processingFeePercentage = 0,
     this.status = '',
   });
@@ -551,6 +555,8 @@ class DealModel {
     int? availableQuantity,
     double? sharePrice,
     int? minimumQty,
+    int? settlementDays,
+    String? settlementLabel,
     double? processingFeePercentage,
     String? status,
   }) {
@@ -565,6 +571,8 @@ class DealModel {
       availableQuantity: availableQuantity ?? this.availableQuantity,
       sharePrice: sharePrice ?? this.sharePrice,
       minimumQty: minimumQty ?? this.minimumQty,
+      settlementDays: settlementDays ?? this.settlementDays,
+      settlementLabel: settlementLabel ?? this.settlementLabel,
       processingFeePercentage:
           processingFeePercentage ?? this.processingFeePercentage,
       status: status ?? this.status,
@@ -572,9 +580,12 @@ class DealModel {
   }
 
   factory DealModel.fromJson(Map<String, dynamic> json) {
+    final days = json['settlement_days'];
+    final parsedDays = days == null ? null : Parse.toInt(days);
+    final label = Parse.toStrings(json['settlement_label']);
     return DealModel(
-      id: Parse.toInt(json['id']),
-      seller: SharePriceSellerModel.fromJson(json['seller'] ?? {}),
+      id: Parse.toInt(json['id'] ?? json['deal_id']),
+      seller: SharePriceSellerModel.fromJson(_resolveDealSeller(json)),
       dealType: Parse.toStrings(json['deal_type']),
       expiredAt: Parse.toStrings(json['expired_at']),
       isHotDeal: Parse.toBool(json['is_hot_deal']),
@@ -583,10 +594,30 @@ class DealModel {
       availableQuantity: Parse.toInt(json['available_quantity']),
       sharePrice: Parse.toDouble(json['share_price']),
       minimumQty: Parse.toInt(json['minimum_qty']),
+      settlementDays: parsedDays == 0 ? null : parsedDays,
+      settlementLabel: label.isEmpty ? null : label,
       processingFeePercentage:
           Parse.toDouble(json['processing_fee_percentage']),
       status: Parse.toStrings(json['status']),
     );
+  }
+
+  /// Prefer [seller] when it has identity; otherwise fall back to [partner].
+  /// APIs often send `"seller": null` / `{}` with the real profile under partner.
+  static Map<String, dynamic> _resolveDealSeller(Map<String, dynamic> json) {
+    final seller = json['seller'] is Map
+        ? Map<String, dynamic>.from(json['seller'] as Map)
+        : <String, dynamic>{};
+    final partner = json['partner'] is Map
+        ? Map<String, dynamic>.from(json['partner'] as Map)
+        : <String, dynamic>{};
+
+    final sellerHasIdentity = Parse.toInt(seller['id']) > 0 ||
+        Parse.toStrings(seller['company_name'] ?? seller['name']).isNotEmpty ||
+        Parse.toStrings(seller['logo'] ?? seller['profile_photo']).isNotEmpty;
+    if (sellerHasIdentity) return seller;
+    if (partner.isNotEmpty) return partner;
+    return seller;
   }
 
   Map<String, dynamic> toJson() {
@@ -601,6 +632,8 @@ class DealModel {
       'available_quantity': availableQuantity,
       'share_price': sharePrice,
       'minimum_qty': minimumQty,
+      'settlement_days': settlementDays,
+      'settlement_label': settlementLabel,
       'processing_fee_percentage': processingFeePercentage,
       'status': status,
     };
@@ -643,26 +676,109 @@ class SellerSharePriceModel {
       };
 }
 
+/// Public Institution/seller profile strings from company detail deals.
+/// Every value is a string; `""` means not filled in. Do not parse as numbers.
+class PartnerPublicProfile {
+  final String yearsOfExperience;
+  final String totalTradesExecuted;
+  final String totalInvestorBase;
+  final String verifiedStatus;
+  final String companiesPreviouslyListed;
+  final String geographicPresence;
+  final String approach;
+
+  const PartnerPublicProfile({
+    this.yearsOfExperience = '',
+    this.totalTradesExecuted = '',
+    this.totalInvestorBase = '',
+    this.verifiedStatus = '',
+    this.companiesPreviouslyListed = '',
+    this.geographicPresence = '',
+    this.approach = '',
+  });
+
+  bool get isEmpty =>
+      yearsOfExperience.isEmpty &&
+      totalTradesExecuted.isEmpty &&
+      totalInvestorBase.isEmpty &&
+      verifiedStatus.isEmpty &&
+      companiesPreviouslyListed.isEmpty &&
+      geographicPresence.isEmpty &&
+      approach.isEmpty;
+
+  bool get hasStats =>
+      yearsOfExperience.isNotEmpty ||
+      totalTradesExecuted.isNotEmpty ||
+      totalInvestorBase.isNotEmpty;
+
+  factory PartnerPublicProfile.fromJson(Map<String, dynamic>? json) {
+    if (json == null) return const PartnerPublicProfile();
+    return PartnerPublicProfile(
+      yearsOfExperience: Parse.toStrings(json['years_of_experience']).trim(),
+      totalTradesExecuted: Parse.toStrings(json['total_trades_executed']).trim(),
+      totalInvestorBase: Parse.toStrings(json['total_investor_base']).trim(),
+      verifiedStatus: Parse.toStrings(json['verified_status']).trim(),
+      companiesPreviouslyListed:
+          Parse.toStrings(json['companies_previously_listed']).trim(),
+      geographicPresence: Parse.toStrings(json['geographic_presence']).trim(),
+      approach: Parse.toStrings(json['approach']).trim(),
+    );
+  }
+
+  Map<String, dynamic> toJson() => {
+        'years_of_experience': yearsOfExperience,
+        'total_trades_executed': totalTradesExecuted,
+        'total_investor_base': totalInvestorBase,
+        'verified_status': verifiedStatus,
+        'companies_previously_listed': companiesPreviouslyListed,
+        'geographic_presence': geographicPresence,
+        'approach': approach,
+      };
+}
+
 class SharePriceSellerModel {
   final int id;
   final String uuid;
   final String companyName;
   final String logo;
+  final PartnerPublicProfile profile;
 
-  const SharePriceSellerModel(
-      {this.id = 0, this.uuid = '', this.companyName = '', this.logo = ''});
+  const SharePriceSellerModel({
+    this.id = 0,
+    this.uuid = '',
+    this.companyName = '',
+    this.logo = '',
+    this.profile = const PartnerPublicProfile(),
+  });
+
+  /// Absolute URLs stay as-is; relative paths get the S3/base prefix.
+  static String resolveLogo(dynamic value) {
+    final raw = Parse.toStrings(value);
+    if (raw.isEmpty) return '';
+    if (raw.startsWith('http://') || raw.startsWith('https://')) return raw;
+    return Parse.parseUrl(raw);
+  }
 
   factory SharePriceSellerModel.fromJson(Map<String, dynamic> json) =>
       SharePriceSellerModel(
-          id: Parse.toInt(json['id']),
-          uuid: Parse.toStrings(json['uuid']),
-          companyName: Parse.toStrings(json['company_name']),
-          logo: Parse.toStrings(json['logo']));
+        id: Parse.toInt(json['id']),
+        uuid: Parse.toStrings(json['uuid']),
+        companyName: Parse.toStrings(
+          json['company_name'] ?? json['name'],
+        ),
+        logo: resolveLogo(json['logo'] ?? json['profile_photo']),
+        profile: PartnerPublicProfile.fromJson(
+          json['profile'] is Map
+              ? Map<String, dynamic>.from(json['profile'] as Map)
+              : null,
+        ),
+      );
 
   Map<String, dynamic> toJson() => {
         'id': id,
         'uuid': uuid,
         'company_name': companyName,
         'logo': logo,
+        'profile': profile.toJson(),
       };
 }

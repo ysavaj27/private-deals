@@ -15,11 +15,12 @@ class PSideBarWidget extends StatelessWidget {
       height: context.height,
       width: 271,
       decoration: BoxDecoration(
-          color: context.theme.colorScheme.surfaceContainerLow,
-          borderRadius: const BorderRadius.only(
-            topRight: Radius.circular(20),
-            bottomRight: Radius.circular(20),
-          )),
+        color: context.theme.colorScheme.surfaceContainerLow,
+        borderRadius: const BorderRadius.only(
+          topRight: Radius.circular(20),
+          bottomRight: Radius.circular(20),
+        ),
+      ),
       child: Column(
         children: [
           // SizedBox(height: 20),
@@ -27,9 +28,11 @@ class PSideBarWidget extends StatelessWidget {
             height: 19,
             width: Get.width,
             decoration: BoxDecoration(
-                color: context.theme.colorScheme.surfaceContainerLow,
-                borderRadius:
-                    const BorderRadius.only(topRight: Radius.circular(16))),
+              color: context.theme.colorScheme.surfaceContainerLow,
+              borderRadius: const BorderRadius.only(
+                topRight: Radius.circular(16),
+              ),
+            ),
           ),
           // SizedBox(height: 10),
           Expanded(
@@ -89,6 +92,12 @@ class PSideBarWidget extends StatelessWidget {
                   ),
                   const SizedBox(height: 5),
                   PTabTileWidget(
+                    icon: AppAssets.sendDocumentsIc,
+                    title: 'My Inquiries',
+                    tab: WTabBarEnum.myInquiries,
+                  ),
+                  const SizedBox(height: 5),
+                  PTabTileWidget(
                     icon: AppAssets.pendingKycIc,
                     title: 'Pending Task',
                     tab: WTabBarEnum.pendingTasks,
@@ -96,7 +105,8 @@ class PSideBarWidget extends StatelessWidget {
                   const SizedBox(height: 5),
                   Obx(() {
                     return Visibility(
-                      visible: app.wUser.isPrimaryAccess ||
+                      visible:
+                          app.wUser.isPrimaryAccess ||
                           app.wUser.isSecondaryAccess,
                       child: PTabTileWidget(
                         icon: AppAssets.sendDocumentsIc,
@@ -107,14 +117,16 @@ class PSideBarWidget extends StatelessWidget {
                   }),
                   Obx(() {
                     return Visibility(
-                      visible: app.wUser.isPrimaryAccess ||
+                      visible:
+                          app.wUser.isPrimaryAccess ||
                           app.wUser.isSecondaryAccess,
                       child: const SizedBox(height: 5),
                     );
                   }),
                   Obx(() {
                     return Visibility(
-                      visible: app.wUser.isPrimaryAccess ||
+                      visible:
+                          app.wUser.isPrimaryAccess ||
                           app.wUser.isSecondaryAccess,
                       child: PTabTileWidget(
                         icon: AppAssets.misIc,
@@ -125,14 +137,14 @@ class PSideBarWidget extends StatelessWidget {
                   }),
                   Obx(() {
                     return Visibility(
-                      visible: app.wUser.isPrimaryAccess ||
+                      visible:
+                          app.wUser.isPrimaryAccess ||
                           app.wUser.isSecondaryAccess,
                       child: const SizedBox(height: 5),
                     );
                   }),
                   Visibility(
-                    visible: app.wUser.type !=
-                        'Relation Manager',
+                    visible: app.wUser.type != 'Relation Manager',
                     child: PTabTileWidget(
                       icon: AppAssets.distributorsIc,
                       title: 'Channel Partner',
@@ -162,9 +174,11 @@ class PSideBarWidget extends StatelessWidget {
             height: 19,
             width: Get.width,
             decoration: BoxDecoration(
-                color: context.theme.colorScheme.surfaceContainerLow,
-                borderRadius:
-                    const BorderRadius.only(bottomRight: Radius.circular(16))),
+              color: context.theme.colorScheme.surfaceContainerLow,
+              borderRadius: const BorderRadius.only(
+                bottomRight: Radius.circular(16),
+              ),
+            ),
           ),
         ],
       ),
@@ -193,9 +207,13 @@ class PTabTileWidget extends StatelessWidget {
     return SizedBox(
       height: 50,
       child: Obx(() {
-        if (SessionNavigation.check('/wealth-manager/${tab.slug}') != AccessResult.allowed) return const SizedBox.shrink();
-        if (SessionNavigation.check('/wealth-manager/${tab.slug}') != AccessResult.allowed) return const SizedBox.shrink();
-      bool isSelected = c.currentTab() == tab;
+        if (SessionNavigation.check('/wealth-manager/${tab.slug}') !=
+            AccessResult.allowed)
+          return const SizedBox.shrink();
+        if (SessionNavigation.check('/wealth-manager/${tab.slug}') !=
+            AccessResult.allowed)
+          return const SizedBox.shrink();
+        bool isSelected = c.currentTab() == tab;
         return Row(
           children: [
             AnimatedContainer(
@@ -211,7 +229,8 @@ class PTabTileWidget extends StatelessWidget {
             Expanded(
               child: InkWell(
                 mouseCursor: SystemMouseCursors.click,
-                onTap: onTap ??
+                onTap:
+                    onTap ??
                     () {
                       Get.back();
                       c.onTap(tab);
@@ -257,10 +276,11 @@ class PTabTileWidget extends StatelessWidget {
                         height: 24,
                         width: 24,
                         colorFilter: ColorFilter.mode(
-                            isSelected
-                                ? context.theme.colorScheme.onPrimaryContainer
-                                : context.theme.colorScheme.onSurfaceVariant,
-                            BlendMode.srcIn),
+                          isSelected
+                              ? context.theme.colorScheme.onPrimaryContainer
+                              : context.theme.colorScheme.onSurfaceVariant,
+                          BlendMode.srcIn,
+                        ),
                       ),
                       // Icon(
                       //   icon,
@@ -288,10 +308,14 @@ class PTabTileWidget extends StatelessWidget {
                                       fontSize: 14,
                                       // fontSize: isSelected ? 14 : 12,
                                       color: isSelected
-                                          ? context.theme.colorScheme
-                                              .onPrimaryContainer
-                                          : context.theme.colorScheme
-                                              .onSurfaceVariant,
+                                          ? context
+                                                .theme
+                                                .colorScheme
+                                                .onPrimaryContainer
+                                          : context
+                                                .theme
+                                                .colorScheme
+                                                .onSurfaceVariant,
                                     ),
                                   ),
                                 );
@@ -387,7 +411,7 @@ class LogoutWidget extends StatelessWidget {
                           color: context.theme.colorScheme.onSurfaceVariant,
                         ),
                       ),
-                    )
+                    ),
                   ],
                 ),
               ),

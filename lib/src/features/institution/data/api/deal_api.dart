@@ -14,12 +14,14 @@ class DealApi {
     CompanyType type = CompanyType.all,
     int companyId = 0,
     required int skip,
+    required bool isHotDeal,
   }) async {
     try {
       final Map<String, dynamic> body = {
         "skip": skip,
         "take": 20,
         "type": type.value,
+        "is_hot_deal": isHotDeal ? 1 : 0,
       };
       body.addAllIf(search.isNotEmpty, {"search": search});
       body.addAllIf(companyId.isNotEmpty, {"company_id": companyId});

@@ -74,101 +74,19 @@ class PSideBarWidget extends StatelessWidget {
             title: 'Dashboard',
             tab: WTabBarEnum.dashboard,
           ),
+          const DUnlistedMenu(),
+          const DLpSecondaryMenu(),
+          const DDealOfTheDayMenu(),
           DTabTileWidget(
-            icon: Icons.business_outlined,
-            title: 'Unlisted Companies',
-            tab: WTabBarEnum.preIPOList,
-          ),
-          DTabTileWidget(
-            icon: Icons.swap_horiz_rounded,
-            title: 'LP Secondary Companies',
-            tab: WTabBarEnum.secondaryList,
-          ),
-          const DHotDealsMenu(),
-          DTabTileWidget(
-            icon: Icons.currency_rupee,
-            title: 'Update Unlisted Share Price',
-            tab: WTabBarEnum.priceUpdate,
+            icon: Icons.receipt_long_outlined,
+            title: 'Transactions',
+            tab: WTabBarEnum.preIPOTransactions,
           ),
           DTabTileWidget(
             icon: Icons.sell_outlined,
-            title: 'Sell Enquiries',
+            title: 'Inquiry',
             tab: WTabBarEnum.sellEnquiries,
           ),
-          // const SizedBox(height: 4),
-          const DTransactionsMenu(),
-          const SizedBox(height: 8),
-          DTabTileWidget(
-            icon: Icons.people_outline,
-            title: 'Investors & CML',
-            tab: WTabBarEnum.investors,
-          ),
-          // Padding(
-          //   padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 18),
-          //   child: Divider(height: 1, color: muted.withValues(alpha: 0.35)),
-          // ),
-          // Padding(
-          //   padding: const EdgeInsets.only(left: 14, bottom: 10),
-          //   child: Text(
-          //     'ACCOUNT',
-          //     style: TextStyle(
-          //       color: muted,
-          //       fontSize: 10,
-          //       fontWeight: FontWeight.w600,
-          //       letterSpacing: 1.6,
-          //     ),
-          //   ),
-          // ),
-          // DTabTileWidget(
-          //   icon: Icons.person_outline_rounded,
-          //   title: 'Profile',
-          //   tab: WTabBarEnum.profile,
-          // ),
-          // DTabTileWidget(
-          //   icon: Icons.lock_outline,
-          //   title: 'Change Password',
-          //   tab: WTabBarEnum.changePassword,
-          // ),
-          // DActionTileWidget(
-          //   icon: Icons.delete_outline,
-          //   title: 'Delete Account',
-          //   destructive: true,
-          //   onTap: () {
-          //     Navigator.of(context).pop();
-          //     WidgetsBinding.instance.addPostFrameCallback((_) {
-          //       showCustomDialog(
-          //         DeleteAccountDialog(
-          //           title: 'Permanently Delete',
-          //           onDelete: () async {
-          //             Get.back();
-          //             await WAuthApi.deleteAccount();
-          //             await app.setUser(prefUser: {});
-          //             await Get.offAllNamed(Routes.signIn);
-          //           },
-          //         ),
-          //       );
-          //     });
-          //   },
-          // ),
-          // DActionTileWidget(
-          //   icon: Icons.logout,
-          //   title: 'Logout',
-          //   onTap: () {
-          //     Navigator.of(context).pop();
-          //     WidgetsBinding.instance.addPostFrameCallback((_) {
-          //       showCustomDialog(
-          //         LogoutDialog(
-          //           onPressed: () async {
-          //             Get.back();
-          //             await WAuthApi.logout();
-          //             await app.setUser(prefUser: {});
-          //             await Get.offAllNamed(Routes.signIn);
-          //           },
-          //         ),
-          //       );
-          //     });
-          //   },
-          // ),
         ],
       ),
     );

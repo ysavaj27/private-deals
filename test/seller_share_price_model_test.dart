@@ -28,9 +28,26 @@ void main() {
       expect(slot.totalQty, 0);
       expect(slot.seller.id, 18);
       expect(slot.seller.companyName, 'Test/Person Account');
-      final normalized = {...json, 'buy_price': 0.0, 'total_qty': 0};
+      final normalized = {
+        ...json,
+        'buy_price': 0.0,
+        'total_qty': 0,
+        'seller': {
+          ...json['seller'] as Map<String, dynamic>,
+          'profile': {
+            'years_of_experience': '',
+            'total_trades_executed': '',
+            'total_investor_base': '',
+            'verified_status': '',
+            'companies_previously_listed': '',
+            'geographic_presence': '',
+            'approach': '',
+          },
+        },
+      };
       expect(slot.toJson(), normalized);
       expect(company.toJson()['seller_share_prices'], [normalized]);
+      expect(slot.seller.profile.isEmpty, isTrue);
     },
   );
 

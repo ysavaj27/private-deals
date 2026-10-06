@@ -30,7 +30,7 @@ class SecondaryTransactionDialogCtrl extends GetxController {
 
   double get payableAmount => investmentAmount + processingFees;
 
-// Function to decrement the sell quantity
+  // Function to decrement the sell quantity
   int decrementSellQuantity() {
     // If the current sell quantity is less than or equal to the minQty, return minQty
     if (shares.value <= model.minimumQty) {
@@ -71,10 +71,8 @@ class SecondaryTransactionDialogCtrl extends GetxController {
     var res = await WPreIpoTransactionApi.inquiry(
       type: InvestmentTypeEnum.buy,
       companySlug: model.companySlug,
-      dealUUID: model.uuid,
       quantity: shares.value,
       offerPrice: model.sharePrice,
-      offerValidTill: DateTime.now().add(const Duration(days: 30)),
     );
     isLoading(false);
     if (res.isSuccess) {

@@ -7,9 +7,21 @@ import 'package:flutter/foundation.dart';
 import 'package:private_deals/src/shared/app_exports.dart';
 
 import 'package:private_deals/firebase_options.dart';
+import 'package:private_deals/src/core/debug/agent_debug_log.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
+  // #region agent log
+  agentDebugLog(
+    hypothesisId: 'H1',
+    location: 'main.dart:main',
+    message: 'app main reached after macos build',
+    data: {
+      'platform': defaultTargetPlatform.name,
+      'kIsWeb': kIsWeb,
+    },
+  );
+  // #endregion
   await init.init(UserType.distributor);
   await init.initConfig();
   await app.restore();
@@ -18,7 +30,23 @@ Future<void> main() async {
     await Firebase.initializeApp(
       options: DefaultFirebaseOptions.currentPlatform,
     );
+    // #region agent log
+    agentDebugLog(
+      hypothesisId: 'H1',
+      location: 'main.dart:firebase',
+      message: 'Firebase.initializeApp succeeded',
+      data: {'platform': defaultTargetPlatform.name},
+    );
+    // #endregion
   } on FirebaseException catch (e) {
+    // #region agent log
+    agentDebugLog(
+      hypothesisId: 'H1',
+      location: 'main.dart:firebase',
+      message: 'Firebase.initializeApp failed',
+      data: {'code': e.code, 'message': e.message},
+    );
+    // #endregion
     logger.d(e);
   }
   if (!PlatformHelper.isWindows && !kIsWeb) {
@@ -44,7 +72,7 @@ class MyApp extends StatelessWidget {
       return GetMaterialApp(
         debugShowCheckedModeBanner: false,
         title: 'Private Deals',
-        enableLog: false,
+        enableLog: true,
         scrollBehavior: const MaterialScrollBehavior().copyWith(
           dragDevices: PointerDeviceKind.values.toSet(),
         ),

@@ -36,8 +36,8 @@ class PhoneHomePageView extends StatelessWidget {
         );
       },
       child: Obx(() {
-        final showCompanyTabs = c.isCompanyTab;
-        final showTransactionTabs = c.isTransactionTab;
+        final showUnlistedSubTabs = c.isUnlistedSection;
+        final showLpSecondarySubTabs = c.isLpSecondarySection;
 
         return Scaffold(
           appBar: AppBar(
@@ -55,25 +55,22 @@ class PhoneHomePageView extends StatelessWidget {
                 );
               }),
             ],
-            bottom: showCompanyTabs || showTransactionTabs
+            bottom: showUnlistedSubTabs || showLpSecondarySubTabs
                 ? PreferredSize(
                     preferredSize: const Size.fromHeight(48),
-                    child: showCompanyTabs
+                    child: showUnlistedSubTabs
                         ? _PhoneSubTabBar(
                             options: const [
-                              (WTabBarEnum.preIPOList, 'Unlisted'),
-                              (WTabBarEnum.secondaryList, 'LP Secondary'),
+                              (WTabBarEnum.preIPOList, 'Manage Company'),
+                              (WTabBarEnum.priceUpdate, 'Share Price'),
                             ],
                             selected: c.currentTab.value,
                             onSelected: c.onTap,
                           )
                         : _PhoneSubTabBar(
                             options: const [
-                              (WTabBarEnum.preIPOTransactions, 'Unlisted'),
-                              (
-                                WTabBarEnum.secondaryTransactions,
-                                'LP Secondary',
-                              ),
+                              (WTabBarEnum.secondaryList, 'Manage Company'),
+                              (WTabBarEnum.manageDeals, 'Manage Deals'),
                             ],
                             selected: c.currentTab.value,
                             onSelected: c.onTap,

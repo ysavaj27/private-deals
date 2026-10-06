@@ -13,6 +13,7 @@ import 'package:private_deals/src/features/catalog/presentation/pre_ipo/pre_ipo_
 import 'package:private_deals/src/features/catalog/presentation/primary/primary_landing_page.dart';
 import 'package:private_deals/src/features/catalog/presentation/secondary/secondary_landing_page.dart';
 import 'package:private_deals/src/shared/app_exports.dart';
+import 'package:private_deals/src/features/enquiries/presentation/enquiries_page.dart';
 
 import 'package:private_deals/src/features/wealth_manager/presentation/channel_partner/channel_partner_page.dart';
 import 'package:private_deals/src/features/wealth_manager/presentation/dashboard/dashboard_page.dart';
@@ -21,10 +22,14 @@ import 'package:private_deals/src/features/wealth_manager/presentation/portfolio
 
 class HomePage extends StatelessWidget {
   final Widget? child;
-  final HomePageCtrl c = Get.put(HomePageCtrl());
+  final HomePageCtrl c = Get.put(HomePageCtrl(), permanent: true);
 
   HomePage({super.key, this.child}) {
-    c.setData();
+    // Defer tab sync — constructor runs during route build, and setData()
+    // updates Obx-watched state.
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (Get.isRegistered<HomePageCtrl>()) c.setData();
+    });
   }
 
   @override
@@ -46,6 +51,8 @@ class MainWidgets extends StatelessWidget {
   Widget build(BuildContext context) {
     return Obx(() {
       switch (c.currentTab()) {
+        case WTabBarEnum.myInquiries:
+          return const EnquiriesPage();
         case WTabBarEnum.dashboard:
           return DashboardPage();
         // return DashboardPage();

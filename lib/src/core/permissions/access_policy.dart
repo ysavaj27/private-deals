@@ -2,6 +2,7 @@ import 'partner_role.dart';
 
 enum AccessScope {
   account,
+  enquiries,
   business,
   institution,
   investors,
@@ -53,7 +54,12 @@ class AccessPolicy {
     if (channelPartners && user.role == PartnerRole.relationManager)
       return AccessResult.forbidden;
     final allowed = switch (scope) {
-      AccessScope.account || AccessScope.investors => true,
+      AccessScope.account => true,
+      AccessScope.enquiries =>
+        user.role == PartnerRole.wealthManager ||
+            user.role == PartnerRole.distributor ||
+            user.role == PartnerRole.retailer,
+      AccessScope.investors => user.role != PartnerRole.institution,
       AccessScope.institution => user.role == PartnerRole.institution,
       AccessScope.business => user.role.isBusinessWorkspace,
       AccessScope.primary => user.role.isBusinessWorkspace && user.primary,

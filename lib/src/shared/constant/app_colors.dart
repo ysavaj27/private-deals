@@ -22,11 +22,16 @@ class AppColors {
   static Color green(BuildContext c) => const Color(0xff0bbc92);
   static const Color grey = Color(0xff656565);
 
+  /// Shared CTA for Pre-IPO / unlisted investment flow buttons.
+  /// Uses theme primary so light/dark stay consistent in one place.
+  static Color preIpoButton(BuildContext context) =>
+      Theme.of(context).colorScheme.primary;
+
   static Color borderColor(BuildContext context) =>
       context.theme.colorScheme.outlineVariant;
 
   static Color logoBgColor(BuildContext context) =>
-      context.isDarkMode ? Colors.white70 : context.theme.dividerColor;
+      context.theme.colorScheme.surfaceContainerLow;
 
   static List<Color> bgGradient(BuildContext context) =>
       context.isDarkMode ? darkGradient : lightGradient;

@@ -296,6 +296,8 @@ class DesktopPreIPOInvestmentView extends StatelessWidget {
                                   height: 50,
                                   radius: 16,
                                   isLoading: c.investing.value,
+                                  backgroundColor:
+                                      AppColors.preIpoButton(context),
                                   text: 'Proceed',
                                   onPressed: () {
                                     if (c.desktopKey.currentState?.validate() ??

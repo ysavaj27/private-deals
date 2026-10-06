@@ -1,10 +1,1 @@
-import 'package:flutter/material.dart';
-
-class Loader extends StatelessWidget {
-  const Loader({super.key});
-
-  @override
-  Widget build(BuildContext context) {
-    return Center(child: CircularProgressIndicator(strokeWidth: 1));
-  }
-}
+export 'package:private_deals/src/shared/plugins/loader.dart';

@@ -8,7 +8,7 @@ class DashboardPageCtrl extends GetxController {
   RxBool isLoading = false.obs;
   RxBool isData = false.obs;
   RxList<StartupRoundModel> startupList = <StartupRoundModel>[].obs;
-  Rx<DashboardTypeEnum> currentIndex = DashboardTypeEnum.primary.obs;
+  Rx<DashboardTypeEnum> currentIndex = DashboardTypeEnum.preIpo.obs;
   Rx<WDashboardModel> model = WDashboardModel.fromJson({}).obs;
   WDashboardModel primaryModel = WDashboardModel.fromJson({});
   WDashboardModel preIpoModel = WDashboardModel.fromJson({});
@@ -41,10 +41,10 @@ class DashboardPageCtrl extends GetxController {
 
   Future<void> getAllData() async {
     await Future.wait([primaryGetData(), preIpoGetData(), getStartupList()]);
-    if (app.wUser.isPrimaryAccess || app.wUser.isSecondaryAccess) {
-      changeTab(DashboardTypeEnum.primary);
-    } else if (app.wUser.isPreIpoAccess) {
+    if (app.wUser.isPreIpoAccess) {
       changeTab(DashboardTypeEnum.preIpo);
+    } else if (app.wUser.isPrimaryAccess || app.wUser.isSecondaryAccess) {
+      changeTab(DashboardTypeEnum.primary);
     }
   }
 
@@ -83,7 +83,9 @@ class DashboardPageCtrl extends GetxController {
     isLoading(false);
     if (res.isSuccess && res.r != null) {
       primaryModel = res.r!;
-      changeTab(DashboardTypeEnum.primary);
+      if (currentIndex() == DashboardTypeEnum.primary) {
+        changeTab(DashboardTypeEnum.primary);
+      }
     } else {
       toast(res.m);
     }
@@ -95,7 +97,9 @@ class DashboardPageCtrl extends GetxController {
     isLoading(false);
     if (res.isSuccess && res.r != null) {
       preIpoModel = res.r!;
-      changeTab(DashboardTypeEnum.preIpo);
+      if (currentIndex() == DashboardTypeEnum.preIpo) {
+        changeTab(DashboardTypeEnum.preIpo);
+      }
     } else {
       toast(res.m);
     }

@@ -9,6 +9,7 @@ import 'package:private_deals/src/shared/institution_widgets/app_button.dart';
 import 'package:private_deals/src/shared/institution_widgets/app_text_field.dart';
 
 import 'package:private_deals/src/features/institution/legacy/features/company/update_share_price/update_share_price_ctrl.dart';
+import 'package:private_deals/src/shared/widgets/settlement_days_dropdown.dart';
 
 // Import your controller and common widgets.
 
@@ -28,19 +29,6 @@ class UpdateSharePricePage extends StatelessWidget {
           body: SafeArea(
             child: Column(
               children: [
-                Padding(
-                  padding: const EdgeInsets.fromLTRB(16, 12, 16, 0),
-                  child: SegmentedButton<String>(
-                    segments: const [
-                      ButtonSegment(value: 'buy', label: Text('Buy')),
-                      ButtonSegment(value: 'sell', label: Text('Sell')),
-                    ],
-                    selected: {c.dealType.value},
-                    onSelectionChanged: saving
-                        ? null
-                        : (values) => c.selectType(values.first),
-                  ),
-                ),
                 // Fixed header and search.
                 ConstrainedBox(
                   constraints: BoxConstraints(
@@ -50,6 +38,7 @@ class UpdateSharePricePage extends StatelessWidget {
                     child: SharePriceFixedHeader(controller: c),
                   ),
                 ),
+                _DealTypeToggle(controller: c),
 
                 // Only this area scrolls.
                 Expanded(
@@ -86,6 +75,126 @@ class UpdateSharePricePage extends StatelessWidget {
                 ),
               ],
             ),
+          ),
+        ),
+      );
+    });
+  }
+}
+
+class _DealTypeToggle extends StatelessWidget {
+  const _DealTypeToggle({required this.controller});
+
+  final UpdateSharePriceCtrl controller;
+
+  @override
+  Widget build(BuildContext context) {
+    final colors = context.theme.colorScheme;
+    final phone = context.isPhone;
+
+    return Obx(() {
+      final saving = controller.saving.value;
+      final buying = controller.dealType.value == 'buy';
+      final options = controller.settlementOptions;
+
+      final button = SegmentedButton<String>(
+        showSelectedIcon: false,
+        style: const ButtonStyle(
+          visualDensity: VisualDensity.compact,
+          tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+        ),
+        segments: const [
+          ButtonSegment(
+            value: 'sell',
+            label: Text('Sell'),
+            tooltip: 'Prices you are offering to sell',
+          ),
+          ButtonSegment(
+            value: 'buy',
+            label: Text('Buy'),
+            tooltip: 'Prices you are willing to buy',
+          ),
+        ],
+        selected: {controller.dealType.value},
+        onSelectionChanged: saving
+            ? null
+            : (values) => controller.selectType(values.first),
+      );
+
+      final hint = Text(
+        buying
+            ? 'Prices and quantities you are willing to buy.'
+            : 'Default settlement applies to all sell rows. Change any row to override.',
+        style: context.textTheme.bodySmall?.copyWith(
+          color: colors.onSurfaceVariant,
+        ),
+      );
+
+      final commonPicker = buying
+          ? null
+          : SizedBox(
+              width: phone ? double.infinity : 220,
+              child: SettlementDaysDropdown(
+                key: ValueKey(
+                  'common-settlement-${controller.commonSettlementDays.value}',
+                ),
+                options: options,
+                value: controller.commonSettlementDays.value,
+                enabled: !saving && options.isNotEmpty,
+                isDense: true,
+                labelText: 'Default settlement *',
+                hintText: options.isEmpty
+                    ? 'Settlement list unavailable'
+                    : 'Select settlement',
+                onChanged: controller.setCommonSettlement,
+              ),
+            );
+
+      return Material(
+        color: colors.surface,
+        child: DecoratedBox(
+          decoration: BoxDecoration(
+            border: Border(bottom: BorderSide(color: colors.outlineVariant)),
+          ),
+          child: Padding(
+            padding: EdgeInsets.fromLTRB(
+              phone ? 12 : 24,
+              12,
+              phone ? 12 : 24,
+              12,
+            ),
+            child: phone
+                ? Column(
+                    crossAxisAlignment: CrossAxisAlignment.stretch,
+                    children: [
+                      Text(
+                        'Price to update',
+                        style: context.textTheme.labelMedium?.copyWith(
+                          color: colors.onSurfaceVariant,
+                        ),
+                      ),
+                      const SizedBox(height: 8),
+                      button,
+                      if (commonPicker != null) ...[
+                        const SizedBox(height: 12),
+                        commonPicker,
+                      ],
+                      const SizedBox(height: 6),
+                      hint,
+                    ],
+                  )
+                : Row(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      button,
+                      const SizedBox(width: 16),
+                      Expanded(child: hint),
+                      if (commonPicker != null) ...[
+                        const SizedBox(width: 16),
+                        commonPicker,
+                      ],
+                    ],
+                  ),
           ),
         ),
       );
@@ -392,8 +501,9 @@ class SharePriceTable extends StatelessWidget {
                 );
               }
 
-              final tableWidth = constraints.maxWidth < 1040
-                  ? 1040.0
+              final tableWidth = constraints.maxWidth <
+                      (controller.isSell ? 1200 : 1040)
+                  ? (controller.isSell ? 1200.0 : 1040.0)
                   : constraints.maxWidth;
 
               return Scrollbar(
@@ -412,6 +522,7 @@ class SharePriceTable extends StatelessWidget {
                       children: [
                         _SharePriceTableHeader(
                           priceLabel: controller.priceLabel,
+                          showSettlement: controller.isSell,
                         ),
                         Expanded(
                           child: Scrollbar(
@@ -447,8 +558,12 @@ class SharePriceTable extends StatelessWidget {
 }
 
 class _SharePriceTableHeader extends StatelessWidget {
-  const _SharePriceTableHeader({required this.priceLabel});
+  const _SharePriceTableHeader({
+    required this.priceLabel,
+    required this.showSettlement,
+  });
   final String priceLabel;
+  final bool showSettlement;
 
   @override
   Widget build(BuildContext context) {
@@ -467,6 +582,7 @@ class _SharePriceTableHeader extends StatelessWidget {
           price: Text('$priceLabel (₹) *'),
           minQty: Text('Minimum Qty *'),
           totalQty: Text('Total Qty'),
+          settlement: showSettlement ? const Text('Settlement *') : null,
         ),
       ),
     );
@@ -518,6 +634,13 @@ class _SharePriceTableRow extends StatelessWidget {
             fieldKey: 'total_qty',
             input: row.totalQty,
           ),
+          settlement: controller.isSell
+              ? _shareSettlementPicker(
+                  context,
+                  row: row,
+                  controller: controller,
+                )
+              : null,
         ),
       );
     });
@@ -584,6 +707,15 @@ class _SharePriceMobileCard extends StatelessWidget {
               input: row.totalQty,
               showLabel: true,
             ),
+            if (controller.isSell) ...[
+              const SizedBox(height: 12),
+              _shareSettlementPicker(
+                context,
+                row: row,
+                controller: controller,
+                showLabel: true,
+              ),
+            ],
           ],
         ),
       );
@@ -684,6 +816,39 @@ Widget _sharePriceInput(
   );
 }
 
+Widget _shareSettlementPicker(
+  BuildContext context, {
+  required SharePriceDraft row,
+  required UpdateSharePriceCtrl controller,
+  bool showLabel = false,
+}) {
+  final error = row.errors['settlement_days'];
+  final options = controller.settlementOptions;
+
+  return Column(
+    crossAxisAlignment: CrossAxisAlignment.start,
+    children: [
+      if (showLabel) ...[
+        Text('Settlement *', style: context.textTheme.bodySmall),
+        const SizedBox(height: 6),
+      ],
+      SettlementDaysDropdown(
+        key: ValueKey(
+          'row-settlement-${row.company.id}-${row.settlementDays.value}',
+        ),
+        options: options,
+        value: row.settlementDays.value,
+        enabled: !controller.saving.value && options.isNotEmpty,
+        isDense: true,
+        labelText: showLabel ? null : 'Settlement',
+        hintText: 'Select',
+        errorText: error,
+        onChanged: (value) => controller.setRowSettlement(row, value),
+      ),
+    ],
+  );
+}
+
 // Shared widths keep headings and row inputs aligned.
 class _PriceColumns extends StatelessWidget {
   const _PriceColumns({
@@ -691,12 +856,14 @@ class _PriceColumns extends StatelessWidget {
     required this.price,
     required this.minQty,
     required this.totalQty,
+    this.settlement,
   });
 
   final Widget company;
   final Widget price;
   final Widget minQty;
   final Widget totalQty;
+  final Widget? settlement;
 
   @override
   Widget build(BuildContext context) {
@@ -710,6 +877,10 @@ class _PriceColumns extends StatelessWidget {
         Expanded(flex: 2, child: minQty),
         const SizedBox(width: 16),
         Expanded(flex: 2, child: totalQty),
+        if (settlement != null) ...[
+          const SizedBox(width: 16),
+          Expanded(flex: 2, child: settlement!),
+        ],
       ],
     );
   }

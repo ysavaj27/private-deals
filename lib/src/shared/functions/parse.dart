@@ -28,21 +28,27 @@ class Parse {
   }
 
   static String parseUrl(String? url) {
-    if (url != null && url.isNotEmpty) {
-      return app.config.s3Baseurl + url;
+    final path = url?.trim() ?? '';
+    if (path.isEmpty) return '';
+    final uri = Uri.tryParse(path);
+    if (uri != null && (uri.scheme == 'https' || uri.scheme == 'http')) {
+      return path;
     }
-    return "";
+    if (path.startsWith('//')) return 'https:$path';
+    final base = app.config.s3Baseurl.trim();
+    if (base.isEmpty) return path;
+    return '${base.replaceFirst(RegExp(r'/+$'), '')}/${path.replaceFirst(RegExp(r'^/+'), '')}';
   }
 
   static T toEnum<T extends Enum>(
-      List<T> values,
-      dynamic data, {
-        required T defaultValue,
-      }) {
+    List<T> values,
+    dynamic data, {
+    required T defaultValue,
+  }) {
     final value = data?.toString().toLowerCase();
 
     return values.firstWhere(
-          (e) => e.name.toLowerCase() == value,
+      (e) => e.name.toLowerCase() == value,
       orElse: () => defaultValue,
     );
   }

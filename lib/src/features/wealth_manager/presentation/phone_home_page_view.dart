@@ -251,7 +251,7 @@ class CustomNavigationIcon extends StatelessWidget {
           onTap:
               onPressed ??
               () {
-                c.currentTab(type);
+                if (type != null) c.onTap(type!);
               },
           borderRadius: AppRadii.mdAll,
           child: Padding(

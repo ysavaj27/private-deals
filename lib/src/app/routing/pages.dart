@@ -33,8 +33,6 @@ import 'package:private_deals/src/features/institution/companies/presentation/ma
 import 'package:private_deals/src/features/institution/deals/presentation/deal_list/deal_list_page.dart';
 import 'package:private_deals/src/features/institution/deals/presentation/create_deal/create_deal_page.dart';
 import 'package:private_deals/src/features/institution/deals/presentation/bulk_deals_page.dart';
-import 'package:private_deals/src/features/investors/presentation/partner_investors_page.dart';
-import 'package:private_deals/src/features/investors/presentation/cml_page.dart';
 import 'package:private_deals/src/shared/widgets/partner_shell.dart';
 
 class Pages {
@@ -126,23 +124,6 @@ class Pages {
       scope: AccessScope.account,
     ),
     privatePage(
-      '/investors',
-      () => app.role == PartnerRole.institution
-          ? const PartnerInvestorsPage()
-          : HomePage(),
-      scope: AccessScope.investors,
-    ),
-    privatePage(
-      '/investors/create',
-      () => const CreateInvestorPage(),
-      scope: AccessScope.investors,
-    ),
-    privatePage(
-      '/investors/:id/cml',
-      () => const CmlPage(),
-      scope: AccessScope.investors,
-    ),
-    privatePage(
       '/institution/dashboard',
       () => const InstitutionDashboard(),
       scope: AccessScope.institution,
@@ -184,20 +165,25 @@ class Pages {
         () => CompanyShareholdersPage(),
         scope: AccessScope.institution,
       ),
-      privatePage(
-        '/institution/deals/$type',
-        () => PartnerShell(
-          title: 'Deals',
-          child: DealListView(key: ValueKey(type)),
-        ),
-        scope: AccessScope.institution,
-      ),
-      privatePage(
-        '/institution/deals/$type/create',
-        () => CreateDealPage(),
-        scope: AccessScope.institution,
-      ),
     ],
+    for (final section in ['hot', 'manage'])
+      for (final type in section == 'hot'
+          ? ['unlisted', 'secondary']
+          : ['secondary']) ...[
+        privatePage(
+          '/institution/deals/$section/$type',
+          () => PartnerShell(
+            title: section == 'hot' ? 'Deal of the day' : 'Manage Deals',
+            child: DealListView(key: ValueKey('$section-$type')),
+          ),
+          scope: AccessScope.institution,
+        ),
+        privatePage(
+          '/institution/deals/$section/$type/create',
+          () => CreateDealPage(),
+          scope: AccessScope.institution,
+        ),
+      ],
     privatePage(
       '/institution/bulk-deals',
       () => const BulkDealsPage(),

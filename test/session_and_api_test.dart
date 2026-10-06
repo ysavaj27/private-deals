@@ -147,6 +147,35 @@ void main() {
     );
     expect(app.token, isEmpty);
   });
+
+  test('Seller-guard 401 does not clear Partner session', () async {
+    await app.setUser(prefUser: identity());
+    dioConfig.dio.httpClientAdapter = FakeAdapter(
+      (_) async => response({'message': 'Unauthenticated.'}, 401),
+    );
+    await expectLater(
+      dioConfig.post('v2/seller/profile/update', {'logo': 'x'}, false),
+      throwsA(isA<DioException>()),
+    );
+    expect(app.token, 'test-token-7');
+    expect(app.isUserLogin, isTrue);
+  });
+
+  test('Institution can post display photo on v2 business profile', () async {
+    await app.setUser(prefUser: identity());
+    final adapter = FakeAdapter(
+      (_) async => response({
+        'status': 1,
+        'data': {...identity(), 'profile_photo': 'https://cdn.example/a.png'},
+      }),
+    );
+    dioConfig.dio.httpClientAdapter = adapter;
+    final res = await dioConfig.post('v2/business/profile', {
+      'logo': 'bytes',
+    }, false);
+    expect(res.statusCode, 200);
+    expect(adapter.requests.single.uri.path, '/api/v2/business/profile');
+  });
   test('A late 401 cannot log out a newer account', () async {
     await app.setUser(prefUser: identity());
     dioConfig.dio.httpClientAdapter = FakeAdapter((_) async {
@@ -191,7 +220,7 @@ void main() {
   test(
     'v2 investor filters are independent; create sends only new contract fields',
     () async {
-      await app.setUser(prefUser: identity());
+      await app.setUser(prefUser: identity('Wealth Manager'));
       final adapter = FakeAdapter(
         (options) async => response({
           'status': 1,
@@ -214,16 +243,27 @@ void main() {
         investorType: 'Individual',
         name: 'Client',
         mobileNumber: '0000000000',
-        password: 'must-not-send',
-        address: 'must-not-send',
-        cityId: 5,
-        pincode: '000000',
       );
       expect(adapter.requests.last.uri.path, '/api/v2/business/investor');
       expect((adapter.requests.last.data as Map).keys.toSet(), {
         'investor_type',
         'name',
         'mobile_number',
+      });
+      await WInvestorsApi.addInvestor(
+        id: 0,
+        investorType: 'Individual',
+        name: 'Client',
+        mobileNumber: '0000000000',
+        email: ' Client@Example.com ',
+        gender: 'Male',
+      );
+      expect((adapter.requests.last.data as Map), {
+        'investor_type': 'Individual',
+        'name': 'Client',
+        'mobile_number': '0000000000',
+        'email': 'client@example.com',
+        'gender': 'Male',
       });
     },
   );
@@ -239,21 +279,23 @@ void main() {
     expect(app.token, isEmpty);
     expect(app.isUserLogin, false);
   });
-  test(
-    'Self CML save fails before networking, including ID fallback',
-    () async {
-      await app.setUser(prefUser: identity());
-      final adapter = FakeAdapter((_) async => response({'status': 1}));
-      dioConfig.dio.httpClientAdapter = adapter;
-      final investor = InvestorModel.fromJson({'id': 70, 'is_self': 0});
-      final result = await CmlApi.save(investor, {
-        'dp_id': '1',
-        'client_id': '2',
-        'pan_no': 'TEST',
-        'name': 'Self',
-      }, null);
-      expect(result.isSuccess, false);
-      expect(adapter.requests, isEmpty);
-    },
-  );
+  test('Self investor KYC can be saved with the partner token', () async {
+    await app.setUser(prefUser: identity('Wealth Manager'));
+    final adapter = FakeAdapter((_) async => response({'status': 1}));
+    dioConfig.dio.httpClientAdapter = adapter;
+    final investor = InvestorModel.fromJson({'id': 70, 'is_self': 0});
+    final result = await CmlApi.save(investor, {
+      'dp_id': '1',
+      'client_id': '2',
+      'pan_no': 'TEST',
+      'name': 'Self',
+      'account_number': '000123456789',
+      'ifsc_code': 'HDFC0000001',
+    }, null);
+    expect(result.isSuccess, true, reason: result.m);
+    expect(
+      adapter.requests.single.headers['Authorization'],
+      'Bearer test-token-7',
+    );
+  });
 }

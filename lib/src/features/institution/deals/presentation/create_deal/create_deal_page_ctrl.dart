@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:private_deals/src/core/session/auth_session.dart';
 import 'package:private_deals/src/features/institution/data/api/company_api.dart';
 import 'package:private_deals/src/features/institution/data/api/deal_api.dart';
 import 'package:private_deals/src/features/institution/data/models/common/enums.dart';
@@ -14,6 +15,7 @@ class CreateDealPageCtrl extends GetxController {
   late final DealRouteContext dealRoute;
 
   CompanyType get companyType => dealRoute.type;
+  bool get isHotDeal => dealRoute.isHotDeal;
 
   String get pageTitle => companyType == CompanyType.unlisted
       ? 'Create Unlisted deal'
@@ -31,7 +33,8 @@ class CreateDealPageCtrl extends GetxController {
 
   final saving = false.obs;
   final dealType = 'sell'.obs;
-  final isHotDeal = false.obs;
+  final settlementDays = RxnInt();
+  final settlementError = ''.obs;
 
   final expiryDate = Rxn<DateTime>();
   final expiryTime = Rxn<TimeOfDay>();
@@ -40,6 +43,9 @@ class CreateDealPageCtrl extends GetxController {
   static const istOffset = Duration(hours: 5, minutes: 30);
 
   bool get isBuyDeal => dealType.value == 'buy';
+
+  bool get requiresSettlement =>
+      companyType == CompanyType.unlisted && !isBuyDeal;
 
   String get availableQuantityLabel =>
       isBuyDeal ? 'Required total quantity' : 'Available total quantity';
@@ -233,6 +239,18 @@ class CreateDealPageCtrl extends GetxController {
         '${twoDigits(time.hour)}:${twoDigits(time.minute)}:00';
   }
 
+  bool validateSettlement() {
+    settlementError.value = '';
+    if (!requiresSettlement) return true;
+    final value = settlementDays.value;
+    final allowed = app.config.settlementDays.map((e) => e.value).toSet();
+    if (value == null || !allowed.contains(value)) {
+      settlementError.value = 'Select a settlement cycle';
+      return false;
+    }
+    return true;
+  }
+
   Map<String, dynamic> buildPayload() {
     return {
       'company_id': selectedCompany.value!.id,
@@ -240,7 +258,8 @@ class CreateDealPageCtrl extends GetxController {
       'available_quantity': int.parse(availableQuantityCtrl.text.trim()),
       'share_price': num.parse(sharePriceCtrl.text.trim()),
       'minimum_qty': int.parse(minimumQuantityCtrl.text.trim()),
-      'is_hot_deal': isHotDeal.value ? 1 : 0,
+      'is_hot_deal': isHotDeal ? 1 : 0,
+      if (requiresSettlement) 'settlement_days': settlementDays.value,
       if (formattedExpiry != null) 'expired_at': formattedExpiry,
     };
   }
@@ -250,8 +269,9 @@ class CreateDealPageCtrl extends GetxController {
 
     final formValid = formKey.currentState?.validate() ?? false;
     final expiryValid = validateExpiry();
+    final settlementValid = validateSettlement();
 
-    if (!formValid || !expiryValid) return;
+    if (!formValid || !expiryValid || !settlementValid) return;
 
     saving.value = true;
 

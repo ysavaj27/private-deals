@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:private_deals/src/core/session/auth_session.dart';
 import 'package:private_deals/src/features/institution/data/api/deal_api.dart';
 import 'package:private_deals/src/features/institution/data/deal_payloads.dart';
 import 'package:private_deals/src/features/institution/data/models/deal/deal_model.dart';
+import 'package:private_deals/src/shared/widgets/settlement_days_dropdown.dart';
 
 Future<bool?> editDealDialog(BuildContext context, DealModel deal) {
   if (!deal.isMine) return Future.value(false);
@@ -31,8 +33,14 @@ class _EditDealState extends State<_EditDealDialog> {
         ? widget.deal.availableQuantity.toInt().toString()
         : '',
   );
+  late int? settlementDays = widget.deal.settlementDays;
   bool saving = false;
   String error = '';
+
+  bool get requiresSettlement =>
+      !widget.deal.isBuyDeal &&
+      widget.deal.company.type.toLowerCase() != 'secondary';
+
   @override
   void dispose() {
     price.dispose();
@@ -43,11 +51,22 @@ class _EditDealState extends State<_EditDealDialog> {
 
   Future<void> save() async {
     try {
+      if (requiresSettlement &&
+          (settlementDays == null ||
+              !app.config.settlementDays.any(
+                (option) => option.value == settlementDays,
+              ))) {
+        setState(() => error = 'Select a settlement cycle');
+        return;
+      }
       final payload = DealPayloads.update(
         uuid: widget.deal.uuid,
         finalPrice: price.text,
         minimumQuantity: minimum.text,
         totalQuantity: total.text,
+        dealType: widget.deal.dealType,
+        status: widget.deal.status,
+        settlementDays: requiresSettlement ? settlementDays : null,
       );
       setState(() {
         saving = true;
@@ -64,7 +83,10 @@ class _EditDealState extends State<_EditDealDialog> {
         error = result.m;
       });
     } on FormatException catch (e) {
-      setState(() => error = e.message);
+      setState(() {
+        saving = false;
+        error = e.message;
+      });
     }
   }
 
@@ -106,6 +128,19 @@ class _EditDealState extends State<_EditDealDialog> {
                 controller: total,
                 decoration: const InputDecoration(labelText: 'Total quantity'),
               ),
+              if (requiresSettlement) ...[
+                const SizedBox(height: 12),
+                SettlementDaysDropdown(
+                  key: ValueKey('edit-settlement-$settlementDays'),
+                  options: app.config.settlementDays,
+                  value: settlementDays,
+                  enabled: !saving && app.config.settlementDays.isNotEmpty,
+                  onChanged: (value) => setState(() {
+                    settlementDays = value;
+                    error = '';
+                  }),
+                ),
+              ],
               if (error.isNotEmpty)
                 Padding(
                   padding: const EdgeInsets.only(top: 12),

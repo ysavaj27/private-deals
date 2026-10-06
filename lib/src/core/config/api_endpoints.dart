@@ -189,8 +189,12 @@ class AppUrl {
       "${version}business/forgot-password/change-password";
   static String wDeleteAccount = "${version}business/delete-account";
 
+  /// Session restore / legacy partner profile (v1).
   static String wProfileGet = "${version}business/profile";
   static String wProfileSave = "${version}business/profile";
+
+  /// Display-photo screen for every partner role (v2).
+  static String wProfilePhoto = "${newVersion}business/profile";
   static String wAifGet = "${version}business/aif/get";
   static String wAifSubmit = "${version}business/aif/submit";
 
@@ -220,9 +224,17 @@ class AppUrl {
   static String wAddPortfolio = "${version}business/add-portfolio";
   static String wStartupLite = "${version}business/get-startup-lite";
 
-  static String wPreIpoBuy = "${version}business/pre-ipo/buy";
+  static String wPreIpoBuy = "v2/business/pre-ipo/buy";
   static String wPreIpoTransaction = "${version}business/pre-ipo/transaction";
   static String wNewPreIpoTransaction = "v2/business/pre-ipo/transaction-list";
+  static String wPreIpoTransactionDetail =
+      "v2/business/pre-ipo/transaction/detail";
+  static String wPreIpoTransactionCancel =
+      "v2/business/pre-ipo/transaction/cancel";
+  static String wPreIpoPaymentReceipt =
+      "v2/business/pre-ipo/transaction/payment-receipt";
+  static String wPreIpoConfirmShareTransfer =
+      "v2/business/pre-ipo/transaction/confirm-share-transfer";
   static String wCompanyList = "${version}business/company/market";
   static String wCompanyDetail = "${newVersion}business/company/detail";
 
@@ -255,7 +267,7 @@ class AppUrl {
   static String wPreIPOHomeNewsSector = "v2/business/home/pre-ipo/news-sectors";
   static String wPreIPONewsList = "v2/business/common/preipo-news";
   static String wSecondaryLandingPage = "v2/business/home/secondary";
-  static String wEnquiry = "v2/business/enquiries/create";
+  static String wEnquiry = "v2/business/enquiries/deals";
 // static const String wPendingTasks = "wealth-manager/dashboard/pending-tasks";
 // static const String wPendingKYC =
 //     "wealth-manager/dashboard/pending-tasks/kyc";

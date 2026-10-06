@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:private_deals/src/features/institution/data/models/common/enums.dart';
 import 'package:private_deals/src/features/institution/institution_routes.dart';
+import 'package:private_deals/src/features/institution/legacy/features/home/home_page_ctrl.dart';
 import 'package:private_deals/src/features/institution/support/plugins/cache_image.dart';
 import 'package:private_deals/src/features/institution/support/plugins/loader.dart';
 import 'package:private_deals/src/shared/institution_widgets/app_button.dart';
@@ -14,8 +16,17 @@ class PhoneCompanyListView extends StatelessWidget {
 
   const PhoneCompanyListView({super.key, required this.c});
 
+  void _openUpdateSharePrice() {
+    if (Get.isRegistered<SellerHomePageCtrl>()) {
+      Get.find<SellerHomePageCtrl>().onTap(WTabBarEnum.priceUpdate);
+    } else {
+      Get.offNamed('/institution/bulk-deals');
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
+    final showPriceUpdate = c.companyType == CompanyType.unlisted;
     return CustomScrollView(
       slivers: [
         SliverPadding(
@@ -25,11 +36,25 @@ class PhoneCompanyListView extends StatelessWidget {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 AppTextField(
-                  // controller: c.searchController,
                   onChanged: c.updateSearch,
                   hint: 'Search companies...',
                   prefixIcon: Icons.search_rounded,
                 ),
+                if (showPriceUpdate) ...[
+                  const SizedBox(height: 12),
+                  SizedBox(
+                    width: double.infinity,
+                    child: AppButton(
+                      onPressed: _openUpdateSharePrice,
+                      icon: Icons.edit_outlined,
+                      label: 'Update share price',
+                      variant: AppButtonVariant.outline,
+                      expanded: true,
+                    ),
+                  ),
+                ],
+                const SizedBox(height: 12),
+                CompanySubmissionFilter(c: c, expanded: true),
                 const SizedBox(height: 12),
                 SizedBox(
                   width: double.infinity,
@@ -72,10 +97,16 @@ class PhoneCompanyListView extends StatelessWidget {
           final companies = c.filteredCompanies;
 
           if (companies.isEmpty) {
-            return const SliverToBoxAdapter(
+            return SliverToBoxAdapter(
               child: Padding(
-                padding: EdgeInsets.all(40),
-                child: Center(child: Text('No companies found')),
+                padding: const EdgeInsets.all(40),
+                child: Center(
+                  child: Text(
+                    c.mySubmissions()
+                        ? 'No companies created by you'
+                        : 'No companies found',
+                  ),
+                ),
               ),
             );
           }
@@ -172,7 +203,9 @@ class PhoneCompanyListView extends StatelessWidget {
                               const SizedBox(width: 16),
                               Flexible(
                                 child: Text(
-                                  '₹${company.sharePrice.toStringAsFixed(2)}',
+                                  c.companyType == CompanyType.unlisted
+                                      ? company.myBasePriceLabel
+                                      : '₹${company.sharePrice.toStringAsFixed(2)}',
                                   textAlign: TextAlign.right,
                                   style: context.textTheme.titleMedium,
                                 ),

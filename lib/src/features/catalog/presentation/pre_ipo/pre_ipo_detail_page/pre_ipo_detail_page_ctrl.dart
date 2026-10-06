@@ -1,37 +1,56 @@
 import 'package:private_deals/src/features/catalog/presentation/pre_ipo/pre_ipo_investment/pre_ipo_offer.dart';
 import 'package:private_deals/src/features/catalog/presentation/pre_ipo/pre_ipo_investment/select_investor_dialog.dart';
+import 'package:private_deals/src/features/catalog/presentation/pre_ipo/pre_ipo_detail_page/pre_ipo_detail_sections.dart';
 import 'package:private_deals/src/shared/app_exports.dart';
+import 'package:private_deals/src/core/configuration/dio_config.dart'
+    show debugNdjson;
 
-class PreIPODetailPageCtrl extends GetxController {
+class PreIPODetailPageCtrl extends GetxController
+    implements CompanyDetailSectionsCtrl {
   final selectedOffer = Rxn<PreIPOOffer>();
 
   double get purchasePrice =>
       selectedOffer.value?.price ?? model().distributerPrice;
 
   Future<void> selectOffer(PreIPOOffer offer, {required bool phone}) async {
-    if (investing.value || !offer.canBuy) return;
+    if (investing.value) return;
+    final blocked = offer.buyBlockedReason;
+    if (blocked != null) {
+      toast(blocked, MessageEnum.alert);
+      return;
+    }
+    if (!model().canBuy) {
+      toast('Buying is not available for this company', MessageEnum.alert);
+      return;
+    }
     if (selectedOffer.value?.key != offer.key) investorList.clear();
     selectedOffer.value = offer;
     minTicketSize = offer.minimumQty.toDouble();
     isQty(true);
     if (phone) {
-      await Get.toNamed(Routes.preIPOInvestmentPath(Get.currentRoute),
-          arguments: PreIPOInvestmentSelection(model(), offer));
+      await Get.toNamed(
+        Routes.preIPOInvestmentPath(Get.currentRoute),
+        arguments: PreIPOInvestmentSelection(model(), offer),
+      );
     } else {
-      addInvestor();
+      await addInvestor();
     }
   }
 
   bool validateOffer() {
     final offer = selectedOffer.value;
-    if (offer == null || !offer.canBuy || !offer.sellerId.isNotEmpty) {
-      toast('Please select an available offer with seller details',
-          MessageEnum.alert);
+    if (offer == null || !offer.canBuy) {
+      toast(
+        offer?.buyBlockedReason ??
+            'Please select an available Institution sell deal',
+        MessageEnum.alert,
+      );
       return false;
     }
     if (investorList.isEmpty) return false;
     for (final investor in investorList) {
-      final error = offer.validateQuantity(investor.quantityCTRL?.text) ??
+      final error =
+          offer.validateQuantity(investor.quantityCTRL?.text) ??
           offer.validatePrice(investor.priceCTRL?.text);
       if (error != null) {
         toast(error, MessageEnum.alert);
@@ -44,9 +63,11 @@ class PreIPODetailPageCtrl extends GetxController {
   RxBool isLoading = false.obs;
   RxBool isBuying = false.obs;
   RxBool isVisible = false.obs;
+  @override
   RxBool isExpanded = false.obs;
 
   // RxBool isButtonClicked = false.obs;
+  @override
   Rx<CompanyModel> model = CompanyModel.fromJson({}).obs;
   Rx<InvestmentTypeEnum> type = InvestmentTypeEnum.none.obs;
   final GlobalKey<FormState> desktopKey = GlobalKey<FormState>();
@@ -54,14 +75,29 @@ class PreIPODetailPageCtrl extends GetxController {
 
   // final TextEditingController qtyCTRL = TextEditingController();
   RxInt qty = 0.obs;
+  @override
   RxInt financialTab = 1.obs;
+  @override
   RxInt shareHoldingTab = 0.obs;
   RxInt tab = 0.obs;
   ScrollController scrollController = ScrollController();
+  @override
   List<GlobalKey> sectionKeys = [];
+
+  int _getDataCount = 0;
+  int _scrollObsUpdates = 0;
 
   Future<void> getData() async {
     final slug = Get.parameters['slug'] ?? "";
+    // #region agent log
+    _getDataCount++;
+    debugNdjson(
+      'D',
+      'pre_ipo_detail_page_ctrl.dart:getData',
+      'company detail fetch',
+      {'slug': slug, 'getDataCount': _getDataCount, 'getxEnableLog': true},
+    );
+    // #endregion
     isLoading(true);
     var res = await PreIpoLandingPageApi.wCompanyDetail(slug);
     isLoading(false);
@@ -88,7 +124,10 @@ class PreIPODetailPageCtrl extends GetxController {
       // if (_isButtonClicked) return; // Ignore if scroll was triggered by a button click
       double maxScroll = scrollController.position.maxScrollExtent;
       double currentScroll = scrollController.position.pixels;
-      if (currentScroll >= 200) {
+      final nextVisible = currentScroll >= 200;
+      final prevTab = tab.value;
+      final prevVisible = isVisible.value;
+      if (nextVisible) {
         isVisible(true);
       } else {
         isVisible(false);
@@ -107,6 +146,24 @@ class PreIPODetailPageCtrl extends GetxController {
           }
         }
       }
+      // #region agent log
+      if (prevTab != tab.value || prevVisible != isVisible.value) {
+        _scrollObsUpdates++;
+        if (_scrollObsUpdates <= 30 || _scrollObsUpdates % 25 == 0) {
+          debugNdjson(
+            'A',
+            'pre_ipo_detail_page_ctrl.dart:scroll',
+            'scroll updated GetX observables',
+            {
+              'scrollObsUpdates': _scrollObsUpdates,
+              'tab': tab.value,
+              'isVisible': isVisible.value,
+              'getxEnableLog': true,
+            },
+          );
+        }
+      }
+      // #endregion
     });
   }
 
@@ -120,13 +177,13 @@ class PreIPODetailPageCtrl extends GetxController {
         box.localToGlobal(Offset.zero).dy + scrollController.offset - 100;
     scrollController
         .animateTo(
-      position,
-      duration: const Duration(milliseconds: 300),
-      curve: Curves.easeInOut,
-    )
+          position,
+          duration: const Duration(milliseconds: 300),
+          curve: Curves.easeInOut,
+        )
         .then((_) {
-      // isButtonClicked(false);
-    });
+          // isButtonClicked(false);
+        });
   }
 
   Future<void> onPress() async {
@@ -134,9 +191,8 @@ class PreIPODetailPageCtrl extends GetxController {
     investing(true);
     var res = await WPreIpoTransactionApi.buy(
       list: investorList,
-      companyId: model().id,
-      distributorPrice: purchasePrice,
-      sellerId: selectedOffer.value!.sellerId,
+      dealId: selectedOffer.value!.dealId,
+      dealUuid: selectedOffer.value!.dealUuid,
     );
     investing(false);
     if (res.isSuccess) {
@@ -185,7 +241,7 @@ class PreIPODetailPageCtrl extends GetxController {
     }
   }
 
-  void addInvestor() async {
+  Future<void> addInvestor() async {
     var res = await showCustomDialog(const SelectInvestorDialog());
     if (res != null && res is List<InvestorModel>) {
       for (var i = 0; i < res.length; i++) {
@@ -195,12 +251,11 @@ class PreIPODetailPageCtrl extends GetxController {
           investorList.add(
             SelectInvestorModel(
               investorId: e.id,
-              investorName: e.name,
+              investorName: e.displayName,
+              isSelf: e.isSelf,
               isMarket: true,
               price: purchasePrice,
-              priceCTRL: TextEditingController(
-                text: purchasePrice.toString(),
-              ),
+              priceCTRL: TextEditingController(text: purchasePrice.toString()),
               quantityCTRL: TextEditingController(),
             ),
           );
@@ -234,9 +289,8 @@ class PreIPODetailPageCtrl extends GetxController {
     investing(true);
     var res = await WPreIpoTransactionApi.buy(
       list: investorList,
-      companyId: model().id,
-      distributorPrice: purchasePrice,
-      sellerId: selectedOffer.value!.sellerId,
+      dealId: selectedOffer.value!.dealId,
+      dealUuid: selectedOffer.value!.dealUuid,
     );
     investing(false);
     if (res.isSuccess) {

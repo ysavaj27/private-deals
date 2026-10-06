@@ -148,8 +148,10 @@ class PhonePreIPOInvestmentView extends StatelessWidget {
                     ],
                   ),
                 ),
-                if (c.selectedOffer.value != null)
-                  Container(
+                Obx(() {
+                  final offer = c.selectedOffer.value;
+                  if (offer == null) return const SizedBox.shrink();
+                  return Container(
                     margin: const EdgeInsets.symmetric(vertical: 12),
                     padding: const EdgeInsets.all(12),
                     decoration: BoxDecoration(
@@ -157,10 +159,12 @@ class PhonePreIPOInvestmentView extends StatelessWidget {
                       border: Border.all(color: AppColors.borderColor(context)),
                     ),
                     child: SellerProfileWidget(
-                      seller: c.selectedOffer.value!.seller,
+                      seller: offer.seller,
                       label: 'Selected seller',
+                      showDetails: true,
                     ),
-                  ),
+                  );
+                }),
                 // SizedBox(height: 5),
                 // Align(
                 //   alignment: Alignment.centerRight,
@@ -208,6 +212,7 @@ class PhonePreIPOInvestmentView extends StatelessWidget {
                             child: CustomElevatedButton(
                               width: 200,
                               height: 45,
+                              backgroundColor: AppColors.preIpoButton(context),
                               onPressed: c.addInvestor,
                               child: const Text("Add Investor"),
                             ),
@@ -230,7 +235,7 @@ class PhonePreIPOInvestmentView extends StatelessWidget {
             padding: const EdgeInsets.symmetric(horizontal: 12),
             child: CustomElevatedButton(
               isLoading: c.investing.value,
-              backgroundColor: AppColors.green(context),
+              backgroundColor: AppColors.preIpoButton(context),
               // borderRadius: const BorderRadius.vertical(top: Radius.circular(15)),
               onPressed: () {
                 if (c.phoneKey.currentState?.validate() ?? false) {
@@ -345,13 +350,15 @@ class CardView extends StatelessWidget {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       InkWell(
-                        onTap: () {
-                          model.isMarket.toggle();
-                          if (model.isMarket.isTrue) {
-                            model.priceCTRL?.text =
-                                c.sharePrice.toStringAsFixed(0);
-                          }
-                        },
+                        onTap: model.isSelf
+                            ? null
+                            : () {
+                                model.isMarket.toggle();
+                                if (model.isMarket.isTrue) {
+                                  model.priceCTRL?.text =
+                                      c.sharePrice.toStringAsFixed(0);
+                                }
+                              },
                         child: Row(
                           // mainAxisAlignment: MainAxisAlignment.start,
                           mainAxisSize: MainAxisSize.min,
@@ -378,20 +385,22 @@ class CardView extends StatelessWidget {
                                 ],
                               ),
                             ),
-                            const SizedBox(width: 1),
-                            const Icon(Icons.keyboard_arrow_down)
+                            if (!model.isSelf) ...[
+                              const SizedBox(width: 1),
+                              const Icon(Icons.keyboard_arrow_down),
+                            ],
                           ],
                         ),
                       ),
                       const SizedBox(height: 9),
                       CustomTextField(
-                        autofocus: true,
+                        autofocus: !model.isSelf,
                         isFilled: true,
                         borderColor:
                             context.theme.disabledColor.withValues(alpha: 0.2),
                         fillColor:
                             context.theme.disabledColor.withValues(alpha: 0.06),
-                        readOnly: model.isMarket.isTrue,
+                        readOnly: model.isMarket.isTrue || model.isSelf,
                         // enabled: model.isMarket.isFalse,
                         controller: model.priceCTRL,
                         keyboardType: TextInputType.number,

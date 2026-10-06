@@ -2,17 +2,17 @@ import 'package:private_deals/src/shared/app_exports.dart';
 
 class PreIPOLandingPageCtrl extends GetxController {
   static const tabs = [
-    UnListedShareTabEnum.hotDeals,
-    UnListedShareTabEnum.exclusiveDeals,
     UnListedShareTabEnum.liquidStocks,
+    UnListedShareTabEnum.exclusiveDeals,
     UnListedShareTabEnum.drhpFiled,
+    UnListedShareTabEnum.hotDeals,
     UnListedShareTabEnum.aToZ,
   ];
 
   RxBool isLoading = false.obs;
   Rx<PreIPOLandingPageModel> model = PreIPOLandingPageModel.fromJson({}).obs;
   Rx<PreIPONewsSectorModel> newsSector = PreIPONewsSectorModel.fromJson({}).obs;
-  Rx<UnListedShareTabEnum> tab = UnListedShareTabEnum.hotDeals.obs;
+  Rx<UnListedShareTabEnum> tab = UnListedShareTabEnum.liquidStocks.obs;
 
   Future<void> getLandingData() async {
     var res = await PreIpoLandingPageApi.wPreIPOHome();

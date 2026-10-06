@@ -11,7 +11,9 @@ import 'package:private_deals/src/shared/institution_widgets/app_button.dart';
 import 'package:private_deals/src/shared/institution_widgets/app_text_field.dart';
 import 'package:private_deals/src/shared/institution_widgets/custom_card_widget.dart';
 
+import 'package:private_deals/src/core/session/auth_session.dart';
 import 'package:private_deals/src/features/institution/deals/presentation/create_deal/create_deal_page_ctrl.dart';
+import 'package:private_deals/src/shared/widgets/settlement_days_dropdown.dart';
 
 class CreateDealPage extends StatelessWidget {
   CreateDealPage({super.key});
@@ -98,9 +100,41 @@ class _CreateDealForm extends GetView<CreateDealPageCtrl> {
                           ? null
                           : 'Select Buy or Sell',
                       onChanged: (value) {
-                        if (value != null) controller.dealType.value = value;
+                        if (value != null) {
+                          controller.dealType.value = value;
+                          controller.settlementError.value = '';
+                          if (value == 'buy') {
+                            controller.settlementDays.value = null;
+                          }
+                        }
                       },
                     ),
+                    Obx(() {
+                      if (!controller.requiresSettlement) {
+                        return const SizedBox.shrink();
+                      }
+                      final options = app.config.settlementDays;
+                      return Padding(
+                        padding: const EdgeInsets.only(top: 24),
+                        child: SettlementDaysDropdown(
+                          key: ValueKey(
+                            'create-settlement-${controller.settlementDays.value}',
+                          ),
+                          options: options,
+                          value: controller.settlementDays.value,
+                          enabled: !controller.saving.value &&
+                              options.isNotEmpty,
+                          labelText: 'Settlement cycle *',
+                          errorText: controller.settlementError.value.isEmpty
+                              ? null
+                              : controller.settlementError.value,
+                          onChanged: (value) {
+                            controller.settlementDays.value = value;
+                            controller.settlementError.value = '';
+                          },
+                        ),
+                      );
+                    }),
                     const SizedBox(height: 24),
                     Obx(() {
                       if (controller.companiesLoading.value) {
@@ -196,22 +230,6 @@ class _CreateDealForm extends GetView<CreateDealPageCtrl> {
                   children: [
                     Text('Deal options', style: context.textTheme.titleLarge),
                     const SizedBox(height: 12),
-                    Obx(
-                      () => SwitchListTile.adaptive(
-                        contentPadding: EdgeInsets.zero,
-                        title: const Text('Hot deal'),
-                        subtitle: const Text(
-                          'Mark this company deal as a hot deal.',
-                        ),
-                        value: controller.isHotDeal.value,
-                        onChanged: (value) =>
-                            controller.isHotDeal.value = value,
-                      ),
-                    ),
-                    const Padding(
-                      padding: EdgeInsets.symmetric(vertical: 16),
-                      child: Divider(height: 1),
-                    ),
                     Text(
                       'Expiry · optional',
                       style: context.textTheme.titleSmall,

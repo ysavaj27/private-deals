@@ -49,7 +49,10 @@ class PhoneProfileView extends StatelessWidget {
 
         return RefreshIndicator(
           onRefresh: () async {
-            await controller.refreshProfile();
+            await Future.wait([
+              controller.refreshProfile(),
+              controller.refreshPublicProfile(),
+            ]);
             controller.logo.value = null;
           },
           child: ListView(

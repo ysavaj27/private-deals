@@ -8,7 +8,7 @@ void toast(
   MessageEnum type = MessageEnum.alert,
   Duration? duration,
 ]) {
-  if (message.isEmpty) return;
+  if (message.isEmpty || Get.testMode) return;
 
   Color backgroundColor() {
     switch (type) {

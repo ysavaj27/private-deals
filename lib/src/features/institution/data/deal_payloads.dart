@@ -14,11 +14,23 @@ class DealPayloads {
     return value;
   }
 
+  static int settlementDays(int? value) {
+    if (value == null || value < 1 || value > 30) {
+      throw const FormatException(
+        'Select a settlement cycle from T+1 to T+30.',
+      );
+    }
+    return value;
+  }
+
   static Map<String, dynamic> update({
     required String uuid,
     required String finalPrice,
     required String minimumQuantity,
     String totalQuantity = '',
+    String dealType = '',
+    String status = '',
+    int? settlementDays,
   }) {
     if (uuid.isEmpty) throw const FormatException('Select an owned deal.');
     final min = quantity(minimumQuantity);
@@ -29,9 +41,13 @@ class DealPayloads {
       );
     return {
       'uuid': uuid,
+      if (dealType.isNotEmpty) 'deal_type': dealType,
       'share_price': price(finalPrice),
       'minimum_qty': min,
       if (total != null) 'available_quantity': total,
+      if (status.isNotEmpty) 'status': status,
+      if (settlementDays != null)
+        'settlement_days': DealPayloads.settlementDays(settlementDays),
     };
   }
 
@@ -52,12 +68,18 @@ class DealPayloads {
         throw const FormatException(
           'Minimum quantity cannot exceed total quantity.',
         );
-      (row.type == 'sell' ? sell : buy).add({
+      final entry = <String, dynamic>{
         'company_id': row.companyId,
         '${row.type}_price': value,
         'min_qty': min,
         'total_qty': total,
-      });
+      };
+      if (row.type == 'sell') {
+        entry['settlement_days'] = settlementDays(row.settlementDays);
+        sell.add(entry);
+      } else {
+        buy.add(entry);
+      }
     }
     if (sell.isEmpty && buy.isEmpty)
       throw const FormatException('Enter at least one positive price.');
@@ -72,7 +94,9 @@ class BulkDealRow {
     required this.price,
     required this.minimum,
     this.total = '',
+    this.settlementDays,
   });
   final int? companyId;
   final String type, price, minimum, total;
+  final int? settlementDays;
 }

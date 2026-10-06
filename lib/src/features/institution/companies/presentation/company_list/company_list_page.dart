@@ -29,27 +29,61 @@ class _CompanyListPageState extends State<CompanyListPage> {
 
   @override
   Widget build(BuildContext context) {
-    return Column(
-      children: [
-        Obx(
-          () => SwitchListTile(
-            title: const Text('Only my submissions'),
-            value: c.mySubmissions(),
-            onChanged: c.isLoading()
-                ? null
-                : (value) {
-                    c.mySubmissions(value);
-                    c.fetchCompanies(page: 0);
-                  },
+    return context.isPhone
+        ? PhoneCompanyListView(c: c)
+        : DesktopCompanyListView(c: c);
+  }
+}
+
+/// Filters the company list. Sits with search, under the page title.
+class CompanySubmissionFilter extends StatelessWidget {
+  final CompanyListPageCtrl c;
+  final bool expanded;
+
+  const CompanySubmissionFilter({
+    super.key,
+    required this.c,
+    this.expanded = false,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Obx(() {
+      final mine = c.mySubmissions();
+      final loading = c.isLoading();
+
+      final button = SegmentedButton<bool>(
+        showSelectedIcon: false,
+        style: const ButtonStyle(
+          visualDensity: VisualDensity.compact,
+          tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+        ),
+        segments: const [
+          ButtonSegment(
+            value: false,
+            label: Text('All companies'),
+            tooltip: 'Every company in this list',
           ),
-        ),
-        Expanded(
-          child: context.isPhone
-              ? PhoneCompanyListView(c: c)
-              : DesktopCompanyListView(c: c),
-        ),
-      ],
-    );
+          ButtonSegment(
+            value: true,
+            label: Text('Created by me'),
+            tooltip: 'Only companies you submitted',
+          ),
+        ],
+        selected: {mine},
+        onSelectionChanged: loading
+            ? null
+            : (values) {
+                final next = values.first;
+                if (next == mine) return;
+                c.mySubmissions(next);
+                c.fetchCompanies(page: 0);
+              },
+      );
+
+      if (!expanded) return button;
+      return SizedBox(width: double.infinity, child: button);
+    });
   }
 }
 

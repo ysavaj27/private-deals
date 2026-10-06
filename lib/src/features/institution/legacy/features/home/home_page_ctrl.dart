@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:private_deals/src/features/institution/data/models/common/enums.dart';
 import 'package:private_deals/src/features/institution/legacy/router/routes/routes.dart';
+import 'package:private_deals/src/core/configuration/dio_config.dart';
 import 'package:private_deals/src/core/session/auth_session.dart';
 
 class SellerHomePageCtrl extends GetxController {
@@ -12,24 +13,29 @@ class SellerHomePageCtrl extends GetxController {
   Rx<WTabBarEnum> currentTab = WTabBarEnum.dashboard.obs;
   RxBool firstTime = false.obs;
 
-  // RxString title = ''.obs;
-
   Timer? debounce;
   DateTime? lastBackPressTime;
   int backPressCount = 0;
 
   void closeMenu() {}
 
-  final transactionsExpanded = false.obs;
-  final hotDealsExpanded = false.obs;
+  final unlistedExpanded = false.obs;
+  final lpSecondaryExpanded = false.obs;
+  final dealOfTheDayExpanded = false.obs;
 
-  bool get isHotDealTab =>
+  bool get isDealOfTheDayTab =>
       currentTab.value == WTabBarEnum.companyDeals ||
       currentTab.value == WTabBarEnum.secondaryDeals;
 
-  bool get isCompanyTab =>
+  bool get isUnlistedSection =>
       currentTab.value == WTabBarEnum.preIPOList ||
-      currentTab.value == WTabBarEnum.secondaryList;
+      currentTab.value == WTabBarEnum.priceUpdate;
+
+  bool get isLpSecondarySection =>
+      currentTab.value == WTabBarEnum.secondaryList ||
+      currentTab.value == WTabBarEnum.manageDeals;
+
+  bool get isCompanyTab => isUnlistedSection || isLpSecondarySection;
 
   // Adjust these property names to match your UserModel.
   bool get canAccessPreIPO => app.wUser.isPreIpoAccess == true;
@@ -44,11 +50,7 @@ class SellerHomePageCtrl extends GetxController {
 
   WTabBarEnum get preferredCompanyTab => WTabBarEnum.preIPOList;
 
-  WTabBarEnum get preferredTransactionTab {
-    if (canAccessPreIPO) return WTabBarEnum.preIPOTransactions;
-    if (canAccessSecondary) return WTabBarEnum.secondaryTransactions;
-    return WTabBarEnum.preIPOTransactions;
-  }
+  WTabBarEnum get preferredTransactionTab => WTabBarEnum.preIPOTransactions;
 
   int get phoneNavIndex {
     switch (currentTab.value) {
@@ -59,6 +61,7 @@ class SellerHomePageCtrl extends GetxController {
         return 1;
       case WTabBarEnum.preIPOList:
       case WTabBarEnum.secondaryList:
+      case WTabBarEnum.manageDeals:
         return 2;
       case WTabBarEnum.priceUpdate:
         return 3;
@@ -87,39 +90,37 @@ class SellerHomePageCtrl extends GetxController {
 
   bool canAccessTab(WTabBarEnum tab) => true;
 
-  // void onTap(WTabBarEnum index) {
-  //   currentTab(index);
-  //   currentTab.refresh();
-  //   if (currentTab() == WTabBarEnum.primary) {
-  //     title("Private Equity");
-  //   } else if (currentTab() == WTabBarEnum.secondary) {
-  //     title("LP Secondary");
-  //   } else if (currentTab() == WTabBarEnum.preIPO) {
-  //     title("Unlisted Shares");
-  //   }
-  // }
-
-  @override
-  void onReady() {
-    // init.forceUpdate();
-    super.onReady();
-  }
-
   void setData() {
-    transactionsExpanded.value = isTransactionTab;
     final path = Uri.parse(Get.currentRoute).path;
+    // #region agent log
+    agentLog('H', 'home_page_ctrl.dart:setData', 'seller home route', {
+      'path': path,
+      'currentRoute': Get.currentRoute,
+    });
+    // #endregion
     final tabFromUrl = WTabBarEnum.values.firstWhere(
       (tab) => path == tab.sellerPath,
-      orElse: () => path.startsWith('/investors')
-          ? WTabBarEnum.investors
-          : WTabBarEnum.dashboard,
+      orElse: () => WTabBarEnum.dashboard,
     );
     final routeArg = Get.arguments;
     if (routeArg != null && routeArg is WTabBarEnum) {
       onTap(routeArg);
     } else {
-      currentTab(tabFromUrl);
-      // _updateTitle(tabFromUrl);
+      if (currentTab() != tabFromUrl) currentTab(tabFromUrl);
+      _syncExpandedMenus(tabFromUrl);
+    }
+  }
+
+  void _syncExpandedMenus(WTabBarEnum tab) {
+    if (tab == WTabBarEnum.preIPOList || tab == WTabBarEnum.priceUpdate) {
+      unlistedExpanded.value = true;
+    }
+    if (tab == WTabBarEnum.secondaryList ||
+        tab == WTabBarEnum.manageDeals) {
+      lpSecondaryExpanded.value = true;
+    }
+    if (tab == WTabBarEnum.companyDeals || tab == WTabBarEnum.secondaryDeals) {
+      dealOfTheDayExpanded.value = true;
     }
   }
 
@@ -127,35 +128,21 @@ class SellerHomePageCtrl extends GetxController {
     if (!canAccessTab(tab)) return;
     if (Uri.parse(Get.currentRoute).path == tab.sellerPath) return;
 
-    if (tab == WTabBarEnum.preIPOTransactions ||
-        tab == WTabBarEnum.secondaryTransactions) {
-      transactionsExpanded.value = true;
-    }
+    _syncExpandedMenus(tab);
 
+    // #region agent log
+    agentLog('H', 'home_page_ctrl.dart:onTap', 'seller tab navigation', {
+      'from': Get.currentRoute,
+      'to': tab.sellerPath,
+    });
+    // #endregion
     Get.offNamed(tab.sellerPath, preventDuplicates: true, arguments: null);
   }
-
-  // void _updateTitle(WTabBarEnum tab) {
-  //   switch (tab) {
-  //     case WTabBarEnum.primary:
-  //       title("Private Equity");
-  //       break;
-  //     case WTabBarEnum.secondary:
-  //       title("LP Secondary");
-  //       break;
-  //     case WTabBarEnum.preIPO:
-  //       title("Unlisted Shares");
-  //       break;
-  //     default:
-  //       break;
-  //   }
-  // }
 
   @override
   void onInit() {
     WidgetsBinding.instance.addPostFrameCallback((_) {
       setData();
-      // Get.lazyPut(() => PortfolioPageCtrl());
     });
 
     super.onInit();
@@ -170,7 +157,7 @@ class SellerHomePageCtrl extends GetxController {
   String get appBarName {
     switch (currentTab()) {
       case WTabBarEnum.investors:
-        return 'Investors & CML';
+        return 'Investors';
       case WTabBarEnum.dashboard:
         return 'Dashboard';
       case WTabBarEnum.transactions:
@@ -182,23 +169,25 @@ class SellerHomePageCtrl extends GetxController {
       case WTabBarEnum.sendDocuments:
         return 'Send Documents';
       case WTabBarEnum.secondaryList:
-        return 'LP Secondary Companies';
+        return 'Manage Company';
       case WTabBarEnum.preIPOList:
-        return 'Unlisted Companies';
+        return 'Manage Company';
       case WTabBarEnum.primaryList:
         return 'Private Equity';
       case WTabBarEnum.sellEnquiries:
-        return 'Sell Enquiries';
+        return 'Inquiry';
       case WTabBarEnum.companyDeals:
-        return 'Unlisted Hot Deals';
+        return 'Deal of the Day';
       case WTabBarEnum.secondaryDeals:
-        return 'LP Secondary Hot Deals';
+        return 'Deal of the Day';
       case WTabBarEnum.priceUpdate:
-        return 'Update Unlisted Share Price';
+        return 'Update Share Price';
+      case WTabBarEnum.manageDeals:
+        return 'Manage Deals';
       case WTabBarEnum.preIPOTransactions:
-        return 'Unlisted Transactions';
+        return 'Transactions';
       case WTabBarEnum.secondaryTransactions:
-        return 'LP Secondary Transactions';
+        return 'Transactions';
     }
   }
 }

@@ -2,7 +2,7 @@ class AppAssets {
   /// SVG IMAGES
   static const String otpBg = "assets/images/otp.svg";
   static const String createPasswordBg = "assets/images/create_password.svg";
-  static const String emptyPlaceHolder = "assets/images/empty_placeholder.svg";
+  static const String emptyPlaceHolder = "assets/images/empty_state_illustration.svg";
   static const String pendingKyc = "assets/images/pending_kyc.svg";
   static const String phoneLoginBg = "assets/images/phone_login_bg.png";
   static const String desktopLoginBg = "assets/images/desktop_login_bg.png";

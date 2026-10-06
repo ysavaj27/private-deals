@@ -49,44 +49,23 @@ class DSideBarWidget extends StatelessWidget {
               tab: WTabBarEnum.dashboard,
             ),
             const SizedBox(height: 8),
-            DTabTileWidget(
-              icon: Icons.business_outlined,
-              title: 'Unlisted Companies',
-              tab: WTabBarEnum.preIPOList,
-            ),
+            const DUnlistedMenu(),
+            const SizedBox(height: 8),
+            const DLpSecondaryMenu(),
+            const SizedBox(height: 8),
+            const DDealOfTheDayMenu(),
             const SizedBox(height: 8),
             DTabTileWidget(
-              icon: Icons.swap_horiz_rounded,
-              title: 'LP Secondary Companies',
-              tab: WTabBarEnum.secondaryList,
-            ),
-            const SizedBox(height: 8),
-            const DHotDealsMenu(),
-            const SizedBox(height: 8),
-            DTabTileWidget(
-              icon: Icons.currency_rupee,
-              title: 'Update Unlisted Share Price',
-              tab: WTabBarEnum.priceUpdate,
+              icon: Icons.receipt_long_outlined,
+              title: 'Transactions',
+              tab: WTabBarEnum.preIPOTransactions,
             ),
             const SizedBox(height: 8),
             DTabTileWidget(
               icon: Icons.sell_outlined,
-              title: 'Sell Enquiries',
+              title: 'Inquiry',
               tab: WTabBarEnum.sellEnquiries,
             ),
-            const SizedBox(height: 8),
-            const DTransactionsMenu(),
-            const SizedBox(height: 8),
-            DTabTileWidget(
-              icon: Icons.people_outline,
-              title: 'Investors & CML',
-              tab: WTabBarEnum.investors,
-            ),
-            // DTabTileWidget(
-            //   icon: Icons.receipt_long_outlined,
-            //   title: 'Transactions',
-            //   tab: WTabBarEnum.transactions,
-            // ),
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 22),
               child: Divider(
@@ -257,106 +236,134 @@ class DActionTileWidget extends StatelessWidget {
   }
 }
 
-class DTransactionsMenu extends GetView<SellerHomePageCtrl> {
-  const DTransactionsMenu({super.key});
+class DExpandableMenu extends GetView<SellerHomePageCtrl> {
+  const DExpandableMenu({
+    super.key,
+    required this.title,
+    required this.icon,
+    required this.selected,
+    required this.expanded,
+    required this.onToggle,
+    required this.children,
+  });
+
+  final String title;
+  final IconData icon;
+  final bool selected;
+  final bool expanded;
+  final VoidCallback onToggle;
+  final List<Widget> children;
+
+  @override
+  Widget build(BuildContext context) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+    final accent = isDark ? const Color(0xFF8BAAD4) : const Color(0xFF2B5996);
+    final muted = isDark ? const Color(0xFFB1BAC4) : const Color(0xFF5A6578);
+    final colors = context.theme.colorScheme;
+    final foreground = selected ? accent : muted;
+
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.stretch,
+      children: [
+        Material(
+          color: selected
+              ? (isDark ? const Color(0xFF1A2E48) : const Color(0xFFD5E2F2))
+              : Colors.transparent,
+          borderRadius: BorderRadius.circular(12),
+          clipBehavior: Clip.antiAlias,
+          child: InkWell(
+            onTap: () {
+              if (selected) return;
+              onToggle();
+            },
+            hoverColor: accent.withAlpha(18),
+            child: Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 15),
+              child: Row(
+                children: [
+                  Icon(icon, size: 22, color: foreground),
+                  const SizedBox(width: 13),
+                  Expanded(
+                    child: Text(
+                      title,
+                      style: TextStyle(
+                        fontSize: 15,
+                        height: 1.25,
+                        color: foreground,
+                        fontWeight: selected
+                            ? FontWeight.w600
+                            : FontWeight.w500,
+                      ),
+                    ),
+                  ),
+                  AnimatedRotation(
+                    turns: expanded ? 0.5 : 0,
+                    duration: const Duration(milliseconds: 180),
+                    child: Icon(
+                      Icons.keyboard_arrow_down_rounded,
+                      color: foreground,
+                      size: 20,
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ),
+        ),
+        AnimatedSize(
+          duration: const Duration(milliseconds: 180),
+          alignment: Alignment.topCenter,
+          child: expanded
+              ? Container(
+                  margin: const EdgeInsets.only(left: 12, top: 8),
+                  padding: const EdgeInsets.only(left: 6),
+                  decoration: BoxDecoration(
+                    border: Border(
+                      left: BorderSide(color: colors.outlineVariant),
+                    ),
+                  ),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.stretch,
+                    children: [
+                      for (var i = 0; i < children.length; i++) ...[
+                        if (i > 0) const SizedBox(height: 6),
+                        children[i],
+                      ],
+                    ],
+                  ),
+                )
+              : const SizedBox.shrink(),
+        ),
+      ],
+    );
+  }
+}
+
+class DUnlistedMenu extends GetView<SellerHomePageCtrl> {
+  const DUnlistedMenu({super.key});
 
   @override
   Widget build(BuildContext context) {
     return Obx(() {
-      final isDark = Theme.of(context).brightness == Brightness.dark;
-      final accent = isDark ? const Color(0xFF8BAAD4) : const Color(0xFF2B5996);
-      final muted = isDark ? const Color(0xFFB1BAC4) : const Color(0xFF5A6578);
-      final colors = context.theme.colorScheme;
-      final selected = controller.isTransactionTab;
-      final manuallyExpanded = controller.transactionsExpanded.value;
-      final expanded = selected || manuallyExpanded;
-      final foreground = selected ? accent : muted;
+      final selected = controller.isUnlistedSection;
+      final expanded = selected || controller.unlistedExpanded.value;
 
-      return Column(
-        crossAxisAlignment: CrossAxisAlignment.stretch,
+      return DExpandableMenu(
+        title: 'Unlisted',
+        icon: Icons.business_outlined,
+        selected: selected,
+        expanded: expanded,
+        onToggle: controller.unlistedExpanded.toggle,
         children: [
-          Material(
-            color: selected
-                ? (isDark ? const Color(0xFF1A2E48) : const Color(0xFFD5E2F2))
-                : Colors.transparent,
-            borderRadius: BorderRadius.circular(12),
-            clipBehavior: Clip.antiAlias,
-            child: InkWell(
-              onTap: () {
-                if (controller.isTransactionTab) return;
-                controller.transactionsExpanded.toggle();
-              },
-              hoverColor: accent.withAlpha(18),
-              child: Padding(
-                padding: const EdgeInsets.symmetric(
-                  horizontal: 14,
-                  vertical: 15,
-                ),
-                child: Row(
-                  children: [
-                    Icon(
-                      Icons.receipt_long_outlined,
-                      size: 22,
-                      color: foreground,
-                    ),
-                    const SizedBox(width: 13),
-                    Expanded(
-                      child: Text(
-                        'Transactions',
-                        style: TextStyle(
-                          fontSize: 15,
-                          height: 1.25,
-                          color: foreground,
-                          fontWeight: selected
-                              ? FontWeight.w600
-                              : FontWeight.w500,
-                        ),
-                      ),
-                    ),
-                    AnimatedRotation(
-                      turns: expanded ? 0.5 : 0,
-                      duration: const Duration(milliseconds: 180),
-                      child: Icon(
-                        Icons.keyboard_arrow_down_rounded,
-                        color: foreground,
-                        size: 20,
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-            ),
+          DTabTileWidget(
+            icon: Icons.business_outlined,
+            title: 'Manage Company',
+            tab: WTabBarEnum.preIPOList,
           ),
-          AnimatedSize(
-            duration: const Duration(milliseconds: 180),
-            alignment: Alignment.topCenter,
-            child: expanded
-                ? Container(
-                    margin: const EdgeInsets.only(left: 12, top: 8),
-                    padding: const EdgeInsets.only(left: 6),
-                    decoration: BoxDecoration(
-                      border: Border(
-                        left: BorderSide(color: colors.outlineVariant),
-                      ),
-                    ),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.stretch,
-                      children: [
-                        DTabTileWidget(
-                          icon: Icons.business_outlined,
-                          title: 'Unlisted',
-                          tab: WTabBarEnum.preIPOTransactions,
-                        ),
-                        const SizedBox(height: 6),
-                        DTabTileWidget(
-                          icon: Icons.swap_horiz_rounded,
-                          title: 'Secondary',
-                          tab: WTabBarEnum.secondaryTransactions,
-                        ),
-                      ],
-                    ),
-                  )
-                : const SizedBox.shrink(),
+          DTabTileWidget(
+            icon: Icons.currency_rupee,
+            title: 'Update Share Price',
+            tab: WTabBarEnum.priceUpdate,
           ),
         ],
       );
@@ -364,106 +371,63 @@ class DTransactionsMenu extends GetView<SellerHomePageCtrl> {
   }
 }
 
-class DHotDealsMenu extends GetView<SellerHomePageCtrl> {
-  const DHotDealsMenu({super.key});
+class DLpSecondaryMenu extends GetView<SellerHomePageCtrl> {
+  const DLpSecondaryMenu({super.key});
 
   @override
   Widget build(BuildContext context) {
     return Obx(() {
-      final isDark = Theme.of(context).brightness == Brightness.dark;
-      final accent = isDark ? const Color(0xFF8BAAD4) : const Color(0xFF2B5996);
-      final muted = isDark ? const Color(0xFFB1BAC4) : const Color(0xFF5A6578);
-      final colors = context.theme.colorScheme;
-      final selected = controller.isHotDealTab;
-      final manuallyExpanded = controller.hotDealsExpanded.value;
-      final expanded = selected || manuallyExpanded;
-      final foreground = selected ? accent : muted;
+      final selected = controller.isLpSecondarySection;
+      final expanded = selected || controller.lpSecondaryExpanded.value;
 
-      return Column(
-        crossAxisAlignment: CrossAxisAlignment.stretch,
+      return DExpandableMenu(
+        title: 'LP Secondary',
+        icon: Icons.swap_horiz_rounded,
+        selected: selected,
+        expanded: expanded,
+        onToggle: controller.lpSecondaryExpanded.toggle,
         children: [
-          Material(
-            color: selected
-                ? (isDark ? const Color(0xFF1A2E48) : const Color(0xFFD5E2F2))
-                : Colors.transparent,
-            borderRadius: BorderRadius.circular(12),
-            clipBehavior: Clip.antiAlias,
-            child: InkWell(
-              onTap: () {
-                if (controller.isHotDealTab) return;
-                controller.hotDealsExpanded.toggle();
-              },
-              hoverColor: accent.withAlpha(18),
-              child: Padding(
-                padding: const EdgeInsets.symmetric(
-                  horizontal: 14,
-                  vertical: 15,
-                ),
-                child: Row(
-                  children: [
-                    Icon(
-                      Icons.business_center_outlined,
-                      size: 22,
-                      color: foreground,
-                    ),
-                    const SizedBox(width: 13),
-                    Expanded(
-                      child: Text(
-                        'Hot Deals',
-                        style: TextStyle(
-                          fontSize: 15,
-                          height: 1.25,
-                          color: foreground,
-                          fontWeight: selected
-                              ? FontWeight.w600
-                              : FontWeight.w500,
-                        ),
-                      ),
-                    ),
-                    AnimatedRotation(
-                      turns: expanded ? 0.5 : 0,
-                      duration: const Duration(milliseconds: 180),
-                      child: Icon(
-                        Icons.keyboard_arrow_down_rounded,
-                        color: foreground,
-                        size: 20,
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-            ),
+          DTabTileWidget(
+            icon: Icons.swap_horiz_rounded,
+            title: 'Manage Company',
+            tab: WTabBarEnum.secondaryList,
           ),
-          AnimatedSize(
-            duration: const Duration(milliseconds: 180),
-            alignment: Alignment.topCenter,
-            child: expanded
-                ? Container(
-                    margin: const EdgeInsets.only(left: 12, top: 8),
-                    padding: const EdgeInsets.only(left: 6),
-                    decoration: BoxDecoration(
-                      border: Border(
-                        left: BorderSide(color: colors.outlineVariant),
-                      ),
-                    ),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.stretch,
-                      children: [
-                        DTabTileWidget(
-                          icon: Icons.business_outlined,
-                          title: 'Unlisted',
-                          tab: WTabBarEnum.companyDeals,
-                        ),
-                        const SizedBox(height: 6),
-                        DTabTileWidget(
-                          icon: Icons.swap_horiz_rounded,
-                          title: 'LP Secondary',
-                          tab: WTabBarEnum.secondaryDeals,
-                        ),
-                      ],
-                    ),
-                  )
-                : const SizedBox.shrink(),
+          DTabTileWidget(
+            icon: Icons.handshake_outlined,
+            title: 'Manage Deals',
+            tab: WTabBarEnum.manageDeals,
+          ),
+        ],
+      );
+    });
+  }
+}
+
+class DDealOfTheDayMenu extends GetView<SellerHomePageCtrl> {
+  const DDealOfTheDayMenu({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return Obx(() {
+      final selected = controller.isDealOfTheDayTab;
+      final expanded = selected || controller.dealOfTheDayExpanded.value;
+
+      return DExpandableMenu(
+        title: 'Deal of the day',
+        icon: Icons.business_center_outlined,
+        selected: selected,
+        expanded: expanded,
+        onToggle: controller.dealOfTheDayExpanded.toggle,
+        children: [
+          DTabTileWidget(
+            icon: Icons.business_outlined,
+            title: 'Unlisted',
+            tab: WTabBarEnum.companyDeals,
+          ),
+          DTabTileWidget(
+            icon: Icons.swap_horiz_rounded,
+            title: 'LP Secondary',
+            tab: WTabBarEnum.secondaryDeals,
           ),
         ],
       );

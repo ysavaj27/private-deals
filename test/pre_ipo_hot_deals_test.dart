@@ -3,7 +3,7 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:private_deals/src/features/catalog/presentation/pre_ipo/pre_ipo_landing_page/pre_ipo_landing_page_ctrl.dart';
 
 void main() {
-  test('Hot Deals tab selects companies from the landing response', () {
+  test('Deal Of the Day tab selects companies from the landing response', () {
     final model = PreIPOLandingPageModel.fromJson({
       'hot_deals': [
         {
@@ -24,10 +24,22 @@ void main() {
       ],
     });
     final controller = PreIPOLandingPageCtrl();
+    expect(controller.tab.value, UnListedShareTabEnum.liquidStocks);
     controller.model(model);
     controller.changeTab(UnListedShareTabEnum.hotDeals);
     expect(controller.currentCompanies.single.slug, 'oyo');
     expect(controller.currentCompanies.single.deals.single.seller.id, 18);
+    expect(UnListedShareTabEnum.hotDeals.label, 'Deal Of the Day');
+    expect(
+      PreIPOLandingPageCtrl.tabs,
+      [
+        UnListedShareTabEnum.liquidStocks,
+        UnListedShareTabEnum.exclusiveDeals,
+        UnListedShareTabEnum.drhpFiled,
+        UnListedShareTabEnum.hotDeals,
+        UnListedShareTabEnum.aToZ,
+      ],
+    );
     controller.changeTab(UnListedShareTabEnum.trending);
     expect(controller.currentCompanies.single.id, 1);
     expect(model.copyWith().hotDeals.single.id, 8);

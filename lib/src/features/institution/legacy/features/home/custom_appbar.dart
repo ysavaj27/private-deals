@@ -1,3 +1,4 @@
+import 'package:private_deals/src/shared/widgets/header_action.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:private_deals/src/features/auth/data/w_auth_api.dart';
@@ -21,15 +22,7 @@ class PhoneAppBar extends StatelessWidget implements PreferredSizeWidget {
 
   @override
   Widget build(BuildContext context) {
-    return AppBar(
-      title: Text(title),
-      actions: actions,
-      // iconTheme: const IconThemeData(color: context.theme.primaryColor),
-      // backgroundColor: context.theme.scaffoldBackgroundColor,
-      shape: const RoundedRectangleBorder(
-        borderRadius: BorderRadius.vertical(bottom: Radius.circular(30)),
-      ),
-    );
+    return AppBar(title: Text(title), actions: actions);
   }
 
   @override
@@ -44,18 +37,11 @@ class CustomAppBar extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final isDark = Theme.of(context).brightness == Brightness.dark;
-    final background = isDark
-        ? const Color(0xFF0D1117)
-        : const Color(0xFFF7F9FC);
-    final border = isDark ? const Color(0xFF30363D) : const Color(0xFFB8C2D1);
-    final foreground = isDark
-        ? const Color(0xFFF0F6FC)
-        : const Color(0xFF1A2233);
-    final accent = isDark ? const Color(0xFF8BAAD4) : const Color(0xFF2B5996);
-    // final foreground = isDark
-    //     ? const Color(0xFFF0F6FC)
-    //     : const Color(0xFF1A2233);
+    final colors = Theme.of(context).colorScheme;
+    final background = colors.surfaceContainerLow;
+    final border = colors.outlineVariant;
+    final foreground = colors.onSurface;
+    final accent = colors.onPrimaryContainer;
 
     return Container(
       width: double.infinity,
@@ -85,7 +71,7 @@ class CustomAppBar extends StatelessWidget {
                           width: 42,
                           height: 42,
                           decoration: BoxDecoration(
-                            color: accent.withAlpha(isDark ? 30 : 22),
+                            color: colors.primaryContainer,
                             borderRadius: BorderRadius.circular(13),
                           ),
                           child: Icon(
@@ -124,7 +110,7 @@ class CustomAppBar extends StatelessWidget {
                     ),
                   ),
                   const SizedBox(width: 12),
-                  // _AppBarAction(
+                  // HeaderAction(
                   //   icon: Icons.notifications_outlined,
                   //   tooltip: 'Notifications',
                   //   onPressed: onPressed,
@@ -151,7 +137,7 @@ class CustomAppBar extends StatelessWidget {
                         break;
                     }
 
-                    return _AppBarAction(
+                    return HeaderAction(
                       icon: icon,
                       tooltip: tooltip,
                       onPressed: () async {
@@ -187,48 +173,6 @@ class CustomAppBar extends StatelessWidget {
   }
 }
 
-class _AppBarAction extends StatelessWidget {
-  final IconData icon;
-  final String tooltip;
-  final VoidCallback? onPressed;
-
-  const _AppBarAction({
-    required this.icon,
-    required this.tooltip,
-    this.onPressed,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    final isDark = Theme.of(context).brightness == Brightness.dark;
-    final accent = isDark ? const Color(0xFF8BAAD4) : const Color(0xFF2B5996);
-
-    return SizedBox(
-      width: 48,
-      height: 48,
-      child: Material(
-        color: isDark ? const Color(0xFF161B22) : Colors.white,
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(12),
-          side: BorderSide(
-            color: isDark ? const Color(0xFF30363D) : const Color(0xFFB8C2D1),
-          ),
-        ),
-        clipBehavior: Clip.antiAlias,
-        child: IconButton(
-          onPressed: onPressed,
-          tooltip: tooltip,
-          icon: Icon(icon, size: 22),
-          color: accent,
-          hoverColor: accent.withAlpha(18),
-          focusColor: accent.withAlpha(26),
-          splashColor: accent.withAlpha(30),
-        ),
-      ),
-    );
-  }
-}
-
 class DropdownMenuWidget extends StatelessWidget {
   final SellerHomePageCtrl c = Get.find<SellerHomePageCtrl>();
 
@@ -236,9 +180,9 @@ class DropdownMenuWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final isDark = Theme.of(context).brightness == Brightness.dark;
-    final accent = isDark ? const Color(0xFF8BAAD4) : const Color(0xFF2B5996);
-    final border = isDark ? const Color(0xFF30363D) : const Color(0xFFB8C2D1);
+    final colors = Theme.of(context).colorScheme;
+    final accent = colors.onPrimaryContainer;
+    final border = colors.outlineVariant;
 
     return PopupMenuButton<MenuItemEnum>(
       // enabled: !context.isPhone,
@@ -247,7 +191,7 @@ class DropdownMenuWidget extends StatelessWidget {
         mouseCursor: WidgetStatePropertyAll(SystemMouseCursors.click),
       ),
       tooltip: 'Account menu',
-      color: isDark ? const Color(0xFF161B22) : const Color(0xFFF7F9FC),
+      color: colors.surfaceContainer,
       surfaceTintColor: Colors.transparent,
       elevation: 8,
       offset: const Offset(0, 8),
@@ -366,7 +310,7 @@ class DropdownMenuWidget extends StatelessWidget {
         height: 48,
         padding: const EdgeInsets.all(4),
         decoration: BoxDecoration(
-          color: accent.withAlpha(isDark ? 28 : 18),
+          color: colors.primaryContainer,
           borderRadius: BorderRadius.circular(14),
           border: Border.all(color: border),
         ),
@@ -382,6 +326,7 @@ class DropdownMenuWidget extends StatelessWidget {
             }
             return CacheImage(
               url: app.wUser.profile,
+              placeHolderImage: app.wUser.placeholderImage,
               imageBuilder: (context, imageProvider) {
                 return Image(
                   image: imageProvider,

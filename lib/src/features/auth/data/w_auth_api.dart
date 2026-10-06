@@ -1,3 +1,4 @@
+import 'package:dio/dio.dart';
 import 'package:private_deals/src/shared/app_exports.dart';
 
 class WAuthApi {
@@ -15,6 +16,28 @@ class WAuthApi {
         'device': init.deviceOs,
       };
       var response = await dioConfig.post(AppUrl.wLogin, body);
+      final raw = response.data;
+      final payload = raw is Map ? Map<String, dynamic>.from(raw) : null;
+      final data = payload?['data'];
+      final dataMap = data is Map ? Map<String, dynamic>.from(data) : null;
+      // #region agent log
+      agentLog('B', 'w_auth_api.dart:login', 'login response', {
+        'httpStatus': response.statusCode,
+        'bodyType': raw.runtimeType.toString(),
+        'status': payload?['status'],
+        'statusType': payload?['status']?.runtimeType.toString(),
+        'message': payload?['message'],
+        'dataType': data?.runtimeType.toString(),
+        'partnerType': dataMap?['type'],
+        'hasId': dataMap?['id'] != null,
+        'idPositive': int.tryParse('${dataMap?['id']}') != null &&
+            int.tryParse('${dataMap?['id']}')! > 0,
+        'hasToken': dataMap?['token'] != null &&
+            dataMap!['token'].toString().isNotEmpty,
+        'cityType': dataMap?['city']?.runtimeType.toString(),
+        'startupListType': dataMap?['startup_list']?.runtimeType.toString(),
+      });
+      // #endregion
       BaseModel<PartnerUser> baseModel = BaseModel.fromJson(
         response.data,
         (data) => PartnerUser.fromJson(data),
@@ -24,6 +47,13 @@ class WAuthApi {
       }
       return baseModel;
     } catch (e, t) {
+      // #region agent log
+      agentLog('A', 'w_auth_api.dart:login', 'login threw', {
+        'errorType': e.runtimeType.toString(),
+        'statusCode': e is DioException ? e.response?.statusCode : null,
+        'dioType': e is DioException ? e.type.name : null,
+      });
+      // #endregion
       logger.e(e, stackTrace: t);
       return BaseModel.fromError(e.toString());
     }
@@ -76,6 +106,64 @@ class WAuthApi {
       return baseModel;
     } catch (e, t) {
       logger.e("Error on Profile Detail Update", error: e, stackTrace: t);
+      return BaseModel.fromError(e.toString());
+    }
+  }
+
+  /// Display-photo profile for every partner role (`GET v2/business/profile`).
+  static Future<BaseModel<PartnerUser>> profilePhotoGet() async {
+    final requestRevision = app.revision;
+    final sessionToken = app.token;
+    try {
+      final response = await dioConfig.get(AppUrl.wProfilePhoto, {});
+      final baseModel = BaseModel<PartnerUser>.fromJson(
+        response.data,
+        (data) => PartnerUser.fromJson(data),
+      );
+      if (baseModel.isSuccess &&
+          baseModel.r != null &&
+          requestRevision == app.revision) {
+        baseModel.r!.token = sessionToken.isNotEmpty
+            ? sessionToken
+            : baseModel.r!.token;
+        await app.setUser(prefUser: baseModel.r!.toJson());
+      }
+      return baseModel;
+    } catch (e, t) {
+      logger.e(e, stackTrace: t);
+      return BaseModel.fromError(e.toString());
+    }
+  }
+
+  /// Update only the display photo (`POST v2/business/profile` form-data `logo`).
+  static Future<BaseModel<PartnerUser>> profilePhotoUpdate({
+    required Uint8List image,
+    required String imageName,
+  }) async {
+    final requestRevision = app.revision;
+    final sessionToken = app.token;
+    try {
+      final body = await dioConfig.createBytesImage(
+        image: image,
+        imageName: imageName,
+        key: 'logo',
+      );
+      final response = await dioConfig.post(AppUrl.wProfilePhoto, body, false);
+      final baseModel = BaseModel<PartnerUser>.fromJson(
+        response.data,
+        (data) => PartnerUser.fromJson(data),
+      );
+      if (baseModel.isSuccess &&
+          baseModel.r != null &&
+          requestRevision == app.revision) {
+        baseModel.r!.token = sessionToken.isNotEmpty
+            ? sessionToken
+            : baseModel.r!.token;
+        await app.setUser(prefUser: baseModel.r!.toJson());
+      }
+      return baseModel;
+    } catch (e, t) {
+      logger.e(e, stackTrace: t);
       return BaseModel.fromError(e.toString());
     }
   }

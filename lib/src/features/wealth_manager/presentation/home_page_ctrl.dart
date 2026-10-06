@@ -43,31 +43,42 @@ class HomePageCtrl extends GetxController {
   }
 
   void setData() {
-    final tabFromUrl = Get.currentRoute.startsWith('/investors')
-        ? WTabBarEnum.investors
-        : WTabBarRouteX.fromSlug(Get.parameters['tab']);
+    final tabFromUrl = WTabBarRouteX.fromSlug(Get.parameters['tab']);
     final routeArg = Get.arguments;
     if (routeArg != null && routeArg is WTabBarEnum) {
       onTap(routeArg);
-    } else {
+    } else if (currentTab() != tabFromUrl) {
       currentTab(tabFromUrl);
-      // _updateTitle(tabFromUrl);
     }
   }
 
   void onTap(WTabBarEnum tab) {
     if (SessionNavigation.check('/wealth-manager/${tab.slug}') !=
         AccessResult.allowed) {
-      Get.toNamed('/access-denied');
+      Get.offAllNamed(SessionNavigation.home);
       return;
     }
-    if (Get.currentRoute == '/wealth-manager/${tab.slug}')
-      return; // avoid redundant navigation
+    final target = '/wealth-manager/${tab.slug}';
+    // Keep view state in sync even when the URL already matches (stale tab).
+    if (Get.currentRoute == target) {
+      if (currentTab() != tab) currentTab(tab);
+      return;
+    }
+    // #region agent log
+    agentLog('A', 'home_page_ctrl.dart:onTap', 'tab switch before offNamed', {
+      'from': currentTab().name,
+      'to': tab.name,
+      'route': Get.currentRoute,
+      'homeRegistered': Get.isRegistered<HomePageCtrl>(),
+      'portfolioRegistered': Get.isRegistered<PortfolioPageCtrl>(),
+      'homeHash': identityHashCode(this),
+    });
+    // #endregion
     currentTab(tab);
     // _updateTitle(tab);
     // if (kIsWeb) {
     Get.offNamed(
-      '/wealth-manager/${tab.slug}',
+      target,
       preventDuplicates: true,
       arguments: null,
     );
@@ -95,19 +106,47 @@ class HomePageCtrl extends GetxController {
   @override
   void onInit() {
     setData();
-    Get.lazyPut(() => PortfolioPageCtrl());
+    // #region agent log
+    agentLog('A', 'home_page_ctrl.dart:onInit', 'before lazyPut PortfolioPageCtrl', {
+      'portfolioRegistered': Get.isRegistered<PortfolioPageCtrl>(),
+      'route': Get.currentRoute,
+      'tab': currentTab().name,
+      'homeHash': identityHashCode(this),
+    });
+    // #endregion
+    // fenix: recreate after SmartManagement deletes the instance on route churn.
+    if (!Get.isRegistered<PortfolioPageCtrl>()) {
+      Get.lazyPut(() => PortfolioPageCtrl(), fenix: true);
+    }
+    // #region agent log
+    agentLog('A', 'home_page_ctrl.dart:onInit', 'after lazyPut PortfolioPageCtrl', {
+      'portfolioRegistered': Get.isRegistered<PortfolioPageCtrl>(),
+      'homeHash': identityHashCode(this),
+    });
+    // #endregion
 
     super.onInit();
   }
 
   @override
   void onClose() {
+    // #region agent log
+    agentLog('B', 'home_page_ctrl.dart:onClose', 'HomePageCtrl disposing', {
+      'portfolioRegistered': Get.isRegistered<PortfolioPageCtrl>(),
+      'route': Get.currentRoute,
+      'tab': currentTab().name,
+      'homeHash': identityHashCode(this),
+      'stillRegistered': Get.isRegistered<HomePageCtrl>(),
+    });
+    // #endregion
     debounce?.cancel();
     super.onClose();
   }
 
   String get appBarName {
     switch (currentTab()) {
+      case WTabBarEnum.myInquiries:
+        return 'My Inquiries';
       case WTabBarEnum.dashboard:
         return 'Dashboard';
       case WTabBarEnum.investorTransactions:

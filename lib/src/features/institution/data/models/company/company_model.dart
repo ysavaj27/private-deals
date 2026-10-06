@@ -15,6 +15,7 @@ class CompanyModel {
   double sharePrice;
   double distributerPrice;
   double basePrice;
+  double myBasePrice;
   bool priceUpdatedToday;
   double lastYearSharePrice;
   bool isTrending;
@@ -43,6 +44,7 @@ class CompanyModel {
     this.sharePrice = 0.0,
     this.distributerPrice = 0.0,
     this.basePrice = 0.0,
+    this.myBasePrice = 0.0,
     this.priceUpdatedToday = false,
     this.lastYearSharePrice = 0.0,
     this.isTrending = false,
@@ -74,6 +76,7 @@ class CompanyModel {
       sharePrice: Parse.toDouble(json['share_price']),
       distributerPrice: Parse.toDouble(json['distributer_price']),
       basePrice: Parse.toDouble(json['base_price']),
+      myBasePrice: Parse.toDouble(json['my_base_price']),
       priceUpdatedToday: Parse.toBool(json['price_updated_today']),
       lastYearSharePrice: Parse.toDouble(json['last_year_share_price']),
       isTrending: Parse.toBool(json['is_trending']),
@@ -113,6 +116,7 @@ class CompanyModel {
       "share_price": sharePrice,
       "distributer_price": distributerPrice,
       "base_price": basePrice,
+      "my_base_price": myBasePrice,
       "price_updated_today": priceUpdatedToday,
       "last_year_share_price": lastYearSharePrice,
       "is_trending": isTrending,
@@ -127,6 +131,12 @@ class CompanyModel {
       "promoters": List<dynamic>.from(promoters.map((x) => x.toJson())),
     };
   }
+
+  /// Institution unlisted list only: today's uploaded base price, not catalog
+  /// [sharePrice]. Zero means no upload today.
+  String get myBasePriceLabel => myBasePrice > 0
+      ? '₹${myBasePrice.toStringAsFixed(2)}'
+      : 'Price Upload Pending';
 }
 
 class SectorModel {

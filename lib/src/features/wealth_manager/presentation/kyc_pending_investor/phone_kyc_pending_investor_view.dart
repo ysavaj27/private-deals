@@ -407,7 +407,7 @@ class PendingKycInvestorWidget extends StatelessWidget {
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
                           Text(
-                            "City : ",
+                            "Type : ",
                             style: TextStyle(
                                 fontSize: 12,
                                 color: context.theme.disabledColor
@@ -415,7 +415,9 @@ class PendingKycInvestorWidget extends StatelessWidget {
                                 fontWeight: FontWeight.w500),
                           ),
                           Text(
-                            model.city.name,
+                            model.investorType.isEmpty
+                                ? '—'
+                                : model.investorType,
                             style: const TextStyle(
                                 fontSize: 12, fontWeight: FontWeight.w500),
                           ),

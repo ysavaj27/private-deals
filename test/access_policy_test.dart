@@ -26,7 +26,7 @@ void main() {
       );
       expect(
         AccessPolicy.check(user, AccessScope.investors) == AccessResult.allowed,
-        role != PartnerRole.unknown,
+        role != PartnerRole.unknown && role != PartnerRole.institution,
       );
       for (final scope in [
         AccessScope.primary,
@@ -137,8 +137,8 @@ void main() {
       expect(AccessPolicy.safeReturnPath(path), isNull);
     }
     expect(
-      AccessPolicy.safeReturnPath('/institution/deals/unlisted?search=abc'),
-      '/institution/deals/unlisted?search=abc',
+      AccessPolicy.safeReturnPath('/institution/deals/hot/unlisted?search=abc'),
+      '/institution/deals/hot/unlisted?search=abc',
     );
   });
 }

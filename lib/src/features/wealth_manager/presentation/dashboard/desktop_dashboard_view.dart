@@ -32,6 +32,24 @@ class DesktopDashboardView extends StatelessWidget {
                       ),
                       const Spacer(),
                       Visibility(
+                        visible: app.wUser.isPreIpoAccess,
+                        child: TabButton(
+                          title: "Unlisted",
+                          type: DashboardTypeEnum.preIpo,
+                          onTap: () {
+                            c.changeTab(DashboardTypeEnum.preIpo);
+                          },
+                          currentIndex: c.currentIndex,
+                          // size: context,
+                        ),
+                      ),
+                      Visibility(
+                        visible: app.wUser.isPreIpoAccess &&
+                            (app.wUser.isSecondaryAccess ||
+                                app.wUser.isPrimaryAccess),
+                        child: const SizedBox(width: 10),
+                      ),
+                      Visibility(
                         visible: app.wUser.isSecondaryAccess ||
                             app.wUser.isPrimaryAccess,
                         child: TabButton(
@@ -39,23 +57,6 @@ class DesktopDashboardView extends StatelessWidget {
                           type: DashboardTypeEnum.primary,
                           onTap: () {
                             c.changeTab(DashboardTypeEnum.primary);
-                          },
-                          currentIndex: c.currentIndex,
-                          // size: context,
-                        ),
-                      ),
-                      Visibility(
-                        visible: app.wUser.isSecondaryAccess ||
-                            app.wUser.isPrimaryAccess,
-                        child: const SizedBox(width: 10),
-                      ),
-                      Visibility(
-                        visible: app.wUser.isPreIpoAccess,
-                        child: TabButton(
-                          title: "Unlisted Shares",
-                          type: DashboardTypeEnum.preIpo,
-                          onTap: () {
-                            c.changeTab(DashboardTypeEnum.preIpo);
                           },
                           currentIndex: c.currentIndex,
                           // size: context,

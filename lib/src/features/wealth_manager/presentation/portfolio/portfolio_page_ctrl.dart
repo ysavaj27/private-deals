@@ -1,3 +1,4 @@
+import 'package:private_deals/src/features/wealth_manager/presentation/home_page_ctrl.dart';
 import 'package:private_deals/src/shared/app_exports.dart';
 
 import 'package:private_deals/src/features/wealth_manager/presentation/portfolio/phone_portfolio_view.dart';
@@ -45,9 +46,26 @@ class PortfolioPageCtrl extends GetxController
 
   @override
   void onInit() {
+    // #region agent log
+    agentLog('C', 'portfolio_page_ctrl.dart:onInit', 'PortfolioPageCtrl created', {
+      'route': Get.currentRoute,
+      'homeRegistered': Get.isRegistered<HomePageCtrl>(),
+    });
+    // #endregion
     setData();
     getData();
     super.onInit();
+  }
+
+  @override
+  void onClose() {
+    // #region agent log
+    agentLog('B', 'portfolio_page_ctrl.dart:onClose', 'PortfolioPageCtrl disposing', {
+      'route': Get.currentRoute,
+      'isLoading': isLoading.value,
+    });
+    // #endregion
+    super.onClose();
   }
 
   void setData() {
@@ -56,6 +74,15 @@ class PortfolioPageCtrl extends GetxController
       selectedInvestor.value = [data];
     }
   }
+
+  List<EquityTypeEnum> get tabTypes => [
+    if (app.wUser.isPreIpoAccess) EquityTypeEnum.preIpo,
+    if (app.wUser.isPrimaryAccess || app.wUser.isSecondaryAccess) ...[
+      EquityTypeEnum.equity,
+      EquityTypeEnum.ccps,
+      EquityTypeEnum.ccd,
+    ],
+  ];
 
   int get tabBarLength {
     int i = 0;
@@ -68,6 +95,7 @@ class PortfolioPageCtrl extends GetxController
 
   List<Widget> get tabs {
     List<Widget> tab = [];
+    tab.addIf(app.wUser.isPreIpoAccess, const Tab(text: 'Unlisted'));
     tab.addIf(
       app.wUser.isPrimaryAccess || app.wUser.isSecondaryAccess,
       const Tab(text: 'Equity'),
@@ -80,15 +108,12 @@ class PortfolioPageCtrl extends GetxController
       app.wUser.isPrimaryAccess || app.wUser.isSecondaryAccess,
       const Tab(text: 'CCD'),
     );
-    tab.addIf(
-      app.wUser.isPreIpoAccess,
-      const Tab(text: 'Unlisted Shares'),
-    );
     return tab;
   }
 
   List<Widget> get tabViews {
     List<Widget> tab = [];
+    tab.addIf(app.wUser.isPreIpoAccess, PreIpoListWidget());
     tab.addIf(
       app.wUser.isPrimaryAccess || app.wUser.isSecondaryAccess,
       ListWidget(equityList),
@@ -100,10 +125,6 @@ class PortfolioPageCtrl extends GetxController
     tab.addIf(
       app.wUser.isPrimaryAccess || app.wUser.isSecondaryAccess,
       ListWidget(ccdList),
-    );
-    tab.addIf(
-      app.wUser.isPreIpoAccess,
-      PreIpoListWidget(),
     );
     return tab;
   }
@@ -140,9 +161,9 @@ class PortfolioPageCtrl extends GetxController
 
           return item.investor.name.toLowerCase().contains(searchQuery) ||
               item.holdings.any(
-                (holding) => holding.company.brandName
-                    .toLowerCase()
-                    .contains(searchQuery),
+                (holding) => holding.company.brandName.toLowerCase().contains(
+                  searchQuery,
+                ),
               );
         }).toList();
         // logger.d("Value :${searchList.length}");
@@ -158,9 +179,9 @@ class PortfolioPageCtrl extends GetxController
 
           return item.investor.name.toLowerCase().contains(searchQuery) ||
               item.holdings.any(
-                (holding) => holding.startup.brandName
-                    .toLowerCase()
-                    .contains(searchQuery),
+                (holding) => holding.startup.brandName.toLowerCase().contains(
+                  searchQuery,
+                ),
               );
         }).toList();
         // logger.d("Value :${searchList.length}");
@@ -201,11 +222,14 @@ class PortfolioPageCtrl extends GetxController
 
   Future<void> getStartupPortfolio() async {
     if (currentIndex() == EquityTypeEnum.preIpo) {
-      getPreIpoPortfolio();
+      await getPreIpoPortfolio();
       return;
     }
     var res = await PortfolioApi.wPortfolioAPi(
-        currentIndex().name, selectedInvestor, selectedStartup);
+      currentIndex().name,
+      selectedInvestor,
+      selectedStartup,
+    );
     if (res.isSuccess) {
       switch (currentIndex()) {
         case EquityTypeEnum.equity:
@@ -228,14 +252,23 @@ class PortfolioPageCtrl extends GetxController
   Future<void> getData() async {
     isLoading(true);
     tabController = TabController(length: tabBarLength, vsync: this);
-    if (app.wUser.isPreIPOOnly) {
+    if (app.wUser.isPreIpoAccess) {
       currentIndex(EquityTypeEnum.preIpo);
     } else {
       currentIndex(EquityTypeEnum.equity);
     }
+    tabController.addListener(() {
+      if (tabTypes.isNotEmpty &&
+          currentIndex() != tabTypes[tabController.index]) {
+        changeTab(tabTypes[tabController.index]);
+      }
+    });
     logger.d(currentIndex.value);
-    await Future.wait(
-        [getStartupPortfolio(), getInvestorList(), getStartupList()]);
+    await Future.wait([
+      getStartupPortfolio(),
+      getInvestorList(),
+      getStartupList(),
+    ]);
     isLoading(false);
   }
 }

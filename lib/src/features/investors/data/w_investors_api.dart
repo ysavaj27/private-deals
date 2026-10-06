@@ -32,53 +32,33 @@ class WInvestorsApi {
     }
   }
 
+  /// POST `v2/business/investor` create body:
+  /// required: investor_type, name, mobile_number
+  /// optional: email, gender
   static Future<BaseModel<InvestorModel>> addInvestor({
     required int id,
     required String investorType,
     required String name,
     required String mobileNumber,
     String email = '',
-    String address = '',
-    int cityId = 0,
-    String pincode = '',
     String gender = '',
-    String password = '',
-    // required bool isPrimaryAccess,
-    // required bool isSecondaryAccess,
-    // required bool isPreIPOAccess,
   }) async {
     try {
-      Map<String, dynamic> body = {
+      final Map<String, dynamic> body = {
         "investor_type": investorType,
         "name": name,
         "mobile_number": mobileNumber,
-        // "email": email,
-        // "address": address,
-        // "city_id": cityId,
-        // "pincode": pincode,
-        // "gender": gender,
-        // "is_primary_access": isPrimaryAccess,
-        // "is_secondary_access": isSecondaryAccess,
-        // "is_preipo_access": isPreIPOAccess
       };
-      body.addIf(email.isNotEmpty, 'email', email);
-      body.addIf(address.isNotEmpty, 'address', address);
-      body.addIf(gender.isNotEmpty, 'gender', gender);
-      body.addIf(pincode.isNotEmpty, 'pincode', pincode);
-      body.addIf(cityId.isNotEmpty, 'city_id', cityId);
-      if (id == 0) {
-        body.removeWhere(
-          (key, _) => ![
-            'investor_type',
-            'name',
-            'mobile_number',
-            'email',
-            'gender',
-          ].contains(key),
-        );
+      final trimmedEmail = email.trim();
+      if (trimmedEmail.isNotEmpty) {
+        body['email'] = trimmedEmail.toLowerCase();
+      }
+      final trimmedGender = gender.trim();
+      if (trimmedGender.isNotEmpty) {
+        body['gender'] = trimmedGender;
       }
       if (id != 0) {
-        body.addAll({"investor_id": id});
+        body['investor_id'] = id;
       }
       var response = await dioConfig.post(
         id != 0 ? AppUrl.wUpdateInvestor : AppUrl.wAddInvestor,

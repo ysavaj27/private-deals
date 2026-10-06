@@ -48,6 +48,9 @@ void main() {
       final other = role == 'Institution'
           ? '/wealth-manager/dashboard'
           : '/institution/dashboard';
+      final home = role == 'Institution'
+          ? '/institution/dashboard'
+          : '/wealth-manager/dashboard';
       await tester.pumpWidget(
         GetMaterialApp(
           initialRoute: other,
@@ -68,8 +71,15 @@ void main() {
               ],
             ),
             GetPage(
-              name: '/access-denied',
-              page: () => const Scaffold(body: Text('Access denied')),
+              name: home,
+              page: () => const Scaffold(body: Text('My dashboard')),
+              middlewares: [
+                AuthMiddleware(
+                  scope: role == 'Institution'
+                      ? AccessScope.institution
+                      : AccessScope.business,
+                ),
+              ],
             ),
           ],
         ),
@@ -77,7 +87,7 @@ void main() {
       await tester.pumpAndSettle();
       expect(built, 0);
       expect(find.text('Private data'), findsNothing);
-      expect(find.text('Access denied'), findsOneWidget);
+      expect(find.text('My dashboard'), findsOneWidget);
     });
   }
   testWidgets('Restoring a stored token never constructs private content', (

@@ -1,8 +1,8 @@
+import 'package:private_deals/src/features/account/presentation/profile_page_ctrl.dart';
+import 'package:private_deals/src/features/account/presentation/profile_photo_section.dart';
 import 'package:private_deals/src/features/auth/presentation/login/login_page.dart';
 import 'package:private_deals/src/features/wealth_manager/presentation/home_page_ctrl.dart';
 import 'package:private_deals/src/shared/app_exports.dart';
-
-import 'package:private_deals/src/features/account/presentation/profile_page_ctrl.dart';
 
 class PhoneProfileView extends StatelessWidget {
   final ProfilePageCtrl c = Get.find<ProfilePageCtrl>();
@@ -21,6 +21,18 @@ class PhoneProfileView extends StatelessWidget {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Text('Account', style: context.textTheme.titleLarge),
+          const SizedBox(height: AppSpace.lg),
+          Obx(() => ProfilePhotoSection(controller: c)),
+          Obx(() {
+            if (c.error.value.isEmpty) return const SizedBox.shrink();
+            return Padding(
+              padding: const EdgeInsets.only(top: AppSpace.sm),
+              child: Text(
+                c.error.value,
+                style: TextStyle(color: scheme.error),
+              ),
+            );
+          }),
           const SizedBox(height: AppSpace.lg),
           TitleTextField(
             readOnly: true,

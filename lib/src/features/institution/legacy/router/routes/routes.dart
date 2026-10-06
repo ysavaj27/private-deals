@@ -111,6 +111,8 @@ extension WTabBarRouteX on WTabBarEnum {
         return 'hot-deals/secondary';
       case WTabBarEnum.priceUpdate:
         return 'update-share-price';
+      case WTabBarEnum.manageDeals:
+        return 'manage-deals';
       case WTabBarEnum.preIPOTransactions:
         return 'unlisted-transactions';
       case WTabBarEnum.secondaryTransactions:
@@ -195,10 +197,10 @@ extension SellerTabPath on WTabBarEnum {
   String get sellerPath => switch (this) {
     WTabBarEnum.preIPOList => '/institution/companies/unlisted',
     WTabBarEnum.secondaryList => '/institution/companies/secondary',
-    WTabBarEnum.companyDeals => '/institution/deals/unlisted',
-    WTabBarEnum.secondaryDeals => '/institution/deals/secondary',
+    WTabBarEnum.companyDeals => '/institution/deals/hot/unlisted',
+    WTabBarEnum.secondaryDeals => '/institution/deals/hot/secondary',
     WTabBarEnum.priceUpdate => '/institution/bulk-deals',
-    WTabBarEnum.investors => '/investors',
+    WTabBarEnum.manageDeals => '/institution/deals/manage/secondary',
     _ => '/institution/$slug',
   };
 }

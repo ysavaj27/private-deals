@@ -1,4 +1,4 @@
-import 'package:private_deals/src/core/session/auth_session.dart';
+import 'package:private_deals/src/shared/functions/parse.dart' as shared;
 
 class Parse {
   static int toInt(dynamic data, [int defaultValue = 0]) {
@@ -27,12 +27,7 @@ class Parse {
     return data?.toString() ?? defaultValue;
   }
 
-  static String parseUrl(String? url) {
-    if (url != null && url.isNotEmpty) {
-      return app.config.s3Baseurl + url;
-    }
-    return "";
-  }
+  static String parseUrl(String? url) => shared.Parse.parseUrl(url);
 
   static T toEnum<T extends Enum>(
     List<T> values,

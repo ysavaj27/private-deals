@@ -20,7 +20,11 @@ class HomePage extends StatelessWidget {
   final SellerHomePageCtrl c = Get.put(SellerHomePageCtrl());
 
   HomePage({super.key, this.child}) {
-    c.setData();
+    // Defer tab sync — constructor runs during route build, and setData()
+    // updates Obx-watched state.
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (Get.isRegistered<SellerHomePageCtrl>()) c.setData();
+    });
   }
 
   @override
@@ -68,6 +72,8 @@ class MainWidgets extends StatelessWidget {
           return DealListView(key: ValueKey(Get.currentRoute));
         case WTabBarEnum.priceUpdate:
           return UpdateSharePricePage();
+        case WTabBarEnum.manageDeals:
+          return DealListView(key: ValueKey(Get.currentRoute));
         case WTabBarEnum.preIPOTransactions:
           return PreIPOTransactionPage();
         case WTabBarEnum.secondaryTransactions:

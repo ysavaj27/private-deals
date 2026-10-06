@@ -60,7 +60,8 @@ class PreIPOInvestmentPageCtrl extends GetxController {
           investorList.add(
             SelectInvestorModel(
               investorId: e.id,
-              investorName: e.name,
+              investorName: e.displayName,
+              isSelf: e.isSelf,
               isMarket: true,
               price: sharePrice,
               priceCTRL: TextEditingController(text: sharePrice.toString()),
@@ -106,33 +107,29 @@ class PreIPOInvestmentPageCtrl extends GetxController {
   }
 
   Future<void> onPress() async {
-    // if (paymentMode.value == null) {
-    //   toast("Please approve investment Agreement first");
-    //   return;
-    // }
     if (investing.value || investorList.isEmpty) return;
     final offer = selectedOffer.value;
-    if (offer != null) {
-      if (!offer.canBuy || !offer.sellerId.isNotEmpty) {
-        toast('Please select an available offer with seller details',
-            MessageEnum.alert);
+    if (offer == null || !offer.canBuy) {
+      toast(
+        offer?.buyBlockedReason ??
+            'Please select an available Institution sell deal',
+        MessageEnum.alert,
+      );
+      return;
+    }
+    for (final investor in investorList) {
+      final error = offer.validateQuantity(investor.quantityCTRL?.text) ??
+          offer.validatePrice(investor.priceCTRL?.text);
+      if (error != null) {
+        toast(error, MessageEnum.alert);
         return;
-      }
-      for (final investor in investorList) {
-        final error = offer.validateQuantity(investor.quantityCTRL?.text) ??
-            offer.validatePrice(investor.priceCTRL?.text);
-        if (error != null) {
-          toast(error, MessageEnum.alert);
-          return;
-        }
       }
     }
     investing(true);
     var res = await WPreIpoTransactionApi.buy(
       list: investorList,
-      companyId: model().id,
-      distributorPrice: purchasePrice,
-      sellerId: selectedOffer.value?.sellerId ?? 0,
+      dealId: offer.dealId,
+      dealUuid: offer.dealUuid,
     );
     investing(false);
     if (res.isSuccess) {

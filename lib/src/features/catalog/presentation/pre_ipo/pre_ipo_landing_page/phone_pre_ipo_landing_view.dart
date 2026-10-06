@@ -23,8 +23,10 @@ class PhonePreIPOLandingView extends StatelessWidget {
                 radius: 16,
                 hintText: "Search Company's",
                 onTap: () {
-                  var routes =
-                      Routes.preIPOListPath(Get.currentRoute, "search");
+                  var routes = Routes.preIPOListPath(
+                    Get.currentRoute,
+                    "search",
+                  );
                   logger.d(routes);
                   Get.toNamed(routes);
                 },
@@ -41,8 +43,10 @@ class PhonePreIPOLandingView extends StatelessWidget {
                     items: PreIPOLandingPageCtrl.tabs,
                     labelBuilder: (tab) => tab.label,
                     selected: c.tab.value,
-                    // read inside Obx by the caller, see below
                     onSelected: c.changeTab,
+                    isHighlighted: (tab) =>
+                        tab == UnListedShareTabEnum.hotDeals,
+                    highlightedIcon: Icons.local_fire_department_rounded,
                   );
                 }),
               ),
@@ -55,13 +59,11 @@ class PhonePreIPOLandingView extends StatelessWidget {
               final companies = c.currentCompanies;
 
               if (companies.isEmpty) {
-                return Padding(
-                  padding: const EdgeInsets.symmetric(vertical: 48),
-                  child: Text(
-                    'No companies to show here.',
-                    style: TextStyle(
-                        color: context.theme.iconTheme.color
-                            ?.withValues(alpha: 0.6)),
+                return const Padding(
+                  padding: EdgeInsets.symmetric(vertical: 24),
+                  child: NoDataView(
+                    title: 'No companies to show here.',
+                    isRefreshButton: false,
                   ),
                 );
               }
@@ -81,7 +83,9 @@ class PhonePreIPOLandingView extends StatelessWidget {
                       // badgeText: company.headingText,
                       onTap: () {
                         var route = Routes.preIPODetailPath(
-                            "/wealth-manager/${WTabBarEnum.preIPO.slug}", company.slug);
+                          "/wealth-manager/${WTabBarEnum.preIPO.slug}",
+                          company.slug,
+                        );
                         logger.d(route);
                         Get.toNamed(route);
                       },
@@ -105,8 +109,10 @@ class PhonePreIPOLandingView extends StatelessWidget {
               text: "Explore More",
               width: 150,
               onPressed: () {
-                var routes =
-                    Routes.preIPOListPath(Get.currentRoute, c.tab.value.route);
+                var routes = Routes.preIPOListPath(
+                  Get.currentRoute,
+                  c.tab.value.route,
+                );
                 logger.d(routes);
                 Get.toNamed(routes);
               },
@@ -148,8 +154,9 @@ class PhoneNewsWidget extends StatelessWidget {
           child: Text(
             'News',
             style: TextStyle(
-                fontSize: context.isPhone ? 22 : 36,
-                fontWeight: FontWeight.bold),
+              fontSize: context.isPhone ? 22 : 36,
+              fontWeight: FontWeight.bold,
+            ),
           ),
         ),
         const SizedBox(height: 20),
@@ -181,9 +188,7 @@ class PhoneNewsWidget extends StatelessWidget {
                           height: 90,
                           width: context.width,
                           child: ClipRRect(
-                            borderRadius: BorderRadius.circular(
-                              12,
-                            ),
+                            borderRadius: BorderRadius.circular(12),
                             child: CacheImage(
                               url: model.image,
                               fit: BoxFit.cover,
@@ -206,12 +211,7 @@ class PhoneNewsWidget extends StatelessWidget {
                             maxLines: 2,
                             style: TextStyle(
                               fontSize: 10,
-                              color: Color.fromRGBO(
-                                124,
-                                124,
-                                124,
-                                1,
-                              ),
+                              color: Color.fromRGBO(124, 124, 124, 1),
                             ),
                           ),
                         ),

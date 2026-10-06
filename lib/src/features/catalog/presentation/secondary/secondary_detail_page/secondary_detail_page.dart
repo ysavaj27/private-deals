@@ -12,9 +12,9 @@ class SecondaryDetailPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     if (context.isPhone) {
-      return PhoneSecondaryDetailView();
+      return const PhoneSecondaryDetailView();
     } else {
-      return DesktopSecondaryDetailViews();
+      return const DesktopSecondaryDetailViews();
     }
   }
 }

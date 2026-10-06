@@ -31,30 +31,31 @@ class PhoneDashboardView extends StatelessWidget {
                       mainAxisAlignment: MainAxisAlignment.end,
                       children: [
                         Visibility(
-                          visible: app.wUser.isSecondaryAccess ||
-                              app.wUser.isSecondaryAccess,
+                          visible: app.wUser.isPreIpoAccess,
                           child: TabButton(
-                            title: "Private Equity",
-                            type: DashboardTypeEnum.primary,
+                            title: "Unlisted",
+                            type: DashboardTypeEnum.preIpo,
                             onTap: () {
-                              c.changeTab(DashboardTypeEnum.primary);
+                              c.changeTab(DashboardTypeEnum.preIpo);
                             },
                             currentIndex: c.currentIndex,
                             // size: context,
                           ),
                         ),
                         Visibility(
-                          visible: app.wUser.isSecondaryAccess ||
-                              app.wUser.isSecondaryAccess,
+                          visible: app.wUser.isPreIpoAccess &&
+                              (app.wUser.isSecondaryAccess ||
+                                  app.wUser.isPrimaryAccess),
                           child: const SizedBox(width: 10),
                         ),
                         Visibility(
-                          visible: app.wUser.isPreIpoAccess,
+                          visible: app.wUser.isSecondaryAccess ||
+                              app.wUser.isPrimaryAccess,
                           child: TabButton(
-                            title: "Unlisted Shares",
-                            type: DashboardTypeEnum.preIpo,
+                            title: "Private Equity",
+                            type: DashboardTypeEnum.primary,
                             onTap: () {
-                              c.changeTab(DashboardTypeEnum.preIpo);
+                              c.changeTab(DashboardTypeEnum.primary);
                             },
                             currentIndex: c.currentIndex,
                             // size: context,

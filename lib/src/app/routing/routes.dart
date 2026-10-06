@@ -41,10 +41,30 @@ class Routes {
 
   static String addInvestorPath(String tabSlug) => '$tabSlug/add-investor';
 
-  static String preIPODetailPath(String url, String slug) =>
-      '$url/detail/$slug';
+  static String preIPODetailPath(String url, String slug) {
+    final uri = Uri.parse(url);
+    return _preIPOPath(uri, '${uri.path}/detail/$slug');
+  }
 
-  static String preIPOInvestmentPath(String url) => '$url/investment';
+  static String preIPOInvestmentPath(String url) {
+    final uri = Uri.parse(url);
+    return _preIPOPath(uri, '${uri.path}/investment');
+  }
+
+  // Discard the retired filter even when arriving from an older deep link.
+  static String _preIPOPath(Uri uri, String path) {
+    final query = Map<String, List<String>>.from(uri.queryParametersAll)
+      ..remove('deal_type');
+    return Uri(
+      scheme: uri.scheme,
+      userInfo: uri.userInfo,
+      host: uri.hasAuthority ? uri.host : null,
+      port: uri.hasPort ? uri.port : null,
+      path: path,
+      queryParameters: query.isEmpty ? null : query,
+      fragment: uri.hasFragment ? uri.fragment : null,
+    ).toString();
+  }
 
   static String primaryDetailPath(String url, String slug) =>
       '$url/detail/$slug';
@@ -76,6 +96,8 @@ class Routes {
 extension WTabBarRouteX on WTabBarEnum {
   String get slug {
     switch (this) {
+      case WTabBarEnum.myInquiries:
+        return 'my-inquiries';
       case WTabBarEnum.dashboard:
         return 'dashboard';
       case WTabBarEnum.investorTransactions:
@@ -155,6 +177,13 @@ class RouteHierarchy {
     if (segments.length == 4 &&
         segments[0] == 'wealth-manager' &&
         segments[2] == 'blog-detail') {
+      return '/wealth-manager/${segments[1]}';
+    }
+
+    // /home/:tab/kyc/:id -> /home/:tab
+    if (segments.length == 4 &&
+        segments[0] == 'wealth-manager' &&
+        segments[2] == 'kyc') {
       return '/wealth-manager/${segments[1]}';
     }
 

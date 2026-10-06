@@ -1,6 +1,7 @@
 import 'package:private_deals/src/core/configuration/init_config.dart';
 
 import 'package:private_deals/src/shared/functions/parse.dart';
+import 'package:private_deals/src/shared/models/settlement_option.dart';
 
 class ConfigModel {
   Document document;
@@ -16,6 +17,7 @@ class ConfigModel {
   String currentApiVersion;
   List<AppVersionModel> appVersion;
   BuildModel build;
+  List<SettlementOption> settlementDays;
 
   ConfigModel({
     required this.document,
@@ -31,6 +33,7 @@ class ConfigModel {
     this.preIpoBuyButton = '',
     this.appVersion = const [],
     required this.build,
+    this.settlementDays = const [],
   });
 
   InfoModel get version {
@@ -58,6 +61,17 @@ class ConfigModel {
             ? List<AppVersionModel>.from(
                 json["app_version"].map((x) => AppVersionModel.fromJson(x)))
             : [],
+        settlementDays: json["settlement_days"] is List
+            ? (json["settlement_days"] as List)
+                .whereType<Map>()
+                .map(
+                  (item) => SettlementOption.fromJson(
+                    Map<String, dynamic>.from(item),
+                  ),
+                )
+                .where((option) => option.value >= 1 && option.value <= 30)
+                .toList()
+            : const [],
       );
 
   Map<String, dynamic> toJson() => {
@@ -74,6 +88,8 @@ class ConfigModel {
         "current_api_version": currentApiVersion,
         "build": build.toJson(),
         "preipo_buy_button": preIpoBuyButton,
+        "settlement_days":
+            List<dynamic>.from(settlementDays.map((x) => x.toJson())),
       };
 }
 

@@ -6,17 +6,19 @@ import 'package:get/get.dart';
 import 'package:private_deals/src/features/institution/data/api/company_api.dart';
 import 'package:private_deals/src/features/institution/data/models/common/enums.dart';
 import 'package:private_deals/src/features/institution/data/models/company/lite_company_model.dart';
-
-// Import SharePriceApi and SharePriceCompany.
+import 'package:private_deals/src/shared/app_exports.dart' show app;
+import 'package:private_deals/src/shared/models/settlement_option.dart';
 
 class SharePriceDraft {
-  SharePriceDraft(this.company);
+  SharePriceDraft(this.company, {int? settlementDays})
+    : settlementDays = RxnInt(settlementDays);
 
   final LiteCompanyModel company;
 
   final price = TextEditingController();
   final minQty = TextEditingController();
   final totalQty = TextEditingController();
+  final RxnInt settlementDays;
 
   final errors = <String, String>{}.obs;
 
@@ -31,6 +33,7 @@ class SharePriceDraft {
     for (final input in inputs) {
       input.clear();
     }
+    settlementDays.value = null;
     errors.clear();
   }
 
@@ -45,9 +48,13 @@ class UpdateSharePriceCtrl extends GetxController {
   final sellRows = <SharePriceDraft>[].obs;
   final buyRows = <SharePriceDraft>[].obs;
   final dealType = 'sell'.obs;
+  final commonSettlementDays = RxnInt();
   RxList<SharePriceDraft> get rows =>
       dealType.value == 'sell' ? sellRows : buyRows;
   String get priceLabel => dealType.value == 'buy' ? 'Buy price' : 'Sell price';
+  bool get isSell => dealType.value == 'sell';
+  List<SettlementOption> get settlementOptions => app.config.settlementDays;
+
   void selectType(String type) {
     if (saving.value || type == dealType.value) return;
     dealType.value = type;
@@ -128,7 +135,12 @@ class UpdateSharePriceCtrl extends GetxController {
             unique.values.map((company) {
               final previous = existing.remove(company.id);
               if (previous != null) return previous;
-              final row = SharePriceDraft(company);
+              final row = SharePriceDraft(
+                company,
+                settlementDays: collection == sellRows
+                    ? commonSettlementDays.value
+                    : null,
+              );
               for (final input in row.inputs) {
                 input.addListener(_onDraftChanged);
               }
@@ -176,6 +188,26 @@ class UpdateSharePriceCtrl extends GetxController {
     feedback.value = '';
   }
 
+  /// Applies the common cycle to rows still on the previous common value.
+  void setCommonSettlement(int? value) {
+    final previous = commonSettlementDays.value;
+    commonSettlementDays.value = value;
+    for (final row in sellRows) {
+      if (row.settlementDays.value == previous) {
+        row.settlementDays.value = value;
+      }
+    }
+    revision.value++;
+    feedback.value = '';
+  }
+
+  void setRowSettlement(SharePriceDraft row, int? value) {
+    row.settlementDays.value = value;
+    row.errors.remove('settlement_days');
+    revision.value++;
+    feedback.value = '';
+  }
+
   bool validateRow(SharePriceDraft row) {
     row.errors.clear();
 
@@ -210,6 +242,14 @@ class UpdateSharePriceCtrl extends GetxController {
         row.errors['total_qty'] = 'Enter a whole number of 1 or more';
       } else if (minimum != null && quantity < minimum) {
         row.errors['total_qty'] = 'Must be at least minimum quantity';
+      }
+    }
+
+    if (isSell) {
+      final cycle = row.settlementDays.value;
+      final allowed = settlementOptions.map((option) => option.value).toSet();
+      if (cycle == null || !allowed.contains(cycle)) {
+        row.errors['settlement_days'] = 'Select a settlement cycle';
       }
     }
 
@@ -259,6 +299,7 @@ class UpdateSharePriceCtrl extends GetxController {
         'min_qty': int.parse(row.minQty.text.trim()),
         if (row.totalQty.text.trim().isNotEmpty)
           'total_qty': int.parse(row.totalQty.text.trim()),
+        if (isSell) 'settlement_days': row.settlementDays.value,
       });
     }
 
@@ -288,6 +329,7 @@ class UpdateSharePriceCtrl extends GetxController {
                 price: row.price.text,
                 minimum: row.minQty.text,
                 total: row.totalQty.text,
+                settlementDays: isSell ? row.settlementDays.value : null,
               ),
             )
             .toList(),
@@ -307,11 +349,19 @@ class UpdateSharePriceCtrl extends GetxController {
       for (final row in rows) {
         row.clear();
       }
+      if (isSell) {
+        commonSettlementDays.value = null;
+      }
 
       clearSearch();
       feedbackIsError.value = false;
       feedback.value = 'Prices updated for ${prices.length} companies.';
       toast(feedback.value, MessageEnum.success);
+    } on FormatException catch (error) {
+      if (!isClosed) {
+        feedbackIsError.value = true;
+        feedback.value = error.message;
+      }
     } catch (_) {
       if (!isClosed) {
         feedbackIsError.value = true;

@@ -1,22 +1,29 @@
 import 'package:private_deals/src/features/catalog/presentation/pre_ipo/pre_ipo_investment/select_investor_dialog.dart';
+import 'package:private_deals/src/features/catalog/presentation/pre_ipo/pre_ipo_detail_page/pre_ipo_detail_sections.dart';
 import 'package:private_deals/src/shared/app_exports.dart';
 
-class SecondaryDetailPageCtrl extends GetxController{
+class SecondaryDetailPageCtrl extends GetxController
+    implements CompanyDetailSectionsCtrl {
   RxBool isLoading = false.obs;
   RxBool isBuying = false.obs;
   RxBool isVisible = false.obs;
+  @override
   RxBool isExpanded = false.obs;
   // RxBool isButtonClicked = false.obs;
+  @override
   Rx<CompanyModel> model = CompanyModel.fromJson({}).obs;
   Rx<InvestmentTypeEnum> type = InvestmentTypeEnum.none.obs;
   final GlobalKey<FormState> desktopKey = GlobalKey<FormState>();
   final GlobalKey<FormState> phoneKey = GlobalKey<FormState>();
   // final TextEditingController qtyCTRL = TextEditingController();
   RxInt qty = 0.obs;
+  @override
   RxInt financialTab = 1.obs;
+  @override
   RxInt shareHoldingTab = 0.obs;
   RxInt tab = 0.obs;
   ScrollController scrollController = ScrollController();
+  @override
   List<GlobalKey> sectionKeys = [];
 
   Future<void> getData() async {
@@ -89,19 +96,11 @@ class SecondaryDetailPageCtrl extends GetxController{
   }
 
   Future<void> onPress() async {
-    investing(true);
-    var res = await WPreIpoTransactionApi.buy(
-      list: investorList,
-      companyId: model().id,
-      distributorPrice: model().distributerPrice,
+    if (investing.value || investorList.isEmpty) return;
+    toast(
+      'Secondary purchases use enquiry. Open Enquire to continue.',
+      MessageEnum.alert,
     );
-    investing(false);
-    if (res.isSuccess) {
-      toast(res.m, MessageEnum.success);
-      investorList.clear();
-    } else {
-      toast(res.m, MessageEnum.alert);
-    }
   }
 
   @override
@@ -153,7 +152,7 @@ class SecondaryDetailPageCtrl extends GetxController{
           investorList.add(
             SelectInvestorModel(
               investorId: e.id,
-              investorName: e.name,
+              investorName: e.displayName,
               isMarket: true,
               price: model().sharePrice,
               priceCTRL: TextEditingController(
@@ -187,19 +186,10 @@ class SecondaryDetailPageCtrl extends GetxController{
   }
 
   Future<void> onInvest() async {
-    investing(true);
-    var res = await WPreIpoTransactionApi.buy(
-      list: investorList,
-      companyId: model().id,
-      distributorPrice: model().distributerPrice,
+    if (investing.value || investorList.isEmpty) return;
+    toast(
+      'Secondary purchases use enquiry. Open Enquire to continue.',
+      MessageEnum.alert,
     );
-    investing(false);
-    if (res.isSuccess) {
-      Get.back(result: true);
-      toast(res.m, MessageEnum.success);
-      transaction(res.r);
-    } else {
-      toast(res.m, MessageEnum.alert);
-    }
   }
 }

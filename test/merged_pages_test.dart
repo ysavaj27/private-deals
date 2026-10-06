@@ -15,7 +15,7 @@ void main() {
     dioConfig.dio.httpClientAdapter = FakeAdapter(
       (options) async => response({
         'status': 1,
-        'data': options.path.endsWith('seller/dashboard')
+        'data': options.path == 'v2/business/institution/dashboard'
             ? {
                 'access': {
                   'is_preipo_access': true,
@@ -42,8 +42,7 @@ void main() {
       '/institution/bulk-deals',
       '/institution/profile',
       '/institution/companies/secondary',
-      '/institution/deals/unlisted',
-      '/investors',
+      '/institution/deals/hot/unlisted',
     ]) {
       testWidgets(
         'Merged page $path at ${size.width} has no rendering errors',
@@ -59,6 +58,19 @@ void main() {
           expect(tester.takeException(), isNull);
           expect(find.byType(Scaffold), findsWidgets);
           expect(Get.currentRoute, path);
+          if (path == '/institution/dashboard') {
+            final adapter = dioConfig.dio.httpClientAdapter as FakeAdapter;
+            final request = adapter.requests.singleWhere(
+              (request) =>
+                  request.path == 'v2/business/institution/dashboard',
+            );
+            expect(request.uri.path, '/api/v2/business/institution/dashboard');
+            expect(
+              find.text(size.width < 600 ? 'Companies' : 'Total companies'),
+              findsOneWidget,
+            );
+            expect(find.text('Your dashboard couldn’t be loaded'), findsNothing);
+          }
           await tester.pumpWidget(const SizedBox());
         },
       );

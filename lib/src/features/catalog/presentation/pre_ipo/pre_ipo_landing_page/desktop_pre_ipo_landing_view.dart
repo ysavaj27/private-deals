@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:cached_network_image/cached_network_image.dart';
+import 'package:cached_network_image_platform_interface/cached_network_image_platform_interface.dart';
 import 'package:flutter/rendering.dart';
 import 'package:private_deals/src/features/catalog/presentation/pre_ipo/news_list/news_detail_dialog.dart';
 import 'package:private_deals/src/shared/app_exports.dart';
@@ -22,15 +23,18 @@ class DesktopPreIPOLandingView extends StatelessWidget {
             const SizedBox(height: 24),
             Text.rich(
               TextSpan(
-                style:
-                    const TextStyle(fontSize: 36, fontWeight: FontWeight.w400),
+                style: const TextStyle(
+                  fontSize: 36,
+                  fontWeight: FontWeight.w400,
+                ),
                 children: [
                   TextSpan(
                     text: 'Explore ',
                     style: TextStyle(
                       decorationThickness: 2.5,
-                      decorationColor:
-                          context.theme.primaryColor.withValues(alpha: 0.7),
+                      decorationColor: context.theme.primaryColor.withValues(
+                        alpha: 0.7,
+                      ),
                     ),
                   ),
                   const TextSpan(
@@ -56,8 +60,11 @@ class DesktopPreIPOLandingView extends StatelessWidget {
                           items: PreIPOLandingPageCtrl.tabs,
                           labelBuilder: (tab) => tab.label,
                           selected: c.tab.value,
-                          // read inside Obx by the caller, see below
                           onSelected: c.changeTab,
+                          isHighlighted: (tab) =>
+                              tab == UnListedShareTabEnum.hotDeals,
+                          highlightedIcon:
+                              Icons.local_fire_department_rounded,
                         );
                       }),
                     ),
@@ -72,8 +79,10 @@ class DesktopPreIPOLandingView extends StatelessWidget {
                         radius: 16,
                         hintText: "Search Company's",
                         onTap: () {
-                          var routes =
-                              Routes.preIPOListPath(Get.currentRoute, "search");
+                          var routes = Routes.preIPOListPath(
+                            Get.currentRoute,
+                            "search",
+                          );
                           logger.d(routes);
                           Get.toNamed(routes);
                         },
@@ -91,20 +100,15 @@ class DesktopPreIPOLandingView extends StatelessWidget {
               final companies = c.currentCompanies;
 
               if (c.isLoading.isTrue) {
-                return SizedBox(
-                  height: context.height * 0.4,
-                  child: Loader(),
-                );
+                return SizedBox(height: context.height * 0.4, child: Loader());
               }
 
               if (companies.isEmpty) {
-                return Padding(
-                  padding: const EdgeInsets.symmetric(vertical: 48),
-                  child: Text(
-                    'No companies to show here.',
-                    style: TextStyle(
-                        color: context.theme.iconTheme.color
-                            ?.withValues(alpha: 0.6)),
+                return const Padding(
+                  padding: EdgeInsets.symmetric(vertical: 24),
+                  child: NoDataView(
+                    title: 'No companies to show here.',
+                    isRefreshButton: false,
                   ),
                 );
               }
@@ -124,7 +128,9 @@ class DesktopPreIPOLandingView extends StatelessWidget {
                       // badgeText: company.headingText,
                       onTap: () {
                         var route = Routes.preIPODetailPath(
-                            "/wealth-manager/${WTabBarEnum.preIPO.slug}", company.slug);
+                          "/wealth-manager/${WTabBarEnum.preIPO.slug}",
+                          company.slug,
+                        );
                         logger.d(route);
                         Get.toNamed(route);
                       },
@@ -151,7 +157,9 @@ class DesktopPreIPOLandingView extends StatelessWidget {
                 height: 56,
                 onPressed: () {
                   var routes = Routes.preIPOListPath(
-                      Get.currentRoute, c.tab.value.route);
+                    Get.currentRoute,
+                    c.tab.value.route,
+                  );
                   logger.d(routes);
                   Get.toNamed(routes);
                 },
@@ -178,12 +186,16 @@ class CustomTabBar<T> extends StatelessWidget {
     required this.labelBuilder,
     required this.selected,
     required this.onSelected,
+    this.isHighlighted,
+    this.highlightedIcon,
   });
 
   final List<T> items;
   final String Function(T item) labelBuilder;
   final T selected;
   final ValueChanged<T> onSelected;
+  final bool Function(T item)? isHighlighted;
+  final IconData? highlightedIcon;
 
   @override
   Widget build(BuildContext context) {
@@ -194,9 +206,12 @@ class CustomTabBar<T> extends StatelessWidget {
       itemBuilder: (context, index) {
         final item = items[index];
         final isSelected = item == selected;
+        final highlighted = isHighlighted?.call(item) ?? false;
         return _TabItem(
           label: labelBuilder(item),
           isSelected: isSelected,
+          isHighlighted: highlighted,
+          highlightedIcon: highlighted ? highlightedIcon : null,
           onTap: () => onSelected(item),
         );
       },
@@ -209,20 +224,38 @@ class _TabItem extends StatelessWidget {
     required this.label,
     required this.isSelected,
     required this.onTap,
+    this.isHighlighted = false,
+    this.highlightedIcon,
   });
 
   final String label;
   final bool isSelected;
+  final bool isHighlighted;
+  final IconData? highlightedIcon;
   final VoidCallback onTap;
 
   @override
   Widget build(BuildContext context) {
     final scheme = context.theme.colorScheme;
+    final accent = AppColors.secondaryStartUp;
+    final primary = context.theme.primaryColor;
 
-    final bg = scheme.surface;
-    final unselectedBorder = scheme.outlineVariant;
-    final selectedTextColor = scheme.onSurface;
-    final unselectedTextColor = scheme.onSurfaceVariant;
+    final Color bg;
+    final Color borderColor;
+    final Color textColor;
+    final double borderWidth;
+
+    if (isHighlighted) {
+      bg = scheme.surface;
+      borderColor = isSelected ? accent : accent.withValues(alpha: 0.55);
+      textColor = isSelected ? primary : scheme.onSurface;
+      borderWidth = isSelected ? 2 : 1.5;
+    } else {
+      bg = scheme.surface;
+      borderColor = isSelected ? primary : scheme.outlineVariant;
+      textColor = isSelected ? scheme.onSurface : scheme.onSurfaceVariant;
+      borderWidth = isSelected ? 1.5 : 1;
+    }
 
     return Clickable(
       onTap: onTap,
@@ -233,19 +266,31 @@ class _TabItem extends StatelessWidget {
         decoration: BoxDecoration(
           color: bg,
           borderRadius: BorderRadius.circular(24),
-          border: Border.all(
-            color: isSelected ? context.theme.primaryColor : unselectedBorder,
-            width: isSelected ? 1.5 : 1,
-          ),
+          border: Border.all(color: borderColor, width: borderWidth),
         ),
         alignment: Alignment.center,
-        child: Text(
-          label,
-          style: TextStyle(
-            color: isSelected ? selectedTextColor : unselectedTextColor,
-            fontSize: 15,
-            fontWeight: isSelected ? FontWeight.w700 : FontWeight.w400,
-          ),
+        child: Row(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            if (highlightedIcon != null) ...[
+              Icon(
+                highlightedIcon,
+                size: 18,
+                color: isSelected ? accent : accent.withValues(alpha: 0.85),
+              ),
+              const SizedBox(width: 6),
+            ],
+            Text(
+              label,
+              style: TextStyle(
+                color: textColor,
+                fontSize: 15,
+                fontWeight: isSelected || isHighlighted
+                    ? FontWeight.w700
+                    : FontWeight.w400,
+              ),
+            ),
+          ],
         ),
       ),
     );
@@ -253,11 +298,7 @@ class _TabItem extends StatelessWidget {
 }
 
 class CustomCompanyCard extends StatelessWidget {
-  const CustomCompanyCard({
-    super.key,
-    required this.company,
-    this.onTap,
-  });
+  const CustomCompanyCard({super.key, required this.company, this.onTap});
 
   /// Logo image widget (e.g. Image.network / Image.asset / SvgPicture).
   // final Widget logo;
@@ -330,8 +371,13 @@ class CustomCompanyCard extends StatelessWidget {
                       color: logoBg,
                       borderRadius: BorderRadius.circular(12),
                       image: DecorationImage(
-                          fit: BoxFit.cover,
-                          image: CachedNetworkImageProvider(company.logo)),
+                        fit: BoxFit.cover,
+                        image: CachedNetworkImageProvider(
+                          company.logo,
+                          imageRenderMethodForWeb:
+                              ImageRenderMethodForWeb.HttpGet,
+                        ),
+                      ),
                     ),
                   ),
                   const SizedBox(width: 14),
@@ -355,7 +401,7 @@ class CustomCompanyCard extends StatelessWidget {
                         Row(
                           children: [
                             Text(
-                              company.distributerPrice.toCurrency,
+                              company.sharePrice.toCurrency,
                               style: TextStyle(
                                 fontSize: 14,
                                 fontWeight: FontWeight.w800,
@@ -452,9 +498,11 @@ class FeaturedWidget extends StatelessWidget {
               TextSpan(
                 text: 'Featured ',
                 style: TextStyle(
-                    decorationThickness: 2.5,
-                    decorationColor:
-                        context.theme.primaryColor.withValues(alpha: 0.7)),
+                  decorationThickness: 2.5,
+                  decorationColor: context.theme.primaryColor.withValues(
+                    alpha: 0.7,
+                  ),
+                ),
               ),
               TextSpan(
                 text: 'Sectors',
@@ -494,8 +542,9 @@ class NewsWidget extends StatelessWidget {
           child: Text(
             'News',
             style: TextStyle(
-                fontSize: context.isPhone ? 22 : 36,
-                fontWeight: FontWeight.bold),
+              fontSize: context.isPhone ? 22 : 36,
+              fontWeight: FontWeight.bold,
+            ),
           ),
         ),
         const SizedBox(height: 60),
@@ -504,7 +553,9 @@ class NewsWidget extends StatelessWidget {
           child: Obx(() {
             return ListView.separated(
               padding: EdgeInsets.only(
-                  left: context.width * 0.0276, right: context.width * 0.1),
+                left: context.width * 0.0276,
+                right: context.width * 0.1,
+              ),
               itemCount: c.newsSector().news.length,
               physics: const BouncingScrollPhysics(),
               scrollDirection: Axis.horizontal,
@@ -517,8 +568,9 @@ class NewsWidget extends StatelessWidget {
                     onTap: () {
                       showNewsDetailBottomSheet(context, news: model);
                     },
-                    borderRadius:
-                        BorderRadius.vertical(top: Radius.circular(14)),
+                    borderRadius: BorderRadius.vertical(
+                      top: Radius.circular(14),
+                    ),
                     child: CustomCardWidget(
                       color: context.theme.scaffoldBackgroundColor,
                       radius: 14,
@@ -526,7 +578,8 @@ class NewsWidget extends StatelessWidget {
                         children: [
                           ClipRRect(
                             borderRadius: const BorderRadius.vertical(
-                                top: Radius.circular(14)),
+                              top: Radius.circular(14),
+                            ),
                             child: CacheImage(
                               url: model.image,
                               width: double.infinity,
@@ -550,15 +603,18 @@ class NewsWidget extends StatelessWidget {
                                       children: [
                                         Row(
                                           children: [
-                                            Icon(Icons.calendar_month,
-                                                color:
-                                                    context.theme.disabledColor,
-                                                size: 24),
+                                            Icon(
+                                              Icons.calendar_month,
+                                              color:
+                                                  context.theme.disabledColor,
+                                              size: 24,
+                                            ),
                                             const SizedBox(width: 5),
                                             Text(
                                               model.createdAt.dateWithMonthYear,
-                                              style:
-                                                  const TextStyle(fontSize: 14),
+                                              style: const TextStyle(
+                                                fontSize: 14,
+                                              ),
                                             ),
                                           ],
                                         ),
@@ -592,8 +648,10 @@ class NewsWidget extends StatelessWidget {
                                   ),
                                   TextButton(
                                     onPressed: () {
-                                      showNewsDetailBottomSheet(context,
-                                          news: model);
+                                      showNewsDetailBottomSheet(
+                                        context,
+                                        news: model,
+                                      );
                                     },
                                     child: const Row(
                                       mainAxisAlignment:
@@ -605,8 +663,10 @@ class NewsWidget extends StatelessWidget {
                                           style: TextStyle(fontSize: 16),
                                         ),
                                         SizedBox(width: 5),
-                                        Icon(Icons.arrow_forward_outlined,
-                                            size: 24),
+                                        Icon(
+                                          Icons.arrow_forward_outlined,
+                                          size: 24,
+                                        ),
                                       ],
                                     ),
                                   ),
@@ -621,9 +681,7 @@ class NewsWidget extends StatelessWidget {
                 );
               },
               separatorBuilder: (BuildContext context, int index) =>
-                  const SizedBox(
-                width: 20,
-              ),
+                  const SizedBox(width: 20),
             );
           }),
         ),
@@ -693,11 +751,16 @@ class SectorCard extends StatelessWidget {
                 height: context.isPhone ? 54 : 60,
                 alignment: Alignment.center,
                 decoration: BoxDecoration(
-                    color: logoBg,
-                    borderRadius: BorderRadius.circular(12),
-                    image: DecorationImage(
-                        fit: BoxFit.contain,
-                        image: CachedNetworkImageProvider(icon))),
+                  color: logoBg,
+                  borderRadius: BorderRadius.circular(12),
+                  image: DecorationImage(
+                    fit: BoxFit.contain,
+                    image: CachedNetworkImageProvider(
+                      icon,
+                      imageRenderMethodForWeb: ImageRenderMethodForWeb.HttpGet,
+                    ),
+                  ),
+                ),
               ),
               const SizedBox(width: 12),
               Expanded(
@@ -753,9 +816,11 @@ class SectorCard extends StatelessWidget {
                           fontWeight: FontWeight.w500,
                         ),
                       ),
-                      Icon(Icons.chevron_right,
-                          color: subtitleColor,
-                          size: context.isPhone ? 16 : 20),
+                      Icon(
+                        Icons.chevron_right,
+                        color: subtitleColor,
+                        size: context.isPhone ? 16 : 20,
+                      ),
                     ],
                   ),
                 ),
@@ -799,11 +864,7 @@ class OverlappingLogoRow extends StatelessWidget {
           for (int i = 0; i < visibleCount; i++)
             Positioned(
               left: i * (size - overlap),
-              child: _LogoCircle(
-                model: logos[i],
-                size: size,
-                onTap: onTap,
-              ),
+              child: _LogoCircle(model: logos[i], size: size, onTap: onTap),
             ),
           if (remaining > 0)
             Positioned(
@@ -817,11 +878,7 @@ class OverlappingLogoRow extends StatelessWidget {
 }
 
 class _LogoCircle extends StatelessWidget {
-  const _LogoCircle({
-    required this.model,
-    required this.size,
-    this.onTap,
-  });
+  const _LogoCircle({required this.model, required this.size, this.onTap});
 
   final SectorCompanyModel model;
   final double size;
@@ -839,12 +896,17 @@ class _LogoCircle extends StatelessWidget {
         width: size,
         height: size,
         decoration: BoxDecoration(
-            shape: BoxShape.circle,
-            color: bg,
-            border: Border.all(color: ringColor, width: 2),
-            image: DecorationImage(
-                fit: BoxFit.contain,
-                image: CachedNetworkImageProvider(model.logo))),
+          shape: BoxShape.circle,
+          color: bg,
+          border: Border.all(color: ringColor, width: 2),
+          image: DecorationImage(
+            fit: BoxFit.contain,
+            image: CachedNetworkImageProvider(
+              model.logo,
+              imageRenderMethodForWeb: ImageRenderMethodForWeb.HttpGet,
+            ),
+          ),
+        ),
         padding: const EdgeInsets.all(1),
         clipBehavior: Clip.antiAlias,
       ),

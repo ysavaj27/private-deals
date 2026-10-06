@@ -38,8 +38,26 @@ void main() {
       CompanyType.secondary,
     );
     expect(
-      DealRouteContext.fromPath('/institution/deals/unlisted/create').type,
+      DealRouteContext.fromPath('/institution/deals/hot/unlisted/create').type,
       CompanyType.unlisted,
+    );
+    expect(
+      DealRouteContext.fromPath(
+        '/institution/deals/hot/unlisted/create',
+      ).isHotDeal,
+      isTrue,
+    );
+    expect(
+      DealRouteContext.fromPath(
+        '/institution/deals/manage/secondary/create',
+      ).isHotDeal,
+      isFalse,
+    );
+    expect(
+      DealRouteContext.fromPath(
+        '/institution/deals/manage/secondary',
+      ).type,
+      CompanyType.secondary,
     );
     expect(
       () => CompanyRouteContext.fromPath('/wealth-manager/dashboard'),
@@ -76,6 +94,7 @@ void main() {
           type: 'sell',
           price: '20',
           minimum: '1000',
+          settlementDays: 2,
         ),
         const BulkDealRow(
           companyId: 12,
@@ -94,6 +113,7 @@ void main() {
             'sell_price': 20,
             'min_qty': 1000,
             'total_qty': null,
+            'settlement_days': 2,
           },
         ],
         'buy': [
@@ -115,12 +135,24 @@ void main() {
           type: 'sell',
           price: '20',
           minimum: '1',
+          settlementDays: 2,
         ),
         const BulkDealRow(
           companyId: 12,
           type: 'buy',
           price: '10',
           minimum: '0',
+        ),
+      ]),
+      throwsFormatException,
+    );
+    expect(
+      () => DealPayloads.bulk([
+        const BulkDealRow(
+          companyId: 12,
+          type: 'sell',
+          price: '20',
+          minimum: '1',
         ),
       ]),
       throwsFormatException,
