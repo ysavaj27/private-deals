@@ -1,0 +1,94 @@
+{
+  "flutter": {
+    "platforms": {
+      "android": {
+        "default": {
+          "projectId": "private-deals-e672b",
+          "appId": "1:749470263169:android:915811d415ebd57a4e2a80",
+          "fileOutput": "android/app/google-services.json"
+        }
+      },
+      "ios": {
+        "default": {
+          "projectId": "private-deals-e672b",
+          "appId": "1:749470263169:ios:455d3c6a6273909a4e2a80",
+          "uploadDebugSymbols": true,
+          "fileOutput": "ios/Runner/GoogleService-Info.plist"
+        }
+      },
+      "macos": {
+        "default": {
+          "projectId": "private-deals-e672b",
+          "appId": "1:749470263169:ios:455d3c6a6273909a4e2a80",
+          "uploadDebugSymbols": true,
+          "fileOutput": "macos/Runner/GoogleService-Info.plist"
+        }
+      },
+      "dart": {
+        "lib/firebase_options.dart": {
+          "projectId": "private-deals-e672b",
+          "configurations": {
+            "android": "1:749470263169:android:915811d415ebd57a4e2a80",
+            "ios": "1:749470263169:ios:455d3c6a6273909a4e2a80",
+            "macos": "1:749470263169:ios:455d3c6a6273909a4e2a80",
+            "web": "1:749470263169:web:c36d2fd936afca1c4e2a80",
+            "windows": "1:749470263169:web:c36d2fd936afca1c4e2a80"
+          }
+        }
+      }
+    }
+  },
+  "hosting": {
+    "site": "staging-private-deals",
+    "public": "build/web",
+    "ignore": [
+      "firebase.json",
+      "**/.*",
+      "**/node_modules/**"
+    ],
+    "rewrites": [
+      {
+        "source": "**",
+        "destination": "/index.html"
+      }
+    ],
+    "headers": [
+      {
+        "source": "/index.html",
+        "headers": [
+          {
+            "key": "Cache-Control",
+            "value": "no-cache"
+          }
+        ]
+      },
+      {
+        "source": "/flutter_bootstrap.js",
+        "headers": [
+          {
+            "key": "Cache-Control",
+            "value": "no-cache"
+          }
+        ]
+      },
+      {
+        "source": "/manifest.json",
+        "headers": [
+          {
+            "key": "Cache-Control",
+            "value": "no-cache"
+          }
+        ]
+      },
+      {
+        "source": "**/*.@(js|css|wasm|png|jpg|jpeg|gif|svg|woff|woff2|ttf|eot)",
+        "headers": [
+          {
+            "key": "Cache-Control",
+            "value": "max-age=31536000"
+          }
+        ]
+      }
+    ]
+  }
+}
