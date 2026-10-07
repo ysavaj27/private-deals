@@ -168,6 +168,16 @@ class OTPWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    // #region agent log
+    debugNdjson('A,C,D,E', 'phone_forgot_password_view.dart:OTPWidget.build',
+        'OTP screen display source (phone)', {
+      'runId': 'post-fix',
+      'displayedText': c.maskedEnteredPhone,
+      'iUserMobile': app.iUser.mobileNumber,
+      'iUserHide': app.iUser.mobileNumber.toHidePhoneNo,
+      'phoneNoCTRL': c.phoneNoCTRL.text,
+    });
+    // #endregion
     return FadeInUp(
       child: CustomCardWidget(
         margin: EdgeInsets.symmetric(horizontal: 16),
@@ -187,7 +197,7 @@ class OTPWidget extends StatelessWidget {
               ),
               const SizedBox(height: 10),
               Text(
-                "A message with the verification code has been sent to \n${app.iUser.mobileNumber.toHidePhoneNo}. Please enter the code to continue.",
+                "A message with the verification code has been sent to \n${c.maskedEnteredPhone}. Please enter the code to continue.",
                 style: TextStyle(
                     fontSize: 12,
                     color: context.theme.colorScheme.onSurfaceVariant),

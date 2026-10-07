@@ -32,6 +32,13 @@ class ForgotPasswordPageCtrl extends GetxController {
     }
   }
 
+  /// Masked mobile entered on the forgot-password form (not session iUser).
+  String get maskedEnteredPhone {
+    final parsed = int.tryParse(phoneNoCTRL.text.trim());
+    if (parsed == null || parsed == 0) return phoneNoCTRL.text.trim();
+    return parsed.toHidePhoneNo;
+  }
+
   Future<void> verifyOTP() async {
     isLoading(true);
     var res = await WAuthApi.verifyOtp(otpCTRL.text);
@@ -73,6 +80,18 @@ class ForgotPasswordPageCtrl extends GetxController {
     var res = await WAuthApi.forgotPassword(phoneNo: phoneNoCTRL.text);
     isLoading(false);
     if (res.isSuccess && res.r != null) {
+      // #region agent log
+      debugNdjson('A,B,C,D,E', 'forgot_password_page_ctrl.dart:forgotPassword',
+          'forgotPassword success — phone sources', {
+        'phoneNoCTRL': phoneNoCTRL.text,
+        'iUserMobile': app.iUser.mobileNumber,
+        'iUserHide': app.iUser.mobileNumber.toHidePhoneNo,
+        'wUserMobile': app.wUser.mobileNumber,
+        'apiPartnerMobile': res.r?.mobileNumber,
+        'apiPartnerId': res.r?.id,
+        'recoveryPartnerId': app.recoveryPartnerId,
+      });
+      // #endregion
       flag(ForgotPassEnum.otp);
       // toast(res.m, MessageEnum.success);
     } else {

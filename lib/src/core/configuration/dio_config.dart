@@ -11,23 +11,29 @@ int _agentLogCount = 0;
 int _apiLogCount = 0;
 
 void _debugNdjson(String hypothesisId, String location, String message,
-    Map<String, dynamic> data) {
+    Map<String, dynamic> data, {String runId = 'pre-fix'}) {
+  final payload = <String, dynamic>{
+    'sessionId': 'd3aa53',
+    'hypothesisId': hypothesisId,
+    'location': location,
+    'message': message,
+    'data': data,
+    'timestamp': DateTime.now().millisecondsSinceEpoch,
+    'runId': runId,
+  };
+  // Prefer local file append so Flutter web/device CORS cannot drop logs.
+  try {
+    // ignore: avoid_print
+    debugPrint('[agent-log] ${payload['location']}: ${payload['message']} $data');
+  } catch (_) {}
   Dio()
       .post(
         'http://127.0.0.1:7415/ingest/9642249b-a697-472d-b58b-e135d6ec4dd4',
-        data: {
-          'sessionId': 'c91d49',
-          'hypothesisId': hypothesisId,
-          'location': location,
-          'message': message,
-          'data': data,
-          'timestamp': DateTime.now().millisecondsSinceEpoch,
-          'runId': 'post-fix',
-        },
+        data: payload,
         options: Options(
           headers: {
             'Content-Type': 'application/json',
-            'X-Debug-Session-Id': 'c91d49',
+            'X-Debug-Session-Id': 'd3aa53',
           },
           sendTimeout: const Duration(seconds: 2),
           receiveTimeout: const Duration(seconds: 2),

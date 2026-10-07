@@ -336,18 +336,21 @@ class _EnquiryCard extends StatelessWidget {
       institution ? item.canSellerRespond : item.canPartnerRespond;
 
   Color _accent(ColorScheme colors) =>
-      item.isBuy ? colors.primary : colors.tertiary;
+      item.isBuy ? colors.primary : colors.secondary;
 
   ({Color fg, Color bg}) _statusColors(ColorScheme colors) {
     return switch (item.status) {
-      'open' => (fg: colors.onSecondaryContainer, bg: colors.secondaryContainer),
-      'locked' => (fg: colors.onPrimaryContainer, bg: colors.primaryContainer),
-      'converted' => (
-        fg: const Color(0xFF065F46),
-        bg: const Color(0xFFD1FAE5),
+      'open' => (
+        fg: colors.onSecondaryContainer,
+        bg: colors.secondaryContainer,
       ),
+      'locked' => (fg: colors.onPrimaryContainer, bg: colors.primaryContainer),
+      'converted' => (fg: colors.onPrimary, bg: colors.primary),
       'rejected' => (fg: colors.onErrorContainer, bg: colors.errorContainer),
-      'withdrawn' => (fg: colors.onSurfaceVariant, bg: colors.surfaceContainerHighest),
+      'withdrawn' => (
+        fg: colors.onSurfaceVariant,
+        bg: colors.surfaceContainerHighest,
+      ),
       _ => (fg: colors.onSurfaceVariant, bg: colors.surfaceContainerHighest),
     };
   }
@@ -679,7 +682,10 @@ class _InfoBanner extends StatelessWidget {
     final text = Theme.of(context).textTheme;
     final (Color bg, Color fg) = switch (tone) {
       _InfoTone.warning => (colors.errorContainer, colors.onErrorContainer),
-      _InfoTone.success => (const Color(0xFFD1FAE5), const Color(0xFF065F46)),
+      _InfoTone.success => (
+        colors.primaryContainer,
+        colors.onPrimaryContainer,
+      ),
       _InfoTone.neutral => (
         colors.surfaceContainerLow,
         colors.onSurfaceVariant,

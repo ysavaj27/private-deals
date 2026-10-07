@@ -221,6 +221,16 @@ class DOtpWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    // #region agent log
+    debugNdjson('A,C,D,E', 'desktop_forgot_password_view.dart:DOtpWidget.build',
+        'OTP screen display source (desktop)', {
+      'runId': 'post-fix',
+      'displayedText': c.maskedEnteredPhone,
+      'iUserMobile': app.iUser.mobileNumber,
+      'iUserHide': app.iUser.mobileNumber.toHidePhoneNo,
+      'phoneNoCTRL': c.phoneNoCTRL.text,
+    });
+    // #endregion
     return CustomCardWidget(
       width: 564.66,
       radius: 16,
@@ -243,7 +253,7 @@ class DOtpWidget extends StatelessWidget {
             ),
             const SizedBox(height: 17),
             Text(
-              "A message with the verification code has been sent to \n${app.iUser.mobileNumber.toHidePhoneNo}. Please enter the code to continue.",
+              "A message with the verification code has been sent to \n${c.maskedEnteredPhone}. Please enter the code to continue.",
               style: TextStyle(
                 fontSize: 16,
                 color: context.theme.disabledColor,
