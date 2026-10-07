@@ -35,6 +35,13 @@ class _EnquiryDecisionDialogState extends State<EnquiryDecisionDialog> {
   bool get _pickSettlement =>
       widget.institution && widget.action == 'accept' && !widget.sell;
 
+  /// Sell inquiries require Pre-IPO KYC; buy inquiries do not gate on KYC here.
+  bool _canSelectInvestor(InvestorModel investor) =>
+      !widget.sell || investor.isPreIpoKycComplete;
+
+  bool get _hasSelectableInvestor =>
+      _investors.any(_canSelectInvestor);
+
   @override
   void initState() {
     super.initState();
@@ -58,6 +65,13 @@ class _EnquiryDecisionDialogState extends State<EnquiryDecisionDialog> {
         _investors = (response.r ?? [])
             .where((investor) => investor.id > 0)
             .toList();
+        if (_investorId != null &&
+            !_investors.any(
+              (investor) =>
+                  investor.id == _investorId && _canSelectInvestor(investor),
+            )) {
+          _investorId = null;
+        }
       } else {
         _error = response.m.isEmpty ? 'Unable to load investors.' : response.m;
       }
@@ -123,25 +137,65 @@ class _EnquiryDecisionDialogState extends State<EnquiryDecisionDialog> {
                     const Text(
                       'No investors available. Add an investor before approving.',
                     )
-                  else
+                  else ...[
+                    if (!_hasSelectableInvestor) ...[
+                      const Text(
+                        'No investors with completed KYC. Complete KYC before approving a sell inquiry.',
+                      ),
+                      const SizedBox(height: 16),
+                    ],
                     DropdownButtonFormField<int>(
                       isExpanded: true,
                       decoration: const InputDecoration(labelText: 'Investor'),
                       items: _investors
                           .map(
-                            (investor) => DropdownMenuItem(
-                              value: investor.id,
-                              child: Text(
-                                investor.displayName,
-                                overflow: TextOverflow.ellipsis,
-                              ),
-                            ),
+                            (investor) {
+                              final selectable = _canSelectInvestor(investor);
+                              return DropdownMenuItem(
+                                value: investor.id,
+                                enabled: selectable,
+                                child: Text(
+                                  selectable
+                                      ? investor.displayName
+                                      : '${investor.displayName} (KYC pending)',
+                                  overflow: TextOverflow.ellipsis,
+                                  style: selectable
+                                      ? null
+                                      : TextStyle(
+                                          color: Theme.of(context)
+                                              .disabledColor,
+                                        ),
+                                ),
+                              );
+                            },
                           )
                           .toList(),
-                      onChanged: (value) => setState(() => _investorId = value),
-                      validator: (value) =>
-                          value == null ? 'Select an investor' : null,
+                      onChanged: !_hasSelectableInvestor
+                          ? null
+                          : (value) {
+                              if (value == null) return;
+                              final investor = _investors.firstWhereOrNull(
+                                (item) => item.id == value,
+                              );
+                              if (investor == null ||
+                                  !_canSelectInvestor(investor)) {
+                                return;
+                              }
+                              setState(() => _investorId = value);
+                            },
+                      validator: (value) {
+                        if (value == null) return 'Select an investor';
+                        final investor = _investors.firstWhereOrNull(
+                          (item) => item.id == value,
+                        );
+                        if (investor == null ||
+                            !_canSelectInvestor(investor)) {
+                          return 'Select an investor with completed KYC';
+                        }
+                        return null;
+                      },
                     ),
+                  ],
                 ] else ...[
                   Text(
                     widget.action == 'accept'
@@ -177,7 +231,10 @@ class _EnquiryDecisionDialogState extends State<EnquiryDecisionDialog> {
         FilledButton(
           onPressed:
               _pickInvestor &&
-                  (_loading || _error.isNotEmpty || _investors.isEmpty)
+                  (_loading ||
+                      _error.isNotEmpty ||
+                      _investors.isEmpty ||
+                      !_hasSelectableInvestor)
               ? null
               : () {
                   if (_form.currentState!.validate()) {

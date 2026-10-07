@@ -507,6 +507,8 @@ class SharePriceTable extends StatelessWidget {
                   controller: controller.scrollController,
                   padding: const EdgeInsets.all(12),
                   itemCount: rows.length,
+                  addAutomaticKeepAlives: false,
+                  addRepaintBoundaries: true,
                   separatorBuilder: (_, _) => const SizedBox(height: 12),
                   itemBuilder: (context, index) {
                     final row = rows[index];
@@ -549,6 +551,8 @@ class SharePriceTable extends StatelessWidget {
                               controller: controller.scrollController,
                               padding: const EdgeInsets.only(bottom: 14),
                               itemCount: rows.length,
+                              addAutomaticKeepAlives: false,
+                              addRepaintBoundaries: true,
                               separatorBuilder: (_, _) =>
                                   const Divider(height: 1),
                               itemBuilder: (context, index) {
@@ -840,31 +844,113 @@ Widget _shareSettlementPicker(
   required UpdateSharePriceCtrl controller,
   bool showLabel = false,
 }) {
-  final error = row.errors['settlement_days'];
-  final options = controller.settlementOptions;
+  return Obx(() {
+    final error = row.errors['settlement_days'];
+    final options = controller.settlementOptions;
+    final value = row.settlementDays.value;
+    final label = controller.settlementLabelFor(value);
+    final enabled = !controller.saving.value && options.isNotEmpty;
+    final editing =
+        controller.editingSettlementCompanyId.value == row.company.id;
+    final colors = context.theme.colorScheme;
+    final selected = options.any((option) => option.value == value)
+        ? value
+        : null;
 
-  return Column(
-    crossAxisAlignment: CrossAxisAlignment.start,
-    children: [
-      if (showLabel) ...[
-        Text('Settlement *', style: context.textTheme.bodySmall),
-        const SizedBox(height: 6),
-      ],
-      SettlementDaysDropdown(
-        key: ValueKey(
-          'row-settlement-${row.company.id}-${row.settlementDays.value}',
+    const fieldPadding = EdgeInsets.symmetric(vertical: 18, horizontal: 16);
+
+    final decoration = InputDecoration(
+      labelText: showLabel ? null : 'Settlement',
+      floatingLabelBehavior: FloatingLabelBehavior.always,
+      hintText: editing ? null : 'Select',
+      errorText: error,
+      // Match [AppTextField] / partner theme field height in both modes.
+      contentPadding: fieldPadding,
+      suffixIcon: editing
+          ? IconButton(
+              tooltip: 'Cancel',
+              onPressed: controller.cancelEditSettlement,
+              icon: const Icon(Icons.close_rounded),
+            )
+          : IconButton(
+              tooltip: 'Edit settlement',
+              onPressed: enabled
+                  ? () => controller.beginEditSettlement(row)
+                  : null,
+              icon: const Icon(Icons.edit_outlined),
+            ),
+    );
+
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        if (showLabel) ...[
+          Text('Settlement *', style: context.textTheme.bodySmall),
+          const SizedBox(height: 6),
+        ],
+        Material(
+          type: MaterialType.transparency,
+          child: editing
+              ? InputDecorator(
+                  isEmpty: selected == null,
+                  decoration: decoration,
+                  child: DropdownButtonHideUnderline(
+                    child: DropdownButton<int>(
+                      value: selected,
+                      isDense: true,
+                      isExpanded: true,
+                      hint: Text(
+                        'Select',
+                        style: context.textTheme.bodyLarge?.copyWith(
+                          color: colors.onSurfaceVariant,
+                          height: 1.2,
+                        ),
+                      ),
+                      style: context.textTheme.bodyLarge?.copyWith(
+                        color: colors.onSurface,
+                        height: 1.2,
+                      ),
+                      icon: const SizedBox.shrink(),
+                      items: [
+                        for (final option in options)
+                          DropdownMenuItem<int>(
+                            value: option.value,
+                            child: Text(
+                              option.label,
+                              overflow: TextOverflow.ellipsis,
+                            ),
+                          ),
+                      ],
+                      onChanged: enabled
+                          ? (selectedValue) =>
+                                controller.setRowSettlement(row, selectedValue)
+                          : null,
+                    ),
+                  ),
+                )
+              : InkWell(
+                  onTap: enabled
+                      ? () => controller.beginEditSettlement(row)
+                      : null,
+                  borderRadius: BorderRadius.circular(4),
+                  child: InputDecorator(
+                    isEmpty: label.isEmpty,
+                    decoration: decoration,
+                    child: Text(
+                      label,
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
+                      style: context.textTheme.bodyLarge?.copyWith(
+                        color: colors.onSurface,
+                        height: 1.2,
+                      ),
+                    ),
+                  ),
+                ),
         ),
-        options: options,
-        value: row.settlementDays.value,
-        enabled: !controller.saving.value && options.isNotEmpty,
-        isDense: true,
-        labelText: showLabel ? null : 'Settlement',
-        hintText: 'Select',
-        errorText: error,
-        onChanged: (value) => controller.setRowSettlement(row, value),
-      ),
-    ],
-  );
+      ],
+    );
+  });
 }
 
 // Shared widths keep headings and row inputs aligned.

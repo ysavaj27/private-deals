@@ -87,7 +87,17 @@ void main() {
       expect(item.typeLabel, 'Sell inquiry');
       expect(item.basePrice, 100);
       expect(item.sharePrice, 101);
+      expect(item.companyLogo, isEmpty);
     }
+    final withLogo = EnquiryModel.fromJson(
+      inquiry('open', side: 'sell')
+        ..['company'] = {
+          'id': 12,
+          'brand_name': 'Test Company',
+          'logo': 'https://cdn.example.com/logo.png',
+        },
+    );
+    expect(withLogo.companyLogo, 'https://cdn.example.com/logo.png');
     final inconsistent = inquiry('open')
       ..['accepted_by_institution'] = {'id': 8};
     expect(EnquiryModel.fromJson(inconsistent).canWithdraw, false);
@@ -532,6 +542,79 @@ void main() {
         findsWidgets,
       );
       expect(adapter.requests.where((r) => r.method == 'POST').length, 1);
+      expect(tester.takeException(), isNull);
+    },
+  );
+
+  testWidgets(
+    'sell inquiry disables investors without completed KYC',
+    (tester) async {
+      await app.setUser(prefUser: identity('Wealth Manager'));
+      bool converted = false;
+      final adapter = FakeAdapter((request) async {
+        if (request.path == 'v2/business/investor') {
+          return response({
+            'status': 1,
+            'data': [
+              {'id': 22, 'name': 'Alex', 'preipo_kyc_status': 0},
+              {'id': 23, 'name': 'Blake', 'preipo_kyc_status': 1},
+            ],
+          });
+        }
+        if (request.method == 'POST') {
+          converted = true;
+          return response({
+            'status': 1,
+            'message': 'Enquiry accepted.',
+            'data': {
+              'id': 482,
+              'transaction_invoice_no': 'TX-482',
+              'order_step': 'mandate_pending',
+              'trade_side': 'sell',
+              'order_source': 'enquiry',
+            },
+          });
+        }
+        return response({
+          'status': 1,
+          'data': [
+            inquiry(converted ? 'converted' : 'locked', side: 'sell'),
+          ],
+        });
+      });
+      dioConfig.dio.httpClientAdapter = adapter;
+      await tester.pumpWidget(
+        const GetMaterialApp(home: Scaffold(body: EnquiriesPage())),
+      );
+      await tester.pumpAndSettle();
+      await tester.tap(find.widgetWithText(FilledButton, 'Approve'));
+      await tester.pumpAndSettle();
+      final confirm = find.descendant(
+        of: find.byType(EnquiryDecisionDialog),
+        matching: find.widgetWithText(FilledButton, 'Approve'),
+      );
+      await tester.tap(find.byType(DropdownButtonFormField<int>));
+      await tester.pumpAndSettle();
+      expect(find.text('Alex (KYC pending)'), findsOneWidget);
+      expect(find.text('Blake'), findsOneWidget);
+      final disabledItem = tester.widget<DropdownMenuItem<int>>(
+        find.widgetWithText(DropdownMenuItem<int>, 'Alex (KYC pending)'),
+      );
+      expect(disabledItem.enabled, isFalse);
+      expect(disabledItem.value, 22);
+      final enabledItem = tester.widget<DropdownMenuItem<int>>(
+        find.widgetWithText(DropdownMenuItem<int>, 'Blake'),
+      );
+      expect(enabledItem.enabled, isTrue);
+      expect(enabledItem.value, 23);
+      await tester.tap(find.text('Blake').last);
+      await tester.pumpAndSettle();
+      await tester.tap(confirm);
+      await tester.pumpAndSettle();
+      expect(adapter.requests.where((r) => r.method == 'POST').single.data, {
+        'uuid': 'inquiry-1',
+        'investor_id': 23,
+      });
       expect(tester.takeException(), isNull);
     },
   );

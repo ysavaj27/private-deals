@@ -22,7 +22,7 @@ class PhoneProfileView extends StatelessWidget {
         children: [
           Text('Account', style: context.textTheme.titleLarge),
           const SizedBox(height: AppSpace.lg),
-          Obx(() => ProfilePhotoSection(controller: c)),
+          ProfilePhotoSection(controller: c),
           Obx(() {
             if (c.error.value.isEmpty) return const SizedBox.shrink();
             return Padding(

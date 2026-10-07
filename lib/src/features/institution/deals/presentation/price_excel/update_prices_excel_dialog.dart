@@ -57,7 +57,6 @@ class _UpdatePricesExcelDialogState extends State<_UpdatePricesExcelDialog> {
   }
 
   void _close({bool saved = false}) {
-    if (!ctrl.canDismiss) return;
     Navigator.of(context).pop(saved);
   }
 
@@ -71,11 +70,13 @@ class _UpdatePricesExcelDialogState extends State<_UpdatePricesExcelDialog> {
     return CustomCardWidget(
       padding: EdgeInsets.zero,
       radius: 24,
-      child: SizedBox.expand(
-        child: Column(
+      child: ClipRRect(
+        borderRadius: BorderRadius.circular(24),
+        child: SizedBox.expand(
+          child: Column(
           children: [
             Padding(
-              padding: EdgeInsets.fromLTRB(horizontal, 20, 12, 0),
+              padding: EdgeInsets.fromLTRB(horizontal, 16, 8, 0),
               child: Row(
                 children: [
                   Container(
@@ -115,13 +116,29 @@ class _UpdatePricesExcelDialogState extends State<_UpdatePricesExcelDialog> {
                       ],
                     ),
                   ),
-                  IconButton(
-                    tooltip: 'Close',
-                    onPressed: ctrl.canDismiss
-                        ? () => _close(saved: ctrl.step == PriceExcelStep.done)
-                        : null,
-                    icon: const Icon(Icons.close_rounded),
+                  Tooltip(
+                    message: 'Close',
+                    child: Material(
+                      color: colors.surfaceContainerHighest,
+                      shape: const CircleBorder(),
+                      child: InkWell(
+                        customBorder: const CircleBorder(),
+                        onTap: () => _close(
+                          saved: ctrl.step == PriceExcelStep.done,
+                        ),
+                        child: SizedBox(
+                          width: 40,
+                          height: 40,
+                          child: Icon(
+                            Icons.close_rounded,
+                            size: 22,
+                            color: colors.onSurface,
+                          ),
+                        ),
+                      ),
+                    ),
                   ),
+                  const SizedBox(width: 8),
                 ],
               ),
             ),
@@ -166,6 +183,7 @@ class _UpdatePricesExcelDialogState extends State<_UpdatePricesExcelDialog> {
                 backgroundColor: colors.surfaceContainerHighest,
               ),
           ],
+        ),
         ),
       ),
     );

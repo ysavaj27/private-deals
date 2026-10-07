@@ -38,7 +38,7 @@ class DesktopProfileView extends StatelessWidget {
                 children: [
                   Text('Account', style: context.textTheme.titleMedium),
                   const SizedBox(height: 24),
-                  Obx(() => ProfilePhotoSection(controller: c)),
+                  ProfilePhotoSection(controller: c),
                   Obx(() {
                     if (c.error.value.isEmpty) return const SizedBox.shrink();
                     return Padding(

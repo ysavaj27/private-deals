@@ -49,6 +49,8 @@ class UpdateSharePriceCtrl extends GetxController {
   final buyRows = <SharePriceDraft>[].obs;
   final dealType = 'sell'.obs;
   final commonSettlementDays = RxnInt();
+  /// Only one per-row settlement editor is open at a time (avoids N dropdowns).
+  final editingSettlementCompanyId = RxnInt();
   RxList<SharePriceDraft> get rows =>
       dealType.value == 'sell' ? sellRows : buyRows;
   String get priceLabel => dealType.value == 'buy' ? 'Buy price' : 'Sell price';
@@ -58,6 +60,7 @@ class UpdateSharePriceCtrl extends GetxController {
   void selectType(String type) {
     if (saving.value || type == dealType.value) return;
     dealType.value = type;
+    editingSettlementCompanyId.value = null;
     feedback.value = '';
     clearSearch();
   }
@@ -192,6 +195,7 @@ class UpdateSharePriceCtrl extends GetxController {
   void setCommonSettlement(int? value) {
     final previous = commonSettlementDays.value;
     commonSettlementDays.value = value;
+    editingSettlementCompanyId.value = null;
     for (final row in sellRows) {
       if (row.settlementDays.value == previous) {
         row.settlementDays.value = value;
@@ -201,11 +205,29 @@ class UpdateSharePriceCtrl extends GetxController {
     feedback.value = '';
   }
 
+  void beginEditSettlement(SharePriceDraft row) {
+    if (saving.value) return;
+    editingSettlementCompanyId.value = row.company.id;
+  }
+
+  void cancelEditSettlement() {
+    editingSettlementCompanyId.value = null;
+  }
+
   void setRowSettlement(SharePriceDraft row, int? value) {
     row.settlementDays.value = value;
     row.errors.remove('settlement_days');
+    editingSettlementCompanyId.value = null;
     revision.value++;
     feedback.value = '';
+  }
+
+  String settlementLabelFor(int? value) {
+    if (value == null) return '';
+    for (final option in settlementOptions) {
+      if (option.value == value) return option.label;
+    }
+    return value > 0 ? 'T+$value' : '';
   }
 
   bool validateRow(SharePriceDraft row) {
@@ -261,6 +283,9 @@ class UpdateSharePriceCtrl extends GetxController {
     searchController.clear();
     query.value = '';
     pinnedCompanyId.value = row.company.id;
+    if (row.errors.containsKey('settlement_days')) {
+      editingSettlementCompanyId.value = row.company.id;
+    }
 
     WidgetsBinding.instance.addPostFrameCallback((_) {
       if (!isClosed && scrollController.hasClients) {
@@ -276,6 +301,7 @@ class UpdateSharePriceCtrl extends GetxController {
   Future<void> save() async {
     if (saving.value || loading.value) return;
 
+    editingSettlementCompanyId.value = null;
     feedback.value = '';
 
     SharePriceDraft? firstInvalid;

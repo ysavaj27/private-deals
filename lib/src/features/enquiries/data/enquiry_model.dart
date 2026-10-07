@@ -14,6 +14,7 @@ class EnquiryModel {
       notes = Parse.toStrings(json['notes']),
       rejectionReason = Parse.toStrings(json['partner_response_reason']),
       companyName = Parse.toStrings((json['company'] as Map?)?['brand_name']),
+      companyLogo = _readLogo((json['company'] as Map?)?['logo']),
       partnerName = Parse.toStrings((json['partner'] as Map?)?['name']),
       institutionName = Parse.toStrings(
         (json['accepted_by_institution'] as Map?)?['name'],
@@ -22,7 +23,7 @@ class EnquiryModel {
       createdAt = Parse.toStrings(json['created_at']);
 
   final String uuid, dealType, status, notes, rejectionReason;
-  final String companyName, partnerName, institutionName, createdAt;
+  final String companyName, companyLogo, partnerName, institutionName, createdAt;
   final int quantity;
   final int? settlementDays;
   final String? settlementLabel;
@@ -60,5 +61,12 @@ class EnquiryModel {
   static String? _readSettlementLabel(dynamic value) {
     final label = Parse.toStrings(value);
     return label.isEmpty ? null : label;
+  }
+
+  static String _readLogo(dynamic value) {
+    final text = Parse.toStrings(value);
+    if (text.isEmpty) return '';
+    if (text.startsWith('http://') || text.startsWith('https://')) return text;
+    return Parse.parseUrl(text);
   }
 }
