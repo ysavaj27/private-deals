@@ -21,10 +21,11 @@ class _EnquiriesPageState extends State<EnquiriesPage> {
   bool _submitting = false;
   String _error = '';
   String _status = 'all';
+  String _type = 'all';
   String _query = '';
 
   static const _filters = {
-    'all': 'All',
+    'all': 'All statuses',
     'open': 'Open',
     'locked': 'Awaiting decision',
     'rejected': 'Rejected',
@@ -93,9 +94,8 @@ class _EnquiriesPageState extends State<EnquiriesPage> {
         );
       }
       if (!mounted) return;
-      ScaffoldMessenger.of(
-        context,
-      ).showSnackBar(SnackBar(content: Text(response.m)));
+      ScaffoldMessenger.of(context)
+          .showSnackBar(SnackBar(content: Text(response.m)));
       // A competing Institution may have locked the inquiry. Always refresh,
       // including business failures, so stale actions cannot remain available.
       await _load();
@@ -151,19 +151,52 @@ class _EnquiriesPageState extends State<EnquiriesPage> {
     );
   }
 
-  List<EnquiryModel> get _filtered => _items
-      .where(
-        (item) =>
-            (_status == 'all' || item.status == _status) &&
-            '${item.companyName} ${item.partnerName} ${item.institutionName} ${item.dealType}'
-                .toLowerCase()
-                .contains(_query),
-      )
+  Iterable<EnquiryModel> get _searched => _items.where(
+    (item) =>
+        '${item.companyName} ${item.partnerName} ${item.institutionName} ${item.dealType}'
+            .toLowerCase()
+            .contains(_query),
+  );
+
+  Iterable<EnquiryModel> get _typed =>
+      _searched.where((item) => _type == 'all' || item.dealType == _type);
+
+  List<EnquiryModel> get _filtered => _typed
+      .where((item) => _status == 'all' || item.status == _status)
       .toList();
 
-  int _countFor(String key) => key == 'all'
-      ? _items.length
-      : _items.where((item) => item.status == key).length;
+  int _countFor(String key) =>
+      _typed.where((item) => key == 'all' || item.status == key).length;
+
+  int _typeCountFor(String key) =>
+      _searched.where((item) => key == 'all' || item.dealType == key).length;
+
+  Widget _typeFilter(String type, String label) {
+    final colors = Theme.of(context).colorScheme;
+    final appearance = _InquiryTypeAppearance.forType(type, colors);
+    final selected = _type == type;
+    return ChoiceChip(
+      key: ValueKey('inquiry-type-$type'),
+      avatar: Icon(appearance.icon, size: 18, color: appearance.foreground),
+      label: Text(_loading ? label : '$label (${_typeCountFor(type)})'),
+      labelStyle: TextStyle(
+        color: selected ? appearance.foreground : colors.onSurface,
+        fontWeight: FontWeight.w700,
+      ),
+      selectedColor: appearance.background,
+      backgroundColor: colors.surfaceContainerLow,
+      side: BorderSide(
+        color: selected ? appearance.border : colors.outlineVariant,
+      ),
+      padding: const EdgeInsets.symmetric(
+        horizontal: AppSpace.sm,
+        vertical: AppSpace.sm,
+      ),
+      selected: selected,
+      showCheckmark: false,
+      onSelected: (_) => setState(() => _type = type),
+    );
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -220,6 +253,16 @@ class _EnquiriesPageState extends State<EnquiriesPage> {
             ],
           ),
           const SizedBox(height: AppSpace.xl),
+          Wrap(
+            spacing: AppSpace.sm,
+            runSpacing: AppSpace.sm,
+            children: [
+              _typeFilter('all', 'All'),
+              _typeFilter('buy', 'Buy'),
+              _typeFilter('sell', 'Sell'),
+            ],
+          ),
+          const SizedBox(height: AppSpace.lg),
           Align(
             alignment: Alignment.centerLeft,
             child: ConstrainedBox(
@@ -279,11 +322,11 @@ class _EnquiriesPageState extends State<EnquiriesPage> {
             _EmptyPanel(
               icon: Icons.inbox_outlined,
               title: 'No inquiries found',
-              message: _query.isNotEmpty || _status != 'all'
-                  ? 'Try another search or status filter.'
+              message: _query.isNotEmpty || _status != 'all' || _type != 'all'
+                  ? 'Try another search, inquiry type, or status filter.'
                   : widget.institution
-                      ? 'New buy and sell inquiries from wealth managers will appear here.'
-                      : 'Inquiries you submit for companies will appear here.',
+                  ? 'New buy and sell inquiries from wealth managers will appear here.'
+                  : 'Inquiries you submit for companies will appear here.',
             )
           else
             ...items.map(
@@ -335,9 +378,6 @@ class _EnquiryCard extends StatelessWidget {
   bool get _canRespond =>
       institution ? item.canSellerRespond : item.canPartnerRespond;
 
-  Color _accent(ColorScheme colors) =>
-      item.isBuy ? colors.primary : colors.secondary;
-
   ({Color fg, Color bg}) _statusColors(ColorScheme colors) {
     return switch (item.status) {
       'open' => (
@@ -366,11 +406,13 @@ class _EnquiryCard extends StatelessWidget {
   Widget build(BuildContext context) {
     final colors = Theme.of(context).colorScheme;
     final text = Theme.of(context).textTheme;
-    final accent = _accent(colors);
+    final appearance = _InquiryTypeAppearance.forType(item.dealType, colors);
     final status = _statusColors(colors);
     final created = _formatCreated(item.createdAt);
     final counterparty = institution
-        ? (item.partnerName.isEmpty ? null : 'Wealth manager · ${item.partnerName}')
+        ? (item.partnerName.isEmpty
+              ? null
+              : 'Wealth manager · ${item.partnerName}')
         : (item.institutionName.isEmpty
               ? null
               : 'Seller · ${item.institutionName}');
@@ -387,24 +429,36 @@ class _EnquiryCard extends StatelessWidget {
       decoration: BoxDecoration(
         color: colors.surface,
         borderRadius: AppRadii.lgAll,
-        border: Border.all(color: colors.outlineVariant),
+        border: Border.all(color: appearance.border),
       ),
       clipBehavior: Clip.antiAlias,
-      child: Stack(
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
-          Positioned(
-            left: 0,
-            top: 0,
-            bottom: 0,
-            child: ColoredBox(color: accent, child: const SizedBox(width: 4)),
+          Container(
+            color: appearance.background,
+            padding: const EdgeInsets.symmetric(
+              horizontal: AppSpace.lg,
+              vertical: AppSpace.md,
+            ),
+            child: Row(
+              children: [
+                Icon(appearance.icon, color: appearance.foreground, size: 22),
+                const SizedBox(width: AppSpace.sm),
+                Expanded(
+                  child: Text(
+                    item.typeLabel,
+                    style: text.titleSmall?.copyWith(
+                      color: appearance.foreground,
+                      fontWeight: FontWeight.w800,
+                    ),
+                  ),
+                ),
+              ],
+            ),
           ),
           Padding(
-            padding: const EdgeInsets.fromLTRB(
-              AppSpace.lg + 4,
-              AppSpace.lg,
-              AppSpace.lg,
-              AppSpace.lg,
-            ),
+            padding: const EdgeInsets.all(AppSpace.lg),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
@@ -431,15 +485,6 @@ class _EnquiryCard extends StatelessWidget {
                             runSpacing: AppSpace.sm,
                             crossAxisAlignment: WrapCrossAlignment.center,
                             children: [
-                              _Chip(
-                                label: item.typeLabel,
-                                foreground: item.isBuy
-                                    ? colors.onPrimaryContainer
-                                    : colors.onSurfaceVariant,
-                                background: item.isBuy
-                                    ? colors.primaryContainer
-                                    : colors.surfaceContainerHighest,
-                              ),
                               _Chip(
                                 label: item.statusLabel(institution),
                                 foreground: status.fg,
@@ -473,7 +518,7 @@ class _EnquiryCard extends StatelessWidget {
                   const SizedBox(height: AppSpace.md),
                   Text(
                     [
-                      if (counterparty != null) counterparty,
+                      ?counterparty,
                       if (created.isNotEmpty) created,
                     ].join(' · '),
                     style: text.bodySmall?.copyWith(
@@ -497,10 +542,7 @@ class _EnquiryCard extends StatelessWidget {
                     runSpacing: AppSpace.md,
                     children: [
                       for (final metric in metrics)
-                        _MetricInline(
-                          label: metric.label,
-                          value: metric.value,
-                        ),
+                        _MetricInline(label: metric.label, value: metric.value),
                     ],
                   ),
                 ),
@@ -526,8 +568,7 @@ class _EnquiryCard extends StatelessWidget {
                   _InfoBanner(
                     icon: Icons.check_circle_outline_rounded,
                     label: 'Next step',
-                    body:
-                        'The transaction appears in Transactions after the investor signs the mandate.',
+                    body: 'The transaction appears in Transactions after the investor signs the mandate.',
                     tone: _InfoTone.success,
                   ),
                 ],
@@ -546,10 +587,7 @@ class _EnquiryCard extends StatelessWidget {
                       if (item.status == 'converted')
                         TextButton.icon(
                           onPressed: acting ? null : onViewTransactions,
-                          icon: const Icon(
-                            Icons.open_in_new_rounded,
-                            size: 18,
-                          ),
+                          icon: const Icon(Icons.open_in_new_rounded, size: 18),
                           label: const Text('View transactions'),
                         ),
                     ],
@@ -561,6 +599,37 @@ class _EnquiryCard extends StatelessWidget {
         ],
       ),
     );
+  }
+}
+
+/// The same type colors and icons identify filters and cards in both workspaces.
+class _InquiryTypeAppearance {
+  const _InquiryTypeAppearance(this.background, this.foreground, this.icon);
+
+  final Color background;
+  final Color foreground;
+  Color get border => foreground.withValues(alpha: 0.25);
+  final IconData icon;
+
+  factory _InquiryTypeAppearance.forType(String type, ColorScheme colors) {
+    final dark = colors.brightness == Brightness.dark;
+    return switch (type) {
+      'buy' => _InquiryTypeAppearance(
+        dark ? const Color(0xFF263442) : const Color(0xFFEAF0F6),
+        dark ? const Color(0xFFB5C5D6) : const Color(0xFF455F7A),
+        Icons.south_west_rounded,
+      ),
+      'sell' => _InquiryTypeAppearance(
+        dark ? const Color(0xFF3B322B) : const Color(0xFFF4EEE7),
+        dark ? const Color(0xFFD4BFAC) : const Color(0xFF7B6048),
+        Icons.north_east_rounded,
+      ),
+      _ => _InquiryTypeAppearance(
+        colors.surfaceContainerHighest,
+        colors.onSurfaceVariant,
+        Icons.inbox_outlined,
+      ),
+    };
   }
 }
 
@@ -614,9 +683,7 @@ class _MetricInline extends StatelessWidget {
       children: [
         Text(
           label,
-          style: text.labelSmall?.copyWith(
-            color: colors.onSurfaceVariant,
-          ),
+          style: text.labelSmall?.copyWith(color: colors.onSurfaceVariant),
         ),
         const SizedBox(height: 2),
         Text(
@@ -652,10 +719,8 @@ class _Chip extends StatelessWidget {
       ),
       child: Text(
         label,
-        style: Theme.of(context).textTheme.labelMedium?.copyWith(
-          color: foreground,
-          fontWeight: FontWeight.w600,
-        ),
+        style: Theme.of(context).textTheme.labelMedium
+            ?.copyWith(color: foreground, fontWeight: FontWeight.w600),
       ),
     );
   }
@@ -682,10 +747,7 @@ class _InfoBanner extends StatelessWidget {
     final text = Theme.of(context).textTheme;
     final (Color bg, Color fg) = switch (tone) {
       _InfoTone.warning => (colors.errorContainer, colors.onErrorContainer),
-      _InfoTone.success => (
-        colors.primaryContainer,
-        colors.onPrimaryContainer,
-      ),
+      _InfoTone.success => (colors.primaryContainer, colors.onPrimaryContainer),
       _InfoTone.neutral => (
         colors.surfaceContainerLow,
         colors.onSurfaceVariant,
@@ -695,10 +757,7 @@ class _InfoBanner extends StatelessWidget {
     return Container(
       width: double.infinity,
       padding: const EdgeInsets.all(AppSpace.md),
-      decoration: BoxDecoration(
-        color: bg,
-        borderRadius: AppRadii.mdAll,
-      ),
+      decoration: BoxDecoration(color: bg, borderRadius: AppRadii.mdAll),
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
@@ -716,10 +775,7 @@ class _InfoBanner extends StatelessWidget {
                   ),
                 ),
                 const SizedBox(height: 2),
-                Text(
-                  body,
-                  style: text.bodyMedium?.copyWith(color: fg),
-                ),
+                Text(body, style: text.bodyMedium?.copyWith(color: fg)),
               ],
             ),
           ),

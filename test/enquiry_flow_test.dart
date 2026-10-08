@@ -343,6 +343,96 @@ void main() {
     );
   });
 
+  for (final institution in [false, true]) {
+    for (final width in [390.0, 1280.0]) {
+      testWidgets(
+        'inquiry types combine with search and status for institution=$institution at $width',
+        (tester) async {
+          tester.view.physicalSize = Size(width, 1200);
+          tester.view.devicePixelRatio = 1;
+          addTearDown(tester.view.resetPhysicalSize);
+          addTearDown(tester.view.resetDevicePixelRatio);
+          await app.setUser(
+            prefUser: institution ? identity() : identity('Wealth Manager'),
+          );
+          final adapter = FakeAdapter(
+            (_) async => response({
+              'status': 1,
+              'data': [
+                inquiry('open')..['company'] = {'brand_name': 'Alpha Buy'},
+                inquiry('locked', side: 'sell')
+                  ..['company'] = {'brand_name': 'Alpha Sell'},
+                inquiry('open', side: 'sell')
+                  ..['company'] = {'brand_name': 'Beta Sell'},
+                inquiry('open', side: 'unknown')
+                  ..['company'] = {'brand_name': 'Other Company'},
+              ],
+            }),
+          );
+          dioConfig.dio.httpClientAdapter = adapter;
+          await tester.pumpWidget(
+            GetMaterialApp(
+              theme: width < 600 ? ThemeData.dark() : ThemeData.light(),
+              home: Scaffold(body: EnquiriesPage(institution: institution)),
+            ),
+          );
+          await tester.pumpAndSettle();
+          expect(find.text('All (4)'), findsOneWidget);
+          expect(find.text('Buy (1)'), findsOneWidget);
+          expect(find.text('Sell (2)'), findsOneWidget);
+
+          await tester.tap(find.byKey(const ValueKey('inquiry-type-buy')));
+          await tester.pumpAndSettle();
+          expect(find.text('Buy inquiry'), findsOneWidget);
+          expect(find.text('Sell inquiry'), findsNothing);
+          expect(find.text('Alpha Buy'), findsOneWidget);
+          expect(find.text('All statuses (1)'), findsOneWidget);
+
+          await tester.tap(find.byKey(const ValueKey('inquiry-type-sell')));
+          await tester.pumpAndSettle();
+          expect(find.text('Buy inquiry'), findsNothing);
+          expect(find.text('All statuses (2)'), findsOneWidget);
+          await tester.tap(find.widgetWithText(ChoiceChip, 'Open (1)'));
+          await tester.pumpAndSettle();
+          expect(find.text('Beta Sell'), findsOneWidget);
+          expect(find.text('Alpha Sell'), findsNothing);
+
+          await tester.enterText(find.byType(TextField), 'Alpha');
+          await tester.pumpAndSettle();
+          expect(find.text('No inquiries found'), findsOneWidget);
+          expect(find.text('Sell (1)'), findsOneWidget);
+          await tester.tap(
+            find.widgetWithText(ChoiceChip, 'Awaiting decision (1)'),
+          );
+          await tester.pumpAndSettle();
+          expect(find.text('Alpha Sell'), findsOneWidget);
+          expect(find.text('Sell inquiry'), findsOneWidget);
+
+          await tester.tap(find.byTooltip('Refresh inquiries'));
+          await tester.pumpAndSettle();
+          expect(find.text('Alpha Sell'), findsOneWidget);
+          expect(
+            tester
+                .widget<ChoiceChip>(
+                  find.byKey(const ValueKey('inquiry-type-sell')),
+                )
+                .selected,
+            isTrue,
+          );
+          await tester.tap(find.byKey(const ValueKey('inquiry-type-all')));
+          await tester.enterText(find.byType(TextField), 'Other');
+          await tester.pumpAndSettle();
+          await tester.tap(find.widgetWithText(ChoiceChip, 'All statuses (1)'));
+          await tester.pumpAndSettle();
+          expect(find.text('Other Company'), findsOneWidget);
+          expect(find.text('Inquiry'), findsOneWidget);
+          expect(tester.takeException(), isNull);
+          expect(adapter.requests.length, 2);
+        },
+      );
+    }
+  }
+
   for (final width in [390.0, 1280.0]) {
     testWidgets(
       'seller can reject without a reason and row disappears at $width',
