@@ -163,13 +163,3 @@ For every future behavior/API/routing change, update this README or the relevant
 - [x] Seller view on listtile
 - [ ] Mandate/deal slip date need to change
 
-We need to improve following points:
-1. Self-confidence
-2. Improve communication
-3. Improve English speaking
-4. Work on fitness
-5. Meditation and focus on mental health
-6. Manage good relationship with family
-7. Always carry positive mindset
-8. Follow the routine and time specific
-9. Very clear about your goal/ visualization

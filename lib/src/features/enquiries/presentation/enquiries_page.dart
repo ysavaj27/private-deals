@@ -340,9 +340,9 @@ class _EnquiriesPageState extends State<EnquiriesPage> {
                   onReject: () => _act(item, 'reject'),
                   onWithdraw: () => _act(item, 'withdraw'),
                   onViewTransactions: () => Get.offNamed(
-                    widget.institution
-                        ? '/institution/unlisted-transactions'
-                        : '/wealth-manager/investor-transactions',
+                    Routes.unlistedTransactionsPath(
+                      institution: widget.institution,
+                    ),
                   ),
                 ),
               ),

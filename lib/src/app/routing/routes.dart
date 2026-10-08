@@ -1,6 +1,15 @@
 import 'package:private_deals/src/shared/app_exports.dart';
 
 class Routes {
+  static String unlistedTransactionsPath({bool institution = false}) =>
+      institution
+      ? '/institution/unlisted-transactions'
+      : '/wealth-manager/investor-transactions?asset=unlisted';
+
+  static String enquiriesPath({bool institution = false}) => institution
+      ? '/institution/sell-enquiries'
+      : '/wealth-manager/my-inquiries';
+
   static const init = '/init';
   static const signIn = '/sign-in';
   static const password = '/sign-in/password';

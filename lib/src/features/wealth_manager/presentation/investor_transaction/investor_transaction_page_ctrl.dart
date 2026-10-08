@@ -28,14 +28,26 @@ class InvestorTransactionPageCtrl extends GetxController
     }
     _tabController?.dispose();
     _tabController = TabController(length: tabBarLength, vsync: this);
+    _tabController!.addListener(() {
+      if (availableTypes.isNotEmpty) {
+        currentIndex(availableTypes[_tabController!.index]);
+      }
+    });
+    applyRouteSelection();
   }
 
-  int get tabBarLength {
-    int i = 0;
-    if (app.wUser.isPrimaryAccess) i += 1;
-    if (app.wUser.isSecondaryAccess) i += 1;
-    if (app.wUser.isPreIpoAccess) i += 1;
-    return i;
+  List<TransactionTypeEnum> get availableTypes => [
+    if (app.wUser.isPreIpoAccess) TransactionTypeEnum.preIpoBuy,
+    if (app.wUser.isSecondaryAccess) TransactionTypeEnum.secondary,
+    if (app.wUser.isPrimaryAccess) TransactionTypeEnum.primary,
+  ];
+
+  int get tabBarLength => availableTypes.length;
+
+  void applyRouteSelection() {
+    if (Get.parameters['asset'] == 'unlisted') {
+      changeTab(TransactionTypeEnum.preIpoBuy);
+    }
   }
 
   List<Widget> tabs() {
@@ -55,7 +67,12 @@ class InvestorTransactionPageCtrl extends GetxController
   }
 
   void changeTab(TransactionTypeEnum type) {
+    final index = availableTypes.indexOf(type);
+    if (index < 0) return;
     currentIndex(type);
+    if (_tabController != null && _tabController!.index != index) {
+      _tabController!.index = index;
+    }
   }
 
   @override

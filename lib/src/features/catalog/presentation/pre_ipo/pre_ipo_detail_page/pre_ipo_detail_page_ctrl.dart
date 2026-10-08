@@ -162,10 +162,12 @@ class PreIPODetailPageCtrl extends GetxController
       dealId: selectedOffer.value!.dealId,
       dealUuid: selectedOffer.value!.dealUuid,
     );
+    if (isClosed) return;
     investing(false);
     if (res.isSuccess) {
       toast(res.m, MessageEnum.success);
       clearInvestors();
+      Get.offAllNamed(Routes.unlistedTransactionsPath());
     } else {
       toast(res.m, MessageEnum.alert);
     }
@@ -259,20 +261,7 @@ class PreIPODetailPageCtrl extends GetxController
   }
 
   Future<void> onInvest() async {
-    if (investing.value || !validateOffer()) return;
-    investing(true);
-    var res = await WPreIpoTransactionApi.buy(
-      list: investorList,
-      dealId: selectedOffer.value!.dealId,
-      dealUuid: selectedOffer.value!.dealUuid,
-    );
-    investing(false);
-    if (res.isSuccess) {
-      Get.back(result: true);
-      toast(res.m, MessageEnum.success);
-    } else {
-      toast(res.m, MessageEnum.alert);
-    }
+    await onPress();
   }
 
   @override

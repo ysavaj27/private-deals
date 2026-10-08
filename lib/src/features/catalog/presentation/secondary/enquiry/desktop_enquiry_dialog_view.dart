@@ -3,154 +3,166 @@ import 'package:private_deals/src/shared/app_exports.dart';
 import 'package:private_deals/src/features/catalog/presentation/secondary/enquiry/enquiry_dialog_ctrl.dart';
 import 'package:private_deals/src/shared/widgets/settlement_days_dropdown.dart';
 
-class DesktopEnquiryDialogView extends StatelessWidget {
+class DesktopEnquiryDialogView extends StatefulWidget {
   final String slug;
 
-  late final EnquiryDialogCtrl c;
+  const DesktopEnquiryDialogView(this.slug, {super.key});
 
-  DesktopEnquiryDialogView(this.slug, {super.key}) {
-    c = Get.put(EnquiryDialogCtrl(slug: slug));
+  @override
+  State<DesktopEnquiryDialogView> createState() => _EnquiryDialogState();
+}
+
+class _EnquiryDialogState extends State<DesktopEnquiryDialogView> {
+  late final EnquiryDialogCtrl c = EnquiryDialogCtrl(slug: widget.slug);
+
+  @override
+  void dispose() {
+    // Keep text controllers alive until the closing dialog has unmounted.
+    c.onDelete();
+    super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
-    return CustomCardWidget(
-      width: 600,
-      color: context.theme.scaffoldBackgroundColor,
-      padding: EdgeInsets.all(context.isPhone ? 20 : 40),
-      child: Column(
-        mainAxisSize: MainAxisSize.min,
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          const Text(
-            "Enquiry",
-            style: TextStyle(fontSize: 32, fontWeight: FontWeight.w600),
-          ),
-          const SizedBox(height: 30),
+    return SingleChildScrollView(
+      child: CustomCardWidget(
+        width: 600,
+        color: context.theme.scaffoldBackgroundColor,
+        padding: EdgeInsets.all(context.isPhone ? 20 : 40),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            const Text(
+              "Enquiry",
+              style: TextStyle(fontSize: 32, fontWeight: FontWeight.w600),
+            ),
+            const SizedBox(height: 30),
 
-          // Enquiry type — buy / sell radio tiles
-          const Text("Enquiry For", style: TextStyle(fontSize: 14)),
-          const SizedBox(height: 8),
-          Obx(() {
-            return Row(
+            // Enquiry type — buy / sell radio tiles
+            const Text("Enquiry For", style: TextStyle(fontSize: 14)),
+            const SizedBox(height: 8),
+            Obx(() {
+              return Row(
+                children: [
+                  Expanded(
+                    child: _RadioTile<InvestmentTypeEnum>(
+                      label: InvestmentTypeEnum.buy.label,
+                      value: InvestmentTypeEnum.buy,
+                      groupValue: c.enquiryType.value,
+                      onChanged: c.selectEnquiryType,
+                    ),
+                  ),
+                  const SizedBox(width: 12),
+                  Expanded(
+                    child: _RadioTile<InvestmentTypeEnum>(
+                      label: InvestmentTypeEnum.sell.label,
+                      value: InvestmentTypeEnum.sell,
+                      groupValue: c.enquiryType.value,
+                      onChanged: c.selectEnquiryType,
+                    ),
+                  ),
+                ],
+              );
+            }),
+
+            const SizedBox(height: 24),
+
+            // Quantity + Offer price
+            Row(
+              crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Expanded(
-                  child: _RadioTile<InvestmentTypeEnum>(
-                    label: InvestmentTypeEnum.buy.label,
-                    value: InvestmentTypeEnum.buy,
-                    groupValue: c.enquiryType.value,
-                    onChanged: c.selectEnquiryType,
+                  child: Obx(
+                    () => _LabeledField(
+                      label: "Quantity",
+                      controller: c.quantityCtrl,
+                      hint: "e.g. 100",
+                      keyboardType: TextInputType.number,
+                      errorText: c.quantityError.value.isEmpty
+                          ? null
+                          : c.quantityError.value,
+                    ),
                   ),
                 ),
-                const SizedBox(width: 12),
+                const SizedBox(width: 20),
                 Expanded(
-                  child: _RadioTile<InvestmentTypeEnum>(
-                    label: InvestmentTypeEnum.sell.label,
-                    value: InvestmentTypeEnum.sell,
-                    groupValue: c.enquiryType.value,
-                    onChanged: c.selectEnquiryType,
+                  child: Obx(
+                    () => _LabeledField(
+                      label: "Offer price",
+                      controller: c.offerPriceCtrl,
+                      hint: "e.g. 250.50",
+                      keyboardType: const TextInputType.numberWithOptions(
+                        decimal: true,
+                      ),
+                      errorText: c.offerPriceError.value.isEmpty
+                          ? null
+                          : c.offerPriceError.value,
+                    ),
                   ),
                 ),
               ],
-            );
-          }),
+            ),
 
-          const SizedBox(height: 24),
-
-          // Quantity + Offer price
-          Row(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Expanded(
-                child: Obx(
-                  () => _LabeledField(
-                    label: "Quantity",
-                    controller: c.quantityCtrl,
-                    hint: "e.g. 100",
-                    keyboardType: TextInputType.number,
-                    errorText: c.quantityError.value.isEmpty
-                        ? null
-                        : c.quantityError.value,
-                  ),
+            Obx(() {
+              if (!c.requiresSettlement) return const SizedBox.shrink();
+              final options = app.config.settlementDays;
+              return Padding(
+                padding: const EdgeInsets.only(top: 24),
+                child: SettlementDaysDropdown(
+                  key: ValueKey('enquiry-create-${c.settlementDays.value}'),
+                  options: options,
+                  value: c.settlementDays.value,
+                  enabled: !c.isLoading.value && options.isNotEmpty,
+                  labelText: 'Settlement cycle *',
+                  errorText: c.settlementError.value.isEmpty
+                      ? null
+                      : c.settlementError.value,
+                  onChanged: (value) {
+                    c.settlementDays.value = value;
+                    c.settlementError.value = '';
+                  },
                 ),
-              ),
-              const SizedBox(width: 20),
-              Expanded(
-                child: Obx(
-                  () => _LabeledField(
-                    label: "Offer price",
-                    controller: c.offerPriceCtrl,
-                    hint: "e.g. 250.50",
-                    keyboardType: const TextInputType.numberWithOptions(
-                      decimal: true,
-                    ),
-                    errorText: c.offerPriceError.value.isEmpty
-                        ? null
-                        : c.offerPriceError.value,
-                  ),
-                ),
-              ),
-            ],
-          ),
+              );
+            }),
 
-          Obx(() {
-            if (!c.requiresSettlement) return const SizedBox.shrink();
-            final options = app.config.settlementDays;
-            return Padding(
-              padding: const EdgeInsets.only(top: 24),
-              child: SettlementDaysDropdown(
-                key: ValueKey('enquiry-create-${c.settlementDays.value}'),
-                options: options,
-                value: c.settlementDays.value,
-                enabled: !c.isLoading.value && options.isNotEmpty,
-                labelText: 'Settlement cycle *',
-                errorText: c.settlementError.value.isEmpty
-                    ? null
-                    : c.settlementError.value,
-                onChanged: (value) {
-                  c.settlementDays.value = value;
-                  c.settlementError.value = '';
-                },
-              ),
-            );
-          }),
+            const SizedBox(height: 24),
 
-          const SizedBox(height: 24),
+            // Notes / remarks
+            const Text("Notes", style: TextStyle(fontSize: 14)),
+            const SizedBox(height: 8),
+            CustomTextField(
+              controller: c.notesCtrl,
+              maxLines: 2,
+              maxLength: 2000,
+              hintText: "Any remarks...",
+            ),
 
-          // Notes / remarks
-          const Text("Notes", style: TextStyle(fontSize: 14)),
-          const SizedBox(height: 8),
-          CustomTextField(
-            controller: c.notesCtrl,
-            maxLines: 2,
-            maxLength: 2000,
-            hintText: "Any remarks...",
-          ),
-
-          const SizedBox(height: 20),
-          Wrap(
-            alignment: WrapAlignment.end,
-            spacing: 12,
-            runSpacing: 12,
-            children: [
-              CustomOutlinedButton(
-                onPressed: Get.back,
-                width: context.isPhone ? 110 : 169,
-                height: 49,
-                text: "Close",
-              ),
-              Obx(() {
-                return CustomElevatedButton(
-                  onPressed: c.onPress,
-                  isLoading: c.isLoading.value,
+            const SizedBox(height: 20),
+            Wrap(
+              alignment: WrapAlignment.end,
+              spacing: 12,
+              runSpacing: 12,
+              children: [
+                CustomOutlinedButton(
+                  onPressed: Get.back,
                   width: context.isPhone ? 110 : 169,
                   height: 49,
-                  text: "Submit",
-                );
-              }),
-            ],
-          ),
-        ],
+                  text: "Close",
+                ),
+                Obx(() {
+                  return CustomElevatedButton(
+                    onPressed: c.onPress,
+                    isLoading: c.isLoading.value,
+                    width: context.isPhone ? 110 : 169,
+                    height: 49,
+                    text: "Submit",
+                  );
+                }),
+              ],
+            ),
+          ],
+        ),
       ),
     );
   }

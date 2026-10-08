@@ -1,7 +1,6 @@
 import 'package:private_deals/src/features/catalog/presentation/pre_ipo/pre_ipo_investment/seller_profile_widget.dart';
 import 'package:private_deals/src/features/catalog/presentation/pre_ipo/pre_ipo_investment/pre_ipo_offer.dart';
 import 'package:private_deals/src/features/catalog/presentation/secondary/enquiry/desktop_enquiry_dialog_view.dart';
-import 'package:private_deals/src/features/catalog/presentation/secondary/enquiry/enquiry_dialog_ctrl.dart';
 import 'package:private_deals/src/shared/app_exports.dart';
 import 'pre_ipo_detail_page_ctrl.dart';
 
@@ -199,8 +198,12 @@ class SellerSlotsWidget extends StatelessWidget {
   }
 
   Future<void> _enquire() async {
-    await showCustomDialog(DesktopEnquiryDialogView(c.model().slug));
-    await Get.delete<EnquiryDialogCtrl>();
+    final created = await showCustomDialog(
+      DesktopEnquiryDialogView(c.model().slug),
+    );
+    if (created == true && !c.isClosed) {
+      Get.offAllNamed(Routes.enquiriesPath());
+    }
   }
 
   Future<void> _showDeal(BuildContext context, DealModel deal) async {

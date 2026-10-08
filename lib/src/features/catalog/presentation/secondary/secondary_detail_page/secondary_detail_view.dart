@@ -1,6 +1,5 @@
 import 'package:private_deals/src/features/catalog/presentation/pre_ipo/pre_ipo_detail_page/pre_ipo_detail_sections.dart';
 import 'package:private_deals/src/features/catalog/presentation/secondary/enquiry/desktop_enquiry_dialog_view.dart';
-import 'package:private_deals/src/features/catalog/presentation/secondary/enquiry/enquiry_dialog_ctrl.dart';
 import 'package:private_deals/src/shared/app_exports.dart';
 import 'package:private_deals/src/shared/functions/on_back_logic.dart';
 
@@ -233,8 +232,12 @@ class _SecondaryActionPanel extends StatelessWidget {
   final SecondaryDetailPageCtrl c;
 
   Future<void> _openEnquire() async {
-    await showCustomDialog(DesktopEnquiryDialogView(c.model().slug));
-    await Get.delete<EnquiryDialogCtrl>();
+    final created = await showCustomDialog(
+      DesktopEnquiryDialogView(c.model().slug),
+    );
+    if (created == true && !c.isClosed) {
+      Get.offAllNamed(Routes.enquiriesPath());
+    }
   }
 
   @override

@@ -94,7 +94,9 @@ class EnquiryDialogCtrl extends GetxController {
       offerPrice: double.parse(offerPriceCtrl.text.trim()),
       notes: notesCtrl.text,
       settlementDays: requiresSettlement ? settlementDays.value : null,
-    );    isLoading(false);
+    );
+    if (isClosed) return;
+    isLoading(false);
     if (res.isSuccess) {
       Get.back(result: true);
       toast(res.m, MessageEnum.success);

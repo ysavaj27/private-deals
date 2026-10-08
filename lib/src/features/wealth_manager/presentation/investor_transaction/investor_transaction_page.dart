@@ -7,7 +7,11 @@ import 'package:private_deals/src/features/wealth_manager/presentation/investor_
 class InvestorTransactionPage extends StatelessWidget {
   final InvestorTransactionPageCtrl c = Get.put(InvestorTransactionPageCtrl());
 
-  InvestorTransactionPage({super.key});
+  InvestorTransactionPage({super.key}) {
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (!c.isClosed) c.applyRouteSelection();
+    });
+  }
 
   @override
   Widget build(BuildContext context) {

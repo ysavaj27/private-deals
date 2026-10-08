@@ -140,9 +140,11 @@ class PreIPOInvestmentPageCtrl extends GetxController
       dealId: offer.dealId,
       dealUuid: offer.dealUuid,
     );
+    if (isClosed) return;
     investing(false);
     if (res.isSuccess) {
-      Get.back(result: true);
+      clearInvestors();
+      Get.offAllNamed(Routes.unlistedTransactionsPath());
       toast(res.m, MessageEnum.success);
     } else {
       toast(res.m, MessageEnum.alert);

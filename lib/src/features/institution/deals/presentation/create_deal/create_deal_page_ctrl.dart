@@ -44,8 +44,9 @@ class CreateDealPageCtrl extends GetxController {
 
   bool get isBuyDeal => dealType.value == 'buy';
 
+  // Read isBuyDeal first so Obx always tracks dealType (avoids GetX error on LP Secondary).
   bool get requiresSettlement =>
-      companyType == CompanyType.unlisted && !isBuyDeal;
+      !isBuyDeal && companyType == CompanyType.unlisted;
 
   String get availableQuantityLabel =>
       isBuyDeal ? 'Required total quantity' : 'Available total quantity';
