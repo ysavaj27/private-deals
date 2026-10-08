@@ -14,7 +14,17 @@ class PreIPOSellShareDialogCtrl extends GetxController {
   PreIPOSellShareDialogCtrl(this.model);
 
   Future<void> onPress() async {
+    if (isLoading.value) return;
     isLoading(true);
+    final kycError = await WInvestorsApi.transactionKycError([
+      model.investor.id,
+    ]);
+    if (isClosed) return;
+    if (kycError != null) {
+      isLoading(false);
+      toast(kycError, MessageEnum.alert);
+      return;
+    }
     var res = await WPreIpoTransactionApi.preIPOSellRequest(
       portfolioId: model.id,
       price: sellPriceCTRL.text,
@@ -30,11 +40,6 @@ class PreIPOSellShareDialogCtrl extends GetxController {
     }
   }
 
-  @override
-  void onInit() {
-    super.onInit();
-  }
-
   void clearData() {
     receipt(MediaModel());
     receiptCTRL.clear();
@@ -42,8 +47,9 @@ class PreIPOSellShareDialogCtrl extends GetxController {
 
   @override
   void onClose() {
-    sellQuantityCTRL.clear();
-    sellPriceCTRL.clear();
+    sellQuantityCTRL.dispose();
+    sellPriceCTRL.dispose();
+    receiptCTRL.dispose();
     super.onClose();
   }
 }

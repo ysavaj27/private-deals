@@ -69,8 +69,7 @@ void main() {
   });
 
   group('Priority 1 contract paths', () {
-    test('#1 primary sell share uses investor sell-now (blocked by interceptor)',
-        () async {
+    test('#1 primary sell share uses investor sell-now (blocked by interceptor)', () async {
       final res = await InvestorSecondaryTransactionApi.primarySellRequest(
         portfolioId: 1,
         shares: 1,
@@ -172,11 +171,7 @@ void main() {
         adapter: adapter,
         expectList: true,
         action: () async {
-          await WInvestorsApi.investorsList(
-            isKyc: '',
-            isActive: '',
-            isAif: '',
-          );
+          await WInvestorsApi.investorsList(isKyc: '', isActive: '', isAif: '');
         },
       );
       await ChannelPartnerApi.relationManagerGet();
@@ -278,6 +273,11 @@ void main() {
         adapter: adapter,
         responseData: {'id': 1},
         action: () async {
+          adapter.respond = (request) async => request.method == 'GET'
+              ? okListBody([
+                  {'id': 1, 'preipo_kyc_status': 1},
+                ])
+              : okBody({'id': 1});
           await InvestorPrimaryTransactionApi.wealthManagerInvestment(
             investorId: 1,
             startupId: 1,
@@ -295,24 +295,25 @@ void main() {
       );
     });
 
-    test('#15 primary payment receipt (investor path blocked by interceptor)',
-        () async {
-      final res = await InvestorPrimaryTransactionApi.paymentReceipt(
-        transactionId: 1,
-        receipt: _emptyMedia(),
-      );
-      expect(adapter.requests, isEmpty);
-      expect(res.isSuccess, isFalse);
-      expect(res.m.toLowerCase(), contains('partner workflow'));
-      smokeLedger.record(
-        SmokeResult(
-          caseId: 15,
-          status: SmokeResultStatus.fail,
-          detail:
-              'Dio interceptor rejects investor upload-payment-receipt for partner session',
-        ),
-      );
-    });
+    test(
+      '#15 primary payment receipt (investor path blocked by interceptor)',
+      () async {
+        final res = await InvestorPrimaryTransactionApi.paymentReceipt(
+          transactionId: 1,
+          receipt: _emptyMedia(),
+        );
+        expect(adapter.requests, isEmpty);
+        expect(res.isSuccess, isFalse);
+        expect(res.m.toLowerCase(), contains('partner workflow'));
+        smokeLedger.record(
+          SmokeResult(
+            caseId: 15,
+            status: SmokeResultStatus.fail,
+            detail: 'Dio interceptor rejects investor upload-payment-receipt for partner session',
+          ),
+        );
+      },
+    );
 
     test('#16 secondary TX list', () async {
       await expectContractPath(
@@ -487,11 +488,12 @@ void main() {
         adapter: adapter,
         expectList: true,
         action: () async {
-          final inv = SelectInvestorModel(
-            investorId: 1,
-            quantity: 1,
-            price: 1,
-          );
+          final inv = SelectInvestorModel(investorId: 1, quantity: 1, price: 1);
+          adapter.respond = (request) async => request.method == 'GET'
+              ? okListBody([
+                  {'id': 1, 'preipo_kyc_status': 1},
+                ])
+              : okListBody();
           await WPreIpoTransactionApi.buy(list: [inv], dealId: 1);
         },
       );
@@ -566,10 +568,7 @@ void main() {
         smokeCase: _case(36),
         adapter: adapter,
         action: () async {
-          await CompanyApi.savePromoters(
-            companyId: 1,
-            promoters: const [],
-          );
+          await CompanyApi.savePromoters(companyId: 1, promoters: const []);
         },
       );
     });

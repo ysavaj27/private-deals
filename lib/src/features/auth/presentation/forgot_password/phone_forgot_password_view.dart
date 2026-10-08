@@ -25,10 +25,7 @@ class PhoneForgotPasswordView extends StatelessWidget {
               children: [
                 Padding(
                   padding: const EdgeInsets.only(left: 24, top: 10),
-                  child: Image.asset(
-                    AppAssets.newLogo,
-                    height: 45,
-                  ),
+                  child: Image.asset(AppAssets.newLogo, height: 45),
                 ),
                 Center(child: MainWidget()),
               ],
@@ -88,8 +85,9 @@ class MobileWidget extends StatelessWidget {
               Text(
                 'Enter your mobile number to reset your \npassword.',
                 style: TextStyle(
-                    fontSize: 12,
-                    color: context.theme.colorScheme.onSurfaceVariant),
+                  fontSize: 12,
+                  color: context.theme.colorScheme.onSurfaceVariant,
+                ),
               ),
               const SizedBox(height: 35),
               TitleTextField(
@@ -114,8 +112,11 @@ class MobileWidget extends StatelessWidget {
                   }
                   return null;
                 },
-                prefixIcon: Icon(Icons.phone_outlined,
-                    color: context.theme.disabledColor, size: 20),
+                prefixIcon: Icon(
+                  Icons.phone_outlined,
+                  color: context.theme.disabledColor,
+                  size: 20,
+                ),
                 onFieldSubmitted: (p0) {
                   if (c.dMobileKey.currentState?.validate() ?? false) {
                     c.forgotPassword();
@@ -146,9 +147,10 @@ class MobileWidget extends StatelessWidget {
                   child: Text(
                     "Back to Login",
                     style: TextStyle(
-                        color: AppColors.lightBlue,
-                        fontSize: 12,
-                        fontWeight: FontWeight.w400),
+                      color: AppColors.lightBlue,
+                      fontSize: 12,
+                      fontWeight: FontWeight.w400,
+                    ),
                   ),
                 ),
               ),
@@ -168,16 +170,6 @@ class OTPWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    // #region agent log
-    debugNdjson('A,C,D,E', 'phone_forgot_password_view.dart:OTPWidget.build',
-        'OTP screen display source (phone)', {
-      'runId': 'post-fix',
-      'displayedText': c.maskedEnteredPhone,
-      'iUserMobile': app.iUser.mobileNumber,
-      'iUserHide': app.iUser.mobileNumber.toHidePhoneNo,
-      'phoneNoCTRL': c.phoneNoCTRL.text,
-    });
-    // #endregion
     return FadeInUp(
       child: CustomCardWidget(
         margin: EdgeInsets.symmetric(horizontal: 16),
@@ -199,8 +191,9 @@ class OTPWidget extends StatelessWidget {
               Text(
                 "A message with the verification code has been sent to \n${c.maskedEnteredPhone}. Please enter the code to continue.",
                 style: TextStyle(
-                    fontSize: 12,
-                    color: context.theme.colorScheme.onSurfaceVariant),
+                  fontSize: 12,
+                  color: context.theme.colorScheme.onSurfaceVariant,
+                ),
               ),
               const SizedBox(height: 35),
               OtpTextField(
@@ -284,9 +277,10 @@ class OTPWidget extends StatelessWidget {
                   child: Text(
                     "Back to Login",
                     style: TextStyle(
-                        color: AppColors.lightBlue,
-                        fontSize: 12,
-                        fontWeight: FontWeight.w400),
+                      color: AppColors.lightBlue,
+                      fontSize: 12,
+                      fontWeight: FontWeight.w400,
+                    ),
                   ),
                 ),
               ),
@@ -326,8 +320,9 @@ class PasswordWidget extends StatelessWidget {
               Text(
                 'Password should contain at least 1 upper case, 1 lower case, 1 numeric character, 1 special character and 8 characters long.',
                 style: TextStyle(
-                    fontSize: 12,
-                    color: context.theme.colorScheme.onSurfaceVariant),
+                  fontSize: 12,
+                  color: context.theme.colorScheme.onSurfaceVariant,
+                ),
               ),
               const SizedBox(height: 35),
               Obx(() {
@@ -341,8 +336,11 @@ class PasswordWidget extends StatelessWidget {
                   name: "New Password",
                   obscureText: c.passObscure.value,
                   maxLines: 1,
-                  prefixIcon: Icon(Icons.vpn_key_outlined,
-                      color: context.theme.disabledColor, size: 20),
+                  prefixIcon: Icon(
+                    Icons.vpn_key_outlined,
+                    color: context.theme.disabledColor,
+                    size: 20,
+                  ),
                   suffixIcon: IconButton(
                     iconSize: 20,
                     splashRadius: 20,
@@ -378,8 +376,11 @@ class PasswordWidget extends StatelessWidget {
                   name: "Confirm Password",
                   keyboardType: TextInputType.visiblePassword,
                   maxLines: 1,
-                  prefixIcon: Icon(Icons.vpn_key_outlined,
-                      color: context.theme.disabledColor, size: 20),
+                  prefixIcon: Icon(
+                    Icons.vpn_key_outlined,
+                    color: context.theme.disabledColor,
+                    size: 20,
+                  ),
                   suffixIcon: IconButton(
                     iconSize: 20,
                     splashRadius: 20,
@@ -431,9 +432,10 @@ class PasswordWidget extends StatelessWidget {
                   child: Text(
                     "Back to Login",
                     style: TextStyle(
-                        color: AppColors.lightBlue,
-                        fontSize: 12,
-                        fontWeight: FontWeight.w400),
+                      color: AppColors.lightBlue,
+                      fontSize: 12,
+                      fontWeight: FontWeight.w400,
+                    ),
                   ),
                 ),
               ),

@@ -1,4 +1,3 @@
-import 'dart:typed_data';
 import 'dart:js_interop';
 
 import 'package:private_deals/src/shared/app_exports.dart';
@@ -39,9 +38,7 @@ class DownloadFile {
 
       final response = await dio.get<List<int>>(
         url,
-        options: Options(
-          responseType: ResponseType.bytes,
-        ),
+        options: Options(responseType: ResponseType.bytes),
         onReceiveProgress: (received, total) {
           if (total > 0) {
             final percent = (received / total * 100).toInt();
@@ -76,18 +73,13 @@ class DownloadFile {
     }
   }
 
-  static Future<bool> saveBytesWeb(
-      List<int> bytes,
-      String fileName,
-      ) async {
+  static Future<bool> saveBytesWeb(List<int> bytes, String fileName) async {
     try {
       final jsBytes = Uint8List.fromList(bytes).toJS;
 
       final blob = web.Blob(
         [jsBytes].toJS,
-        web.BlobPropertyBag(
-          type: 'application/octet-stream',
-        ),
+        web.BlobPropertyBag(type: 'application/octet-stream'),
       );
 
       final url = web.URL.createObjectURL(blob);
@@ -107,20 +99,13 @@ class DownloadFile {
 
       return true;
     } catch (e, t) {
-      logger.e(
-        'Web save error',
-        error: e.toString(),
-        stackTrace: t,
-      );
+      logger.e('Web save error', error: e.toString(), stackTrace: t);
 
       return false;
     }
   }
 
-  static String _buildFileName(
-      String fileName,
-      String url,
-      ) {
+  static String _buildFileName(String fileName, String url) {
     if (fileName.contains('.')) {
       return fileName;
     }

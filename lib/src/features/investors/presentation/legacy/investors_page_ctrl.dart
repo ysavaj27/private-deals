@@ -95,4 +95,10 @@ class InvestorsPageCtrl extends GetxController {
       toast(res.m);
     }
   }
+
+  @override
+  void onClose() {
+    controller.dispose();
+    super.onClose();
+  }
 }

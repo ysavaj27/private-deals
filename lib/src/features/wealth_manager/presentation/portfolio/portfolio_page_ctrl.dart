@@ -1,10 +1,9 @@
-import 'package:private_deals/src/features/wealth_manager/presentation/home_page_ctrl.dart';
 import 'package:private_deals/src/shared/app_exports.dart';
 
 import 'package:private_deals/src/features/wealth_manager/presentation/portfolio/phone_portfolio_view.dart';
 
 class PortfolioPageCtrl extends GetxController
-    with GetSingleTickerProviderStateMixin {
+    with GetTickerProviderStateMixin {
   RxBool isLoading = false.obs;
   RxBool isSearching = false.obs;
   RxList<StartupPortfolioListModel> equityList =
@@ -26,7 +25,8 @@ class PortfolioPageCtrl extends GetxController
   RxList<int> selectedStartup = <int>[].obs;
   RxList<StartupLiteModel> startupList = <StartupLiteModel>[].obs;
 
-  late TabController tabController;
+  TabController? _tabController;
+  TabController get tabController => _tabController!;
 
   RxList<StartupPortfolioListModel> get startUpList {
     if (isSearching.isTrue) {
@@ -46,26 +46,9 @@ class PortfolioPageCtrl extends GetxController
 
   @override
   void onInit() {
-    // #region agent log
-    agentLog('C', 'portfolio_page_ctrl.dart:onInit', 'PortfolioPageCtrl created', {
-      'route': Get.currentRoute,
-      'homeRegistered': Get.isRegistered<HomePageCtrl>(),
-    });
-    // #endregion
     setData();
     getData();
     super.onInit();
-  }
-
-  @override
-  void onClose() {
-    // #region agent log
-    agentLog('B', 'portfolio_page_ctrl.dart:onClose', 'PortfolioPageCtrl disposing', {
-      'route': Get.currentRoute,
-      'isLoading': isLoading.value,
-    });
-    // #endregion
-    super.onClose();
   }
 
   void setData() {
@@ -193,6 +176,16 @@ class PortfolioPageCtrl extends GetxController
   Future<void> getPreIpoPortfolio() async {
     var res = await PortfolioApi.wPreIpoPortfolioAPi(selectedInvestor);
     if (res.isSuccess) {
+      await getInvestorList();
+      for (final group in res.r ?? <PreIPOPortfolioListModel>[]) {
+        for (final holding in group.holdings) {
+          holding.investor =
+              investorList.firstWhereOrNull(
+                (item) => item.id == group.investor.id,
+              ) ??
+              InvestorModel(id: group.investor.id, name: group.investor.name);
+        }
+      }
       preIpoList(res.r);
     }
   }
@@ -207,6 +200,7 @@ class PortfolioPageCtrl extends GetxController
     if (res.isSuccess && res.r != null) {
       investorList(res.r);
     } else {
+      investorList.clear();
       toast(res.m);
     }
   }
@@ -231,6 +225,16 @@ class PortfolioPageCtrl extends GetxController
       selectedStartup,
     );
     if (res.isSuccess) {
+      await getInvestorList();
+      for (final group in res.r ?? <StartupPortfolioListModel>[]) {
+        for (final holding in group.holdings) {
+          holding.investor =
+              investorList.firstWhereOrNull(
+                (item) => item.id == group.investor.id,
+              ) ??
+              InvestorModel(id: group.investor.id, name: group.investor.name);
+        }
+      }
       switch (currentIndex()) {
         case EquityTypeEnum.equity:
           equityList(res.r);
@@ -251,7 +255,8 @@ class PortfolioPageCtrl extends GetxController
 
   Future<void> getData() async {
     isLoading(true);
-    tabController = TabController(length: tabBarLength, vsync: this);
+    _tabController?.dispose();
+    _tabController = TabController(length: tabBarLength, vsync: this);
     if (app.wUser.isPreIpoAccess) {
       currentIndex(EquityTypeEnum.preIpo);
     } else {
@@ -264,11 +269,14 @@ class PortfolioPageCtrl extends GetxController
       }
     });
     logger.d(currentIndex.value);
-    await Future.wait([
-      getStartupPortfolio(),
-      getInvestorList(),
-      getStartupList(),
-    ]);
+    await Future.wait([getStartupPortfolio(), getStartupList()]);
     isLoading(false);
+  }
+
+  @override
+  void onClose() {
+    controller.dispose();
+    _tabController?.dispose();
+    super.onClose();
   }
 }

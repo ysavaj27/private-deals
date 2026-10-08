@@ -1,4 +1,7 @@
+import 'package:private_deals/src/features/investors/presentation/complete_investor_kyc_button.dart';
+
 import 'unlisted_portfolio_view.dart';
+
 import 'package:private_deals/src/features/wealth_manager/presentation/portfolio/primary_sell_share_dialog/primary_sell_share_dialog.dart';
 import 'package:private_deals/src/features/wealth_manager/presentation/portfolio/primary_sell_share_dialog/primary_sell_share_dialog_ctrl.dart';
 import 'package:private_deals/src/shared/app_exports.dart';
@@ -207,10 +210,7 @@ class PortfolioFilterWidget extends StatelessWidget {
           // SizedBox(height: 10),
           Divider(),
           SizedBox(height: 20),
-          Text(
-            "Select Investor",
-            style: context.textTheme.titleLarge,
-          ),
+          Text("Select Investor", style: context.textTheme.titleLarge),
           SizedBox(height: 10),
           Obx(() {
             return Wrap(
@@ -232,10 +232,7 @@ class PortfolioFilterWidget extends StatelessWidget {
             );
           }),
           SizedBox(height: 20),
-          Text(
-            "Select Startup",
-            style: context.textTheme.titleLarge,
-          ),
+          Text("Select Startup", style: context.textTheme.titleLarge),
           SizedBox(height: 10),
           Obx(() {
             return Wrap(
@@ -301,8 +298,11 @@ class StartUpPortfolioWidget extends StatelessWidget {
   final List<StartupPortfolioListModel> list;
   final Future<void> Function() onRefresh;
 
-  const StartUpPortfolioWidget(
-      {super.key, required this.list, required this.onRefresh});
+  const StartUpPortfolioWidget({
+    super.key,
+    required this.list,
+    required this.onRefresh,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -394,8 +394,9 @@ class StartUpPortfolioWidget extends StatelessWidget {
                   ],
                 ),
                 children: [
-                  ...model.holdings.map((e) =>
-                      StartUpPortfolioCard(model: e, onRefresh: onRefresh))
+                  ...model.holdings.map(
+                    (e) => StartUpPortfolioCard(model: e, onRefresh: onRefresh),
+                  ),
                 ],
               );
             },
@@ -413,8 +414,11 @@ class StartUpPortfolioCard extends StatelessWidget {
   final PortfolioModel model;
   final Future<void> Function() onRefresh;
 
-  const StartUpPortfolioCard(
-      {super.key, required this.model, required this.onRefresh});
+  const StartUpPortfolioCard({
+    super.key,
+    required this.model,
+    required this.onRefresh,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -433,8 +437,10 @@ class StartUpPortfolioCard extends StatelessWidget {
                   width: 75,
                   radius: 4,
                   onTap: () {
-                    Get.toNamed(Routes.primaryDetailPage,
-                        arguments: model.startupId);
+                    Get.toNamed(
+                      Routes.primaryDetailPage,
+                      arguments: model.startupId,
+                    );
                   },
                 ),
                 const SizedBox(width: 15),
@@ -444,7 +450,9 @@ class StartUpPortfolioCard extends StatelessWidget {
                     Text(
                       model.startup.brandName,
                       style: const TextStyle(
-                          fontWeight: FontWeight.w600, fontSize: 20),
+                        fontWeight: FontWeight.w600,
+                        fontSize: 20,
+                      ),
                     ),
                     // SizedBox(height: 2),
                     Text(
@@ -464,13 +472,16 @@ class StartUpPortfolioCard extends StatelessWidget {
                             decoration: BoxDecoration(
                               borderRadius: BorderRadius.circular(4),
                               color: context.isDarkMode
-                                  ? context.theme.disabledColor
-                                      .withValues(alpha: 0.4)
+                                  ? context.theme.disabledColor.withValues(
+                                      alpha: 0.4,
+                                    )
                                   : null,
                               border: Border.all(color: Colors.white),
                             ),
                             padding: const EdgeInsets.symmetric(
-                                vertical: 3, horizontal: 5),
+                              vertical: 3,
+                              horizontal: 5,
+                            ),
                             alignment: Alignment.center,
                             child: const Text(
                               "Private Equity",
@@ -484,14 +495,18 @@ class StartUpPortfolioCard extends StatelessWidget {
                             decoration: BoxDecoration(
                               borderRadius: BorderRadius.circular(4),
                               color: context.isDarkMode
-                                  ? context.theme.disabledColor
-                                      .withValues(alpha: 0.4)
+                                  ? context.theme.disabledColor.withValues(
+                                      alpha: 0.4,
+                                    )
                                   : null,
                               border: Border.all(
-                                  color: context.theme.disabledColor),
+                                color: context.theme.disabledColor,
+                              ),
                             ),
                             padding: const EdgeInsets.symmetric(
-                                vertical: 3, horizontal: 5),
+                              vertical: 3,
+                              horizontal: 5,
+                            ),
                             alignment: Alignment.center,
                             child: const Text(
                               "Lp Secondary",
@@ -533,29 +548,37 @@ class StartUpPortfolioCard extends StatelessWidget {
                     const SizedBox(height: 6),
                     Visibility(
                       visible: model.canSell,
-                      child: CustomElevatedButton(
-                        onPressed: () async {
-                          var res = await showCustomDialog(
-                              PrimarySellShareDialog(model));
-                          Get.delete<PrimarySellShareDialogCtrl>();
-                          if (res == true) onRefresh();
-                        },
-                        text: 'Sell',
-                        size: const Size(150, 44),
-                        style: const TextStyle(
-                            fontSize: 18, fontWeight: FontWeight.w600),
-                        // width: 187,
-                        // height: 44,
-                        radius: 14,
-                      ),
+                      child: !model.investor.isPreIpoKycComplete
+                          ? CompleteInvestorKycButton(
+                              investor: model.investor,
+                              onSaved: () async {
+                                await onRefresh();
+                              },
+                            )
+                          : CustomElevatedButton(
+                              onPressed: () async {
+                                var res = await showCustomDialog(
+                                  PrimarySellShareDialog(model),
+                                );
+                                Get.delete<PrimarySellShareDialogCtrl>();
+                                if (res == true) onRefresh();
+                              },
+                              text: 'Sell',
+                              size: const Size(150, 44),
+                              style: const TextStyle(
+                                fontSize: 18,
+                                fontWeight: FontWeight.w600,
+                              ),
+                              // width: 187,
+                              // height: 44,
+                              radius: 14,
+                            ),
                     ),
                   ],
                 ),
               ],
             ),
-            const SizedBox(
-              height: 23,
-            ),
+            const SizedBox(height: 23),
             CustomCardWidget(
               radius: 6,
               child: Padding(
@@ -642,12 +665,16 @@ class StartUpPortfolioCard extends StatelessWidget {
                         Text(
                           "Amount Invested",
                           style: TextStyle(
-                              color: context.theme.disabledColor, fontSize: 16),
+                            color: context.theme.disabledColor,
+                            fontSize: 16,
+                          ),
                         ),
                         Text(
                           model.investmentAmount.toCurrency,
                           style: const TextStyle(
-                              fontSize: 18, fontWeight: FontWeight.w500),
+                            fontSize: 18,
+                            fontWeight: FontWeight.w500,
+                          ),
                         ),
                       ],
                     ),
@@ -658,14 +685,17 @@ class StartUpPortfolioCard extends StatelessWidget {
                         Text(
                           "Increase/Decrease (Amt)",
                           style: TextStyle(
-                              color: context.theme.disabledColor, fontSize: 16),
+                            color: context.theme.disabledColor,
+                            fontSize: 16,
+                          ),
                         ),
                         Text(
                           model.profitAmount.toCurrency,
                           style: TextStyle(
-                              fontSize: 18,
-                              color: model.profitColor,
-                              fontWeight: FontWeight.w500),
+                            fontSize: 18,
+                            color: model.profitColor,
+                            fontWeight: FontWeight.w500,
+                          ),
                         ),
                       ],
                     ),
@@ -676,21 +706,24 @@ class StartUpPortfolioCard extends StatelessWidget {
                         Text(
                           "Increase/Decrease(%)",
                           style: TextStyle(
-                              color: context.theme.disabledColor, fontSize: 16),
+                            color: context.theme.disabledColor,
+                            fontSize: 16,
+                          ),
                         ),
                         Text(
                           model.profitPercentage,
                           style: TextStyle(
-                              fontSize: 18,
-                              color: model.profitColor,
-                              fontWeight: FontWeight.w500),
+                            fontSize: 18,
+                            color: model.profitColor,
+                            fontWeight: FontWeight.w500,
+                          ),
                         ),
                       ],
                     ),
                   ],
                 ),
               ),
-            )
+            ),
           ],
         ),
       ),

@@ -123,8 +123,9 @@ class DashboardPageCtrl extends GetxController {
 
   Future<void> getStartupList() async {
     isLoading(true);
-    var res =
-        await LandingPageApi.wStartupList(type: StartupStatusEnum.raisingnow);
+    var res = await LandingPageApi.wStartupList(
+      type: StartupStatusEnum.raisingnow,
+    );
     isLoading(false);
     if (res.isSuccess) {
       startupList(res.r);
@@ -153,35 +154,47 @@ class DashboardPageCtrl extends GetxController {
     clearData();
 
     /// SET ACTIVE & NON ACTIVE  AND KYC AND NON KYC INVESTOR
-    var activeInvestor = model()
-        .investorChartModel
-        .active
+    var activeInvestor = model().investorChartModel.active
         .where((e) => e.kycStatus.isNotEmpty)
         .toList();
-    var unActiveInvestor = model()
-        .investorChartModel
-        .active
+    var unActiveInvestor = model().investorChartModel.active
         .where((e) => e.kycStatus.isEmpty)
         .toList();
-    activeInvestorList.add(DataModel(
-        index: activeInvestor.length, info: activeInvestor, title: "Active"));
-    activeInvestorList.add(DataModel(
+    activeInvestorList.add(
+      DataModel(
+        index: activeInvestor.length,
+        info: activeInvestor,
+        title: "Active",
+      ),
+    );
+    activeInvestorList.add(
+      DataModel(
         index: unActiveInvestor.length,
         info: unActiveInvestor,
-        title: "In Active"));
+        title: "In Active",
+      ),
+    );
 
-    var kycCompleteInvestorList =
-        model().investorChartModel.kyc.where((e) => e.kycStatus == 1).toList();
-    var noKycInvestorList =
-        model().investorChartModel.kyc.where((e) => e.kycStatus == 0).toList();
-    kycInvestorList.add(DataModel(
+    var kycCompleteInvestorList = model().investorChartModel.kyc
+        .where((e) => e.kycStatus == 1)
+        .toList();
+    var noKycInvestorList = model().investorChartModel.kyc
+        .where((e) => e.kycStatus == 0)
+        .toList();
+    kycInvestorList.add(
+      DataModel(
         index: kycCompleteInvestorList.length,
         info: kycCompleteInvestorList,
-        title: "Kyc"));
-    kycInvestorList.add(DataModel(
+        title: "Kyc",
+      ),
+    );
+    kycInvestorList.add(
+      DataModel(
         index: noKycInvestorList.length,
         info: noKycInvestorList,
-        title: "Non Kyc"));
+        title: "Non Kyc",
+      ),
+    );
 
     ///NEW BAR CHARTS DATA
     for (var i = 0; i < model().investmentGrowth.length; i++) {
@@ -203,11 +216,12 @@ class DashboardPageCtrl extends GetxController {
     for (var i = 0; i < model().sectors.length; i++) {
       var data = model().sectors[i];
       var dataModel = DataModel<List<WStartup>>(
-          title: data.name,
-          numData: data.startups.length.toDouble(),
-          numData2: data.totalInvestment.toDouble(),
-          index: i,
-          info: data.startups);
+        title: data.name,
+        numData: data.startups.length.toDouble(),
+        numData2: data.totalInvestment.toDouble(),
+        index: i,
+        info: data.startups,
+      );
       numberPieChartList.add(dataModel);
       investmentPieChartList.add(dataModel);
     }
@@ -251,20 +265,34 @@ class DashboardPageCtrl extends GetxController {
     /// LINE CHART DATA
     for (var i = 0; i < model().investments.monthly.length; i++) {
       var chart = model().investments.monthly[i];
-      monthlyList.add(DataModel(
+      monthlyList.add(
+        DataModel(
           title: chart.month,
           numData: chart.totalInvestment.toDouble(),
-          index: i));
+          index: i,
+        ),
+      );
     }
     for (var i = 0; i < model().investments.quarterly.length; i++) {
       var chart = model().investments.quarterly[i];
-      quarterlyList.add(DataModel(
+      quarterlyList.add(
+        DataModel(
           title: chart.quarter,
           numData: chart.totalInvestment.toDouble(),
-          index: i));
+          index: i,
+        ),
+      );
     }
 
     isData(true);
+  }
+
+  @override
+  void onClose() {
+    scrollController.dispose();
+    trendingPageController.dispose();
+    chartPageController.dispose();
+    super.onClose();
   }
 }
 
@@ -303,10 +331,10 @@ class DataModel<T> {
   });
 
   Map<String, dynamic> toJson() => {
-        'title': title,
-        'data': data,
-        'image': image,
-        'numData': numData,
-        'index': index,
-      };
+    'title': title,
+    'data': data,
+    'image': image,
+    'numData': numData,
+    'index': index,
+  };
 }

@@ -79,4 +79,14 @@ class PrimaryLandingPageCtrl extends GetxController {
     sectorList();
     super.onInit();
   }
+
+  @override
+  void onClose() {
+    scrollController.dispose();
+    controller.dispose();
+    liveDealController.dispose();
+    completedDealController.dispose();
+    blogController.dispose();
+    super.onClose();
+  }
 }

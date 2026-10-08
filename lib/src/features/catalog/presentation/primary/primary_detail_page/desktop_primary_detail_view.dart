@@ -3,7 +3,6 @@ import 'package:private_deals/src/shared/app_exports.dart';
 import 'package:private_deals/src/shared/functions/on_back_logic.dart';
 
 import 'package:private_deals/src/features/catalog/presentation/primary/primary_detail_page/investor_list_dialog/investor_list_dialog.dart';
-import 'package:private_deals/src/features/catalog/presentation/primary/primary_detail_page/investor_list_dialog/investor_list_dialog_ctrl.dart';
 import 'package:private_deals/src/features/catalog/presentation/primary/primary_detail_page/primary_detail_page.dart';
 import 'package:private_deals/src/features/catalog/presentation/primary/primary_detail_page/primary_detail_page_ctrl.dart';
 
@@ -42,8 +41,9 @@ class DesktopPrimaryDetailView extends StatelessWidget {
                       width: 40,
                       decoration: BoxDecoration(
                         shape: BoxShape.circle,
-                        color:
-                            context.theme.dividerColor.withValues(alpha: 0.5),
+                        color: context.theme.dividerColor.withValues(
+                          alpha: 0.5,
+                        ),
                       ),
                       child: Icon(
                         Icons.arrow_back,
@@ -125,18 +125,16 @@ class HeaderDetails extends StatelessWidget {
               ),
             ),
             Padding(
-              padding:
-                  const EdgeInsets.symmetric(horizontal: 120, vertical: 20),
+              padding: const EdgeInsets.symmetric(
+                horizontal: 120,
+                vertical: 20,
+              ),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Row(
                     children: [
-                      LogoImage(
-                        height: 112,
-                        width: 112,
-                        url: c.model.cms.logo,
-                      ),
+                      LogoImage(height: 112, width: 112, url: c.model.cms.logo),
                       const SizedBox(width: 10),
                       Expanded(
                         child: Column(
@@ -146,7 +144,9 @@ class HeaderDetails extends StatelessWidget {
                               c.model.brandName,
                               maxLines: 3,
                               style: const TextStyle(
-                                  fontSize: 28, fontWeight: FontWeight.w600),
+                                fontSize: 28,
+                                fontWeight: FontWeight.w600,
+                              ),
                             ),
                             const SizedBox(height: 4),
                             Text(
@@ -160,18 +160,21 @@ class HeaderDetails extends StatelessWidget {
                             ),
                           ],
                         ),
-                      )
+                      ),
                     ],
                   ),
                   const SizedBox(height: 30),
                   Container(
                     width: context.width,
                     padding: const EdgeInsets.symmetric(
-                        vertical: 25, horizontal: 30),
+                      vertical: 25,
+                      horizontal: 30,
+                    ),
                     decoration: BoxDecoration(
                       color: context.theme.primaryColor.withValues(alpha: 0.05),
                       borderRadius: const BorderRadius.vertical(
-                          bottom: Radius.circular(10)),
+                        bottom: Radius.circular(10),
+                      ),
                     ),
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
@@ -187,21 +190,26 @@ class HeaderDetails extends StatelessWidget {
                         const SizedBox(height: 15),
                         Obx(() {
                           return Text(c.model.briefInformation);
-                        })
+                        }),
                       ],
                     ),
                   ),
                   Container(
                     decoration: BoxDecoration(
-                      borderRadius:
-                          const BorderRadius.vertical(top: Radius.circular(10)),
+                      borderRadius: const BorderRadius.vertical(
+                        top: Radius.circular(10),
+                      ),
                       color: context.theme.scaffoldBackgroundColor,
                       border: Border.all(
-                          color: context.theme.dividerColor
-                              .withValues(alpha: 0.2)),
+                        color: context.theme.dividerColor.withValues(
+                          alpha: 0.2,
+                        ),
+                      ),
                     ),
                     padding: const EdgeInsets.symmetric(
-                        horizontal: 26, vertical: 23),
+                      horizontal: 26,
+                      vertical: 23,
+                    ),
                     child: Row(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
@@ -234,14 +242,17 @@ class HeaderDetails extends StatelessWidget {
                                         (e) => e.icon != null
                                             ? Padding(
                                                 padding: const EdgeInsets.only(
-                                                    right: 15),
+                                                  right: 15,
+                                                ),
                                                 child: Clickable(
-                                                    onTap: () {
-                                                      Launcher.launchURL(
-                                                          e.link);
-                                                    },
-                                                    child: FaIcon(e.icon,
-                                                        size: 30)),
+                                                  onTap: () {
+                                                    Launcher.launchURL(e.link);
+                                                  },
+                                                  child: FaIcon(
+                                                    e.icon,
+                                                    size: 30,
+                                                  ),
+                                                ),
                                               )
                                             : const SizedBox(),
                                       )
@@ -262,7 +273,10 @@ class HeaderDetails extends StatelessWidget {
                               const SizedBox(height: 30),
                               DetailWidget(
                                 title: 'Incorporation date',
-                                subTitle: c.model.legalInfo.incorporationDate
+                                subTitle: c
+                                    .model
+                                    .legalInfo
+                                    .incorporationDate
                                     .dateWithSortMonthYear,
                               ),
                             ],
@@ -285,7 +299,10 @@ class HeaderDetails extends StatelessWidget {
                               const SizedBox(height: 30),
                               DetailWidget(
                                 title: 'Type',
-                                subTitle: c.model.raisingRound.instrument
+                                subTitle: c
+                                    .model
+                                    .raisingRound
+                                    .instrument
                                     .instrumentName,
                               ),
                               const SizedBox(height: 30),
@@ -293,13 +310,17 @@ class HeaderDetails extends StatelessWidget {
                                 visible: !c.model.isEquity,
                                 child: DetailWidget(
                                   title: 'Floor',
-                                  subTitle: c.model.raisingRound.floor
+                                  subTitle: c
+                                      .model
+                                      .raisingRound
+                                      .floor
                                       .toFormattedPrice,
                                 ),
                               ),
                               Visibility(
-                                  visible: !c.model.isEquity,
-                                  child: const SizedBox(height: 30)),
+                                visible: !c.model.isEquity,
+                                child: const SizedBox(height: 30),
+                              ),
                               Visibility(
                                 visible: !c.model.isEquity,
                                 child: DetailWidget(
@@ -309,19 +330,24 @@ class HeaderDetails extends StatelessWidget {
                                 ),
                               ),
                               Visibility(
-                                  visible: !c.model.isEquity,
-                                  child: const SizedBox(height: 30)),
+                                visible: !c.model.isEquity,
+                                child: const SizedBox(height: 30),
+                              ),
                               Visibility(
                                 visible: c.model.isEquity,
                                 child: DetailWidget(
                                   title: 'Valuation',
-                                  subTitle: c.model.raisingRound.floor
+                                  subTitle: c
+                                      .model
+                                      .raisingRound
+                                      .floor
                                       .toFormattedPrice,
                                 ),
                               ),
                               Visibility(
-                                  visible: c.model.isEquity,
-                                  child: const SizedBox(height: 30)),
+                                visible: c.model.isEquity,
+                                child: const SizedBox(height: 30),
+                              ),
                               DetailWidget(
                                 title: 'Equity Offered',
                                 subTitle:
@@ -330,14 +356,20 @@ class HeaderDetails extends StatelessWidget {
                               const SizedBox(height: 30),
                               DetailWidget(
                                 title: 'Private Deals Round Size',
-                                subTitle: c.model.raisingRound.fundRequirement
+                                subTitle: c
+                                    .model
+                                    .raisingRound
+                                    .fundRequirement
                                     .toFormattedPrice,
                               ),
                               const SizedBox(height: 30),
                               DetailWidget(
                                 title: 'Total Round Size',
-                                subTitle: c.model.raisingRound
-                                    .totalFundRequirement.toFormattedPrice,
+                                subTitle: c
+                                    .model
+                                    .raisingRound
+                                    .totalFundRequirement
+                                    .toFormattedPrice,
                               ),
                               const SizedBox(height: 30),
                               DetailWidget(
@@ -362,14 +394,16 @@ class HeaderDetails extends StatelessWidget {
                         size: const Size(361, 64),
                         radius: 22,
                         onPressed: () async {
-                          var res =
-                              await showCustomDialog(InvestorListDialog());
-                          Get.delete<InvestorListDialogCtrl>();
+                          var res = await showCustomDialog(
+                            InvestorListDialog(),
+                          );
                           if (res is InvestorModel) {
                             logger.d(res.toJson());
                             var data = await Get.toNamed(
                               Routes.primaryInvestmentPath(
-                                  Get.currentRoute, res.uuid),
+                                Get.currentRoute,
+                                res.uuid,
+                              ),
                             );
                             // var data = await Get.to(() => InvestmentPage(),
                             //     arguments: {'startup': c.model, 'investor': res});
@@ -419,10 +453,7 @@ class _KeyInformationWidget extends StatelessWidget {
             children: [
               const Text(
                 "Key Information",
-                style: TextStyle(
-                  fontSize: 26,
-                  fontWeight: FontWeight.w600,
-                ),
+                style: TextStyle(fontSize: 26, fontWeight: FontWeight.w600),
               ),
               const SizedBox(height: 15),
               Html(data: c.model.cms.keyInformation),
@@ -450,10 +481,7 @@ class _DocumentWidget extends StatelessWidget {
         children: [
           const Text(
             "Documents",
-            style: TextStyle(
-              fontSize: 26,
-              fontWeight: FontWeight.w600,
-            ),
+            style: TextStyle(fontSize: 26, fontWeight: FontWeight.w600),
           ),
           const SizedBox(height: 15),
           Row(
@@ -543,10 +571,7 @@ class _FAQWidget extends StatelessWidget {
             children: [
               const Text(
                 "Frequently Asked Questions",
-                style: TextStyle(
-                  fontSize: 26,
-                  fontWeight: FontWeight.w600,
-                ),
+                style: TextStyle(fontSize: 26, fontWeight: FontWeight.w600),
               ),
               const SizedBox(height: 15),
               Expanded(
@@ -570,9 +595,13 @@ class _FAQWidget extends StatelessWidget {
                       dense: false,
                       tilePadding: context.isPhone
                           ? const EdgeInsets.symmetric(
-                              vertical: 10, horizontal: 15)
+                              vertical: 10,
+                              horizontal: 15,
+                            )
                           : const EdgeInsets.symmetric(
-                              vertical: 20, horizontal: 20),
+                              vertical: 20,
+                              horizontal: 20,
+                            ),
                       backgroundColor: context.theme.colorScheme.surface,
                       leading: Text(
                         "Q",
@@ -605,7 +634,9 @@ class _FAQWidget extends StatelessWidget {
                                 model.answer,
                                 style: TextStyle(
                                   color: context
-                                      .theme.colorScheme.onSurfaceVariant,
+                                      .theme
+                                      .colorScheme
+                                      .onSurfaceVariant,
                                   fontSize: context.isPhone ? 14 : 16,
                                 ),
                               ),
@@ -646,10 +677,7 @@ class _InvestorWidget extends StatelessWidget {
             children: [
               const Text(
                 "Investors",
-                style: TextStyle(
-                  fontSize: 26,
-                  fontWeight: FontWeight.w600,
-                ),
+                style: TextStyle(fontSize: 26, fontWeight: FontWeight.w600),
               ),
               const SizedBox(height: 15),
               Expanded(
@@ -661,8 +689,9 @@ class _InvestorWidget extends StatelessWidget {
                       radius: 14,
                       child: Padding(
                         padding: EdgeInsets.symmetric(
-                            vertical: 15,
-                            horizontal: context.isPhone ? 15 : 30),
+                          vertical: 15,
+                          horizontal: context.isPhone ? 15 : 30,
+                        ),
                         child: Row(
                           children: [
                             LogoImage(
@@ -686,8 +715,11 @@ class _InvestorWidget extends StatelessWidget {
                               child: Text(
                                 "Amount Invested: ",
                                 style: TextStyle(
-                                    color: context
-                                        .theme.colorScheme.onSurfaceVariant),
+                                  color: context
+                                      .theme
+                                      .colorScheme
+                                      .onSurfaceVariant,
+                                ),
                               ),
                             ),
                             Text(
@@ -730,10 +762,7 @@ class _UpdatesWidget extends StatelessWidget {
           children: [
             const Text(
               "Updates",
-              style: TextStyle(
-                fontSize: 26,
-                fontWeight: FontWeight.w600,
-              ),
+              style: TextStyle(fontSize: 26, fontWeight: FontWeight.w600),
             ),
             const SizedBox(height: 15),
             Expanded(
@@ -769,7 +798,9 @@ class _UpdatesWidget extends StatelessWidget {
                                 model.createdAt.dateWithSortMonthYear,
                                 style: TextStyle(
                                   color: context
-                                      .theme.colorScheme.onSurfaceVariant,
+                                      .theme
+                                      .colorScheme
+                                      .onSurfaceVariant,
                                 ),
                               ),
                             ],
@@ -778,8 +809,9 @@ class _UpdatesWidget extends StatelessWidget {
                           Divider(
                             height: 1,
                             thickness: 0.6,
-                            color: context.theme.dividerColor
-                                .withValues(alpha: 0.4),
+                            color: context.theme.dividerColor.withValues(
+                              alpha: 0.4,
+                            ),
                           ),
                           const SizedBox(height: 25),
                           Text(
@@ -822,10 +854,7 @@ class _TeamWidget extends StatelessWidget {
             children: [
               const Text(
                 "Team List",
-                style: TextStyle(
-                  fontSize: 26,
-                  fontWeight: FontWeight.w600,
-                ),
+                style: TextStyle(fontSize: 26, fontWeight: FontWeight.w600),
               ),
               const SizedBox(height: 15),
               Expanded(
@@ -864,8 +893,9 @@ class _TeamWidget extends StatelessWidget {
                                       Text(
                                         model.designation,
                                         style: const TextStyle(
-                                            fontSize: 16,
-                                            fontWeight: FontWeight.w600),
+                                          fontSize: 16,
+                                          fontWeight: FontWeight.w600,
+                                        ),
                                       ),
                                       // Text.rich(
                                       //   TextSpan(
@@ -904,8 +934,9 @@ class _TeamWidget extends StatelessWidget {
                             Divider(
                               height: 1,
                               thickness: 0.6,
-                              color: context.theme.dividerColor
-                                  .withValues(alpha: 0.4),
+                              color: context.theme.dividerColor.withValues(
+                                alpha: 0.4,
+                              ),
                             ),
                             const SizedBox(height: 25),
                             Text(
@@ -947,9 +978,7 @@ class _IdeaWidget extends StatelessWidget {
         children: [
           Visibility(
             visible: c.model.cms.pitchVideo.isNotEmpty,
-            child: CustomVideoPlayer(
-              url: c.model.cms.pitchVideo,
-            ),
+            child: CustomVideoPlayer(url: c.model.cms.pitchVideo),
           ),
           const SizedBox(height: 15),
           Html(data: c.model.cms.idea),
@@ -972,7 +1001,10 @@ class _SliverTabBarDelegate extends SliverPersistentHeaderDelegate {
 
   @override
   Widget build(
-      BuildContext context, double shrinkOffset, bool overlapsContent) {
+    BuildContext context,
+    double shrinkOffset,
+    bool overlapsContent,
+  ) {
     return Container(
       color: context.theme.scaffoldBackgroundColor,
       width: 800,
@@ -988,403 +1020,3 @@ class _SliverTabBarDelegate extends SliverPersistentHeaderDelegate {
     return false;
   }
 }
-
-// class DesktopStartupDetailView extends StatelessWidget {
-//   final StartupDetailPageCtrl c = Get.find<StartupDetailPageCtrl>();
-//
-//   DesktopStartupDetailView({super.key});
-//
-//   @override
-//   Widget build(BuildContext context) {
-//     return Scaffold(
-//       body: SafeArea(
-//         child: Obx(() {
-//           if (c.isLoading.isFalse) {
-//             return SingleChildScrollView(
-//               controller: c.parentController,
-//               physics: c.isParentScrolling.isTrue
-//                   ? const BouncingScrollPhysics()
-//                   : const NeverScrollableScrollPhysics(),
-//               child: Column(
-//                 crossAxisAlignment: CrossAxisAlignment.start,
-//                 children: [
-//                   Stack(
-//                     children: [
-//                       SizedBox(
-//                         height: 280,
-//                         child: CacheImage(
-//                           url: c.model.cms.longBanner,
-//                           fit: BoxFit.fitWidth,
-//                           width: context.width,
-//                         ),
-//                       ),
-//                       Positioned(
-//                         top: 20,
-//                         left: 80,
-//                         child: InkWell(
-//                           onTap: Get.back,
-//                           borderRadius: BorderRadius.circular(63),
-//                           child: Container(
-//                             height: 63,
-//                             width: 63,
-//                             decoration: BoxDecoration(
-//                               shape: BoxShape.circle,
-//                               color:
-//                                   context.theme.dividerColor.withValues(alpha: 0.5),
-//                             ),
-//                             child: Icon(
-//                               Icons.arrow_back,
-//                               color: context.theme.scaffoldBackgroundColor,
-//                             ),
-//                           ),
-//                         ),
-//                       ),
-//                     ],
-//                   ),
-//                   Padding(
-//                     padding: const EdgeInsets.symmetric(
-//                         horizontal: 120, vertical: 20),
-//                     child: Column(
-//                       crossAxisAlignment: CrossAxisAlignment.start,
-//                       children: [
-//                         Row(
-//                           children: [
-//                             LogoImage(
-//                               height: 112,
-//                               width: 112,
-//                               url: c.model.cms.logo,
-//                             ),
-//                             const SizedBox(width: 10),
-//                             Expanded(
-//                               child: Column(
-//                                 crossAxisAlignment: CrossAxisAlignment.start,
-//                                 children: [
-//                                   Text(
-//                                     c.model.brandName,
-//                                     maxLines: 3,
-//                                     style: const TextStyle(
-//                                         fontSize: 28,
-//                                         fontWeight: FontWeight.w600),
-//                                   ),
-//                                   const SizedBox(height: 4),
-//                                   Text(
-//                                     c.model.cms.oneLiner,
-//                                     style: TextStyle(
-//                                       fontSize: 18,
-//                                       fontWeight: FontWeight.w500,
-//                                       color: context.theme.colorScheme.onSurfaceVariant,
-//                                     ),
-//                                   ),
-//                                 ],
-//                               ),
-//                             )
-//                           ],
-//                         ),
-//
-//                         const SizedBox(height: 30),
-//                         Container(
-//                           width: context.width,
-//                           padding: const EdgeInsets.symmetric(
-//                               vertical: 25, horizontal: 30),
-//                           decoration: BoxDecoration(
-//                             color: context.theme.primaryColor.withOpacity(0.05),
-//                             borderRadius: const BorderRadius.vertical(
-//                                 bottom: Radius.circular(10)),
-//                           ),
-//                           child: Column(
-//                             crossAxisAlignment: CrossAxisAlignment.start,
-//                             children: [
-//                               Text(
-//                                 "Startup Highlights",
-//                                 style: TextStyle(
-//                                   color: context.theme.primaryColor,
-//                                   fontSize: 24,
-//                                   fontWeight: FontWeight.w600,
-//                                 ),
-//                               ),
-//                               const SizedBox(height: 15),
-//                               Text(
-//                                 c.model.briefInformation,
-//                               )
-//                             ],
-//                           ),
-//                         ),
-//                         Container(
-//                           decoration: BoxDecoration(
-//                             borderRadius: const BorderRadius.vertical(
-//                                 top: Radius.circular(10)),
-//                             color: context.theme.scaffoldBackgroundColor,
-//                             border: Border.all(
-//                                 color: context.theme.dividerColor
-//                                     .withValues(alpha: 0.2)),
-//                           ),
-//                           padding: const EdgeInsets.symmetric(
-//                               horizontal: 26, vertical: 23),
-//                           child: Row(
-//                             crossAxisAlignment: CrossAxisAlignment.start,
-//                             children: [
-//                               Expanded(
-//                                 flex: 4,
-//                                 child: Column(
-//                                   crossAxisAlignment: CrossAxisAlignment.start,
-//                                   children: [
-//                                     Text(
-//                                       "Startup Overview",
-//                                       style: TextStyle(
-//                                         color: context.theme.primaryColor,
-//                                         fontSize: 24,
-//                                         fontWeight: FontWeight.w600,
-//                                       ),
-//                                     ),
-//                                     const SizedBox(height: 30),
-//                                     DetailWidget(
-//                                       title: 'Location',
-//                                       subTitle: c.model.city.name.capitalFirst,
-//                                     ),
-//                                     const SizedBox(height: 30),
-//                                     DetailWidget(
-//                                       title: 'Social Media',
-//                                       alignment: Alignment.centerLeft,
-//                                       child: Row(
-//                                         mainAxisAlignment:
-//                                             MainAxisAlignment.start,
-//                                         children: c.model.socialMediaLinks
-//                                             .map(
-//                                               (e) => e.icon != null
-//                                                   ? Padding(
-//                                                       padding:
-//                                                           const EdgeInsets.only(
-//                                                               right: 15),
-//                                                       child: GestureDetector(
-//                                                           onTap: () {
-//                                                             Launcher.launchURL(
-//                                                                 e.link);
-//                                                           },
-//                                                           child: Icon(e.icon,
-//                                                               size: 30)),
-//                                                     )
-//                                                   : const SizedBox(),
-//                                             )
-//                                             .toList(),
-//                                       ),
-//                                     ),
-//                                     const SizedBox(height: 30),
-//                                     DetailWidget(
-//                                       title: 'website',
-//                                       subTitle: c.model.cms.website.naString,
-//                                       isUrl: true,
-//                                     ),
-//                                     const SizedBox(height: 30),
-//                                     DetailWidget(
-//                                       title: 'Company Number',
-//                                       subTitle: c.model.legalInfo.cin.naString,
-//                                     ),
-//                                     const SizedBox(height: 30),
-//                                     DetailWidget(
-//                                       title: 'Incorporation date',
-//                                       subTitle: c
-//                                           .model
-//                                           .legalInfo
-//                                           .incorporationDate
-//                                           .dateWithSortMonthYear,
-//                                     ),
-//                                   ],
-//                                 ),
-//                               ),
-//                               const SizedBox(width: 20),
-//                               Expanded(
-//                                 flex: 3,
-//                                 child: Column(
-//                                   crossAxisAlignment: CrossAxisAlignment.start,
-//                                   children: [
-//                                     Text(
-//                                       "Investment Summary",
-//                                       style: TextStyle(
-//                                         color: context.theme.primaryColor,
-//                                         fontSize: 24,
-//                                         fontWeight: FontWeight.w600,
-//                                       ),
-//                                     ),
-//                                     const SizedBox(height: 30),
-//                                     DetailWidget(
-//                                       title: 'Type',
-//                                       subTitle: c.model.raisingRound.instrument.instrumentName,
-//                                     ),
-//                                     const SizedBox(height: 30),
-//                                     Visibility(
-//                                       visible: !c.model.isEquity,
-//                                       child: DetailWidget(
-//                                         title: 'Floor',
-//                                         subTitle: c.model.raisingRound.floor
-//                                             .toFormattedPrice,
-//                                       ),
-//                                     ),
-//                                     Visibility(
-//                                         visible: !c.model.isEquity,
-//                                         child: const SizedBox(height: 30)),
-//                                     Visibility(
-//                                       visible: !c.model.isEquity,
-//                                       child: DetailWidget(
-//                                         title: 'Cap',
-//                                         subTitle: c.model.raisingRound.cap
-//                                             .toFormattedPrice,
-//                                       ),
-//                                     ),
-//                                     Visibility(
-//                                         visible: !c.model.isEquity,
-//                                         child: const SizedBox(height: 30)),
-//                                     Visibility(
-//                                       visible: c.model.isEquity,
-//                                       child: DetailWidget(
-//                                         title: 'Valuation',
-//                                         subTitle: c.model.raisingRound.floor
-//                                             .toFormattedPrice,
-//                                       ),
-//                                     ),
-//                                     Visibility(
-//                                         visible: c.model.isEquity,
-//                                         child: const SizedBox(height: 30)),
-//                                     DetailWidget(
-//                                       title: 'Equity Offered',
-//                                       subTitle:
-//                                           "${c.model.raisingRound.equityOffered}%",
-//                                     ),
-//                                     const SizedBox(height: 30),
-//                                     DetailWidget(
-//                                       title: 'Shuru-Up Round Size',
-//                                       subTitle: c.model.raisingRound
-//                                           .fundRequirement.toFormattedPrice,
-//                                     ),
-//                                     const SizedBox(height: 30),
-//                                     DetailWidget(
-//                                       title: 'Total Round Size',
-//                                       subTitle: c
-//                                           .model
-//                                           .raisingRound
-//                                           .totalFundRequirement
-//                                           .toFormattedPrice,
-//                                     ),
-//                                     const SizedBox(height: 30),
-//                                     DetailWidget(
-//                                       title: 'Share price',
-//                                       subTitle:
-//                                           "${c.model.raisingRound.sharePrice.toCurrency}",
-//                                     ),
-//                                   ],
-//                                 ),
-//                               ),
-//                             ],
-//                           ),
-//                         ),
-//                         Visibility(
-//                           visible: c.model.isActiveRound && !app.fromSecondary,
-//                           child: const SizedBox(height: 45),
-//                         ),
-//                         Center(
-//                           child: Visibility(
-//                             visible: c.model.isActiveRound && !app.fromSecondary,
-//                             child: CustomElevatedButton(
-//                               size: const Size(361, 64),
-//                               radius: 22,
-//                               onPressed: () async {
-//                                 var res = await showCustomDialog(
-//                                     InvestorListDialog());
-//                                 Get.delete<InvestorListDialogCtrl>();
-//                                 if (res is InvestorModel) {
-//                                   logger.d(res.toJson());
-//                                   var data = await Get.to(
-//                                       () => InvestmentPage(),
-//                                       arguments: {
-//                                         'startup': c.model,
-//                                         'investor': res
-//                                       });
-//                                   if (data == true) {
-//                                     c.getData();
-//                                   }
-//                                 }
-//                               },
-//                               text: 'Invest Now',
-//                             ),
-//                           ),
-//                         ),
-//                         const SizedBox(height: 50),
-//                         Visibility(
-//                           visible: app.fromSecondary,
-//                           child: MarketWidget(),
-//                         ),
-//                         Visibility(
-//                           visible: app.fromSecondary,
-//                           child: const SizedBox(height: 40),
-//                         ),
-//                         Container(
-//                           decoration: BoxDecoration(
-//                             borderRadius: BorderRadius.circular(10),
-//                             border: Border.all(
-//                                 color: context.theme.dividerColor
-//                                     .withValues(alpha: 0.2)),
-//                           ),
-//                           alignment: Alignment.center,
-//                           child: SingleChildScrollView(
-//                             scrollDirection: Axis.horizontal,
-//                             child: Row(
-//                               children: [
-//                                 // Visibility(
-//                                 //   visible: c.fromSecondary,
-//                                 //   child: CustomTabBarButton(
-//                                 //     tab: StartupDetailEnum.market,
-//                                 //     title: "Market",
-//                                 //   ),
-//                                 // ),
-//                                 CustomTabBarButton(
-//                                   tab: StartupDetailEnum.idea,
-//                                   title: "Idea",
-//                                 ),
-//                                 CustomTabBarButton(
-//                                   tab: StartupDetailEnum.keyInfo,
-//                                   title: "Key Information",
-//                                 ),
-//                                 CustomTabBarButton(
-//                                   tab: StartupDetailEnum.team,
-//                                   title: "Team",
-//                                 ),
-//                                 CustomTabBarButton(
-//                                   tab: StartupDetailEnum.updates,
-//                                   title: "Updates",
-//                                 ),
-//                                 CustomTabBarButton(
-//                                   tab: StartupDetailEnum.investor,
-//                                   title: "Investor",
-//                                 ),
-//                                 CustomTabBarButton(
-//                                   tab: StartupDetailEnum.faq,
-//                                   title: "FAQ’s",
-//                                 ),
-//                                 // CustomTabBarButton(
-//                                 //   tab: StartupDetailEnum.meet,
-//                                 //   title: "Shuru-meet",
-//                                 // ),
-//                                 CustomTabBarButton(
-//                                   tab: StartupDetailEnum.documents,
-//                                   title: "Documents",
-//                                 ),
-//                               ],
-//                             ),
-//                           ),
-//                         ),
-//                         const SizedBox(height: 20),
-//                         CustomTabBarView(),
-//                         // const SizedBox(height: 80),
-//                       ],
-//                     ),
-//                   ),
-//                 ],
-//               ),
-//             );
-//           } else {
-//             return const Loader();
-//           }
-//         }),
-//       ),
-//     );
-//   }
-// }

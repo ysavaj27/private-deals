@@ -1,7 +1,20 @@
 import 'dart:math';
 
-import 'package:private_deals/src/shared/app_exports.dart';
+import 'package:get/get_utils/src/extensions/double_extensions.dart';
+import 'package:get/get_utils/src/extensions/internacionalization.dart';
 import 'package:intl/intl.dart';
+
+// Keep the original pattern and honor locale changes without rebuilding the
+// formatter for every cell in a list or table.
+final Map<String, NumberFormat> _displayFormats = {};
+
+NumberFormat get _displayFormat {
+  final locale = Intl.getCurrentLocale();
+  return _displayFormats.putIfAbsent(
+    locale,
+    () => NumberFormat('#,##,##0.##', locale),
+  );
+}
 
 extension Formatte on int {
   double get convertToMB {
@@ -146,9 +159,10 @@ extension FancyNum on num {
     final doubleValue = double.tryParse(toString());
     if (doubleValue == null) return toString();
     return doubleValue.toStringAsFixed(
-        doubleValue.truncateToDouble() == doubleValue
-            ? 0
-            : doubleValue.toString().split('.').last.length);
+      doubleValue.truncateToDouble() == doubleValue
+          ? 0
+          : doubleValue.toString().split('.').last.length,
+    );
   }
 
   // 2. Distributor Price + Gross Distributor Price
@@ -191,14 +205,12 @@ extension FancyNum on num {
 
   String get toCurrency {
     if (this <= 0) return '-';
-    var format = NumberFormat("#,##,##0.##");
-    return "$currency ${format.format(this)}";
+    return "$currency ${_displayFormat.format(this)}";
   }
 
   String get toShowNum {
     if (this <= 0) return '-';
-    var format = NumberFormat("#,##,##0.##");
-    return format.format(this);
+    return _displayFormat.format(this);
   }
 
   num minus(int value) {

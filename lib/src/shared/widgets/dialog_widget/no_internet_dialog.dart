@@ -3,7 +3,7 @@ import 'dart:io';
 import 'package:private_deals/src/shared/app_exports.dart';
 
 class NoInternetDialog extends StatelessWidget {
-  const NoInternetDialog({Key? key}) : super(key: key);
+  const NoInternetDialog({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -24,19 +24,13 @@ class NoInternetDialog extends StatelessWidget {
               fontWeight: FontWeight.bold,
             ),
           ),
-          const SizedBox(
-            height: 10.0,
-          ),
+          const SizedBox(height: 10.0),
           Text(
             "Wifi or cellular network is required. Please check your network",
             textAlign: TextAlign.center,
-            style: const TextStyle(
-              fontSize: 14.0,
-            ),
+            style: const TextStyle(fontSize: 14.0),
           ),
-          const SizedBox(
-            height: 15.0,
-          ),
+          const SizedBox(height: 15.0),
           Row(
             mainAxisAlignment: MainAxisAlignment.end,
             children: [
@@ -45,9 +39,7 @@ class NoInternetDialog extends StatelessWidget {
                   if (connectivity.isLoading.isFalse) {
                     return Text(
                       "Check Again".tr,
-                      style: TextStyle(
-                        color: AppColors.green(context),
-                      ),
+                      style: TextStyle(color: AppColors.green(context)),
                     );
                   } else {
                     return SizedBox(
@@ -67,16 +59,9 @@ class NoInternetDialog extends StatelessWidget {
                   }
                 },
               ),
-              const SizedBox(
-                width: 5.0,
-              ),
+              const SizedBox(width: 5.0),
               TextButton(
-                child: Text(
-                  "Exit",
-                  style: const TextStyle(
-                    color: Colors.red,
-                  ),
-                ),
+                child: Text("Exit", style: const TextStyle(color: Colors.red)),
                 onPressed: () {
                   exit(0);
                 },

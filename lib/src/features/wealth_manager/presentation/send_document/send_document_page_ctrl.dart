@@ -43,13 +43,18 @@ class SendDocumentPageCtrl extends GetxController {
       isSearching(false);
     } else {
       searchList.value = list.where((item) {
-        return item.startup.brandName
-                .toLowerCase()
-                .toString()
-                .contains(query.toLowerCase()) ||
+        return item.startup.brandName.toLowerCase().toString().contains(
+              query.toLowerCase(),
+            ) ||
             item.investor.name.toLowerCase().contains(query.toLowerCase());
       }).toList();
       isSearching(true);
     }
+  }
+
+  @override
+  void onClose() {
+    controller.dispose();
+    super.onClose();
   }
 }

@@ -1,4 +1,3 @@
-import 'package:private_deals/src/core/permissions/partner_role.dart';
 import 'package:private_deals/src/features/investors/presentation/legacy/add_investor/add_investor_page.dart';
 import 'package:private_deals/src/features/auth/presentation/change_password/change_password_page.dart';
 import 'package:private_deals/src/features/auth/presentation/forgot_password/forgot_password_page.dart';
@@ -167,9 +166,8 @@ class Pages {
       ),
     ],
     for (final section in ['hot', 'manage'])
-      for (final type in section == 'hot'
-          ? ['unlisted', 'secondary']
-          : ['secondary']) ...[
+      for (final type
+          in section == 'hot' ? ['unlisted', 'secondary'] : ['secondary']) ...[
         privatePage(
           '/institution/deals/$section/$type',
           () => PartnerShell(

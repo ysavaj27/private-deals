@@ -26,10 +26,7 @@ class VideoPlayerScreen extends StatelessWidget {
         crossAxisAlignment: CrossAxisAlignment.end,
         mainAxisSize: MainAxisSize.min,
         children: [
-          IconButton(
-            onPressed: Get.back,
-            icon: const Icon(Icons.close),
-          ),
+          IconButton(onPressed: Get.back, icon: const Icon(Icons.close)),
           CustomVideoPlayer(url: url),
         ],
       ),
@@ -43,7 +40,7 @@ class CustomVideoPlayer extends StatefulWidget {
   const CustomVideoPlayer({super.key, required this.url});
 
   @override
-  _CustomVideoPlayerState createState() => _CustomVideoPlayerState();
+  State<CustomVideoPlayer> createState() => _CustomVideoPlayerState();
 }
 
 class _CustomVideoPlayerState extends State<CustomVideoPlayer> {
@@ -100,8 +97,10 @@ class _CustomVideoPlayerState extends State<CustomVideoPlayer> {
             autoInitialize: true,
             errorBuilder: (context, errorMessage) {
               return Center(
-                child: Text(errorMessage,
-                    style: const TextStyle(color: Colors.white)),
+                child: Text(
+                  errorMessage,
+                  style: const TextStyle(color: Colors.white),
+                ),
               );
             },
           );
@@ -112,8 +111,9 @@ class _CustomVideoPlayerState extends State<CustomVideoPlayer> {
       if (value.isCompleted && isPlaying) {
         _controller.seekTo(Duration.zero);
         _controller.pause();
-        setState(() => isPlaying =
-            false); // no need to setState the whole tree every frame
+        setState(
+          () => isPlaying = false,
+        ); // no need to setState the whole tree every frame
       }
     };
 

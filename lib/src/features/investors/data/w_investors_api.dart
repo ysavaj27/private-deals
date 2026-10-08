@@ -1,6 +1,33 @@
 import 'package:private_deals/src/shared/app_exports.dart';
 
 class WInvestorsApi {
+  /// Recheck server-owned KYC immediately before creating a transaction.
+  /// Missing investors and failed lookups must never permit an order.
+  static Future<String?> transactionKycError(Iterable<int> investorIds) async {
+    final ids = investorIds.toSet();
+    if (ids.isEmpty || ids.any((id) => id <= 0)) {
+      return 'Select an investor with completed KYC.';
+    }
+    final response = await investorsList(
+      isKyc: 'All',
+      isActive: 'All',
+      isAif: 'All',
+    );
+    if (!response.isSuccess || response.r == null) {
+      return 'Unable to verify investor KYC. Please retry.';
+    }
+    for (final id in ids) {
+      final investor = response.r!.firstWhereOrNull((item) => item.id == id);
+      if (investor == null) {
+        return 'Unable to verify investor KYC. Please retry.';
+      }
+      if (!investor.isPreIpoKycComplete) {
+        return 'Complete KYC for ${investor.displayName} before making a transaction.';
+      }
+    }
+    return null;
+  }
+
   static Future<BaseModel<List<InvestorModel>>> investorsList({
     required String isKyc,
     required String isActive,

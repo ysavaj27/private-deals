@@ -6,83 +6,6 @@ import 'package:private_deals/src/shared/app_exports.dart';
 
 final DioConfig dioConfig = DioConfig();
 
-// #region agent log
-int _agentLogCount = 0;
-int _apiLogCount = 0;
-
-void _debugNdjson(String hypothesisId, String location, String message,
-    Map<String, dynamic> data, {String runId = 'pre-fix'}) {
-  final payload = <String, dynamic>{
-    'sessionId': 'd3aa53',
-    'hypothesisId': hypothesisId,
-    'location': location,
-    'message': message,
-    'data': data,
-    'timestamp': DateTime.now().millisecondsSinceEpoch,
-    'runId': runId,
-  };
-  // Prefer local file append so Flutter web/device CORS cannot drop logs.
-  try {
-    // ignore: avoid_print
-    debugPrint('[agent-log] ${payload['location']}: ${payload['message']} $data');
-  } catch (_) {}
-  Dio()
-      .post(
-        'http://127.0.0.1:7415/ingest/9642249b-a697-472d-b58b-e135d6ec4dd4',
-        data: payload,
-        options: Options(
-          headers: {
-            'Content-Type': 'application/json',
-            'X-Debug-Session-Id': 'd3aa53',
-          },
-          sendTimeout: const Duration(seconds: 2),
-          receiveTimeout: const Duration(seconds: 2),
-        ),
-      )
-      .then((_) {}, onError: (_) {});
-}
-
-void debugNdjson(String hypothesisId, String location, String message,
-    Map<String, dynamic> data) {
-  _debugNdjson(hypothesisId, location, message, data);
-}
-
-void agentLog(
-  String hypothesisId,
-  String location,
-  String message,
-  Map<String, dynamic> data,
-) {
-  _agentLogCount++;
-  _debugNdjson(hypothesisId, location, message, {
-    ...data,
-    'agentLogCount': _agentLogCount,
-  });
-  Dio()
-      .post(
-        'http://127.0.0.1:7381/ingest/3656f79e-c7de-4216-93be-fc1c1a370c79',
-        data: {
-          'sessionId': 'b4d366',
-          'hypothesisId': hypothesisId,
-          'location': location,
-          'message': message,
-          'data': data,
-          'timestamp': DateTime.now().millisecondsSinceEpoch,
-          'runId': 'pre-fix',
-        },
-        options: Options(
-          headers: {
-            'Content-Type': 'application/json',
-            'X-Debug-Session-Id': 'b4d366',
-          },
-          sendTimeout: const Duration(seconds: 2),
-          receiveTimeout: const Duration(seconds: 2),
-        ),
-      )
-      .then((_) {}, onError: (_) {});
-}
-// #endregion
-
 class DioConfig {
   final Dio dio;
 
@@ -105,10 +28,7 @@ class DioConfig {
     bool isCustomUrl = false,
   }) => dio.get(url, queryParameters: params);
 
-  Future<Response> getBytes(
-    String url,
-    Map<String, dynamic> params,
-  ) => dio.get(
+  Future<Response> getBytes(String url, Map<String, dynamic> params) => dio.get(
     url,
     queryParameters: params,
     options: Options(responseType: ResponseType.bytes),
@@ -166,14 +86,6 @@ class ApiLogInterceptor extends Interceptor {
   @override
   void onRequest(RequestOptions options, RequestInterceptorHandler handler) {
     options.extra['apiLogStartedAt'] = DateTime.now();
-    // #region agent log
-    _apiLogCount++;
-    _debugNdjson('C', 'ApiLogInterceptor.onRequest', 'api log print', {
-      'path': options.uri.path,
-      'method': options.method,
-      'apiLogCount': _apiLogCount,
-    });
-    // #endregion
     _log.i(
       _safe({
         'endpoint': '${options.method} ${options.uri}',
@@ -190,17 +102,6 @@ class ApiLogInterceptor extends Interceptor {
   void onResponse(Response response, ResponseInterceptorHandler handler) {
     final options = response.requestOptions;
     final summarized = _summarizeForLog(response.data);
-    // #region agent log
-    _debugNdjson('C', 'ApiLogInterceptor.onResponse', 'api log response print', {
-      'path': options.uri.path,
-      'status': response.statusCode,
-      'payloadType': response.data.runtimeType.toString(),
-      'payloadChars': response.data?.toString().length ?? 0,
-      'summarizedChars': summarized.toString().length,
-      'apiLogCount': _apiLogCount,
-      'runId': 'post-fix',
-    });
-    // #endregion
     _log.i(
       _safe({
         'endpoint': '${options.method} ${options.uri}',
@@ -259,8 +160,10 @@ class ApiLogInterceptor extends Interceptor {
     if (value is Map) {
       return {
         for (final entry in value.entries)
-          entry.key.toString():
-              _summarizeForLog(entry.value, entry.key.toString()),
+          entry.key.toString(): _summarizeForLog(
+            entry.value,
+            entry.key.toString(),
+          ),
       };
     }
     if (value is Iterable) {
@@ -338,17 +241,6 @@ class ApiInterceptor extends Interceptor {
     }
     final isRecovery = path.contains('/business/forgot-password');
     final isLogin = path.endsWith('/business/login');
-    // #region agent log
-    if (isLogin) {
-      agentLog('A', 'dio_config.dart:onRequest', 'login request', {
-        'path': path,
-        'device': init.deviceOs,
-        'deviceIdEmpty': init.deviceId.isEmpty,
-        'userTypeHeader': 'distributor',
-        'hasHeadToken': true,
-      });
-    }
-    // #endregion
     final isProfileGet =
         path.endsWith('/business/profile') && options.method == 'GET';
     final isLogout = path.endsWith('/business/logout');
@@ -419,16 +311,6 @@ class ApiInterceptor extends Interceptor {
     if (!isLogin && !isRecovery && app.token.isNotEmpty) {
       options.headers['Authorization'] = 'Bearer ${app.token}';
     }
-    // #region agent log
-    if (!isLogin) {
-      agentLog('G', 'dio_config.dart:onRequest', 'authenticated request', {
-        'path': path,
-        'method': options.method,
-        'hasAuth': options.headers.containsKey('Authorization'),
-        'role': app.role.apiValue,
-      });
-    }
-    // #endregion
     handler.next(options);
   }
 
@@ -460,31 +342,15 @@ class ApiInterceptor extends Interceptor {
       // receive 401 there without the Partner session being invalid.
       final sellerGuardRejection = path.contains('/seller/');
       final revision = options.extra['sessionRevision'];
-      final expired = !sellerGuardRejection &&
+      final expired =
+          !sellerGuardRejection &&
           revision is int &&
           await app.expire(revision);
-      // #region agent log
-      agentLog('G', 'dio_config.dart:onError', 'authenticated 401', {
-        'path': path,
-        'expired': expired,
-        'sellerGuardRejection': sellerGuardRejection,
-        'revisionMatch': revision == app.revision,
-      });
-      // #endregion
       if (expired) {
         // Keep controllers alive until GetX removes the outgoing route.
         if (Get.key.currentState != null) Get.offAllNamed(Routes.signIn);
       }
     }
-    // #region agent log
-    if (options.uri.path.endsWith('/business/login')) {
-      agentLog('A', 'dio_config.dart:onError', 'login http error', {
-        'statusCode': error.response?.statusCode,
-        'dioType': error.type.name,
-        'errorType': error.runtimeType.toString(),
-      });
-    }
-    // #endregion
     final body = error.response?.data;
     final message = body is Map && body['message'] is String
         ? body['message'] as String
@@ -503,8 +369,8 @@ class DioApiError extends DioException {
   @override
   final String message;
 
-  DioApiError(RequestOptions options, this.message, {Response? response})
-    : super(requestOptions: options, response: response);
+  DioApiError(RequestOptions options, this.message, {super.response})
+    : super(requestOptions: options);
 
   @override
   String toString() => message;

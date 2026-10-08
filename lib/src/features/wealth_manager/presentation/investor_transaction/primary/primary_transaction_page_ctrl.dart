@@ -24,7 +24,9 @@ class PrimaryTransactionPageCtrl extends GetxController {
   Future<void> uploadSlip(int transactionId) async {
     isUploading(true);
     var res = await InvestorPrimaryTransactionApi.paymentReceipt(
-        transactionId: transactionId, receipt: receipt());
+      transactionId: transactionId,
+      receipt: receipt(),
+    );
     isUploading(false);
     if (res.isSuccess) {
       Get.back();
@@ -43,15 +45,14 @@ class PrimaryTransactionPageCtrl extends GetxController {
       searchList.value = list.where((item) {
         // logger.d("Search :$query Amount :${item.amount}");
         return item.investor.name.toString().contains(query) ||
-            item.investor.partnerDetails.partnerName
-                .toLowerCase()
-                .contains(query) ||
+            item.investor.partnerDetails.partnerName.toLowerCase().contains(
+              query,
+            ) ||
             item.startup.brandName.toLowerCase().contains(query.toLowerCase());
       }).toList();
       isSearching(true);
     }
   }
-
 
   void clearData() {
     receipt(MediaModel());
@@ -66,10 +67,15 @@ class PrimaryTransactionPageCtrl extends GetxController {
     }
   }
 
-
   @override
   void onInit() {
     getData();
     super.onInit();
+  }
+
+  @override
+  void onClose() {
+    receiptCTRL.dispose();
+    super.onClose();
   }
 }

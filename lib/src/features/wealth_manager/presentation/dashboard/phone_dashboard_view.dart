@@ -13,118 +13,118 @@ class PhoneDashboardView extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Obx(
-        () {
-          if (c.isLoading.isFalse && c.isData.isTrue) {
-            return RefreshIndicator(
-              onRefresh: c.getData,
-              child: SingleChildScrollView(
-                physics: const BouncingScrollPhysics(),
-                padding:
-                    const EdgeInsets.symmetric(horizontal: 16, vertical: 26),
-                child: Column(
-                  mainAxisSize: MainAxisSize.min,
-                  crossAxisAlignment: CrossAxisAlignment.start,
+    return Obx(() {
+      if (c.isLoading.isFalse && c.isData.isTrue) {
+        return RefreshIndicator(
+          onRefresh: c.getData,
+          child: SingleChildScrollView(
+            physics: const BouncingScrollPhysics(),
+            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 26),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                const SizedBox(height: 16),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.end,
                   children: [
-                    const SizedBox(height: 16),
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.end,
-                      children: [
-                        Visibility(
-                          visible: app.wUser.isPreIpoAccess,
-                          child: TabButton(
-                            title: "Unlisted",
-                            type: DashboardTypeEnum.preIpo,
-                            onTap: () {
-                              c.changeTab(DashboardTypeEnum.preIpo);
-                            },
-                            currentIndex: c.currentIndex,
-                            // size: context,
-                          ),
-                        ),
-                        Visibility(
-                          visible: app.wUser.isPreIpoAccess &&
-                              (app.wUser.isSecondaryAccess ||
-                                  app.wUser.isPrimaryAccess),
-                          child: const SizedBox(width: 10),
-                        ),
-                        Visibility(
-                          visible: app.wUser.isSecondaryAccess ||
-                              app.wUser.isPrimaryAccess,
-                          child: TabButton(
-                            title: "Private Equity",
-                            type: DashboardTypeEnum.primary,
-                            onTap: () {
-                              c.changeTab(DashboardTypeEnum.primary);
-                            },
-                            currentIndex: c.currentIndex,
-                            // size: context,
-                          ),
-                        ),
-                      ],
-                    ),
-                    const SizedBox(height: 16),
-                    const DashboardHeroCard(),
-                    const SizedBox(height: AppSpace.md),
-                    const DashboardKpiStrip(compact: true),
-                    const SizedBox(height: AppSpace.lg),
-                    const DashboardPendingStrip(),
-                    const SizedBox(height: AppSpace.xl),
-                    const DashboardSectionHeader(
-                      title: 'Insights',
-                      subtitle: 'Sectors, investors & growth',
-                    ),
-                    const SizedBox(height: AppSpace.md),
-                    SizedBox(
-                      height: 400,
-                      child: Stack(
-                        alignment: Alignment.bottomCenter,
-                        children: [
-                          PageView(
-                            controller: c.chartPageController,
-                            children: c.charts(),
-                          ),
-                          Padding(
-                            padding: const EdgeInsets.only(bottom: 15),
-                            child: SmoothPageIndicator(
-                              controller: c.chartPageController,
-                              onDotClicked: (index) {
-                                c.chartPageController.jumpToPage(index);
-                              },
-                              count: 3,
-                              effect: WormEffect(
-                                dotHeight: 8,
-                                dotWidth: 8,
-                                spacing: 8.0,
-                                dotColor: Theme.of(context)
-                                    .colorScheme
-                                    .outlineVariant,
-                                activeDotColor:
-                                    Theme.of(context).colorScheme.primary,
-                              ),
-                            ),
-                          ),
-                        ],
+                    Visibility(
+                      visible: app.wUser.isPreIpoAccess,
+                      child: TabButton(
+                        title: "Unlisted",
+                        type: DashboardTypeEnum.preIpo,
+                        onTap: () {
+                          c.changeTab(DashboardTypeEnum.preIpo);
+                        },
+                        currentIndex: c.currentIndex,
+                        // size: context,
                       ),
                     ),
-                    const SizedBox(height: AppSpace.xl),
-                    const DashboardTopInvestors(),
-                    const SizedBox(height: AppSpace.xl),
+                    Visibility(
+                      visible:
+                          app.wUser.isPreIpoAccess &&
+                          (app.wUser.isSecondaryAccess ||
+                              app.wUser.isPrimaryAccess),
+                      child: const SizedBox(width: 10),
+                    ),
+                    Visibility(
+                      visible:
+                          app.wUser.isSecondaryAccess ||
+                          app.wUser.isPrimaryAccess,
+                      child: TabButton(
+                        title: "Private Equity",
+                        type: DashboardTypeEnum.primary,
+                        onTap: () {
+                          c.changeTab(DashboardTypeEnum.primary);
+                        },
+                        currentIndex: c.currentIndex,
+                        // size: context,
+                      ),
+                    ),
                   ],
                 ),
-              ),
-            );
-          } else if (c.isLoading.isTrue) {
-            return const Loader();
-          } else {
-            return ErrorView(
-              title: 'Unable to load dashboard',
-              message: 'Pull to refresh or try again.',
-              onRetry: c.getData,
-            );
-          }
-        },
-    );
+                const SizedBox(height: 16),
+                const DashboardHeroCard(),
+                const SizedBox(height: AppSpace.md),
+                const DashboardKpiStrip(compact: true),
+                const SizedBox(height: AppSpace.lg),
+                const DashboardPendingStrip(),
+                const SizedBox(height: AppSpace.xl),
+                const DashboardSectionHeader(
+                  title: 'Insights',
+                  subtitle: 'Sectors, investors & growth',
+                ),
+                const SizedBox(height: AppSpace.md),
+                SizedBox(
+                  height: 400,
+                  child: Stack(
+                    alignment: Alignment.bottomCenter,
+                    children: [
+                      PageView(
+                        controller: c.chartPageController,
+                        children: c.charts(),
+                      ),
+                      Padding(
+                        padding: const EdgeInsets.only(bottom: 15),
+                        child: SmoothPageIndicator(
+                          controller: c.chartPageController,
+                          onDotClicked: (index) {
+                            c.chartPageController.jumpToPage(index);
+                          },
+                          count: 3,
+                          effect: WormEffect(
+                            dotHeight: 8,
+                            dotWidth: 8,
+                            spacing: 8.0,
+                            dotColor: Theme.of(
+                              context,
+                            ).colorScheme.outlineVariant,
+                            activeDotColor: Theme.of(
+                              context,
+                            ).colorScheme.primary,
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+                const SizedBox(height: AppSpace.xl),
+                const DashboardTopInvestors(),
+                const SizedBox(height: AppSpace.xl),
+              ],
+            ),
+          ),
+        );
+      } else if (c.isLoading.isTrue) {
+        return const Loader();
+      } else {
+        return ErrorView(
+          title: 'Unable to load dashboard',
+          message: 'Pull to refresh or try again.',
+          onRetry: c.getData,
+        );
+      }
+    });
   }
 }
 
@@ -133,7 +133,11 @@ class PendingTaskView extends StatelessWidget {
   static const int totalTasks = 10;
   final String title;
 
-  PendingTaskView({super.key, required this.pendingTask, required this.title});
+  const PendingTaskView({
+    super.key,
+    required this.pendingTask,
+    required this.title,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -154,10 +158,7 @@ class PendingTaskView extends StatelessWidget {
           ),
           backgroundColor: context.theme.colorScheme.surfaceContainerHighest,
           circularStrokeCap: CircularStrokeCap.round,
-          center: Text(
-            "$pendingTask",
-            style: const TextStyle(fontSize: 20.0),
-          ),
+          center: Text("$pendingTask", style: const TextStyle(fontSize: 20.0)),
         ),
         const SizedBox(height: 15),
         Text(
@@ -170,7 +171,7 @@ class PendingTaskView extends StatelessWidget {
 }
 
 class ColumnChartWidget extends StatelessWidget {
-  ColumnChartWidget({super.key});
+  const ColumnChartWidget({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -222,17 +223,18 @@ class ColumnChart extends StatelessWidget {
         labelRotation: 350,
       ),
       primaryYAxis: NumericAxis(
-          majorTickLines: const MajorTickLines(size: 1),
-          labelFormat: '{value}',
-          // This will be overridden by the label formatter.
-          axisLabelFormatter: (AxisLabelRenderDetails details) {
-            return ChartAxisLabel(
-              details.value.toLakesCorersFormat(),
-              TextStyle(color: axisLabelColor, fontSize: 10),
-            );
-          },
-          majorGridLines: const MajorGridLines(width: 0),
-          rangePadding: ChartRangePadding.auto),
+        majorTickLines: const MajorTickLines(size: 1),
+        labelFormat: '{value}',
+        // This will be overridden by the label formatter.
+        axisLabelFormatter: (AxisLabelRenderDetails details) {
+          return ChartAxisLabel(
+            details.value.toLakesCorersFormat(),
+            TextStyle(color: axisLabelColor, fontSize: 10),
+          );
+        },
+        majorGridLines: const MajorGridLines(width: 0),
+        rangePadding: ChartRangePadding.auto,
+      ),
       series: _getBackToBackColumn(isDark),
       tooltipBehavior: TooltipBehavior(
         enable: true,
@@ -261,21 +263,27 @@ class ColumnChart extends StatelessWidget {
         dataLabelMapper: (DataModel sales, _) => sales.image,
         dataLabelSettings: DataLabelSettings(
           isVisible: true,
-          builder: (dynamic data, dynamic point, dynamic series, int pointIndex,
-              int seriesIndex) {
-            return Visibility(
-              visible: data.isBig(data.numData2),
-              child: Padding(
-                padding: const EdgeInsets.only(bottom: 5),
-                child: LogoImage(
-                  url: data.image,
-                  radius: 2,
-                  width: 27,
-                  height: 27,
-                ),
-              ),
-            );
-          },
+          builder:
+              (
+                dynamic data,
+                dynamic point,
+                dynamic series,
+                int pointIndex,
+                int seriesIndex,
+              ) {
+                return Visibility(
+                  visible: data.isBig(data.numData2),
+                  child: Padding(
+                    padding: const EdgeInsets.only(bottom: 5),
+                    child: LogoImage(
+                      url: data.image,
+                      radius: 2,
+                      width: 27,
+                      height: 27,
+                    ),
+                  ),
+                );
+              },
         ),
       ),
       ColumnSeries<DataModel, String>(
@@ -294,21 +302,27 @@ class ColumnChart extends StatelessWidget {
         dataLabelMapper: (DataModel sales, _) => sales.image,
         dataLabelSettings: DataLabelSettings(
           isVisible: true,
-          builder: (dynamic data, dynamic point, dynamic series, int pointIndex,
-              int seriesIndex) {
-            return Visibility(
-              visible: data.isBig(data.numData),
-              child: Padding(
-                padding: const EdgeInsets.only(bottom: 5),
-                child: LogoImage(
-                  url: data.image,
-                  radius: 2,
-                  width: 27,
-                  height: 27,
-                ),
-              ),
-            );
-          },
+          builder:
+              (
+                dynamic data,
+                dynamic point,
+                dynamic series,
+                int pointIndex,
+                int seriesIndex,
+              ) {
+                return Visibility(
+                  visible: data.isBig(data.numData),
+                  child: Padding(
+                    padding: const EdgeInsets.only(bottom: 5),
+                    child: LogoImage(
+                      url: data.image,
+                      radius: 2,
+                      width: 27,
+                      height: 27,
+                    ),
+                  ),
+                );
+              },
         ),
       ),
     ];
@@ -355,7 +369,9 @@ class MobilePieChartWidget extends StatelessWidget {
                     onTap: () => c.isInvestment(false),
                     child: Container(
                       padding: const EdgeInsets.symmetric(
-                          vertical: 3, horizontal: 10),
+                        vertical: 3,
+                        horizontal: 10,
+                      ),
                       decoration: BoxDecoration(
                         borderRadius: BorderRadius.circular(4),
                         color: c.isInvestment.isFalse
@@ -378,7 +394,9 @@ class MobilePieChartWidget extends StatelessWidget {
                     onTap: () => c.isInvestment(true),
                     child: Container(
                       padding: const EdgeInsets.symmetric(
-                          vertical: 3, horizontal: 10),
+                        vertical: 3,
+                        horizontal: 10,
+                      ),
                       decoration: BoxDecoration(
                         borderRadius: BorderRadius.circular(4),
                         color: c.isInvestment.isTrue
@@ -411,7 +429,8 @@ class MobilePieChartWidget extends StatelessWidget {
                     legend: Legend(
                       overflowMode: LegendItemOverflowMode.none,
                       textStyle: TextStyle(
-                          color: context.theme.colorScheme.onSurface),
+                        color: context.theme.colorScheme.onSurface,
+                      ),
                     ),
                     palette: AppColors.pieChartPalette(context),
                     series: <PieSeries<DataModel, String>>[
@@ -447,7 +466,7 @@ class MobilePieChartWidget extends StatelessWidget {
                             fontWeight: FontWeight.w500,
                           ),
                         ),
-                      )
+                      ),
                     ],
                     // onTooltipRender: (TooltipArgs args) {
                     //   final NumberFormat format = NumberFormat.decimalPattern();
@@ -463,7 +482,8 @@ class MobilePieChartWidget extends StatelessWidget {
                     legend: Legend(
                       overflowMode: LegendItemOverflowMode.none,
                       textStyle: TextStyle(
-                          color: context.theme.colorScheme.onSurface),
+                        color: context.theme.colorScheme.onSurface,
+                      ),
                     ),
                     palette: AppColors.pieChartPalette(context),
                     series: <PieSeries<DataModel, String>>[
@@ -503,7 +523,7 @@ class MobilePieChartWidget extends StatelessWidget {
                             fontWeight: FontWeight.w500,
                           ),
                         ),
-                      )
+                      ),
                     ],
                     // onTooltipRender: (TooltipArgs args) {
                     //   final NumberFormat format = NumberFormat.decimalPattern();
@@ -564,7 +584,9 @@ class InvestorPieChartWidget extends StatelessWidget {
                     onTap: () => c.isActive(false),
                     child: Container(
                       padding: const EdgeInsets.symmetric(
-                          vertical: 3, horizontal: 10),
+                        vertical: 3,
+                        horizontal: 10,
+                      ),
                       decoration: BoxDecoration(
                         borderRadius: BorderRadius.circular(4),
                         color: c.isActive.isFalse
@@ -587,7 +609,9 @@ class InvestorPieChartWidget extends StatelessWidget {
                     onTap: () => c.isActive(true),
                     child: Container(
                       padding: const EdgeInsets.symmetric(
-                          vertical: 3, horizontal: 10),
+                        vertical: 3,
+                        horizontal: 10,
+                      ),
                       decoration: BoxDecoration(
                         borderRadius: BorderRadius.circular(4),
                         color: c.isActive.isTrue
@@ -619,7 +643,8 @@ class InvestorPieChartWidget extends StatelessWidget {
                     legend: Legend(
                       overflowMode: LegendItemOverflowMode.wrap,
                       textStyle: TextStyle(
-                          color: context.theme.colorScheme.onSurface),
+                        color: context.theme.colorScheme.onSurface,
+                      ),
                     ),
                     palette: AppColors.pieChartPalette(context),
                     series: <PieSeries<DataModel<List<Active>>, String>>[
@@ -641,10 +666,12 @@ class InvestorPieChartWidget extends StatelessWidget {
                             if (model.info != null) {
                               showCustomDialog(
                                 InvestorsListDialog(
-                                    investorList: model.info!,
-                                    isCompleted:
-                                        model.title == "Active" ? true : false,
-                                    isKyc: false),
+                                  investorList: model.info!,
+                                  isCompleted: model.title == "Active"
+                                      ? true
+                                      : false,
+                                  isKyc: false,
+                                ),
                               );
                             }
                           }
@@ -667,7 +694,7 @@ class InvestorPieChartWidget extends StatelessWidget {
                             fontWeight: FontWeight.w500,
                           ),
                         ),
-                      )
+                      ),
                     ],
                     // onTooltipRender: (TooltipArgs args) {
                     //   final NumberFormat format = NumberFormat.decimalPattern();
@@ -682,7 +709,8 @@ class InvestorPieChartWidget extends StatelessWidget {
                     legend: Legend(
                       overflowMode: LegendItemOverflowMode.wrap,
                       textStyle: TextStyle(
-                          color: context.theme.colorScheme.onSurface),
+                        color: context.theme.colorScheme.onSurface,
+                      ),
                     ),
                     palette: AppColors.pieChartPalette(context),
                     series: <PieSeries<DataModel<List<Active>>, String>>[
@@ -705,8 +733,9 @@ class InvestorPieChartWidget extends StatelessWidget {
                               showCustomDialog(
                                 InvestorsListDialog(
                                   investorList: model.info!,
-                                  isCompleted:
-                                      model.title == "Kyc" ? true : false,
+                                  isCompleted: model.title == "Kyc"
+                                      ? true
+                                      : false,
                                   isKyc: true,
                                 ),
                               );
@@ -732,7 +761,7 @@ class InvestorPieChartWidget extends StatelessWidget {
                             fontWeight: FontWeight.w500,
                           ),
                         ),
-                      )
+                      ),
                     ],
                     // onTooltipRender: (TooltipArgs args) {
                     //   final NumberFormat format = NumberFormat.decimalPattern();

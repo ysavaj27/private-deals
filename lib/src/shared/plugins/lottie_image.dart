@@ -35,7 +35,7 @@ class LottieImage extends StatelessWidget {
 
 class LottieAnimationDemo extends StatefulWidget {
   @override
-  _LottieAnimationDemoState createState() => _LottieAnimationDemoState();
+  State<LottieAnimationDemo> createState() => _LottieAnimationDemoState();
 }
 
 class _LottieAnimationDemoState extends State<LottieAnimationDemo>
@@ -48,7 +48,8 @@ class _LottieAnimationDemoState extends State<LottieAnimationDemo>
     _controller = AnimationController(
       vsync: this,
       duration: const Duration(
-          seconds: 8), // Increase the duration to slow down the animation
+        seconds: 8,
+      ), // Increase the duration to slow down the animation
     )..repeat(); // Make the animation loop
   }
 

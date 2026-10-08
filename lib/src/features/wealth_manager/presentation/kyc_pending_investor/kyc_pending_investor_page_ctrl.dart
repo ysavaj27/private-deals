@@ -26,13 +26,17 @@ class KycPendingInvestorPageCtrl extends GetxController {
       if (selected == PendingTaskEnum.kyc || selected == PendingTaskEnum.aif) {
         final isKyc = selected == PendingTaskEnum.kyc;
         final res = await WInvestorsApi.investorsList(
-          isKyc: isKyc ? FilterTypeEnum.No.name : FilterTypeEnum.All.name,
+          isKyc: FilterTypeEnum.All.name,
           isActive: FilterTypeEnum.All.name,
           isAif: isKyc ? FilterTypeEnum.All.name : FilterTypeEnum.No.name,
         );
         if (request != _request || isClosed) return;
         if (res.isSuccess) {
-          investorList.assignAll(res.r ?? []);
+          investorList.assignAll(
+            (res.r ?? []).where(
+              (investor) => !isKyc || !investor.isPreIpoKycComplete,
+            ),
+          );
         } else {
           error('Unable to load pending investors. Please try again.');
         }

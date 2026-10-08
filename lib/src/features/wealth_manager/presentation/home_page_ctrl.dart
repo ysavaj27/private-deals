@@ -64,24 +64,10 @@ class HomePageCtrl extends GetxController {
       if (currentTab() != tab) currentTab(tab);
       return;
     }
-    // #region agent log
-    agentLog('A', 'home_page_ctrl.dart:onTap', 'tab switch before offNamed', {
-      'from': currentTab().name,
-      'to': tab.name,
-      'route': Get.currentRoute,
-      'homeRegistered': Get.isRegistered<HomePageCtrl>(),
-      'portfolioRegistered': Get.isRegistered<PortfolioPageCtrl>(),
-      'homeHash': identityHashCode(this),
-    });
-    // #endregion
     currentTab(tab);
     // _updateTitle(tab);
     // if (kIsWeb) {
-    Get.offNamed(
-      target,
-      preventDuplicates: true,
-      arguments: null,
-    );
+    Get.offNamed(target, preventDuplicates: true, arguments: null);
     logger.d(Get.currentRoute);
     // }
     // Replaces the URL without pushing a new page onto the stack
@@ -106,39 +92,16 @@ class HomePageCtrl extends GetxController {
   @override
   void onInit() {
     setData();
-    // #region agent log
-    agentLog('A', 'home_page_ctrl.dart:onInit', 'before lazyPut PortfolioPageCtrl', {
-      'portfolioRegistered': Get.isRegistered<PortfolioPageCtrl>(),
-      'route': Get.currentRoute,
-      'tab': currentTab().name,
-      'homeHash': identityHashCode(this),
-    });
-    // #endregion
     // fenix: recreate after SmartManagement deletes the instance on route churn.
     if (!Get.isRegistered<PortfolioPageCtrl>()) {
       Get.lazyPut(() => PortfolioPageCtrl(), fenix: true);
     }
-    // #region agent log
-    agentLog('A', 'home_page_ctrl.dart:onInit', 'after lazyPut PortfolioPageCtrl', {
-      'portfolioRegistered': Get.isRegistered<PortfolioPageCtrl>(),
-      'homeHash': identityHashCode(this),
-    });
-    // #endregion
 
     super.onInit();
   }
 
   @override
   void onClose() {
-    // #region agent log
-    agentLog('B', 'home_page_ctrl.dart:onClose', 'HomePageCtrl disposing', {
-      'portfolioRegistered': Get.isRegistered<PortfolioPageCtrl>(),
-      'route': Get.currentRoute,
-      'tab': currentTab().name,
-      'homeHash': identityHashCode(this),
-      'stillRegistered': Get.isRegistered<HomePageCtrl>(),
-    });
-    // #endregion
     debounce?.cancel();
     super.onClose();
   }

@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-10-06T07:52:30.801302Z",
+  "generated_at": "2026-10-08T07:01:03.212675Z",
   "config": "baseUrl=https://www.privatedeals.in/ live=false allowWrites=false roles=none stagingHint=no",
   "mode": "contract_path_alignment+interceptor_findings",
   "roles_env": {

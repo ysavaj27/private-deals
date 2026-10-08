@@ -12,7 +12,17 @@ class PrimarySellShareDialogCtrl extends GetxController {
   PrimarySellShareDialogCtrl(this.model);
 
   Future<void> onPress() async {
+    if (isLoading.value) return;
     isLoading(true);
+    final kycError = await WInvestorsApi.transactionKycError([
+      model.investor.id,
+    ]);
+    if (isClosed) return;
+    if (kycError != null) {
+      isLoading(false);
+      toast(kycError, MessageEnum.alert);
+      return;
+    }
     var res = await InvestorSecondaryTransactionApi.primarySellRequest(
       portfolioId: model.id,
       price: sellPriceCTRL.text,
@@ -47,7 +57,7 @@ class PrimarySellShareDialogCtrl extends GetxController {
         : newQty;
   }
 
-// Function to decrement the sell quantity
+  // Function to decrement the sell quantity
   int decrementSellQuantity() {
     // If the current sell quantity is less than or equal to the minQty, return minQty
     if (shares.value <= model.minimumShares) {
@@ -90,8 +100,8 @@ class PrimarySellShareDialogCtrl extends GetxController {
 
   @override
   void onClose() {
-    sellQuantityCTRL.clear();
-    sellPriceCTRL.clear();
+    sellQuantityCTRL.dispose();
+    sellPriceCTRL.dispose();
     super.onClose();
   }
 }

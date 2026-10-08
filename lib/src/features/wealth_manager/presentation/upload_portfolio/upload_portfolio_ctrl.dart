@@ -33,6 +33,7 @@ class UploadPortfolioCtrl extends GetxController {
   }
 
   void clearData() {
+    if (isClosed) return;
     sharePriceCTRL.clear();
     qtyCTRL.clear();
     purchaseDateCTRL.clear();
@@ -100,5 +101,15 @@ class UploadPortfolioCtrl extends GetxController {
   void onInit() {
     getData();
     super.onInit();
+  }
+
+  @override
+  void onClose() {
+    investorCTRL.dispose();
+    companyCTRL.dispose();
+    sharePriceCTRL.dispose();
+    qtyCTRL.dispose();
+    purchaseDateCTRL.dispose();
+    super.onClose();
   }
 }

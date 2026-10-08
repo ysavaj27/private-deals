@@ -86,6 +86,10 @@ class WPreIpoTransactionApi {
       if (dealId <= 0 && dealUuid.isEmpty) {
         return BaseModel.fromError('Deal id is required');
       }
+      final kycError = await WInvestorsApi.transactionKycError(
+        list.map((investor) => investor.investorId),
+      );
+      if (kycError != null) return BaseModel.fromError(kycError);
       final orders = list.map((e) {
         final order = <String, dynamic>{
           'investor_id': e.investorId,

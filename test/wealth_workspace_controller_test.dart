@@ -1,10 +1,12 @@
 import 'dart:async';
+
 import 'package:dio/dio.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:private_deals/src/shared/app_exports.dart';
 import 'package:private_deals/src/features/wealth_manager/presentation/kyc_pending_investor/kyc_pending_investor_page_ctrl.dart';
 import 'package:private_deals/src/features/wealth_manager/presentation/my_earning/my_earning_page_ctrl.dart';
 import 'package:private_deals/src/features/wealth_manager/presentation/mis/mis_page_ctrl.dart';
+
 import 'session_and_api_test.dart' show FakeAdapter, response, identity;
 
 void main() {
@@ -117,7 +119,7 @@ void main() {
       adapter.requests
           .singleWhere((r) => r.path == AppUrl.wInvestorList)
           .queryParameters['is_kyc'],
-      'No',
+      'All',
     );
     expect(controller.countsLoading(), false);
     expect(controller.isLoading(), false);

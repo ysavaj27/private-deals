@@ -11,8 +11,8 @@ class PrimaryInvestmentPageCtrl extends GetxController {
   // bool get isCaptable => type() == PrimaryInvestmentType.Captable;
   RxBool isSelected = false.obs;
   Rx<StartupModel> model = StartupModel.fromJson({}).obs;
-  Rx<PrimaryTransactionModel> transaction =
-      PrimaryTransactionModel.fromJson({}).obs;
+  Rx<PrimaryTransactionModel> transaction = PrimaryTransactionModel.fromJson({})
+      .obs;
   RxBool isMixedAmount = false.obs;
   RxBool investing = false.obs;
   RxBool alreadyInvested = false.obs;
@@ -97,8 +97,9 @@ class PrimaryInvestmentPageCtrl extends GetxController {
   }
 
   void findShares(double price) {
-    totalShare.value =
-        price.calculateShares(model().raisingRound.sharePrice).toDouble();
+    totalShare.value = price
+        .calculateShares(model().raisingRound.sharePrice)
+        .toDouble();
   }
 
   void onChangeForCapTable(String? p0) {
@@ -128,6 +129,14 @@ class PrimaryInvestmentPageCtrl extends GetxController {
   // }
 
   Future<void> onPress() async {
+    if (investing.value) return;
+    if (!investor().isPreIpoKycComplete) {
+      toast(
+        'Complete investor KYC before making a transaction.',
+        MessageEnum.alert,
+      );
+      return;
+    }
     investing(true);
     var res = await InvestorPrimaryTransactionApi.wealthManagerInvestment(
       startupId: model().id,
@@ -166,5 +175,12 @@ class PrimaryInvestmentPageCtrl extends GetxController {
       reverseDuration: const Duration(seconds: 1),
     );
     super.onInit();
+  }
+
+  @override
+  void onClose() {
+    amountCTRL.dispose();
+    aifAmountCTRL.dispose();
+    super.onClose();
   }
 }

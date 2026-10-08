@@ -20,10 +20,7 @@ class DesktopForgotPasswordView extends StatelessWidget {
           Positioned(
             left: 65,
             top: 43,
-            child: Image.asset(
-              AppAssets.newLogo,
-              height: 72,
-            ),
+            child: Image.asset(AppAssets.newLogo, height: 72),
           ),
           DesktopMainWidget(),
         ],
@@ -74,10 +71,7 @@ class DPasswordWidget extends StatelessWidget {
           children: [
             const Text(
               "Create Password",
-              style: TextStyle(
-                fontSize: 26,
-                fontWeight: FontWeight.bold,
-              ),
+              style: TextStyle(fontSize: 26, fontWeight: FontWeight.bold),
             ),
             const SizedBox(height: 17),
             Text(
@@ -102,8 +96,11 @@ class DPasswordWidget extends StatelessWidget {
                 name: "New Password",
                 textInputAction: TextInputAction.next,
                 maxLines: 1,
-                prefixIcon: Icon(Icons.vpn_key_outlined,
-                    color: context.theme.disabledColor, size: 20),
+                prefixIcon: Icon(
+                  Icons.vpn_key_outlined,
+                  color: context.theme.disabledColor,
+                  size: 20,
+                ),
                 suffixIcon: IconButton(
                   iconSize: 20,
                   splashRadius: 20,
@@ -140,8 +137,11 @@ class DPasswordWidget extends StatelessWidget {
                 name: "Confirm Password",
                 textInputAction: TextInputAction.done,
                 maxLines: 1,
-                prefixIcon: Icon(Icons.vpn_key_outlined,
-                    color: context.theme.disabledColor, size: 20),
+                prefixIcon: Icon(
+                  Icons.vpn_key_outlined,
+                  color: context.theme.disabledColor,
+                  size: 20,
+                ),
                 suffixIcon: IconButton(
                   iconSize: 20,
                   splashRadius: 20,
@@ -221,16 +221,6 @@ class DOtpWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    // #region agent log
-    debugNdjson('A,C,D,E', 'desktop_forgot_password_view.dart:DOtpWidget.build',
-        'OTP screen display source (desktop)', {
-      'runId': 'post-fix',
-      'displayedText': c.maskedEnteredPhone,
-      'iUserMobile': app.iUser.mobileNumber,
-      'iUserHide': app.iUser.mobileNumber.toHidePhoneNo,
-      'phoneNoCTRL': c.phoneNoCTRL.text,
-    });
-    // #endregion
     return CustomCardWidget(
       width: 564.66,
       radius: 16,
@@ -246,10 +236,7 @@ class DOtpWidget extends StatelessWidget {
           children: [
             const Text(
               "Enter OTP",
-              style: TextStyle(
-                fontSize: 24,
-                fontWeight: FontWeight.bold,
-              ),
+              style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
             ),
             const SizedBox(height: 17),
             Text(
@@ -285,8 +272,11 @@ class DOtpWidget extends StatelessWidget {
                 }
                 return null;
               },
-              prefixIcon: Icon(Icons.phone_outlined,
-                  size: 20, color: context.theme.disabledColor),
+              prefixIcon: Icon(
+                Icons.phone_outlined,
+                size: 20,
+                color: context.theme.disabledColor,
+              ),
               onFieldSubmitted: (p0) {
                 if (c.dOtpKey.currentState?.validate() ?? false) {
                   c.verifyOTP();
@@ -373,10 +363,7 @@ class DMobileWidget extends StatelessWidget {
           children: [
             const Text(
               "Forgot password",
-              style: TextStyle(
-                fontSize: 24,
-                fontWeight: FontWeight.bold,
-              ),
+              style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
             ),
             const SizedBox(height: 17),
             Text(
@@ -411,8 +398,11 @@ class DMobileWidget extends StatelessWidget {
                 }
                 return null;
               },
-              prefixIcon: Icon(Icons.phone_outlined,
-                  color: context.theme.disabledColor, size: 20),
+              prefixIcon: Icon(
+                Icons.phone_outlined,
+                color: context.theme.disabledColor,
+                size: 20,
+              ),
               onFieldSubmitted: (p0) {
                 if (c.dMobileKey.currentState?.validate() ?? false) {
                   c.forgotPassword();

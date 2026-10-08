@@ -1,6 +1,4 @@
-library private_deals;
-
-
+library;
 
 ///THEME
 
@@ -12,14 +10,13 @@ export 'package:private_deals/src/shared/theme/app_tokens.dart';
 export 'package:private_deals/src/shared/theme/brand_colors.dart';
 export 'package:private_deals/src/shared/theme/section_accents.dart';
 
-
 export 'package:animate_do/animate_do.dart';
 export 'package:carousel_slider/carousel_slider.dart';
 export 'package:circular_menu/circular_menu.dart';
+
 /// BACKEND
 export 'package:private_deals/src/features/auth/data/i_auth_api.dart';
 export 'package:private_deals/src/features/auth/data/w_auth_api.dart';
-export 'package:private_deals/src/features/wealth_manager/data/api/bank_accounts/bank_accounts_api.dart';
 export 'package:private_deals/src/features/wealth_manager/data/api/bank_accounts/mandate_api.dart';
 export 'package:private_deals/src/features/wealth_manager/data/api/channel_partner/channel_partner_api.dart';
 export 'package:private_deals/src/core/config/config_api.dart';
@@ -47,16 +44,17 @@ export 'package:private_deals/src/features/wealth_manager/data/api/transaction/w
 export 'package:private_deals/src/features/wealth_manager/data/api/transaction/w_primary_transaction_api.dart';
 export 'package:private_deals/src/features/wealth_manager/data/api/transaction/w_secondary_transaction_api.dart';
 export 'package:private_deals/src/features/investors/data/w_investors_api.dart';
+
 /// Config
 export 'package:private_deals/src/core/session/auth_session.dart';
 export 'package:private_deals/src/core/configuration/connectivity_config.dart';
 export 'package:private_deals/src/core/configuration/dio_config.dart';
 export 'package:private_deals/src/core/configuration/init_config.dart';
-export 'package:private_deals/src/core/configuration/master_config.dart';
 export 'package:private_deals/src/core/configuration/notification_config.dart';
 export 'package:private_deals/src/core/configuration/pref_config.dart';
 export 'package:private_deals/src/features/wealth_manager/data/models/bank_account/bank_account_model.dart';
 export 'package:private_deals/src/features/wealth_manager/data/models/bank_account/mandate_model.dart';
+
 /// MODEL
 export 'package:private_deals/src/shared/models/base_model.dart';
 export 'package:private_deals/src/shared/models/config_model.dart';
@@ -102,6 +100,7 @@ export 'package:private_deals/src/features/investors/data/investor_model.dart';
 export 'package:private_deals/src/features/investors/data/w_investor_model.dart';
 export 'package:private_deals/src/core/session/partner_user.dart';
 export 'package:private_deals/src/shared/translation/translation.dart';
+
 /// CONST
 export 'package:private_deals/src/shared/constant/app_assets.dart';
 export 'package:private_deals/src/shared/constant/app_colors.dart';
@@ -121,10 +120,9 @@ export 'package:private_deals/src/shared/plugins/desktop_notification.dart';
 export 'package:private_deals/src/shared/plugins/dotted_borders.dart';
 // FUNCTION
 export 'package:private_deals/src/shared/plugins/download_file/download_file.dart';
-// export 'package:private_deals/src/utils/plugins/excel_viewer/excel_viewer_screen.dart';
-// export 'package:private_deals/src/utils/plugins/excel_viewer/excel_viewer_screen_ctrl.dart';
 export 'package:private_deals/src/shared/plugins/file_picker.dart';
 export 'package:private_deals/src/shared/plugins/loader.dart';
+
 ///utils
 export 'package:private_deals/src/shared/plugins/logger.dart';
 export 'package:private_deals/src/shared/plugins/lottie_image.dart';
@@ -132,8 +130,6 @@ export 'package:private_deals/src/shared/plugins/luncher.dart';
 export 'package:private_deals/src/shared/plugins/otp_text_field.dart';
 export 'package:private_deals/src/shared/plugins/pdf_viewer.dart';
 export 'package:private_deals/src/shared/plugins/svg_image.dart';
-// export 'package:private_deals/src/utils/plugins/syncfusion_charts/charts/charts.dart'
-//     hide TooltipPosition;
 export 'package:private_deals/src/shared/plugins/toast.dart';
 export 'package:private_deals/src/shared/plugins/video_player.dart';
 export 'package:private_deals/src/shared/widgets/buttons/custom_elevated_button.dart';
@@ -147,6 +143,7 @@ export 'package:private_deals/src/shared/widgets/company_deal_card.dart';
 export 'package:private_deals/src/shared/widgets/auth_background.dart';
 export 'package:private_deals/src/shared/widgets/custom_card_widget.dart';
 export 'package:private_deals/src/shared/widgets/custom_drop_down.dart';
+
 /// COMMON WIDGETS
 export 'package:private_deals/src/shared/widgets/custom_text_field.dart';
 export 'package:private_deals/src/shared/widgets/dialog_widget/delete_dialog_widget.dart';
@@ -163,10 +160,9 @@ export 'package:private_deals/src/shared/widgets/searchable_text_field.dart';
 export 'package:private_deals/src/shared/widgets/status_pipeline.dart';
 export 'package:private_deals/src/shared/widgets/title_text.dart';
 export 'package:desktop_drop/desktop_drop.dart';
-// export 'package:infinite_scroll_pagination/infinite_scroll_pagination.dart';
 export 'package:file_picker/file_picker.dart';
+
 /// PACKAGES
-// export 'package:file_picker/file_picker.dart';
 export 'package:flutter/cupertino.dart' hide RefreshCallback;
 export 'package:flutter/material.dart';
 export 'package:flutter/services.dart';

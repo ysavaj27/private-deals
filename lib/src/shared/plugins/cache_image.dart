@@ -1,7 +1,9 @@
 import 'package:private_deals/src/shared/widgets/image_placeholder.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:cached_network_image_platform_interface/cached_network_image_platform_interface.dart';
-import 'package:private_deals/src/shared/app_exports.dart';
+import 'package:flutter/material.dart';
+import 'package:private_deals/src/shared/plugins/loader.dart';
+import 'package:private_deals/src/shared/plugins/logger.dart';
 
 class CacheImage extends StatelessWidget {
   final String url;
@@ -26,6 +28,11 @@ class CacheImage extends StatelessWidget {
     this.errorWidget,
     this.placeholderBuilder,
   });
+
+  /// Allows workspace-specific loading visuals to share the image lifecycle.
+  @protected
+  Widget buildLoadingIndicator(BuildContext context) =>
+      Loader(color: Theme.of(context).primaryColor, size: 40);
 
   @override
   Widget build(BuildContext context) {
@@ -55,14 +62,12 @@ class CacheImage extends StatelessWidget {
       imageUrl: url,
       color: color,
       imageBuilder: imageBuilder,
-      // memCacheHeight: height?.toInt(),
-      // memCacheWidth: width?.toInt(),
       placeholder: (context, url) {
         if (placeholderBuilder != null) return placeholderBuilder!(context);
         if (placeHolderImage.isNotEmpty) {
           return ImagePlaceholder(asset: placeHolderImage);
         }
-        return Loader(color: context.theme.primaryColor, size: 40);
+        return buildLoadingIndicator(context);
       },
       errorWidget:
           errorWidget ??

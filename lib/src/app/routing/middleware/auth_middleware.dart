@@ -10,16 +10,6 @@ class AuthMiddleware extends GetMiddleware {
   RouteSettings? redirect(String? route) {
     final target = route ?? SessionNavigation.home;
     final result = SessionNavigation.check(target, scope: scope);
-    // #region agent log
-    agentLog('F', 'auth_middleware.dart:redirect', 'route guard', {
-      'target': target,
-      'result': result.name,
-      'role': app.role.apiValue,
-      'validated': app.validated(),
-      'hasToken': app.token.isNotEmpty,
-      'scope': scope?.name,
-    });
-    // #endregion
     if (result == AccessResult.allowed) {
       final segments = Uri.parse(target).pathSegments;
       if (segments.length > 1 &&

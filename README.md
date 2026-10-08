@@ -4,7 +4,17 @@ A Flutter application combining the Partner app with the supported Seller workfl
 
 ## Run locally
 
-Use Flutter with Dart 3.12.2 or later, compatible with the checked-in lockfile.
+Use **Flutter 3.47.6 stable** (pinned in `.flutter-version`) with **Dart 3.13.5**. PrivateDeals uses a project-local SDK so the Partner and Seller apps can keep their existing Flutter installations.
+
+Install the pinned SDK once, then put it first on your shell's PATH for this project:
+
+```sh
+git clone --depth 1 --branch "$(cat .flutter-version)" https://github.com/flutter/flutter.git .flutter-sdk
+export PATH="$PWD/.flutter-sdk/bin:$PATH"
+flutter --version
+```
+
+The `.flutter-sdk/` directory is ignored by Git. For an IDE, select `.flutter-sdk` as the Flutter SDK directory. With an existing Flutter 3.47.6 installation, you can use that installation instead.
 
 ```sh
 flutter pub get
@@ -17,7 +27,15 @@ The default API origin is the existing Private Deals service. For a test server,
 flutter run -d chrome --dart-define=PRIVATE_DEALS_BASE_URL=https://your-staging-host/
 ```
 
-Keep `pubspec.lock` under version control. Do not run an automatic dependency upgrade as part of this merge. The current resolved file-picker API uses bytes for browser uploads.
+Keep `pubspec.lock` under version control. Dependencies were updated to compatible stable releases on 2026-10-08; the file picker uses the stable v13 API and reads selected files as bytes for browser uploads.
+
+The following stable versions are retained for compatibility:
+
+- `cached_network_image` 3.4.1 and its platform interface 4.1.1, `google_fonts` 8.2.1, and `pinput` 6.0.2 match the app's `package:flutter/material.dart` widgets. Their newer major versions use the separate `material_ui` library, which requires an app-wide UI migration.
+- `connectivity_plus` 7.3.1 shares `dbus` 0.7 with the stable notification and desktop-drop packages. Version 7.3.2 requires `dbus` 0.8 and cannot resolve with those stable releases.
+- `html` is pinned to 0.15.6 because `flutter_html` 3.0.0 calls the internal `query_selector.matches` API removed in 0.15.7. Remove the pin when a compatible stable `flutter_html` release is available.
+
+Review `flutter pub outdated` before future upgrades; avoid prereleases and dependency overrides that bypass these compatibility constraints.
 
 ## Structure
 
@@ -144,3 +162,14 @@ For every future behavior/API/routing change, update this README or the relevant
 - [x] Pre-IPO detail page completely redegin
 - [x] Seller view on listtile
 - [ ] Mandate/deal slip date need to change
+
+We need to improve following points:
+1. Self-confidence
+2. Improve communication
+3. Improve English speaking
+4. Work on fitness
+5. Meditation and focus on mental health
+6. Manage good relationship with family
+7. Always carry positive mindset
+8. Follow the routine and time specific
+9. Very clear about your goal/ visualization

@@ -4,7 +4,6 @@ import 'dart:typed_data';
 import 'package:dio/dio.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:get/get.dart';
-import 'package:private_deals/src/core/configuration/dio_config.dart';
 import 'package:private_deals/src/core/session/auth_session.dart';
 
 import 'smoke_case.dart';
@@ -32,53 +31,55 @@ class SmokeFakeAdapter implements HttpClientAdapter {
 }
 
 ResponseBody okBody([Object? data]) => ResponseBody.fromString(
-      jsonEncode({
-        'status': 1,
-        'message': 'ok',
-        'data': data ?? <String, dynamic>{'id': 1},
-      }),
-      200,
-      headers: {
-        Headers.contentTypeHeader: ['application/json'],
-      },
-    );
+  jsonEncode({
+    'status': 1,
+    'message': 'ok',
+    'data': data ?? <String, dynamic>{'id': 1},
+  }),
+  200,
+  headers: {
+    Headers.contentTypeHeader: ['application/json'],
+  },
+);
 
 ResponseBody okListBody([List<dynamic>? items]) => ResponseBody.fromString(
-      jsonEncode({
-        'status': 1,
-        'message': 'ok',
-        'data': items ??
-            [
-              {'id': 1},
-            ],
-      }),
-      200,
-      headers: {
-        Headers.contentTypeHeader: ['application/json'],
-      },
-    );
+  jsonEncode({
+    'status': 1,
+    'message': 'ok',
+    'data':
+        items ??
+        [
+          {'id': 1},
+        ],
+  }),
+  200,
+  headers: {
+    Headers.contentTypeHeader: ['application/json'],
+  },
+);
 
 Map<String, dynamic> partnerIdentity({
   String type = 'Wealth Manager',
   int id = 7,
-}) =>
-    {
-      'id': id,
-      'type': type,
-      'token': 'smoke-token-$id',
-      'self_investor_id': 70,
-      'is_primary_access': 1,
-      'is_secondary_access': 1,
-      'is_preipo_access': 1,
-      'name': 'Smoke Partner',
-      'mobile_no': '9000000000',
-    };
+}) => {
+  'id': id,
+  'type': type,
+  'token': 'smoke-token-$id',
+  'self_investor_id': 70,
+  'is_primary_access': 1,
+  'is_secondary_access': 1,
+  'is_preipo_access': 1,
+  'name': 'Smoke Partner',
+  'mobile_no': '9000000000',
+};
 
 Future<void> installSmokeSession({
   String type = 'Wealth Manager',
   int id = 7,
 }) async {
-  await app.setUser(prefUser: partnerIdentity(type: type, id: id));
+  await app.setUser(
+    prefUser: partnerIdentity(type: type, id: id),
+  );
   app.validated(true);
 }
 
@@ -149,8 +150,8 @@ Future<void> expectContractPath({
   final methodOk = last == null
       ? false
       : (smokeCase.method == SmokeMethod.get
-          ? last.method.toUpperCase() == 'GET'
-          : last.method.toUpperCase() == 'POST');
+            ? last.method.toUpperCase() == 'GET'
+            : last.method.toUpperCase() == 'POST');
   final pathOk = last != null && pathMatches(actual, smokeCase.pathSuffix);
 
   // Contract smoke cares that the client hits the planned endpoint.
@@ -179,7 +180,7 @@ Future<void> expectContractPath({
       detail: error != null
           ? 'threw: $error'
           : 'expected ${smokeCase.method.name.toUpperCase()} '
-              '${smokeCase.pathSuffix}, got ${last?.method} $actual',
+                '${smokeCase.pathSuffix}, got ${last?.method} $actual',
     ),
   );
   fail(

@@ -1,10 +1,5 @@
-import 'package:private_deals/src/shared/models/enums.dart';
-import 'package:private_deals/src/features/wealth_manager/data/models/document/document_model.dart';
-import 'package:private_deals/src/features/wealth_manager/data/models/startup/startup_model.dart';
-import 'package:private_deals/src/features/investors/data/investor_model.dart';
 import 'package:private_deals/src/shared/app_exports.dart';
 import 'package:private_deals/src/shared/functions/parse.dart';
-import 'package:private_deals/src/core/session/auth_session.dart';
 
 class PrimaryTransactionModel {
   int id;
@@ -108,8 +103,9 @@ class PrimaryTransactionModel {
         nextStep: Parse.toStrings(json["next_step"]),
         percentage: Parse.toDouble(json["percentage"]),
         ssaDocument: DocumentModel.fromJson(json["ssa_document"] ?? {}),
-        mgtChallanDocument:
-            DocumentModel.fromJson(json["mgt_challan_document"] ?? {}),
+        mgtChallanDocument: DocumentModel.fromJson(
+          json["mgt_challan_document"] ?? {},
+        ),
         mgtZipDocument: DocumentModel.fromJson(json["mgt_zip_document"] ?? {}),
         offerDocument: DocumentModel.fromJson(json["offer_document"] ?? {}),
         counterSlip: DocumentModel.fromJson(json["counter_slip"] ?? {}),
@@ -120,32 +116,32 @@ class PrimaryTransactionModel {
       );
 
   Map<String, dynamic> toJson() => {
-        "id": id,
-        "type": type,
-        "investor_id": investorId,
-        "startup_id": startupId,
-        "round_id": roundId,
-        "instrument": instrument,
-        "shares": shares,
-        "share_price": sharePrice,
-        "investment_amount": investmentAmount,
-        "payment_status": paymentStatus,
-        "payment_mode": paymentMode,
-        "is_share_transfered": isShareTransfered,
-        "status": status,
-        "created_at": createdAt.toIso8601String(),
-        "updated_at": updatedAt.toIso8601String(),
-        "current_status": currentStatus,
-        "next_step": nextStep,
-        "percentage": percentage,
-        "ssa_document": ssaDocument.toJson(),
-        "mgt_challan_document": mgtChallanDocument.toJson(),
-        "mgt_zip_document": mgtZipDocument.toJson(),
-        "offer_document": offerDocument.toJson(),
-        "counter_slip": counterSlip.toJson(),
-        "rtgs_receipt": rtgsReceipt.toJson(),
-        "sha_document": shaDocument.toJson(),
-        "startup": startup.toJson(),
-        "investor": investor.toJson(),
-      };
+    "id": id,
+    "type": type,
+    "investor_id": investorId,
+    "startup_id": startupId,
+    "round_id": roundId,
+    "instrument": instrument,
+    "shares": shares,
+    "share_price": sharePrice,
+    "investment_amount": investmentAmount,
+    "payment_status": paymentStatus,
+    "payment_mode": paymentMode,
+    "is_share_transfered": isShareTransfered,
+    "status": status,
+    "created_at": createdAt.toIso8601String(),
+    "updated_at": updatedAt.toIso8601String(),
+    "current_status": currentStatus,
+    "next_step": nextStep,
+    "percentage": percentage,
+    "ssa_document": ssaDocument.toJson(),
+    "mgt_challan_document": mgtChallanDocument.toJson(),
+    "mgt_zip_document": mgtZipDocument.toJson(),
+    "offer_document": offerDocument.toJson(),
+    "counter_slip": counterSlip.toJson(),
+    "rtgs_receipt": rtgsReceipt.toJson(),
+    "sha_document": shaDocument.toJson(),
+    "startup": startup.toJson(),
+    "investor": investor.toJson(),
+  };
 }

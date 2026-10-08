@@ -89,8 +89,8 @@ class PreIPOTransactionModel {
     DateTime? settlementDate,
     DateTime? transactionCancelTimer,
     this.statusList = const [],
-  })  : settlementDate = settlementDate ?? DateTime(0),
-        transactionCancelTimer = transactionCancelTimer ?? DateTime(0);
+  }) : settlementDate = settlementDate ?? DateTime(0),
+       transactionCancelTimer = transactionCancelTimer ?? DateTime(0);
 
   factory PreIPOTransactionModel.fromJson(Map<String, dynamic> json) {
     return PreIPOTransactionModel(
@@ -184,14 +184,14 @@ class TransactionStatusModel {
       );
 
   Map<String, dynamic> toJson() => {
-        "title": title,
-        "description": description,
-        "date": date.toIso8601String(),
-        "document": document.toJson(),
-        "action": action.toJson(),
-        "is_active": isActive,
-        "is_completed": isCompleted,
-      };
+    "title": title,
+    "description": description,
+    "date": date.toIso8601String(),
+    "document": document.toJson(),
+    "action": action.toJson(),
+    "is_active": isActive,
+    "is_completed": isCompleted,
+  };
 }
 
 class BankDetailModel {
@@ -266,7 +266,7 @@ class PaymentModel {
   DocumentModel document;
 
   PaymentModel({DocumentModel? document})
-      : document = document ?? DocumentModel.fromJson({});
+    : document = document ?? DocumentModel.fromJson({});
 
   factory PaymentModel.fromJson(Map<String, dynamic> json) {
     return PaymentModel(
@@ -279,78 +279,6 @@ class PaymentModel {
   }
 }
 
-// class PrivateEquityTransactionModel {
-//   int id;
-//   int investorId;
-//   int companyId;
-//   int status;
-//   int shares;
-//   double sharePrice;
-//   double investmentAmount;
-//   DateTime createdAt;
-//   DateTime updatedAt;
-//   String currentStatus;
-//   String nextStep;
-//   Company company;
-//   InvestorModel investor;
-//   DocumentModel dealSlip;
-//
-//   PrivateEquityTransactionModel({
-//     this.id = 0,
-//     this.investorId = 0,
-//     this.companyId = 0,
-//     this.status = 0,
-//     this.shares = 0,
-//     this.sharePrice = 0.0,
-//     this.investmentAmount = 0.0,
-//     required this.createdAt,
-//     required this.updatedAt,
-//     this.currentStatus = '',
-//     this.nextStep = 'N/A',
-//     required this.company,
-//     required this.investor,
-//     required this.dealSlip,
-//   });
-//
-//   factory PrivateEquityTransactionModel.fromJson(Map<String, dynamic> json) {
-//     return PrivateEquityTransactionModel(
-//       id: Parse.toInt(json["id"]),
-//       investorId: Parse.toInt(json["investor_id"]),
-//       companyId: Parse.toInt(json["company_id"]),
-//       status: Parse.toInt(json["status"]),
-//       shares: Parse.toInt(json["shares"]),
-//       sharePrice: Parse.toDouble(json["share_price"]),
-//       investmentAmount: Parse.toDouble(json["investment_amount"]),
-//       createdAt: Parse.toDateTime(json["created_at"]),
-//       updatedAt: Parse.toDateTime(json["updated_at"]),
-//       currentStatus: Parse.toStrings(json["current_status"]),
-//       nextStep: Parse.toStrings(json["next_step"], 'N/A'),
-//       company: Company.fromJson(json["company"] ?? {}),
-//       investor: InvestorModel.fromJson(json["investor"] ?? {}),
-//       dealSlip: DocumentModel.fromJson(json["deal_slip"] ?? {}),
-//     );
-//   }
-//
-//   Map<String, dynamic> toJson() {
-//     return {
-//       "id": id,
-//       "investor_id": investorId,
-//       "company_id": companyId,
-//       "status": status,
-//       "shares": shares,
-//       "share_price": sharePrice,
-//       "investment_amount": investmentAmount,
-//       "created_at": createdAt.toIso8601String(),
-//       "updated_at": updatedAt.toIso8601String(),
-//       "current_status": currentStatus,
-//       "next_step": nextStep,
-//       "company": company.toJson(),
-//       "investor": investor.toJson(),
-//       "deal_slip": dealSlip.toJson(),
-//     };
-//   }
-// }
-//
 class Company {
   int id;
   String uuid;

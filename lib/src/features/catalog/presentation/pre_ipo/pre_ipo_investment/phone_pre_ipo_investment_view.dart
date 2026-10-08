@@ -52,67 +52,17 @@ class PhonePreIPOInvestmentView extends StatelessWidget {
                             ),
                           ),
                           const SizedBox(height: 8),
-                          // Row(
-                          //   children: [
-                          //     Text(
-                          //       "Base price",
-                          //       style: TextStyle(
-                          //           fontSize: 12,
-                          //           color: context.theme.colorScheme.onSurfaceVariant),
-                          //     ),
-                          //     const Spacer(),
-                          //     Text(
-                          //       c.model().basePrice.distributorPrice.fixDigit,
-                          //       style: TextStyle(fontSize: 12),
-                          //     ),
-                          //   ],
-                          // ),
-                          // Row(
-                          //   children: [
-                          //     Text(
-                          //       "Shuru-up Commission(2.5%)",
-                          //       style: TextStyle(
-                          //           fontSize: 12,
-                          //           color: context.theme.colorScheme.onSurfaceVariant),
-                          //     ),
-                          //     const Spacer(),
-                          //     Text(
-                          //       c
-                          //           .model()
-                          //           .basePrice
-                          //           .distributorPriceWithGross
-                          //           .fixDigit,
-                          //       style: TextStyle(fontSize: 12),
-                          //     ),
-                          //   ],
-                          // ),
-                          // Row(
-                          //   children: [
-                          //     Text(
-                          //       "GST 18%",
-                          //       style: TextStyle(
-                          //           fontSize: 12,
-                          //           color: context.theme.colorScheme.onSurfaceVariant),
-                          //     ),
-                          //     const Spacer(),
-                          //     Text(
-                          //       c
-                          //           .model()
-                          //           .basePrice
-                          //           .finalDistributorPrice
-                          //           .fixDigit,
-                          //       style: TextStyle(fontSize: 12),
-                          //     ),
-                          //   ],
-                          // ),
                           Row(
                             children: [
                               Text(
                                 "Distributor price",
                                 style: TextStyle(
-                                    fontSize: 12,
-                                    color: context
-                                        .theme.colorScheme.onSurfaceVariant),
+                                  fontSize: 12,
+                                  color: context
+                                      .theme
+                                      .colorScheme
+                                      .onSurfaceVariant,
+                                ),
                               ),
                               const Spacer(),
                               Text(
@@ -194,34 +144,32 @@ class PhonePreIPOInvestmentView extends StatelessWidget {
                   child: Form(
                     autovalidateMode: AutovalidateMode.onUserInteraction,
                     key: c.phoneKey,
-                    child: Obx(
-                      () {
-                        if (c.investorList.isNotEmpty) {
-                          return ListView.separated(
-                            padding: const EdgeInsets.only(top: 27, bottom: 50),
-                            itemCount: c.investorList.length,
-                            physics: const BouncingScrollPhysics(),
-                            separatorBuilder: (context, index) =>
-                                const SizedBox(height: 20),
-                            itemBuilder: (context, index) {
-                              return CardView(model: c.investorList[index]);
-                            },
-                          );
-                        } else {
-                          return Center(
-                            child: CustomElevatedButton(
-                              width: 200,
-                              height: 45,
-                              backgroundColor: AppColors.preIpoButton(context),
-                              onPressed: c.addInvestor,
-                              child: const Text("Add Investor"),
-                            ),
-                          );
-                        }
-                      },
-                    ),
+                    child: Obx(() {
+                      if (c.investorList.isNotEmpty) {
+                        return ListView.separated(
+                          padding: const EdgeInsets.only(top: 27, bottom: 50),
+                          itemCount: c.investorList.length,
+                          physics: const BouncingScrollPhysics(),
+                          separatorBuilder: (context, index) =>
+                              const SizedBox(height: 20),
+                          itemBuilder: (context, index) {
+                            return CardView(model: c.investorList[index]);
+                          },
+                        );
+                      } else {
+                        return Center(
+                          child: CustomElevatedButton(
+                            width: 200,
+                            height: 45,
+                            backgroundColor: AppColors.preIpoButton(context),
+                            onPressed: c.addInvestor,
+                            child: const Text("Add Investor"),
+                          ),
+                        );
+                      }
+                    }),
                   ),
-                )
+                ),
               ],
             ),
           ),
@@ -292,7 +240,7 @@ class CardView extends StatelessWidget {
                   ),
                 ),
                 InkWell(
-                  onTap: () => c.investorList.remove(model),
+                  onTap: () => c.removeInvestor(model),
                   child: Container(
                     padding: const EdgeInsets.all(4),
                     decoration: BoxDecoration(
@@ -300,8 +248,11 @@ class CardView extends StatelessWidget {
                       border: Border.all(color: AppColors.borderColor(context)),
                     ),
                     alignment: Alignment.center,
-                    child:
-                        const Icon(Icons.delete, size: 18, color: Colors.red),
+                    child: const Icon(
+                      Icons.delete,
+                      size: 18,
+                      color: Colors.red,
+                    ),
                   ),
                 ),
               ],
@@ -316,14 +267,18 @@ class CardView extends StatelessWidget {
               mainAxisAlignment: MainAxisAlignment.start,
               children: [
                 TitleTextField(
-                  borderColor:
-                      context.theme.disabledColor.withValues(alpha: 0.2),
-                  fillColor:
-                      context.theme.disabledColor.withValues(alpha: 0.06),
+                  borderColor: context.theme.disabledColor.withValues(
+                    alpha: 0.2,
+                  ),
+                  fillColor: context.theme.disabledColor.withValues(
+                    alpha: 0.06,
+                  ),
                   name: "Quantity",
                   textInputAction: TextInputAction.next,
-                  contentPadding:
-                      const EdgeInsets.symmetric(horizontal: 15, vertical: 10),
+                  contentPadding: const EdgeInsets.symmetric(
+                    horizontal: 15,
+                    vertical: 10,
+                  ),
                   isDense: true,
                   controller: model.quantityCTRL,
                   keyboardType: TextInputType.number,
@@ -355,8 +310,8 @@ class CardView extends StatelessWidget {
                             : () {
                                 model.isMarket.toggle();
                                 if (model.isMarket.isTrue) {
-                                  model.priceCTRL?.text =
-                                      c.sharePrice.toStringAsFixed(0);
+                                  model.priceCTRL?.text = c.sharePrice
+                                      .toStringAsFixed(0);
                                 }
                               },
                         child: Row(
@@ -368,7 +323,9 @@ class CardView extends StatelessWidget {
                                 style: TextStyle(
                                   fontWeight: FontWeight.w400,
                                   color: context
-                                      .theme.colorScheme.onSurfaceVariant,
+                                      .theme
+                                      .colorScheme
+                                      .onSurfaceVariant,
                                   fontSize: context.isPhone ? 14 : 16,
                                 ),
                                 children: [
@@ -396,17 +353,21 @@ class CardView extends StatelessWidget {
                       CustomTextField(
                         autofocus: !model.isSelf,
                         isFilled: true,
-                        borderColor:
-                            context.theme.disabledColor.withValues(alpha: 0.2),
-                        fillColor:
-                            context.theme.disabledColor.withValues(alpha: 0.06),
+                        borderColor: context.theme.disabledColor.withValues(
+                          alpha: 0.2,
+                        ),
+                        fillColor: context.theme.disabledColor.withValues(
+                          alpha: 0.06,
+                        ),
                         readOnly: model.isMarket.isTrue || model.isSelf,
                         // enabled: model.isMarket.isFalse,
                         controller: model.priceCTRL,
                         keyboardType: TextInputType.number,
                         textInputAction: TextInputAction.done,
                         contentPadding: const EdgeInsets.symmetric(
-                            horizontal: 15, vertical: 10),
+                          horizontal: 15,
+                          vertical: 10,
+                        ),
                         isDense: true,
                         onChanged: onAmountChange,
                         validator: (p0) {

@@ -26,6 +26,7 @@ class AccessSnapshot {
     required this.hasToken,
     required this.validated,
     required this.role,
+    this.storageUnavailable = false,
     this.blocked = false,
     this.deleted = false,
     this.passwordChange = false,
@@ -34,6 +35,7 @@ class AccessSnapshot {
     this.unlisted = false,
   });
   final bool hasToken, validated, blocked, deleted, passwordChange;
+  final bool storageUnavailable;
   final bool primary, secondary, unlisted;
   final PartnerRole role;
 }
@@ -45,6 +47,7 @@ class AccessPolicy {
     bool changingPassword = false,
     bool channelPartners = false,
   }) {
+    if (user.storageUnavailable) return AccessResult.retrySession;
     if (!user.hasToken) return AccessResult.login;
     if (!user.validated) return AccessResult.retrySession;
     if (user.blocked || user.deleted) return AccessResult.accountUnavailable;

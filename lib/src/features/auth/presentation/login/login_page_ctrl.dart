@@ -17,17 +17,6 @@ class LoginPageCtrl extends GetxController {
       password: passwordCTRL.text,
     );
     isLoading(false);
-    // #region agent log
-    agentLog('D', 'login_page_ctrl.dart:onPress', 'login finished', {
-      'isSuccess': res.isSuccess,
-      'message': res.m,
-      'isUserLogin': app.isUserLogin,
-      'role': app.role.apiValue,
-      'hasUserId': app.userId > 0,
-      'hasToken': app.token.isNotEmpty,
-      'validated': app.validated(),
-    });
-    // #endregion
     if (res.isSuccess && app.isUserLogin) {
       passwordCTRL.clear();
       await app.loginCounts();
@@ -46,7 +35,7 @@ class LoginPageCtrl extends GetxController {
 
   @override
   void onInit() {
-    if(kDebugMode){
+    if (kDebugMode) {
       // mobileNoCTRL.text = '7984718397';
       mobileNoCTRL.text = '9898375981';
       passwordCTRL.text = 'Shuru@123';

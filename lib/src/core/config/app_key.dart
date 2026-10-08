@@ -1,7 +1,5 @@
-
 import 'package:private_deals/src/core/session/auth_session.dart';
 import 'package:private_deals/src/shared/models/enums.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/foundation.dart';
 
 class AppKey {

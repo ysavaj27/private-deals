@@ -56,38 +56,14 @@ class SessionNavigation {
 
   static void goHome() {
     final next = destination(app.pendingRoute);
-    // #region agent log
-    agentLog('E', 'session_navigation.dart:goHome', 'post-login destination', {
-      'next': next,
-      'role': app.role.apiValue,
-      'home': home,
-      'pending': app.pendingRoute,
-      'account': AccessPolicy.check(app.access, AccessScope.account).name,
-    });
-    // #endregion
     if (next != Routes.changePassword && next != '/session')
       app.pendingRoute = null;
     Get.offAllNamed(next);
   }
 
   static Future<void> logout() async {
-    // #region agent log
-    agentLog('D', 'session_navigation.dart:logout', 'logout start', {
-      'hasToken': app.token.isNotEmpty,
-      'revision': app.revision,
-      'route': Get.currentRoute,
-    });
-    // #endregion
     // Clear local identity even if the server cannot be reached.
-    final logoutResult = await WAuthApi.logout();
-    // #region agent log
-    agentLog('D', 'session_navigation.dart:logout', 'logout API finished', {
-      'success': logoutResult.isSuccess,
-      'message': logoutResult.m,
-      'hasToken': app.token.isNotEmpty,
-      'revision': app.revision,
-    });
-    // #endregion
+    await WAuthApi.logout();
     await app.clear();
     // GetX disposes route controllers after the outgoing widgets unmount.
     // Deleting them here breaks reactive rebuilds triggered by clearing identity.

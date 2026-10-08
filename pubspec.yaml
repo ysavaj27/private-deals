@@ -26,7 +26,8 @@ publish_to: 'none' # Remove this line if you wish to publish to pub.dev
 version: 1.0.0+2
 
 environment:
-  sdk: ^3.12.2
+  sdk: ^3.13.0
+  flutter: ">=3.47.6"
 
 # Dependencies specify other packages that your package needs in order to work.
 # To automatically upgrade your package dependencies to the latest versions
@@ -41,29 +42,32 @@ dependencies:
   flutter_web_plugins:
     sdk: flutter
 
-  cupertino_icons: ^1.0.9
   font_awesome_flutter: ^11.0.0
 
   # BASIC
   get: ^4.7.3
   get_storage: ^2.1.1
-  dio: ^5.11.0
-  logger: ^2.7.0
-  fluttertoast: ^10.0.0
+  flutter_secure_storage: ^11.2.0
+  dio: ^5.11.1
+  logger: ^2.8.0
+  # New majors use material_ui; keep these aligned with flutter/material.dart.
   cached_network_image: ^3.4.1
   cached_network_image_platform_interface: ^4.1.1
   intl: ^0.20.3
+  timezone: ^0.11.1
+  web: ^1.1.1
   flutter_svg: ^2.3.0
-  lottie: ^3.3.0
+  lottie: ^3.6.1
   google_fonts: ^8.2.1
-  flutter_local_notifications: ^22.3.0
+  flutter_local_notifications: ^22.3.1
   open_filex: ^4.7.0
   windows_notification: ^1.3.0
-  permission_handler: ^13.0.1
+  permission_handler: ^13.0.2
 
   # SYSTEMS
-  device_info_plus: ^13.2.0
-  package_info_plus: ^10.2.1
+  device_info_plus: ^13.3.0
+  package_info_plus: ^10.2.2
+  # 7.3.2 requires dbus 0.8; stable notifications/desktop_drop require 0.7.
   connectivity_plus: ^7.3.1
 
   # ANIMATION/ LOADER
@@ -71,69 +75,62 @@ dependencies:
   animate_do: ^5.1.0
 
   # IMAGE AND FILE PICKER
-  image_picker: ^1.2.3
-  file_picker: ^12.0.0-beta.3
+  image_picker: ^1.2.4
+  file_picker: ^13.1.0
   path_provider: ^2.1.6
 
   # FIREBASE
-  #  firebase_database: ^10.5.5
-  firebase_core: ^4.12.1
-  firebase_messaging: ^16.4.3
-  firebase_crashlytics: ^5.2.6
+
+  firebase_core: ^4.15.0
+  firebase_messaging: ^16.7.0
+  firebase_crashlytics: ^5.4.0
 
   pinput: ^6.0.2
 
   # DESKTOP ONLY PACKAGES
   file_selector: ^1.1.0
 
-  google_nav_bar: ^5.0.7
-  fl_chart: ^1.2.0
   like_button: ^2.1.0
   flutter_screenutil: ^5.9.3
   flutter_html: ^3.0.0
-  #  persistent_bottom_nav_bar: ^5.0.2
+  # flutter_html 3.0.0 calls an internal API removed in html 0.15.7.
+  html: 0.15.6
+
 
   # Video player
-  video_player: ^2.14.0
-  chewie: ^1.14.1
-  video_player_win: ^3.2.2                      # for desktop
+  video_player: ^2.14.1
+  chewie: ^1.17.2
+  video_player_win: ^3.3.0                      # for desktop
   visibility_detector: ^0.4.0+2                 # Native video dependencies.
-  #  video_player: ^2.2.10
 
-  smooth_page_indicator: ^2.0.1
+
+  smooth_page_indicator: ^3.0.0
   carousel_slider: ^5.1.2
   percent_indicator: ^4.2.5
-  syncfusion_flutter_charts: ^34.2.3
+  syncfusion_flutter_charts: ^35.1.39
 
   window_manager: ^0.5.2
   showcaseview: ^5.1.0
   dotted_border: ^3.1.0
-  desktop_drop: ^0.7.1
+  desktop_drop: ^0.8.4
   circular_menu: ^4.0.0
   flutter_speed_dial: ^7.0.0
-  excel: ^4.0.6
-  pdfx: ^2.9.2
-  data_table_2: ^2.7.2
-  sticky_headers: ^0.3.0+2
+  pdfx: ^2.11.0
 
 
   # LUNCH URL AND OPEN FILE
-  url_launcher: ^6.3.2
+  url_launcher: ^6.3.3
 
   searchfield: ^2.0.0
 
-  #  flutter_animate: ^4.5.0
-  #  animations: ^2.0.11
+
   flutter_stepindicator: ^0.1.7
 
-  infinite_scroll_pagination: ^5.1.1
 
-#dependency_overrides:
-#  url_launcher_ios: 6.3.1
 
 
 dev_dependencies:
-  flutter_cache_manager: ^3.4.1
+  flutter_cache_manager: ^3.4.5
   flutter_test:
     sdk: flutter
 
@@ -232,10 +229,6 @@ flutter:
   # see https://flutter.dev/custom-fonts/#from-packages
 
 
-#Flutter 3.23.0-13.0.pre.87 • channel master • https://github.com/flutter/flutter.git
-#Framework • revision c246ecdf8e (2 months ago) • 2024-06-03 18:06:22 -0700
-#Engine • revision a6aa5d8266
-#Tools • Dart 3.5.0 (build 3.5.0-218.0.dev) • DevTools 2.36.0
 
 msix_config:
   display_name: Shuru-Up Business

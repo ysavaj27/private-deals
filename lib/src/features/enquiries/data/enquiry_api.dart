@@ -1,3 +1,4 @@
+import 'package:private_deals/src/features/investors/data/w_investors_api.dart';
 import 'package:private_deals/src/core/configuration/dio_config.dart';
 import 'package:private_deals/src/features/enquiries/data/enquiry_model.dart';
 import 'package:private_deals/src/shared/models/base_model.dart';
@@ -53,19 +54,19 @@ class EnquiryApi {
         action == 'accept' &&
         settlementDays != null &&
         (settlementDays < 1 || settlementDays > 30)) {
-      return BaseModel.fromError(
-        'Select a settlement cycle from T+1 to T+30.',
-      );
+      return BaseModel.fromError('Select a settlement cycle from T+1 to T+30.');
     }
     try {
-      final response = await dioConfig
-          .post('${institution ? institutionPath : partnerPath}/$action', {
-            'uuid': uuid,
-            if (action == 'reject')
-              'reason': trimmedReason.isEmpty ? null : trimmedReason,
-            if (institution && action == 'accept' && settlementDays != null)
-              'settlement_days': settlementDays,
-          });
+      final response = await dioConfig.post(
+        '${institution ? institutionPath : partnerPath}/$action',
+        {
+          'uuid': uuid,
+          if (action == 'reject')
+            'reason': trimmedReason.isEmpty ? null : trimmedReason,
+          if (institution && action == 'accept' && settlementDays != null)
+            'settlement_days': settlementDays,
+        },
+      );
       // Institution rejection intentionally has no data object.
       return BaseModel.fromMessage(response.data);
     } catch (error) {
@@ -80,6 +81,8 @@ class EnquiryApi {
     if (uuid.isEmpty || investorId <= 0) {
       return BaseModel.fromError('Select an investor.');
     }
+    final kycError = await WInvestorsApi.transactionKycError([investorId]);
+    if (kycError != null) return BaseModel.fromError(kycError);
     try {
       final response = await dioConfig.post('$partnerPath/accept', {
         'uuid': uuid,

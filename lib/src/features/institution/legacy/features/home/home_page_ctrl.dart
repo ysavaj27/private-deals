@@ -4,7 +4,6 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:private_deals/src/features/institution/data/models/common/enums.dart';
 import 'package:private_deals/src/features/institution/legacy/router/routes/routes.dart';
-import 'package:private_deals/src/core/configuration/dio_config.dart';
 import 'package:private_deals/src/core/session/auth_session.dart';
 
 class SellerHomePageCtrl extends GetxController {
@@ -92,12 +91,6 @@ class SellerHomePageCtrl extends GetxController {
 
   void setData() {
     final path = Uri.parse(Get.currentRoute).path;
-    // #region agent log
-    agentLog('H', 'home_page_ctrl.dart:setData', 'seller home route', {
-      'path': path,
-      'currentRoute': Get.currentRoute,
-    });
-    // #endregion
     final tabFromUrl = WTabBarEnum.values.firstWhere(
       (tab) => path == tab.sellerPath,
       orElse: () => WTabBarEnum.dashboard,
@@ -115,8 +108,7 @@ class SellerHomePageCtrl extends GetxController {
     if (tab == WTabBarEnum.preIPOList || tab == WTabBarEnum.priceUpdate) {
       unlistedExpanded.value = true;
     }
-    if (tab == WTabBarEnum.secondaryList ||
-        tab == WTabBarEnum.manageDeals) {
+    if (tab == WTabBarEnum.secondaryList || tab == WTabBarEnum.manageDeals) {
       lpSecondaryExpanded.value = true;
     }
     if (tab == WTabBarEnum.companyDeals || tab == WTabBarEnum.secondaryDeals) {
@@ -130,12 +122,6 @@ class SellerHomePageCtrl extends GetxController {
 
     _syncExpandedMenus(tab);
 
-    // #region agent log
-    agentLog('H', 'home_page_ctrl.dart:onTap', 'seller tab navigation', {
-      'from': Get.currentRoute,
-      'to': tab.sellerPath,
-    });
-    // #endregion
     Get.offNamed(tab.sellerPath, preventDuplicates: true, arguments: null);
   }
 

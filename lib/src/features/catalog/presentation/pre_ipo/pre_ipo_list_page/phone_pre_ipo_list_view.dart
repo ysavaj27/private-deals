@@ -15,66 +15,16 @@ class PhonePreIPOListView extends StatelessWidget {
     return Scaffold(
       extendBodyBehindAppBar: true,
       appBar: AppBar(
-        leading: BackButton(
-          onPressed: onBackPressed,
-        ),
+        leading: BackButton(onPressed: onBackPressed),
         title: Text(
-            "${(Get.parameters['type'] ?? "").toString().capitalizeFirst}"),
+          "${(Get.parameters['type'] ?? "").toString().capitalizeFirst}",
+        ),
       ),
       body: SafeArea(
         child: CustomScrollView(
           physics: const BouncingScrollPhysics(),
           controller: c.scrollController,
           slivers: [
-            // SliverAppBar(
-            //   leading: const SizedBox(),
-            //   expandedHeight: 180,
-            //   collapsedHeight: 110,
-            //   floating: false,
-            //   pinned: true,
-            //   flexibleSpace: FlexibleSpaceBar(
-            //     centerTitle: false,
-            //     collapseMode: CollapseMode.parallax,
-            //     title: Column(
-            //       crossAxisAlignment: CrossAxisAlignment.start,
-            //       mainAxisAlignment: MainAxisAlignment.end,
-            //       children: [
-            //         const Text.rich(
-            //           TextSpan(
-            //             style: TextStyle(
-            //               fontSize: 18,
-            //               fontWeight: FontWeight.w400,
-            //               height: 1.1,
-            //             ),
-            //             children: [
-            //               TextSpan(
-            //                 text: 'Unlock Potential:\n',
-            //                 style: TextStyle(fontWeight: FontWeight.bold),
-            //               ),
-            //               TextSpan(
-            //                 text: 'Invest in Unlisted Shares\n',
-            //               ),
-            //               TextSpan(text: 'Companies'),
-            //             ],
-            //           ),
-            //         ),
-            //         const SizedBox(height: 4),
-            //         Text(
-            //           "Discover lucrative investment opportunities in Unlisted Shares \ncompanies and position yourself for significant growth \nbefore they hit the public market.",
-            //           style: TextStyle(
-            //               fontSize: 8, color: context.theme.colorScheme.onSurfaceVariant),
-            //         ),
-            //       ],
-            //     ),
-            //     background: SVGImage(
-            //       context.isDarkMode
-            //           ? AppAssets.preIPODarkBg
-            //           : AppAssets.preIPOLightBg,
-            //       fit: BoxFit.cover,
-            //     ),
-            //   ),
-            //   primary: true,
-            // ),
             SliverPersistentHeader(
               pinned: false,
               floating: true,
@@ -83,8 +33,10 @@ class PhonePreIPOListView extends StatelessWidget {
                 maxHeight: 80.0,
                 child: Container(
                   color: context.theme.scaffoldBackgroundColor,
-                  padding:
-                      const EdgeInsets.symmetric(vertical: 15, horizontal: 16),
+                  padding: const EdgeInsets.symmetric(
+                    vertical: 15,
+                    horizontal: 16,
+                  ),
                   child: SearchBarTextField(
                     radius: 6,
                     hintText: "Search Businesses",
@@ -103,17 +55,23 @@ class PhonePreIPOListView extends StatelessWidget {
                         var model = c.list[index];
                         return Padding(
                           padding: const EdgeInsets.symmetric(
-                              horizontal: 16, vertical: 7),
+                            horizontal: 16,
+                            vertical: 7,
+                          ),
                           child: InkWell(
                             borderRadius: BorderRadius.circular(6),
                             onTap: () {
-                              Get.to(() => PreIPODetailPage(),
-                                  arguments: model.id);
+                              Get.to(
+                                () => PreIPODetailPage(),
+                                arguments: model.id,
+                              );
                             },
                             child: CustomCardWidget(
                               radius: 6,
                               padding: const EdgeInsets.symmetric(
-                                  vertical: 10, horizontal: 10),
+                                vertical: 10,
+                                horizontal: 10,
+                              ),
                               child: Column(
                                 children: [
                                   Row(
@@ -153,7 +111,9 @@ class PhonePreIPOListView extends StatelessWidget {
                                               textAlign: TextAlign.center,
                                               style: TextStyle(
                                                 fontSize: 12,
-                                                color: context.theme.colorScheme
+                                                color: context
+                                                    .theme
+                                                    .colorScheme
                                                     .onSurfaceVariant,
                                               ),
                                             ),
@@ -161,7 +121,8 @@ class PhonePreIPOListView extends StatelessWidget {
                                             Text(
                                               "${model.sharePrice.toCurrency}",
                                               style: const TextStyle(
-                                                  fontWeight: FontWeight.bold),
+                                                fontWeight: FontWeight.bold,
+                                              ),
                                             ),
                                           ],
                                         ),
@@ -174,7 +135,9 @@ class PhonePreIPOListView extends StatelessWidget {
                                               textAlign: TextAlign.center,
                                               style: TextStyle(
                                                 fontSize: 12,
-                                                color: context.theme.colorScheme
+                                                color: context
+                                                    .theme
+                                                    .colorScheme
                                                     .onSurfaceVariant,
                                               ),
                                             ),
@@ -182,7 +145,8 @@ class PhonePreIPOListView extends StatelessWidget {
                                             Text(
                                               "${model.fundamentals.lotSize}",
                                               style: const TextStyle(
-                                                  fontWeight: FontWeight.bold),
+                                                fontWeight: FontWeight.bold,
+                                              ),
                                             ),
                                           ],
                                         ),
@@ -195,7 +159,9 @@ class PhonePreIPOListView extends StatelessWidget {
                                               textAlign: TextAlign.center,
                                               style: TextStyle(
                                                 fontSize: 12,
-                                                color: context.theme.colorScheme
+                                                color: context
+                                                    .theme
+                                                    .colorScheme
                                                     .onSurfaceVariant,
                                               ),
                                             ),
@@ -203,7 +169,8 @@ class PhonePreIPOListView extends StatelessWidget {
                                             Text(
                                               model.fundamentals.depository,
                                               style: const TextStyle(
-                                                  fontWeight: FontWeight.bold),
+                                                fontWeight: FontWeight.bold,
+                                              ),
                                             ),
                                           ],
                                         ),
@@ -238,19 +205,14 @@ class PhonePreIPOListView extends StatelessWidget {
                 );
               }
             }),
-            Obx(
-              () {
-                return SliverToBoxAdapter(
-                  child: Visibility(
-                    visible: c.isLoadMore.value,
-                    child: SizedBox(
-                      height: 100,
-                      child: const Loader(),
-                    ),
-                  ),
-                );
-              },
-            ),
+            Obx(() {
+              return SliverToBoxAdapter(
+                child: Visibility(
+                  visible: c.isLoadMore.value,
+                  child: SizedBox(height: 100, child: const Loader()),
+                ),
+              );
+            }),
           ],
         ),
       ),
@@ -263,12 +225,7 @@ class ChartWidget extends StatelessWidget {
   final double? height;
   final double? width;
 
-  const ChartWidget({
-    super.key,
-    required this.list,
-    this.height,
-    this.width,
-  });
+  const ChartWidget({super.key, required this.list, this.height, this.width});
 
   @override
   Widget build(BuildContext context) {
@@ -299,7 +256,8 @@ class ChartWidget extends StatelessWidget {
 
   /// The method returns line series to chart.
   List<AreaSeries<SharePriceModel, DateTime>> _getDefaultLineSeries(
-      BuildContext context) {
+    BuildContext context,
+  ) {
     return <AreaSeries<SharePriceModel, DateTime>>[
       AreaSeries<SharePriceModel, DateTime>(
         dataSource: list,
@@ -308,10 +266,7 @@ class ChartWidget extends StatelessWidget {
         gradient: LinearGradient(
           begin: Alignment.bottomRight,
           end: Alignment.topLeft,
-          colors: [
-            context.theme.scaffoldBackgroundColor,
-            Color(0xff5E3E1A),
-          ],
+          colors: [context.theme.scaffoldBackgroundColor, Color(0xff5E3E1A)],
         ),
 
         xValueMapper: (SharePriceModel sales, _) => sales.date,

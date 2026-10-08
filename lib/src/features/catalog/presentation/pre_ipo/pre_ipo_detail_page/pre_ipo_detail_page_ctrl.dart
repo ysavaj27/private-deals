@@ -1,11 +1,11 @@
+import 'package:private_deals/src/features/catalog/presentation/investor_draft_lifecycle.dart';
 import 'package:private_deals/src/features/catalog/presentation/pre_ipo/pre_ipo_investment/pre_ipo_offer.dart';
 import 'package:private_deals/src/features/catalog/presentation/pre_ipo/pre_ipo_investment/select_investor_dialog.dart';
 import 'package:private_deals/src/features/catalog/presentation/pre_ipo/pre_ipo_detail_page/pre_ipo_detail_sections.dart';
 import 'package:private_deals/src/shared/app_exports.dart';
-import 'package:private_deals/src/core/configuration/dio_config.dart'
-    show debugNdjson;
 
 class PreIPODetailPageCtrl extends GetxController
+    with InvestorDraftLifecycle
     implements CompanyDetailSectionsCtrl {
   final selectedOffer = Rxn<PreIPOOffer>();
 
@@ -23,7 +23,7 @@ class PreIPODetailPageCtrl extends GetxController
       toast('Buying is not available for this company', MessageEnum.alert);
       return;
     }
-    if (selectedOffer.value?.key != offer.key) investorList.clear();
+    if (selectedOffer.value?.key != offer.key) clearInvestors();
     selectedOffer.value = offer;
     minTicketSize = offer.minimumQty.toDouble();
     isQty(true);
@@ -84,20 +84,8 @@ class PreIPODetailPageCtrl extends GetxController
   @override
   List<GlobalKey> sectionKeys = [];
 
-  int _getDataCount = 0;
-  int _scrollObsUpdates = 0;
-
   Future<void> getData() async {
     final slug = Get.parameters['slug'] ?? "";
-    // #region agent log
-    _getDataCount++;
-    debugNdjson(
-      'D',
-      'pre_ipo_detail_page_ctrl.dart:getData',
-      'company detail fetch',
-      {'slug': slug, 'getDataCount': _getDataCount, 'getxEnableLog': true},
-    );
-    // #endregion
     isLoading(true);
     var res = await PreIpoLandingPageApi.wCompanyDetail(slug);
     isLoading(false);
@@ -125,8 +113,6 @@ class PreIPODetailPageCtrl extends GetxController
       double maxScroll = scrollController.position.maxScrollExtent;
       double currentScroll = scrollController.position.pixels;
       final nextVisible = currentScroll >= 200;
-      final prevTab = tab.value;
-      final prevVisible = isVisible.value;
       if (nextVisible) {
         isVisible(true);
       } else {
@@ -146,24 +132,6 @@ class PreIPODetailPageCtrl extends GetxController
           }
         }
       }
-      // #region agent log
-      if (prevTab != tab.value || prevVisible != isVisible.value) {
-        _scrollObsUpdates++;
-        if (_scrollObsUpdates <= 30 || _scrollObsUpdates % 25 == 0) {
-          debugNdjson(
-            'A',
-            'pre_ipo_detail_page_ctrl.dart:scroll',
-            'scroll updated GetX observables',
-            {
-              'scrollObsUpdates': _scrollObsUpdates,
-              'tab': tab.value,
-              'isVisible': isVisible.value,
-              'getxEnableLog': true,
-            },
-          );
-        }
-      }
-      // #endregion
     });
   }
 
@@ -197,7 +165,7 @@ class PreIPODetailPageCtrl extends GetxController
     investing(false);
     if (res.isSuccess) {
       toast(res.m, MessageEnum.success);
-      investorList.clear();
+      clearInvestors();
     } else {
       toast(res.m, MessageEnum.alert);
     }
@@ -225,7 +193,6 @@ class PreIPODetailPageCtrl extends GetxController
   RxDouble investedAmount = 0.0.obs;
   double minTicketSize = 100000;
   TextEditingController amountCTRL = TextEditingController();
-  RxList<SelectInvestorModel> investorList = <SelectInvestorModel>[].obs;
   RxBool isQty = true.obs;
 
   GlobalKey<FormState> desktopFormKey = GlobalKey<FormState>();
@@ -242,7 +209,14 @@ class PreIPODetailPageCtrl extends GetxController
   }
 
   Future<void> addInvestor() async {
-    var res = await showCustomDialog(const SelectInvestorDialog());
+    var res = await showCustomDialog(
+      SelectInvestorDialog(
+        selectedInvestorIds: investorList
+            .map((item) => item.investorId)
+            .toList(),
+      ),
+    );
+    if (isClosed) return;
     if (res != null && res is List<InvestorModel>) {
       for (var i = 0; i < res.length; i++) {
         var e = res[i];
@@ -264,7 +238,7 @@ class PreIPODetailPageCtrl extends GetxController
     }
   }
 
-  findShares(double price) {
+  void findShares(double price) {
     totalShare.value = price.calculateShares(model().sharePrice);
   }
 
@@ -299,5 +273,12 @@ class PreIPODetailPageCtrl extends GetxController
     } else {
       toast(res.m, MessageEnum.alert);
     }
+  }
+
+  @override
+  void onClose() {
+    scrollController.dispose();
+    amountCTRL.dispose();
+    super.onClose();
   }
 }

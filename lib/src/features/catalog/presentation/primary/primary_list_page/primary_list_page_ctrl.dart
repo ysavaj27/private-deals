@@ -30,6 +30,7 @@ class PrimaryListPageCtrl extends GetxController {
     var slug = Get.parameters['slug'] ?? "";
     isLoading(true);
     var res = await LandingPageApi.wNewStartupList(slug: slug);
+    if (isClosed) return;
     isLoading(false);
     if (res.isSuccess && res.r != null) {
       list.value = res.r!;
@@ -39,8 +40,9 @@ class PrimaryListPageCtrl extends GetxController {
   }
 
   void _startAutoScroll() {
-    if (list.isEmpty) return;
-    Timer.periodic(const Duration(seconds: 3), (Timer timer) {
+    timer?.cancel();
+    if (isClosed || list.isEmpty) return;
+    timer = Timer.periodic(const Duration(seconds: 3), (Timer timer) {
       if (currentPage < list.length - 1) {
         currentPage++;
       } else {
@@ -58,9 +60,9 @@ class PrimaryListPageCtrl extends GetxController {
   }
 
   @override
-  void dispose() {
+  void onClose() {
     timer?.cancel();
     pageController.dispose();
-    super.dispose();
+    super.onClose();
   }
 }

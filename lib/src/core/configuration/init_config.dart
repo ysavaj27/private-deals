@@ -13,7 +13,6 @@ final InitConfig init = InitConfig.instance;
 
 class InitConfig extends GetxService {
   static final InitConfig instance = InitConfig();
-  bool noInternet = false;
 
   // RxBool isDarkMode = false.obs;
   Rx<ThemeMode> themeModes = ThemeMode.dark.obs;
@@ -41,7 +40,6 @@ class InitConfig extends GetxService {
     await app.getLoginCounts();
     await _getDeviceInfo();
     await _getPackageInfo();
-    await networkCheck();
     await ConfigApi.config();
     getTheme();
   }
@@ -67,7 +65,7 @@ class InitConfig extends GetxService {
     }
   }
 
-  static _setOrientation() async {
+  static Future<void> _setOrientation() async {
     // SystemChrome.setSystemUIOverlayStyle(
     //   const SystemUiOverlayStyle(
     //     statusBarColor: Colors.transparent,
@@ -110,32 +108,6 @@ class InitConfig extends GetxService {
     }
     version = int.tryParse(packageInfo.buildNumber) ?? 1;
     packageVersion = '${packageInfo.version}+${packageInfo.buildNumber}';
-  }
-
-  Future<void> networkCheck() async {
-    // logger.i('check network');
-    // Connectivity().onConnectivityChanged.listen((ConnectivityResult result) {
-    //   logger.d('result :$result Internet :$noInternet');
-    //   if (result == ConnectivityResult.none && noInternet == false) {
-    //     noInternet = true;
-    //     appPopUp(barrierDismissible: false, children: [
-    //       const SizedBox(height: 10),
-    //       const SpinKitPouringHourGlassRefined(color: Colors.white),
-    //       const SizedBox(height: 20),
-    //       Text(
-    //         "Network Connection Lost..! \n Please Reconnect..",
-    //         style: Get.context?.textTheme.labelMedium
-    //             ?.copyWith(fontWeight: FontWeight.bold),
-    //         textAlign: TextAlign.center,
-    //       ),
-    //       const SizedBox(height: 10),
-    //     ]);
-    //   } else {
-    //     Get.back();
-    //     logger.d("Get.back Called");
-    //     noInternet = false;
-    //   }
-    // });
   }
 
   Future<void> _getDeviceInfo() async {
@@ -253,7 +225,8 @@ class InitConfig extends GetxService {
 
   Future<void> getTheme() async {
     var themes = await prefs.getValue(key: "theme") ?? 2;
-    var c = await prefs.getValue(key: "color") ??
+    var c =
+        await prefs.getValue(key: "color") ??
         AppColors.sectionPrivateEquity.toARGB32();
     ThemeMode themeMode = ThemeMode.values[themes];
     color(c);

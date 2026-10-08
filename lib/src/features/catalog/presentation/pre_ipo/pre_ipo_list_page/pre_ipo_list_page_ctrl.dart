@@ -21,9 +21,13 @@ class PreIPOListPageCtrl extends GetxController {
       final response = await PreIpoLandingPageApi.wPreIPOHome();
       if (response.isSuccess) {
         final search = query.trim().toLowerCase();
-        list.assignAll(response.r!.hotDeals.where((company) =>
-            company.brandName.toLowerCase().contains(search) ||
-            company.companyName.toLowerCase().contains(search)));
+        list.assignAll(
+          response.r!.hotDeals.where(
+            (company) =>
+                company.brandName.toLowerCase().contains(search) ||
+                company.companyName.toLowerCase().contains(search),
+          ),
+        );
       } else {
         toast(response.m, MessageEnum.error);
       }
@@ -33,7 +37,7 @@ class PreIPOListPageCtrl extends GetxController {
 
     if (isSearch) {
       WidgetsBinding.instance.addPostFrameCallback((_) {
-        searchFocusNode.requestFocus();
+        if (!isClosed) searchFocusNode.requestFocus();
       });
     }
     if (count.isEmpty) {
@@ -78,7 +82,8 @@ class PreIPOListPageCtrl extends GetxController {
   Future<void> _loadMore() async {
     if (isLoading.isTrue || isLoadMore.isTrue) return;
     if (!isSecondary &&
-        Get.parameters['type'] == UnListedShareTabEnum.hotDeals.route) return;
+        Get.parameters['type'] == UnListedShareTabEnum.hotDeals.route)
+      return;
 
     isLoadMore(true);
 
@@ -103,6 +108,7 @@ class PreIPOListPageCtrl extends GetxController {
     scrollController.dispose();
     debounce?.cancel();
 
+    searchFocusNode.dispose();
     super.onClose();
   }
 }

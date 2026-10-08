@@ -9,7 +9,8 @@ class InvestorTransactionPageCtrl extends GetxController
   Rx<TransactionTypeEnum> currentIndex = TransactionTypeEnum.preIpoBuy.obs;
 
   TextEditingController controller = TextEditingController();
-  late TabController tabController;
+  TabController? _tabController;
+  TabController get tabController => _tabController!;
 
   @override
   void onInit() {
@@ -25,7 +26,8 @@ class InvestorTransactionPageCtrl extends GetxController
     } else {
       currentIndex(TransactionTypeEnum.primary);
     }
-    tabController = TabController(length: tabBarLength, vsync: this);
+    _tabController?.dispose();
+    _tabController = TabController(length: tabBarLength, vsync: this);
   }
 
   int get tabBarLength {
@@ -54,5 +56,12 @@ class InvestorTransactionPageCtrl extends GetxController
 
   void changeTab(TransactionTypeEnum type) {
     currentIndex(type);
+  }
+
+  @override
+  void onClose() {
+    controller.dispose();
+    _tabController?.dispose();
+    super.onClose();
   }
 }

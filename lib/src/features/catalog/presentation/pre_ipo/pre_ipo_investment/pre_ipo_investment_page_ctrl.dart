@@ -1,9 +1,11 @@
+import 'package:private_deals/src/features/catalog/presentation/investor_draft_lifecycle.dart';
 import 'package:private_deals/src/features/catalog/presentation/pre_ipo/pre_ipo_investment/pre_ipo_offer.dart';
 import 'package:private_deals/src/shared/app_exports.dart';
 
 import 'package:private_deals/src/features/catalog/presentation/pre_ipo/pre_ipo_investment/select_investor_dialog.dart';
 
-class PreIPOInvestmentPageCtrl extends GetxController {
+class PreIPOInvestmentPageCtrl extends GetxController
+    with InvestorDraftLifecycle {
   final selectedOffer = Rxn<PreIPOOffer>();
   double get purchasePrice =>
       selectedOffer.value?.price ?? model().distributerPrice;
@@ -23,7 +25,6 @@ class PreIPOInvestmentPageCtrl extends GetxController {
   RxDouble investedAmount = 0.0.obs;
   double minTicketSize = 100000;
   TextEditingController amountCTRL = TextEditingController();
-  RxList<SelectInvestorModel> investorList = <SelectInvestorModel>[].obs;
   RxBool isQty = true.obs;
 
   GlobalKey<FormState> desktopKey = GlobalKey<FormState>();
@@ -51,7 +52,14 @@ class PreIPOInvestmentPageCtrl extends GetxController {
   }
 
   void addInvestor() async {
-    var res = await showCustomDialog(const SelectInvestorDialog());
+    var res = await showCustomDialog(
+      SelectInvestorDialog(
+        selectedInvestorIds: investorList
+            .map((item) => item.investorId)
+            .toList(),
+      ),
+    );
+    if (isClosed) return;
     if (res != null && res is List<InvestorModel>) {
       for (var i = 0; i < res.length; i++) {
         var e = res[i];
@@ -86,7 +94,7 @@ class PreIPOInvestmentPageCtrl extends GetxController {
   //   isLoading(false);
   // }
 
-  findShares(double price) {
+  void findShares(double price) {
     totalShare.value = price.calculateShares(model().sharePrice);
   }
 
@@ -118,7 +126,8 @@ class PreIPOInvestmentPageCtrl extends GetxController {
       return;
     }
     for (final investor in investorList) {
-      final error = offer.validateQuantity(investor.quantityCTRL?.text) ??
+      final error =
+          offer.validateQuantity(investor.quantityCTRL?.text) ??
           offer.validatePrice(investor.priceCTRL?.text);
       if (error != null) {
         toast(error, MessageEnum.alert);
@@ -150,5 +159,11 @@ class PreIPOInvestmentPageCtrl extends GetxController {
   void onInit() {
     getData();
     super.onInit();
+  }
+
+  @override
+  void onClose() {
+    amountCTRL.dispose();
+    super.onClose();
   }
 }

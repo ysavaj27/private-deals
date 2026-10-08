@@ -12,6 +12,7 @@ import 'package:private_deals/src/features/wealth_manager/presentation/desktop_s
 import 'package:private_deals/src/features/institution/legacy/features/home/desktop_sidebar.dart'
     as seller;
 import 'package:private_deals/src/features/institution/legacy/features/company/update_share_price/update_share_price_ctrl.dart';
+
 import 'session_and_api_test.dart' show FakeAdapter, identity, response;
 
 void main() {
@@ -68,7 +69,7 @@ void main() {
         expect(find.byType(seller.DSideBarWidget), findsNothing);
         expect(tester.takeException(), isNull);
 
-        await tester.tap(find.text('KYC'));
+        await tester.tap(find.text('Complete KYC'));
         await tester.pumpAndSettle();
         expect(find.text('Investor KYC'), findsOneWidget);
         expect(Get.currentRoute, '/wealth-manager/investors');

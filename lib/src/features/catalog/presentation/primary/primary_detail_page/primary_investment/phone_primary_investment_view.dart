@@ -1,3 +1,4 @@
+import 'package:private_deals/src/features/investors/presentation/complete_investor_kyc_button.dart';
 import 'package:flutter/gestures.dart';
 import 'package:private_deals/src/shared/app_exports.dart';
 
@@ -61,8 +62,7 @@ class PhonePrimaryInvestmentView extends StatelessWidget {
                 color: context.theme.colorScheme.onSurfaceVariant,
               ),
               TextSpan(
-                text:
-                    "In Captable, invest directly in the startup and have your name reflected on its cap table while in AIF, pool your investment with others via a SEBI-registered fund and get units into your demat account.",
+                text: "In Captable, invest directly in the startup and have your name reflected on its cap table while in AIF, pool your investment with others via a SEBI-registered fund and get units into your demat account.",
                 children: <TextSpan>[
                   TextSpan(
                     text: 'Learn More',
@@ -96,7 +96,8 @@ class PhonePrimaryInvestmentView extends StatelessWidget {
       floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
       floatingActionButton: Obx(() {
         return Visibility(
-          visible: c.alreadyInvested.isFalse,
+          visible:
+              c.alreadyInvested.isFalse && c.investor().isPreIpoKycComplete,
           child: Padding(
             padding: const EdgeInsets.symmetric(horizontal: 12),
             child: CustomElevatedButton(
@@ -172,10 +173,7 @@ class SummaryWidget extends StatelessWidget {
                   const Row(
                     mainAxisAlignment: MainAxisAlignment.start,
                     children: [
-                      Icon(
-                        Icons.bookmark_outline,
-                        size: 23,
-                      ),
+                      Icon(Icons.bookmark_outline, size: 23),
                       SizedBox(width: 10),
                       Text(
                         'Summary',
@@ -277,8 +275,9 @@ class SummaryWidget extends StatelessWidget {
             return CustomElevatedButton(
               backgroundColor: AppColors.green(context),
               isLoading: c.investing.value,
-              borderRadius:
-                  const BorderRadius.vertical(top: Radius.circular(15)),
+              borderRadius: const BorderRadius.vertical(
+                top: Radius.circular(15),
+              ),
               onPressed: () {
                 Get.back();
                 c.onPress();
@@ -299,39 +298,50 @@ class MainView extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Obx(
-      () {
-        if (c.alreadyInvested.isFalse) {
-          // switch (c.type()) {
-          //   case PrimaryInvestmentType.Captable:
-          return CaptableView();
-          // case PrimaryInvestmentType.AIF:
-          //   return AIFView();
-          // }
-        } else {
-          return Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Text(
-                'Investing in ${c.model().brandName}',
-                style:
-                    const TextStyle(fontWeight: FontWeight.w600, fontSize: 24),
-              ),
-              const SizedBox(height: 28),
-              Obx(() {
-                return Text(
-                  c.transaction().nextStep,
-                  style: const TextStyle(
-                      fontWeight: FontWeight.w500, fontSize: 18),
-                );
-              }),
-              const SizedBox(height: 40),
-              const Center(child: LottieImage(path: AppAssets.sign)),
-            ],
-          );
-        }
-      },
-    );
+    return Obx(() {
+      if (!c.investor().isPreIpoKycComplete && c.alreadyInvested.isFalse) {
+        return Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            const Text('Complete investor KYC before making a transaction.'),
+            CompleteInvestorKycButton(
+              investor: c.investor(),
+              onSaved: () => c.getInvestor(Get.parameters['id'] ?? ''),
+            ),
+          ],
+        );
+      }
+      if (c.alreadyInvested.isFalse) {
+        // switch (c.type()) {
+        //   case PrimaryInvestmentType.Captable:
+        return CaptableView();
+        // case PrimaryInvestmentType.AIF:
+        //   return AIFView();
+        // }
+      } else {
+        return Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(
+              'Investing in ${c.model().brandName}',
+              style: const TextStyle(fontWeight: FontWeight.w600, fontSize: 24),
+            ),
+            const SizedBox(height: 28),
+            Obx(() {
+              return Text(
+                c.transaction().nextStep,
+                style: const TextStyle(
+                  fontWeight: FontWeight.w500,
+                  fontSize: 18,
+                ),
+              );
+            }),
+            const SizedBox(height: 40),
+            const Center(child: LottieImage(path: AppAssets.sign)),
+          ],
+        );
+      }
+    });
   }
 }
 
@@ -342,497 +352,248 @@ class CaptableView extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Obx(
-      () {
-        return Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            const SizedBox(height: 10),
-            const Text(
-              "How much do you want to invest?",
-              style: TextStyle(fontSize: 18, fontWeight: FontWeight.w500),
-            ),
-            const SizedBox(height: 12),
-            Form(
-              key: c.captablePhoneKey,
-              autovalidateMode: AutovalidateMode.onUserInteraction,
-              child: CustomTextField(
-                autofocus: false,
-                borderColor: context.theme.dividerColor.withValues(alpha: 0.8),
-                hintText: 'Enter amount',
-                isFilled: true,
-                isBorder: true,
-                controller: c.amountCTRL,
-                inputFormatters: [
-                  FilteringTextInputFormatter.allow(RegExp('[0-9+]')),
-                ],
-                // errorStyle:
-                //     TextStyle(color: context.theme.disabledColor),
-                fillColor: context.isDarkMode
-                    ? context.theme.shadowColor
-                    : context.theme.scaffoldBackgroundColor,
-                // controller: controller,
-                keyboardType: TextInputType.number,
-                textInputAction: TextInputAction.done,
-                hintStyle:
-                    const TextStyle(fontWeight: FontWeight.w400, fontSize: 13),
-                onChanged: c.onChangeForCapTable,
-                validator: (p0) {
-                  if (p0 == null || p0.isEmpty) {
-                    return "Please Enter amount";
-                  }
-                  if (double.tryParse(p0) == null) {
-                    return 'Enter valid amount';
-                  }
-                  if (double.parse(p0) <
-                      c.model().raisingRound.minimumInvestment) {
-                    return 'Min ticket size is ${c.model().raisingRound.minimumInvestment.toCurrency}';
-                  }
-                  return null;
-                },
+    return Obx(() {
+      return Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          const SizedBox(height: 10),
+          const Text(
+            "How much do you want to invest?",
+            style: TextStyle(fontSize: 18, fontWeight: FontWeight.w500),
+          ),
+          const SizedBox(height: 12),
+          Form(
+            key: c.captablePhoneKey,
+            autovalidateMode: AutovalidateMode.onUserInteraction,
+            child: CustomTextField(
+              autofocus: false,
+              borderColor: context.theme.dividerColor.withValues(alpha: 0.8),
+              hintText: 'Enter amount',
+              isFilled: true,
+              isBorder: true,
+              controller: c.amountCTRL,
+              inputFormatters: [
+                FilteringTextInputFormatter.allow(RegExp('[0-9+]')),
+              ],
+              // errorStyle:
+              //     TextStyle(color: context.theme.disabledColor),
+              fillColor: context.isDarkMode
+                  ? context.theme.shadowColor
+                  : context.theme.scaffoldBackgroundColor,
+              // controller: controller,
+              keyboardType: TextInputType.number,
+              textInputAction: TextInputAction.done,
+              hintStyle: const TextStyle(
+                fontWeight: FontWeight.w400,
+                fontSize: 13,
               ),
+              onChanged: c.onChangeForCapTable,
+              validator: (p0) {
+                if (p0 == null || p0.isEmpty) {
+                  return "Please Enter amount";
+                }
+                if (double.tryParse(p0) == null) {
+                  return 'Enter valid amount';
+                }
+                if (double.parse(p0) <
+                    c.model().raisingRound.minimumInvestment) {
+                  return 'Min ticket size is ${c.model().raisingRound.minimumInvestment.toCurrency}';
+                }
+                return null;
+              },
             ),
-            const SizedBox(height: 12),
-            Obx(() {
-              return Visibility(
-                visible: c.isMixedAmount.isTrue,
-                child: Text(
-                  "To own a whole number of shares you must enter and amount that is a multiple of ${c.model().raisingRound.sharePrice.toCurrency} such as:",
+          ),
+          const SizedBox(height: 12),
+          Obx(() {
+            return Visibility(
+              visible: c.isMixedAmount.isTrue,
+              child: Text(
+                "To own a whole number of shares you must enter and amount that is a multiple of ${c.model().raisingRound.sharePrice.toCurrency} such as:",
+                style: TextStyle(
+                  fontSize: 12,
+                  fontWeight: FontWeight.w500,
+                  color: context.theme.colorScheme.onSurfaceVariant,
+                ),
+              ),
+            );
+          }),
+          Obx(() {
+            return Visibility(
+              visible: c.isMixedAmount.isTrue,
+              child: const SizedBox(height: 12),
+            );
+          }),
+          Obx(() {
+            return Visibility(
+              visible: c.isMixedAmount.isTrue,
+              child: Row(
+                children: [
+                  InkWell(
+                    borderRadius: BorderRadius.circular(12),
+                    onTap: () {
+                      c.amountCTRL.text = c.minAmount.toString();
+                      c.isMixedAmount(false);
+                      c.findShares(c.minAmount().toDouble());
+                      c.investedAmount(c.minAmount().toDouble());
+                    },
+                    child: CustomCardWidget(
+                      radius: 12,
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 38,
+                        vertical: 10,
+                      ),
+                      child: Text(
+                        c.minAmount().toCurrency,
+                        style: const TextStyle(fontWeight: FontWeight.w500),
+                      ),
+                    ),
+                  ),
+                  Expanded(
+                    child: Center(
+                      child: Text(
+                        "Or",
+                        style: TextStyle(
+                          color: context.theme.colorScheme.onSurfaceVariant,
+                          fontSize: 12,
+                          fontWeight: FontWeight.w500,
+                        ),
+                      ),
+                    ),
+                  ),
+                  InkWell(
+                    borderRadius: BorderRadius.circular(12),
+                    onTap: () {
+                      c.amountCTRL.text = c.maxAmount.toString();
+                      c.isMixedAmount(false);
+                      c.findShares(c.maxAmount().toDouble());
+                      c.investedAmount(c.maxAmount().toDouble());
+                    },
+                    child: CustomCardWidget(
+                      radius: 12,
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 38,
+                        vertical: 10,
+                      ),
+                      child: Text(
+                        c.maxAmount().toCurrency,
+                        style: const TextStyle(fontWeight: FontWeight.w500),
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+            );
+          }),
+          Obx(() {
+            return Visibility(
+              visible: c.isMixedAmount.isTrue,
+              child: const SizedBox(height: 16),
+            );
+          }),
+          const SizedBox(height: 16),
+          const Text(
+            "Investment Details",
+            style: TextStyle(fontSize: 20, fontWeight: FontWeight.w500),
+          ),
+          const SizedBox(height: 25),
+          Obx(() {
+            return _DetailWidget(
+              title: "Investment amount:",
+              data: c.investedAmount().toCurrency,
+            );
+          }),
+          const SizedBox(height: 18),
+          Obx(() {
+            return _DetailWidget(
+              title: "No.  of shares:",
+              data: c.totalShare().formattedDecimal,
+            );
+          }),
+          const SizedBox(height: 18),
+          _DetailWidget(
+            title: "Share type:",
+            data: c.model().raisingRound.instrument.instrumentName,
+          ),
+          const SizedBox(height: 18),
+          _DetailWidget(
+            title: "Share Price:",
+            data: c.model().raisingRound.sharePrice.toCurrency,
+          ),
+          const SizedBox(height: 32),
+          const Text(
+            "Mode Of Payment ",
+            style: TextStyle(fontWeight: FontWeight.w500, fontSize: 16),
+          ),
+          const SizedBox(height: 23),
+          Row(
+            children: [
+              // _TabWidget(
+              //   text: "Mandate",
+              //   type: app
+              //       .config.enumValues.primaryTransactionPaymentMode.mandate,
+              // ),
+              // SizedBox(width: 5),
+              _TabWidget(
+                text: "RTGS",
+                type: app.config.enumValues.primaryTransactionPaymentMode.rtgs,
+              ),
+              const SizedBox(width: 20),
+              _TabWidget(
+                text: "Cheque",
+                type:
+                    app.config.enumValues.primaryTransactionPaymentMode.cheque,
+              ),
+            ],
+          ),
+          const SizedBox(height: 13),
+          Row(
+            children: [
+              Obx(() {
+                return Checkbox(
+                  fillColor: WidgetStateProperty.resolveWith((Set states) {
+                    if (states.contains(WidgetState.selected)) {
+                      return context.theme.primaryColor;
+                    } else {
+                      return context.theme.scaffoldBackgroundColor;
+                    }
+                  }),
+                  side: BorderSide(
+                    color: context.theme.iconTheme.color ?? Colors.white,
+                  ),
+                  value: c.isSelected(),
+                  onChanged: (v) => c.isSelected(v),
+                );
+              }),
+              // SizedBox(width: 3),
+              Flexible(
+                child: Text.rich(
                   style: TextStyle(
                     fontSize: 12,
-                    fontWeight: FontWeight.w500,
-                    color: context.theme.colorScheme.onSurfaceVariant,
+                    color: context.theme.disabledColor,
                   ),
-                ),
-              );
-            }),
-            Obx(() {
-              return Visibility(
-                visible: c.isMixedAmount.isTrue,
-                child: const SizedBox(height: 12),
-              );
-            }),
-            Obx(() {
-              return Visibility(
-                visible: c.isMixedAmount.isTrue,
-                child: Row(
-                  children: [
-                    InkWell(
-                      borderRadius: BorderRadius.circular(12),
-                      onTap: () {
-                        c.amountCTRL.text = c.minAmount.toString();
-                        c.isMixedAmount(false);
-                        c.findShares(c.minAmount().toDouble());
-                        c.investedAmount(c.minAmount().toDouble());
-                      },
-                      child: CustomCardWidget(
-                        radius: 12,
-                        padding: const EdgeInsets.symmetric(
-                            horizontal: 38, vertical: 10),
-                        child: Text(
-                          c.minAmount().toCurrency,
-                          style: const TextStyle(fontWeight: FontWeight.w500),
-                        ),
-                      ),
-                    ),
-                    Expanded(
-                      child: Center(
-                        child: Text(
-                          "Or",
-                          style: TextStyle(
-                            color: context.theme.colorScheme.onSurfaceVariant,
-                            fontSize: 12,
-                            fontWeight: FontWeight.w500,
+                  TextSpan(
+                    text: 'I have read and agree to the Disclaimer, privacy policy, terms of use, risk disclosure.',
+                    children: <TextSpan>[
+                      TextSpan(
+                        text: 'Investment Agreement',
+                        style: const TextStyle(color: Colors.blue),
+                        recognizer: TapGestureRecognizer()
+                          ..onTap = () => Get.to(
+                            () => PdfViewerPage(path: AppUrl.itDisclosures),
                           ),
-                        ),
                       ),
-                    ),
-                    InkWell(
-                      borderRadius: BorderRadius.circular(12),
-                      onTap: () {
-                        c.amountCTRL.text = c.maxAmount.toString();
-                        c.isMixedAmount(false);
-                        c.findShares(c.maxAmount().toDouble());
-                        c.investedAmount(c.maxAmount().toDouble());
-                      },
-                      child: CustomCardWidget(
-                        radius: 12,
-                        padding: const EdgeInsets.symmetric(
-                            horizontal: 38, vertical: 10),
-                        child: Text(
-                          c.maxAmount().toCurrency,
-                          style: const TextStyle(fontWeight: FontWeight.w500),
-                        ),
-                      ),
-                    ),
-                  ],
-                ),
-              );
-            }),
-            Obx(() {
-              return Visibility(
-                visible: c.isMixedAmount.isTrue,
-                child: const SizedBox(height: 16),
-              );
-            }),
-            const SizedBox(height: 16),
-            const Text(
-              "Investment Details",
-              style: TextStyle(
-                fontSize: 20,
-                fontWeight: FontWeight.w500,
-              ),
-            ),
-            const SizedBox(height: 25),
-            Obx(() {
-              return _DetailWidget(
-                title: "Investment amount:",
-                data: c.investedAmount().toCurrency,
-              );
-            }),
-            const SizedBox(height: 18),
-            Obx(() {
-              return _DetailWidget(
-                title: "No.  of shares:",
-                data: c.totalShare().formattedDecimal,
-              );
-            }),
-            const SizedBox(height: 18),
-            _DetailWidget(
-              title: "Share type:",
-              data: c.model().raisingRound.instrument.instrumentName,
-            ),
-            const SizedBox(height: 18),
-            _DetailWidget(
-              title: "Share Price:",
-              data: c.model().raisingRound.sharePrice.toCurrency,
-            ),
-            const SizedBox(height: 32),
-            const Text(
-              "Mode Of Payment ",
-              style: TextStyle(fontWeight: FontWeight.w500, fontSize: 16),
-            ),
-            const SizedBox(height: 23),
-            Row(
-              children: [
-                // _TabWidget(
-                //   text: "Mandate",
-                //   type: app
-                //       .config.enumValues.primaryTransactionPaymentMode.mandate,
-                // ),
-                // SizedBox(width: 5),
-                _TabWidget(
-                  text: "RTGS",
-                  type:
-                      app.config.enumValues.primaryTransactionPaymentMode.rtgs,
-                ),
-                const SizedBox(width: 20),
-                _TabWidget(
-                  text: "Cheque",
-                  type: app
-                      .config.enumValues.primaryTransactionPaymentMode.cheque,
-                ),
-              ],
-            ),
-            const SizedBox(height: 13),
-            Row(
-              children: [
-                Obx(() {
-                  return Checkbox(
-                    fillColor: WidgetStateProperty.resolveWith((Set states) {
-                      if (states.contains(WidgetState.selected)) {
-                        return context.theme.primaryColor;
-                      } else {
-                        return context.theme.scaffoldBackgroundColor;
-                      }
-                    }),
-                    side: BorderSide(
-                        color: context.theme.iconTheme.color ?? Colors.white),
-                    value: c.isSelected(),
-                    onChanged: (v) => c.isSelected(v),
-                  );
-                }),
-                // SizedBox(width: 3),
-                Flexible(
-                  child: Text.rich(
-                    style: TextStyle(
-                      fontSize: 12,
-                      color: context.theme.disabledColor,
-                    ),
-                    TextSpan(
-                      text:
-                          'I have read and agree to the Disclaimer, privacy policy, terms of use, risk disclosure.',
-                      children: <TextSpan>[
-                        TextSpan(
-                          text: 'Investment Agreement',
-                          style: const TextStyle(color: Colors.blue),
-                          recognizer: TapGestureRecognizer()
-                            ..onTap = () => Get.to(
-                                  () => PdfViewerPage(
-                                    path: AppUrl.itDisclosures,
-                                  ),
-                                ),
-                        ),
-                      ],
-                    ),
+                    ],
                   ),
                 ),
-              ],
-            ),
-            const SizedBox(height: 60),
-          ],
-        );
-      },
-    );
+              ),
+            ],
+          ),
+          const SizedBox(height: 60),
+        ],
+      );
+    });
   }
 }
-
-// class AIFView extends StatelessWidget {
-//   final InvestmentPageCtrl c = Get.find<InvestmentPageCtrl>();
-//
-//   AIFView({super.key});
-//
-//   @override
-//   Widget build(BuildContext context) {
-//     return Column(
-//       children: [
-//         // Obx(() {
-//         //   return Visibility(
-//         //     visible: !c.investor().aifStatus,
-//         //     child: CustomCardWidget(
-//         //       borderColor: context.theme.disabledColor,
-//         //       padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 15),
-//         //       child: Column(
-//         //         children: [
-//         //           const Row(
-//         //             mainAxisAlignment: MainAxisAlignment.center,
-//         //             children: [
-//         //               Icon(
-//         //                 Icons.warning_amber_rounded,
-//         //               ),
-//         //               SizedBox(width: 10),
-//         //               Text(
-//         //                 "Complete your kyc",
-//         //                 style: TextStyle(fontSize: 16),
-//         //               ),
-//         //             ],
-//         //           ),
-//         //           const SizedBox(height: 10),
-//         //           Text(
-//         //             "Please complete your KYC for onboarding as an investor on AIF",
-//         //             textAlign: TextAlign.center,
-//         //             style: TextStyle(
-//         //                 fontSize: 12, color: context.theme.colorScheme.onSurfaceVariant),
-//         //           ),
-//         //           const SizedBox(height: 10),
-//         //           CustomElevatedButton(
-//         //             text: 'KYC',
-//         //             width: 150,
-//         //             height: 40,
-//         //             backgroundColor: context.iconColor,
-//         //             color: context.theme.scaffoldBackgroundColor,
-//         //             onPressed: () {
-//         //               Get.to(() => AifOnboardingPage());
-//         //             },
-//         //           ),
-//         //         ],
-//         //       ),
-//         //     ),
-//         //   );
-//         // }),
-//         Visibility(
-//           visible: !app.iUser.aifStatus,
-//           child: const SizedBox(height: 18),
-//         ),
-//         const Text(
-//           "How much do you want to invest?",
-//           style: TextStyle(fontSize: 18, fontWeight: FontWeight.w500),
-//         ),
-//         const SizedBox(height: 12),
-//         Form(
-//           key: c.aifPhoneKey,
-//           autovalidateMode: AutovalidateMode.onUserInteraction,
-//           child: CustomTextField(
-//             autofocus: false,
-//             borderColor: context.theme.dividerColor.withValues(alpha: 0.8),
-//             hintText: 'Enter amount',
-//             isFilled: true,
-//             isBorder: true,
-//             controller: c.aifAmountCTRL,
-//             onChanged: c.onChangeForAIF,
-//             inputFormatters: [
-//               FilteringTextInputFormatter.allow(RegExp('[0-9+]')),
-//             ],
-//             // errorStyle:
-//             //     TextStyle(color: context.theme.disabledColor),
-//             fillColor: context.isDarkMode
-//                 ? context.theme.shadowColor
-//                 : context.theme.scaffoldBackgroundColor,
-//             // controller: controller,
-//             keyboardType: TextInputType.number,
-//             textInputAction: TextInputAction.done,
-//             hintStyle:
-//                 const TextStyle(fontWeight: FontWeight.w400, fontSize: 13),
-//             validator: (p0) {
-//               if (p0 == null || p0.isEmpty) {
-//                 return "Please Enter amount";
-//               }
-//               if (double.tryParse(p0) == null) {
-//                 return 'Enter valid amount';
-//               }
-//               if (double.parse(p0) <
-//                   c.model().raisingRound.minimumInvestmentAif) {
-//                 return 'Min ticket size is ${c.model().raisingRound.minimumInvestmentAif.toCurrency}';
-//               }
-//               return null;
-//             },
-//           ),
-//         ),
-//         const SizedBox(height: 12),
-//         const Text(
-//           "Investment Details",
-//           style: TextStyle(
-//             fontSize: 20,
-//             fontWeight: FontWeight.w500,
-//           ),
-//         ),
-//         const SizedBox(height: 25),
-//         Obx(() {
-//           return _DetailWidget(
-//             title: "Investment amount:",
-//             data: c.enterPrice().toCurrency,
-//           );
-//         }),
-//         const SizedBox(height: 18),
-//         Obx(() {
-//           return _DetailWidget(
-//             title: "No. of units:",
-//             data: "${(c.investedAmount() / 1000).formatUnit()}",
-//           );
-//         }),
-//         const SizedBox(height: 18),
-//         _DetailWidget(
-//           title: "Share type:",
-//           data: c.model().raisingRound.instrument.instrumentName,
-//         ),
-//         const SizedBox(height: 18),
-//         const _DetailWidget(
-//           title: "Unit Price:",
-//           data: "1000",
-//         ),
-//         const SizedBox(height: 32),
-//         const Text(
-//           "Mode Of Payment ",
-//           style: TextStyle(fontWeight: FontWeight.w500, fontSize: 16),
-//         ),
-//         const SizedBox(height: 23),
-//         Row(
-//           children: [
-//             // _TabWidget(
-//             //   text: "Mandate",
-//             //   type: app
-//             //       .config.enumValues.primaryTransactionPaymentMode.mandate,
-//             // ),
-//             // SizedBox(width: 5),
-//             _TabWidget(
-//               text: "RTGS",
-//               type: app.config.enumValues.primaryTransactionPaymentMode.rtgs,
-//             ),
-//             const SizedBox(width: 20),
-//             _TabWidget(
-//               text: "Cheque",
-//               type: app.config.enumValues.primaryTransactionPaymentMode.cheque,
-//             ),
-//           ],
-//         ),
-//         const SizedBox(height: 13),
-//         Row(
-//           children: [
-//             Obx(() {
-//               return Checkbox(
-//                 fillColor: WidgetStateProperty.resolveWith((Set states) {
-//                   if (states.contains(WidgetState.selected)) {
-//                     return context.theme.primaryColor;
-//                   } else {
-//                     return context.theme.scaffoldBackgroundColor;
-//                   }
-//                 }),
-//                 side: BorderSide(
-//                     color: context.theme.iconTheme.color ?? Colors.white),
-//                 value: c.isSelected(),
-//                 onChanged: (v) => c.isSelected(v),
-//               );
-//             }),
-//             // SizedBox(width: 3),
-//             Flexible(
-//               child: Text.rich(
-//                 style: TextStyle(
-//                   fontSize: 12,
-//                   color: context.theme.disabledColor,
-//                 ),
-//                 TextSpan(
-//                   text:
-//                       'I have read and agree to the Disclaimer, privacy policy, terms of use, risk disclosure.',
-//                   children: <TextSpan>[
-//                     TextSpan(
-//                       text: 'Investment Agreement',
-//                       style: const TextStyle(color: Colors.blue),
-//                       recognizer: TapGestureRecognizer()
-//                         ..onTap = () => Get.to(
-//                               () => PdfViewerPage(
-//                                 path: AppUrl.itDisclosures,
-//                               ),
-//                             ),
-//                     ),
-//                   ],
-//                 ),
-//               ),
-//             ),
-//           ],
-//         ),
-//         const SizedBox(height: 60),
-//       ],
-//     );
-//   }
-// }
-
-// class _TabView extends StatelessWidget {
-//   final InvestmentPageCtrl c = Get.find<InvestmentPageCtrl>();
-//   final PrimaryInvestmentType type;
-//
-//   _TabView(this.type);
-//
-//   @override
-//   Widget build(BuildContext context) {
-//     return Obx(() {
-//       bool isSelected = c.type() == type;
-//       return InkWell(
-//         onTap: () {
-//           c.type(type);
-//           c.clearData();
-//         },
-//         borderRadius: BorderRadius.circular(8),
-//         child: CustomCardWidget(
-//           padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 10),
-//           radius: 8,
-//           borderColor: context.iconColor,
-//           color: isSelected ? context.iconColor : Colors.transparent,
-//           alignment: Alignment.center,
-//           child: Text(
-//             type.name,
-//             style: TextStyle(
-//               fontSize: 14,
-//               fontWeight: FontWeight.bold,
-//               color: isSelected
-//                   ? context.theme.scaffoldBackgroundColor
-//                   : context.iconColor,
-//             ),
-//           ),
-//         ),
-//       );
-//     });
-//   }
-// }
 
 class MoreInfoDialog extends StatelessWidget {
   const MoreInfoDialog({super.key});
@@ -852,10 +613,7 @@ class MoreInfoDialog extends StatelessWidget {
               const Expanded(
                 child: Text(
                   "AIF vs Captable",
-                  style: TextStyle(
-                    fontSize: 20,
-                    fontWeight: FontWeight.bold,
-                  ),
+                  style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
                 ),
               ),
               InkWell(
@@ -892,15 +650,18 @@ class MoreInfoDialog extends StatelessWidget {
                       Text(
                         "Description:",
                         style: TextStyle(
-                            fontWeight: FontWeight.bold, fontSize: 15),
+                          fontWeight: FontWeight.bold,
+                          fontSize: 15,
+                        ),
                       ),
                     ],
                   ),
                   Text(
                     "Invest directly in the startup and have your name reflected in its cap table.",
                     style: TextStyle(
-                        color: context.theme.colorScheme.onSurfaceVariant,
-                        fontSize: 13),
+                      color: context.theme.colorScheme.onSurfaceVariant,
+                      fontSize: 13,
+                    ),
                   ),
                   const SizedBox(height: 8),
                   const Row(
@@ -909,7 +670,9 @@ class MoreInfoDialog extends StatelessWidget {
                       Text(
                         "Particulars:",
                         style: TextStyle(
-                            fontWeight: FontWeight.bold, fontSize: 15),
+                          fontWeight: FontWeight.bold,
+                          fontSize: 15,
+                        ),
                       ),
                     ],
                   ),
@@ -926,7 +689,9 @@ class MoreInfoDialog extends StatelessWidget {
                                 style: TextStyle(
                                   fontSize: 13,
                                   color: context
-                                      .theme.colorScheme.onSurfaceVariant,
+                                      .theme
+                                      .colorScheme
+                                      .onSurfaceVariant,
                                 ),
                               ),
                             ),
@@ -941,7 +706,9 @@ class MoreInfoDialog extends StatelessWidget {
                                 style: TextStyle(
                                   fontSize: 13,
                                   color: context
-                                      .theme.colorScheme.onSurfaceVariant,
+                                      .theme
+                                      .colorScheme
+                                      .onSurfaceVariant,
                                 ),
                               ),
                             ),
@@ -956,7 +723,9 @@ class MoreInfoDialog extends StatelessWidget {
                                 style: TextStyle(
                                   fontSize: 13,
                                   color: context
-                                      .theme.colorScheme.onSurfaceVariant,
+                                      .theme
+                                      .colorScheme
+                                      .onSurfaceVariant,
                                 ),
                               ),
                             ),
@@ -971,7 +740,9 @@ class MoreInfoDialog extends StatelessWidget {
                                 style: TextStyle(
                                   fontSize: 13,
                                   color: context
-                                      .theme.colorScheme.onSurfaceVariant,
+                                      .theme
+                                      .colorScheme
+                                      .onSurfaceVariant,
                                 ),
                               ),
                             ),
@@ -992,15 +763,18 @@ class MoreInfoDialog extends StatelessWidget {
                       Text(
                         "Description:",
                         style: TextStyle(
-                            fontWeight: FontWeight.bold, fontSize: 15),
+                          fontWeight: FontWeight.bold,
+                          fontSize: 15,
+                        ),
                       ),
                     ],
                   ),
                   Text(
                     "Pool your investment with others via an Alternative Investment Fund managed by professionals.",
                     style: TextStyle(
-                        color: context.theme.colorScheme.onSurfaceVariant,
-                        fontSize: 13),
+                      color: context.theme.colorScheme.onSurfaceVariant,
+                      fontSize: 13,
+                    ),
                   ),
                   const SizedBox(height: 8),
                   const Row(
@@ -1009,7 +783,9 @@ class MoreInfoDialog extends StatelessWidget {
                       Text(
                         "Benefits:",
                         style: TextStyle(
-                            fontWeight: FontWeight.bold, fontSize: 15),
+                          fontWeight: FontWeight.bold,
+                          fontSize: 15,
+                        ),
                       ),
                     ],
                   ),
@@ -1027,7 +803,9 @@ class MoreInfoDialog extends StatelessWidget {
                                 style: TextStyle(
                                   fontSize: 13,
                                   color: context
-                                      .theme.colorScheme.onSurfaceVariant,
+                                      .theme
+                                      .colorScheme
+                                      .onSurfaceVariant,
                                 ),
                               ),
                             ),
@@ -1043,7 +821,9 @@ class MoreInfoDialog extends StatelessWidget {
                                 style: TextStyle(
                                   fontSize: 13,
                                   color: context
-                                      .theme.colorScheme.onSurfaceVariant,
+                                      .theme
+                                      .colorScheme
+                                      .onSurfaceVariant,
                                 ),
                               ),
                             ),
@@ -1059,7 +839,9 @@ class MoreInfoDialog extends StatelessWidget {
                                 style: TextStyle(
                                   fontSize: 13,
                                   color: context
-                                      .theme.colorScheme.onSurfaceVariant,
+                                      .theme
+                                      .colorScheme
+                                      .onSurfaceVariant,
                                 ),
                               ),
                             ),
@@ -1075,7 +857,9 @@ class MoreInfoDialog extends StatelessWidget {
                                 style: TextStyle(
                                   fontSize: 13,
                                   color: context
-                                      .theme.colorScheme.onSurfaceVariant,
+                                      .theme
+                                      .colorScheme
+                                      .onSurfaceVariant,
                                 ),
                               ),
                             ),
@@ -1173,10 +957,7 @@ class _DetailWidget extends StatelessWidget {
           flex: 2,
           child: Text(
             data,
-            style: const TextStyle(
-              fontWeight: FontWeight.bold,
-              fontSize: 16,
-            ),
+            style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
           ),
         ),
       ],

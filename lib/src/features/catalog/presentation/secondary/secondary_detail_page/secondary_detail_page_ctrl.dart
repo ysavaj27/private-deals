@@ -1,8 +1,10 @@
+import 'package:private_deals/src/features/catalog/presentation/investor_draft_lifecycle.dart';
 import 'package:private_deals/src/features/catalog/presentation/pre_ipo/pre_ipo_investment/select_investor_dialog.dart';
 import 'package:private_deals/src/features/catalog/presentation/pre_ipo/pre_ipo_detail_page/pre_ipo_detail_sections.dart';
 import 'package:private_deals/src/shared/app_exports.dart';
 
 class SecondaryDetailPageCtrl extends GetxController
+    with InvestorDraftLifecycle
     implements CompanyDetailSectionsCtrl {
   RxBool isLoading = false.obs;
   RxBool isBuying = false.obs;
@@ -62,7 +64,7 @@ class SecondaryDetailPageCtrl extends GetxController
 
       for (int i = 0; i < sectionKeys.length; i++) {
         final RenderBox? box =
-        sectionKeys[i].currentContext?.findRenderObject() as RenderBox?;
+            sectionKeys[i].currentContext?.findRenderObject() as RenderBox?;
         if (box != null) {
           final position = box.localToGlobal(Offset.zero).dy;
           if (position >= 0 && position < 200) {
@@ -81,18 +83,18 @@ class SecondaryDetailPageCtrl extends GetxController
     tab(index);
     // isButtonClicked(true);
     final RenderBox box =
-    sectionKeys[index].currentContext!.findRenderObject() as RenderBox;
+        sectionKeys[index].currentContext!.findRenderObject() as RenderBox;
     final position =
         box.localToGlobal(Offset.zero).dy + scrollController.offset - 100;
     scrollController
         .animateTo(
-      position,
-      duration: const Duration(milliseconds: 300),
-      curve: Curves.easeInOut,
-    )
+          position,
+          duration: const Duration(milliseconds: 300),
+          curve: Curves.easeInOut,
+        )
         .then((_) {
-      // isButtonClicked(false);
-    });
+          // isButtonClicked(false);
+        });
   }
 
   Future<void> onPress() async {
@@ -125,7 +127,6 @@ class SecondaryDetailPageCtrl extends GetxController
   RxDouble investedAmount = 0.0.obs;
   double minTicketSize = 100000;
   TextEditingController amountCTRL = TextEditingController();
-  RxList<SelectInvestorModel> investorList = <SelectInvestorModel>[].obs;
   RxBool isQty = true.obs;
 
   GlobalKey<FormState> desktopFormKey = GlobalKey<FormState>();
@@ -142,8 +143,15 @@ class SecondaryDetailPageCtrl extends GetxController
   }
 
   void addInvestor() async {
-    var res = await showCustomDialog(const SelectInvestorDialog());
-    investorList.clear();
+    var res = await showCustomDialog(
+      SelectInvestorDialog(
+        selectedInvestorIds: investorList
+            .map((item) => item.investorId)
+            .toList(),
+      ),
+    );
+    if (isClosed) return;
+    clearInvestors();
     if (res != null && res is List<InvestorModel>) {
       for (var i = 0; i < res.length; i++) {
         var e = res[i];
@@ -156,7 +164,8 @@ class SecondaryDetailPageCtrl extends GetxController
               isMarket: true,
               price: model().sharePrice,
               priceCTRL: TextEditingController(
-                  text: model().sharePrice.toString()),
+                text: model().sharePrice.toString(),
+              ),
               quantityCTRL: TextEditingController(),
             ),
           );
@@ -165,7 +174,7 @@ class SecondaryDetailPageCtrl extends GetxController
     }
   }
 
-  findShares(double price) {
+  void findShares(double price) {
     totalShare.value = price.calculateShares(model().sharePrice);
   }
 
@@ -191,5 +200,12 @@ class SecondaryDetailPageCtrl extends GetxController
       'Secondary purchases use enquiry. Open Enquire to continue.',
       MessageEnum.alert,
     );
+  }
+
+  @override
+  void onClose() {
+    scrollController.dispose();
+    amountCTRL.dispose();
+    super.onClose();
   }
 }

@@ -29,7 +29,9 @@ class InvestorPrimaryTransactionApi {
       };
       var res = await dioConfig.post(AppUrl.primaryInvestment, body);
       BaseModel<PrimaryTransactionModel> baseModel = BaseModel.fromJson(
-          res.data, (p0) => PrimaryTransactionModel.fromJson(p0));
+        res.data,
+        (p0) => PrimaryTransactionModel.fromJson(p0),
+      );
       return baseModel;
     } catch (e, t) {
       logger.e("Error on Primary Investment List", error: e, stackTrace: t);
@@ -38,14 +40,14 @@ class InvestorPrimaryTransactionApi {
   }
 
   static Future<BaseModel<List<PrimaryTransactionModel>>>
-      primaryTransactionList() async {
+  primaryTransactionList() async {
     try {
       var res = await dioConfig.get(AppUrl.iTransactionList, {});
       BaseModel<List<PrimaryTransactionModel>> baseModel =
           BaseModel.fromListJson(
-              res.data,
-              (p0) =>
-                  p0.map((e) => PrimaryTransactionModel.fromJson(e)).toList());
+            res.data,
+            (p0) => p0.map((e) => PrimaryTransactionModel.fromJson(e)).toList(),
+          );
       return baseModel;
     } catch (e, t) {
       logger.e("Error on Primary Transaction List", error: e, stackTrace: t);
@@ -53,17 +55,21 @@ class InvestorPrimaryTransactionApi {
     }
   }
 
-  static Future<BaseModel<PrimaryTransactionModel>> transaction(
-      {required int startupId, required int roundId}) async {
+  static Future<BaseModel<PrimaryTransactionModel>> transaction({
+    required int startupId,
+    required int roundId,
+  }) async {
     try {
       Map<String, dynamic> body = {
         "investor_id": app.iUser.id,
         'startup_id': startupId,
-        "round_id": roundId
+        "round_id": roundId,
       };
       var res = await dioConfig.get(AppUrl.iTransaction, body);
       BaseModel<PrimaryTransactionModel> baseModel = BaseModel.fromJson(
-          res.data, (p0) => PrimaryTransactionModel.fromJson(p0));
+        res.data,
+        (p0) => PrimaryTransactionModel.fromJson(p0),
+      );
       return baseModel;
     } catch (e, t) {
       logger.e("Error on transaction", error: e, stackTrace: t);
@@ -71,19 +77,22 @@ class InvestorPrimaryTransactionApi {
     }
   }
 
-  static Future<BaseModel<PrimaryTransactionModel>> wealthManagerTransaction(
-      {required int startupId,
-      required int roundId,
-      required int investorId}) async {
+  static Future<BaseModel<PrimaryTransactionModel>> wealthManagerTransaction({
+    required int startupId,
+    required int roundId,
+    required int investorId,
+  }) async {
     try {
       Map<String, dynamic> body = {
         'investor_id': investorId,
         'startup_id': startupId,
-        "round_id": roundId
+        "round_id": roundId,
       };
       var res = await dioConfig.get(AppUrl.wTransaction, body);
       BaseModel<PrimaryTransactionModel> baseModel = BaseModel.fromJson(
-          res.data, (p0) => PrimaryTransactionModel.fromJson(p0));
+        res.data,
+        (p0) => PrimaryTransactionModel.fromJson(p0),
+      );
       return baseModel;
     } catch (e, t) {
       logger.e("Error on transaction", error: e, stackTrace: t);
@@ -104,6 +113,8 @@ class InvestorPrimaryTransactionApi {
     required double gst,
     required PrimaryInvestmentType type,
   }) async {
+    final kycError = await WInvestorsApi.transactionKycError([investorId]);
+    if (kycError != null) return BaseModel.fromError(kycError);
     try {
       Map<String, dynamic> body = {
         "investor_id": investorId,
@@ -121,7 +132,9 @@ class InvestorPrimaryTransactionApi {
 
       var res = await dioConfig.post(AppUrl.wPrimaryInvestment, body);
       BaseModel<PrimaryTransactionModel> baseModel = BaseModel.fromJson(
-          res.data, (p0) => PrimaryTransactionModel.fromJson(p0));
+        res.data,
+        (p0) => PrimaryTransactionModel.fromJson(p0),
+      );
       return baseModel;
     } catch (e, t) {
       logger.e("Error on Wealth Manager Investment", error: e, stackTrace: t);
@@ -129,8 +142,10 @@ class InvestorPrimaryTransactionApi {
     }
   }
 
-  static Future<BaseModel> paymentReceipt(
-      {required int transactionId, required MediaModel receipt}) async {
+  static Future<BaseModel> paymentReceipt({
+    required int transactionId,
+    required MediaModel receipt,
+  }) async {
     try {
       Map<String, dynamic> body = {'transaction_id': transactionId};
       body.addAll(await dioConfig.createMedia(receipt, "receipt"));
@@ -143,19 +158,19 @@ class InvestorPrimaryTransactionApi {
     }
   }
 
-// static Future<BaseModel<List<PrimaryTransactionModel>>>
-//     wealthMangerTransactionList() async {
-//   try {
-//     var res = await dioConfig.get(AppUrl.wTransactions, {});
-//     BaseModel<List<PrimaryTransactionModel>> baseModel =
-//         BaseModel.fromListJson(
-//             res.data,
-//             (p0) =>
-//                 p0.map((e) => PrimaryTransactionModel.fromJson(e)).toList());
-//     return baseModel;
-//   } catch (e, t) {
-//     logger.e("Error on Primary Transaction List", error: e, stackTrace: t);
-//     return BaseModel.fromError(e.toString());
-//   }
-// }
+  // static Future<BaseModel<List<PrimaryTransactionModel>>>
+  //     wealthMangerTransactionList() async {
+  //   try {
+  //     var res = await dioConfig.get(AppUrl.wTransactions, {});
+  //     BaseModel<List<PrimaryTransactionModel>> baseModel =
+  //         BaseModel.fromListJson(
+  //             res.data,
+  //             (p0) =>
+  //                 p0.map((e) => PrimaryTransactionModel.fromJson(e)).toList());
+  //     return baseModel;
+  //   } catch (e, t) {
+  //     logger.e("Error on Primary Transaction List", error: e, stackTrace: t);
+  //     return BaseModel.fromError(e.toString());
+  //   }
+  // }
 }

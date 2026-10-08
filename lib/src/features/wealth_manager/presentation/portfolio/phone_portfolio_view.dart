@@ -1,4 +1,7 @@
+import 'package:private_deals/src/features/investors/presentation/complete_investor_kyc_button.dart';
+
 import 'unlisted_portfolio_view.dart';
+
 import 'package:private_deals/src/features/wealth_manager/presentation/portfolio/primary_sell_share_dialog/primary_sell_share_dialog.dart';
 import 'package:private_deals/src/features/wealth_manager/presentation/portfolio/primary_sell_share_dialog/primary_sell_share_dialog_ctrl.dart';
 import 'package:private_deals/src/shared/app_exports.dart';
@@ -172,9 +175,14 @@ class PreIpoListWidget extends StatelessWidget {
   final PortfolioPageCtrl c = Get.find<PortfolioPageCtrl>();
   PreIpoListWidget({super.key});
   @override
-  Widget build(BuildContext context) => Obx(() => c.isLoading.isTrue
-      ? const Loader()
-      : UnlistedPortfolioView(list: c.preIpoList.toList(), onRefresh: c.getStartupPortfolio));
+  Widget build(BuildContext context) => Obx(
+    () => c.isLoading.isTrue
+        ? const Loader()
+        : UnlistedPortfolioView(
+            list: c.preIpoList.toList(),
+            onRefresh: c.getStartupPortfolio,
+          ),
+  );
 }
 
 class ListWidget extends StatelessWidget {
@@ -198,7 +206,9 @@ class ListWidget extends StatelessWidget {
           return RefreshIndicator(
             onRefresh: c.getStartupPortfolio,
             child: StartUpPortfolioWidget(
-                list: list, onRefresh: c.getStartupPortfolio),
+              list: list,
+              onRefresh: c.getStartupPortfolio,
+            ),
           );
         } else {
           return NoDataView(
@@ -217,8 +227,11 @@ class StartUpPortfolioWidget extends StatelessWidget {
   final List<StartupPortfolioListModel> list;
   final Future<void> Function() onRefresh;
 
-  const StartUpPortfolioWidget(
-      {super.key, required this.list, required this.onRefresh});
+  const StartUpPortfolioWidget({
+    super.key,
+    required this.list,
+    required this.onRefresh,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -316,8 +329,9 @@ class StartUpPortfolioWidget extends StatelessWidget {
                   ],
                 ),
                 children: [
-                  ...model.holdings.map((e) =>
-                      StartupPortfolioCard(model: e, onRefresh: onRefresh))
+                  ...model.holdings.map(
+                    (e) => StartupPortfolioCard(model: e, onRefresh: onRefresh),
+                  ),
                 ],
               );
             },
@@ -335,8 +349,11 @@ class StartupPortfolioCard extends StatelessWidget {
   final PortfolioModel model;
   final Future<void> Function() onRefresh;
 
-  const StartupPortfolioCard(
-      {super.key, required this.model, required this.onRefresh});
+  const StartupPortfolioCard({
+    super.key,
+    required this.model,
+    required this.onRefresh,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -358,8 +375,10 @@ class StartupPortfolioCard extends StatelessWidget {
                   height: 75,
                   width: 75,
                   onTap: () {
-                    Get.toNamed(Routes.primaryDetailPage,
-                        arguments: model.startupId);
+                    Get.toNamed(
+                      Routes.primaryDetailPage,
+                      arguments: model.startupId,
+                    );
                   },
                 ),
               ),
@@ -371,7 +390,9 @@ class StartupPortfolioCard extends StatelessWidget {
                     Text(
                       model.startup.brandName,
                       style: const TextStyle(
-                          fontWeight: FontWeight.bold, fontSize: 16),
+                        fontWeight: FontWeight.bold,
+                        fontSize: 16,
+                      ),
                     ),
                     const SizedBox(height: 2),
                     Text(
@@ -394,9 +415,14 @@ class StartupPortfolioCard extends StatelessWidget {
                               border: Border.all(color: Colors.white),
                             ),
                             padding: const EdgeInsets.symmetric(
-                                vertical: 3, horizontal: 5),
+                              vertical: 3,
+                              horizontal: 5,
+                            ),
                             alignment: Alignment.center,
-                            child: Text("Primary", style: context.textTheme.bodySmall),
+                            child: Text(
+                              "Primary",
+                              style: context.textTheme.bodySmall,
+                            ),
                           ),
                         ),
                         Visibility(
@@ -405,16 +431,23 @@ class StartupPortfolioCard extends StatelessWidget {
                             decoration: BoxDecoration(
                               borderRadius: BorderRadius.circular(4),
                               color: context.isDarkMode
-                                  ? context.theme.disabledColor
-                                      .withValues(alpha: 0.4)
+                                  ? context.theme.disabledColor.withValues(
+                                      alpha: 0.4,
+                                    )
                                   : null,
                               border: Border.all(
-                                  color: context.theme.disabledColor),
+                                color: context.theme.disabledColor,
+                              ),
                             ),
                             padding: const EdgeInsets.symmetric(
-                                vertical: 3, horizontal: 5),
+                              vertical: 3,
+                              horizontal: 5,
+                            ),
                             alignment: Alignment.center,
-                            child: Text("Lp Secondary", style: context.textTheme.bodySmall),
+                            child: Text(
+                              "Lp Secondary",
+                              style: context.textTheme.bodySmall,
+                            ),
                           ),
                         ),
                       ],
@@ -460,75 +493,33 @@ class StartupPortfolioCard extends StatelessWidget {
                   ),
                   Visibility(
                     visible: model.canSell,
-                    child: CustomElevatedButton(
-                      onPressed: () async {
-                        var res = await showCustomDialog(
-                            PrimarySellShareDialog(model));
-                        Get.delete<PrimarySellShareDialogCtrl>();
-                        if (res == true) {
-                          onRefresh();
-                        }
-                      },
-                      padding: EdgeInsets.zero,
-                      text: 'Sell',
-                      size: const Size(65, 35),
-                      // width: 187,
-                      // height: 44,
-                      radius: 8,
-                    ),
+                    child: !model.investor.isPreIpoKycComplete
+                        ? CompleteInvestorKycButton(
+                            investor: model.investor,
+                            onSaved: () async {
+                              await onRefresh();
+                            },
+                          )
+                        : CustomElevatedButton(
+                            onPressed: () async {
+                              var res = await showCustomDialog(
+                                PrimarySellShareDialog(model),
+                              );
+                              Get.delete<PrimarySellShareDialogCtrl>();
+                              if (res == true) {
+                                onRefresh();
+                              }
+                            },
+                            padding: EdgeInsets.zero,
+                            text: 'Sell',
+                            size: const Size(65, 35),
+                            // width: 187,
+                            // height: 44,
+                            radius: 8,
+                          ),
                   ),
                 ],
               ),
-
-              // Column(
-              //   mainAxisAlignment: MainAxisAlignment.start,
-              //   crossAxisAlignment: CrossAxisAlignment.end,
-              //   children: [
-              //     Row(
-              //       children: [
-              //         Container(
-              //           height: 10,
-              //           width: 10,
-              //           decoration: const BoxDecoration(
-              //             color: Colors.green,
-              //             shape: BoxShape.circle,
-              //           ),
-              //         ),
-              //         const SizedBox(width: 5),
-              //         Text(
-              //           "On Sell",
-              //           style: TextStyle(
-              //             fontSize: 10,
-              //             fontWeight: FontWeight.w600,
-              //             color: context.theme.colorScheme.onSurfaceVariant,
-              //           ),
-              //         ),
-              //       ],
-              //     ),
-              //     const SizedBox(height: 6),
-              //     // Visibility(
-              //     //   visible: model.canSell,
-              //     //   child: CustomElevatedButton(
-              //     //     onPressed: () async {
-              //     //       var res = await showCustomDialog(
-              //     //           SellShareDialog(model));
-              //     //       Get.delete<SellShareDialogCtrl>();
-              //     //       if (res == true) {
-              //     //         c.getData();
-              //     //       }
-              //     //
-              //     //       // showCustomDialog(TransactionSlipDialog());
-              //     //     },
-              //     //     padding: EdgeInsets.zero,
-              //     //     text: 'Sell',
-              //     //     size: const Size(65, 35),
-              //     //     // width: 187,
-              //     //     // height: 44,
-              //     //     radius: 8,
-              //     //   ),
-              //     // ),
-              //   ],
-              // ),
             ],
           ),
           const SizedBox(height: 12),
@@ -537,12 +528,7 @@ class StartupPortfolioCard extends StatelessWidget {
               Expanded(
                 child: Column(
                   children: [
-                    const Text(
-                      "Shares",
-                      style: TextStyle(
-                        fontSize: 10,
-                      ),
-                    ),
+                    const Text("Shares", style: TextStyle(fontSize: 10)),
                     const SizedBox(height: 8),
                     Text(
                       "${model.availableShares}",
@@ -559,9 +545,7 @@ class StartupPortfolioCard extends StatelessWidget {
                   children: [
                     const Text(
                       "Current Share Price",
-                      style: TextStyle(
-                        fontSize: 10,
-                      ),
+                      style: TextStyle(fontSize: 10),
                     ),
                     const SizedBox(height: 8),
                     Text(
@@ -579,9 +563,7 @@ class StartupPortfolioCard extends StatelessWidget {
                   children: [
                     const Text(
                       "Avg share price",
-                      style: TextStyle(
-                        fontSize: 10,
-                      ),
+                      style: TextStyle(fontSize: 10),
                     ),
                     const SizedBox(height: 8),
                     Text(
@@ -607,7 +589,9 @@ class StartupPortfolioCard extends StatelessWidget {
                   Text(
                     model.investmentAmount.toCurrency,
                     style: const TextStyle(
-                        fontSize: 12, fontWeight: FontWeight.w500),
+                      fontSize: 12,
+                      fontWeight: FontWeight.w500,
+                    ),
                   ),
                 ],
               ),
@@ -615,13 +599,17 @@ class StartupPortfolioCard extends StatelessWidget {
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
-                  Text("Increase/Decrease (Amt)", style: context.textTheme.bodySmall),
+                  Text(
+                    "Increase/Decrease (Amt)",
+                    style: context.textTheme.bodySmall,
+                  ),
                   Text(
                     model.profitAmount.toCurrency,
                     style: TextStyle(
-                        color: model.profitColor,
-                        fontSize: 12,
-                        fontWeight: FontWeight.w500),
+                      color: model.profitColor,
+                      fontSize: 12,
+                      fontWeight: FontWeight.w500,
+                    ),
                   ),
                 ],
               ),
@@ -645,13 +633,17 @@ class StartupPortfolioCard extends StatelessWidget {
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
-                  Text("Increase/Decrease(%)", style: context.textTheme.bodySmall),
+                  Text(
+                    "Increase/Decrease(%)",
+                    style: context.textTheme.bodySmall,
+                  ),
                   Text(
                     model.profitPercentage,
                     style: TextStyle(
-                        color: model.profitColor,
-                        fontSize: 12,
-                        fontWeight: FontWeight.w500),
+                      color: model.profitColor,
+                      fontSize: 12,
+                      fontWeight: FontWeight.w500,
+                    ),
                   ),
                 ],
               ),
@@ -664,11 +656,7 @@ class StartupPortfolioCard extends StatelessWidget {
 }
 
 class TabText extends StatelessWidget {
-  TabText({
-    super.key,
-    required this.title,
-    required this.type,
-  });
+  TabText({super.key, required this.title, required this.type});
 
   final PortfolioPageCtrl c = Get.find<PortfolioPageCtrl>();
 

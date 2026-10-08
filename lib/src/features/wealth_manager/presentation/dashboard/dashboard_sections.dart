@@ -1,7 +1,6 @@
 import 'package:private_deals/src/features/wealth_manager/presentation/dashboard/dashboard_page_ctrl.dart';
 import 'package:private_deals/src/features/wealth_manager/presentation/home_page_ctrl.dart';
 import 'package:private_deals/src/features/wealth_manager/presentation/kyc_pending_investor/kyc_pending_investor_page_ctrl.dart';
-import 'package:private_deals/src/shared/theme/brand_colors.dart';
 import 'package:private_deals/src/shared/app_exports.dart';
 
 /// Section label used across dashboard blocks.
@@ -134,17 +133,11 @@ class DashboardHeroCard extends StatelessWidget {
               ),
             ),
             const SizedBox(height: 20),
-            Container(
-              height: 1,
-              color: Colors.white.withValues(alpha: 0.12),
-            ),
+            Container(height: 1, color: Colors.white.withValues(alpha: 0.12)),
             const SizedBox(height: 16),
             Row(
               children: [
-                _HeroStat(
-                  label: 'Investors',
-                  value: '${m.totalInvestors}',
-                ),
+                _HeroStat(label: 'Investors', value: '${m.totalInvestors}'),
                 _HeroStat(
                   label: c.isPrimary ? 'Startups' : 'Companies',
                   value: '${m.totalStartups}',
@@ -558,8 +551,9 @@ class _InvestorRankRow extends StatelessWidget {
   Widget build(BuildContext context) {
     final colors = Theme.of(context).colorScheme;
     final textTheme = Theme.of(context).textTheme;
-    final initial =
-        name.trim().isEmpty ? '?' : name.trim().substring(0, 1).toUpperCase();
+    final initial = name.trim().isEmpty
+        ? '?'
+        : name.trim().substring(0, 1).toUpperCase();
     final accent = _rankColor(context);
 
     return Row(

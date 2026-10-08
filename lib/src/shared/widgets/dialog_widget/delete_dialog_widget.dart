@@ -17,7 +17,7 @@ class DeleteAccountDialog extends StatefulWidget {
   });
 
   @override
-  _DeleteAccountDialogState createState() => _DeleteAccountDialogState();
+  State<DeleteAccountDialog> createState() => _DeleteAccountDialogState();
 }
 
 class _DeleteAccountDialogState extends State<DeleteAccountDialog> {
@@ -46,10 +46,7 @@ class _DeleteAccountDialogState extends State<DeleteAccountDialog> {
         children: [
           Text(
             widget.title ?? "Delete Account",
-            style: const TextStyle(
-              fontSize: 22,
-              fontWeight: FontWeight.w600,
-            ),
+            style: const TextStyle(fontSize: 22, fontWeight: FontWeight.w600),
           ),
           Divider(
             color: context.theme.dividerColor,
@@ -79,8 +76,9 @@ class _DeleteAccountDialogState extends State<DeleteAccountDialog> {
                 size: const Size(80, 38),
                 radius: 15,
                 text: widget.primaryText ?? 'Delete',
-                onPressed:
-                    _isValid ? widget.onDelete : null, // Enable only when valid
+                onPressed: _isValid
+                    ? widget.onDelete
+                    : null, // Enable only when valid
               ),
               const SizedBox(width: 20),
               CustomOutlinedButton(

@@ -52,13 +52,13 @@ class _InvestorKycDialogState extends State<InvestorKycDialog> {
   }
 
   Future<CmlDocument?> _pickDocument() async {
-    final result = await FilePicker.pickFiles(
+    final file = await FilePicker.pickFile(
       type: FileType.custom,
       allowedExtensions: ['pdf'],
     );
-    if (result == null || result.files.isEmpty) return null;
-    final file = result.files.single;
-    if (file.size > 10 * 1024 * 1024) {
+    if (file == null) return null;
+    final size = file.lengthSync() ?? await file.length();
+    if (size != null && size > 10 * 1024 * 1024) {
       throw const FormatException('CML must be 10 MB or smaller.');
     }
     return CmlDocument(file.name, await file.readAsBytes());

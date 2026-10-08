@@ -132,13 +132,17 @@ class InvestorListCard extends StatelessWidget {
           const SizedBox(height: AppSpace.lg),
           Divider(height: 1, color: AppColors.borderColor(context)),
           const SizedBox(height: AppSpace.md),
-          Row(
+          Wrap(
+            spacing: 8,
+            crossAxisAlignment: WrapCrossAlignment.center,
             children: [
               if (onOpenKyc != null)
                 TextButton.icon(
                   onPressed: investor.isPreIpoKycComplete ? null : onOpenKyc,
                   icon: const Icon(Icons.badge_outlined, size: 18),
-                  label: const Text('KYC'),
+                  label: Text(
+                    investor.isPreIpoKycComplete ? 'KYC' : 'Complete KYC',
+                  ),
                 ),
               if (onViewPortfolio != null)
                 TextButton.icon(
@@ -146,7 +150,6 @@ class InvestorListCard extends StatelessWidget {
                   icon: const Icon(Icons.pie_chart_outline, size: 18),
                   label: const Text('Portfolio'),
                 ),
-              const Spacer(),
               if (onTap != null)
                 Icon(Icons.chevron_right, color: colors.onSurfaceVariant),
             ],
@@ -235,10 +238,8 @@ class _StatusChip extends StatelessWidget {
       ),
       child: Text(
         label,
-        style: Theme.of(context).textTheme.labelMedium?.copyWith(
-          color: foreground,
-          fontWeight: FontWeight.w600,
-        ),
+        style: Theme.of(context).textTheme.labelMedium
+            ?.copyWith(color: foreground, fontWeight: FontWeight.w600),
       ),
     );
   }

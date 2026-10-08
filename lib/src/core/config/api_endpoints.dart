@@ -1,5 +1,8 @@
 class AppUrl {
-  static const String baseUrl = String.fromEnvironment('PRIVATE_DEALS_BASE_URL', defaultValue: 'https://www.privatedeals.in/');
+  static const String baseUrl = String.fromEnvironment(
+    'PRIVATE_DEALS_BASE_URL',
+    defaultValue: 'https://www.privatedeals.in/',
+  );
   static const String baseApiURL = "${baseUrl}api/";
 
   static String pinCodeToAddress(int pinCode) =>
@@ -135,47 +138,6 @@ class AppUrl {
   static String iPreIpoSellTransaction =
       "${version}investor/pre-ipo/sell-transaction";
 
-  // static String commit = version + "investor/dashboard/commit";
-  // static String authHome = version + "investor/auth-home";
-  // static String startupDetails = version + "raise/startup-details";
-  // static String iSignupMobileRegister = version + "investor/signup";
-  // static String iSignupSetPassword = version + "investor/signup/set-password";
-  // static String iSignupReSendOtp = version + "investor/signup/resendotp";
-  // static String iSignupStep1 = version + "investor/signup/step1";
-  // static String iSignupStep2 = version + "investor/signup/step2";
-  // static String iProfile = version + "investor/profile";
-  // static String iProfileUpdate =
-  //     version + "investor/dashboard/profile/image-save";
-  // static String iProfileRemove =
-  //     version + "investor/dashboard/profile/image-remove";
-  //
-  // // static const String iChangePassword = "investor/dashboard/chnage-password";
-  // static String iUpdateProfile = version + "investor/dashboard/profile/details";
-  // static String iDematDetails = version + "investor/dashboard/demat-details";
-  // static String iDefaultBankAccount =
-  //     version + "investor/dashboard/bankaccount/default";
-  //
-  // static String iLivePitchList = version + "investor/dashboard/live-pitch/list";
-  // static String iMyFamilyList = version + "investor/dashboard/my-family";
-  // static String iBankAccount = version + "investor/dashboard/bankaccount";
-  // static String iBankMandateList = version + "investor/dashboard/bank-mandate";
-  // static String iTransactions = version + "investor/dashboard/transactions";
-  // static String sectorInvestment =
-  //     version + "investor/dashboard/sector-investment";
-  // static String iSellRequest = version + "investor/dashboard/sell-request";
-  // static String iSecondaryTransactions =
-  //     version + "investor/dashboard/secondary-transactions";
-  //
-  // static String iNotificationList = version + "investor/dashboard/notification";
-  // static String iMisList = version + "investor/dashboard/mis";
-  // // static String iPortfolio = version + "investor/dashboard/portfolio";
-  // // static String iDocument = version + "investor/dashboard/document";
-  //
-  // static String iUpcomingLivePitch =
-  //     version + "investor/dashboard/live-pitch/upcoming";
-  // static String iCompletedLivePitch =
-  //     version + "investor/dashboard/live-pitch/completed";
-
   /// WEALTH-MANAGER APIS ("w" for wealth-manager)
 
   static String wLogin = "${version}business/login";
@@ -268,17 +230,17 @@ class AppUrl {
   static String wPreIPONewsList = "v2/business/common/preipo-news";
   static String wSecondaryLandingPage = "v2/business/home/secondary";
   static String wEnquiry = "v2/business/enquiries/deals";
-// static const String wPendingTasks = "wealth-manager/dashboard/pending-tasks";
-// static const String wPendingKYC =
-//     "wealth-manager/dashboard/pending-tasks/kyc";
-// static const String wPendingDocument =
-//     "wealth-manager/dashboard/pending-tasks/document-sign";
-// static const String wPendingFundTransfer =
-//     "wealth-manager/dashboard/pending-tasks/fund-transfer";
-// static const String wPendingKYCUpdate =
-//     "wealth-manager/dashboard/pending-tasks/kyc-save";
-// static const String wDistributors = "wealth-manager/dashboard/distributors";
-// static const String wAddDistributor = "wealth-manager/dashboard/distributors";
-// static const String wRetailers = "wealth-manager/dashboard/retailers";
-// static const String wAddRetailer = "wealth-manager/dashboard/retailers";
+  // static const String wPendingTasks = "wealth-manager/dashboard/pending-tasks";
+  // static const String wPendingKYC =
+  //     "wealth-manager/dashboard/pending-tasks/kyc";
+  // static const String wPendingDocument =
+  //     "wealth-manager/dashboard/pending-tasks/document-sign";
+  // static const String wPendingFundTransfer =
+  //     "wealth-manager/dashboard/pending-tasks/fund-transfer";
+  // static const String wPendingKYCUpdate =
+  //     "wealth-manager/dashboard/pending-tasks/kyc-save";
+  // static const String wDistributors = "wealth-manager/dashboard/distributors";
+  // static const String wAddDistributor = "wealth-manager/dashboard/distributors";
+  // static const String wRetailers = "wealth-manager/dashboard/retailers";
+  // static const String wAddRetailer = "wealth-manager/dashboard/retailers";
 }

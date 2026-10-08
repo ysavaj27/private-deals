@@ -1,3 +1,4 @@
+import 'package:private_deals/src/features/investors/presentation/investor_picker.dart';
 import 'package:dio/dio.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:private_deals/src/shared/app_exports.dart';
@@ -9,6 +10,7 @@ import 'package:private_deals/src/features/institution/legacy/backend/api/pre_ip
 import 'package:private_deals/src/core/permissions/access_policy.dart';
 import 'package:private_deals/src/features/institution/legacy/features/transaction/pre_ipo_transaction/pre_ipo_transaction_page_ctrl.dart';
 import 'package:private_deals/src/core/permissions/partner_role.dart';
+
 import 'session_and_api_test.dart' show FakeAdapter, identity, response;
 
 Map<String, dynamic> inquiry(String status, {String side = 'buy'}) => {
@@ -136,75 +138,77 @@ void main() {
     },
   );
 
-  test(
-    'partner rejects with required trimmed reason and accepts with investor only',
-    () async {
-      await app.setUser(prefUser: identity('Wealth Manager'));
-      final adapter = FakeAdapter(
-        (request) async => response({
-          'status': 1,
-          'message': 'Enquiry accepted. The sell mandate could not be sent.',
-          'data': {
-            'id': 481,
-            'order_step': 'mandate_pending',
-            'trade_side': 'sell',
-            'order_source': 'enquiry',
-            'mandate_sent': false,
-          },
-        }),
-      );
-      dioConfig.dio.httpClientAdapter = adapter;
-      expect(
-        (await EnquiryApi.respond(
-          institution: false,
-          uuid: 'inquiry-1',
-          action: 'reject',
-          reason: '  ',
-        )).isSuccess,
-        false,
-      );
-      expect(
-        (await EnquiryApi.respond(
-          institution: false,
-          uuid: 'inquiry-1',
-          action: 'reject',
-          reason: 'x' * 1001,
-        )).isSuccess,
-        false,
-      );
-      expect(adapter.requests, isEmpty);
-      await EnquiryApi.respond(
+  test('partner rejects with required trimmed reason and accepts with investor only', () async {
+    await app.setUser(prefUser: identity('Wealth Manager'));
+    final adapter = FakeAdapter(
+      (request) async => request.method == 'GET'
+          ? response({
+              'status': 1,
+              'data': [
+                {'id': 22, 'preipo_kyc_status': 1},
+              ],
+            })
+          : response({
+              'status': 1,
+              'message':
+                  'Enquiry accepted. The sell mandate could not be sent.',
+              'data': {
+                'id': 481,
+                'order_step': 'mandate_pending',
+                'trade_side': 'sell',
+                'order_source': 'enquiry',
+                'mandate_sent': false,
+              },
+            }),
+    );
+    dioConfig.dio.httpClientAdapter = adapter;
+    expect(
+      (await EnquiryApi.respond(
         institution: false,
         uuid: 'inquiry-1',
         action: 'reject',
-        reason: ' Terms changed ',
-      );
-      expect(adapter.requests.last.data, {
-        'uuid': 'inquiry-1',
-        'reason': 'Terms changed',
-      });
-      expect(adapter.requests.last.path, '${EnquiryApi.partnerPath}/reject');
-      final accepted = await EnquiryApi.accept(
-        uuid: 'inquiry-1',
-        investorId: 22,
-      );
-      expect(adapter.requests.last.data, {
-        'uuid': 'inquiry-1',
-        'investor_id': 22,
-      });
-      expect(accepted.isSuccess, true);
-      expect(accepted.r!.mandateSent, false);
-      expect(accepted.r!.tradeSide, 'sell');
-      expect(accepted.r!.orderSource, 'enquiry');
-      await EnquiryApi.respond(
+        reason: '  ',
+      )).isSuccess,
+      false,
+    );
+    expect(
+      (await EnquiryApi.respond(
         institution: false,
         uuid: 'inquiry-1',
-        action: 'withdraw',
-      );
-      expect(adapter.requests.last.path, '${EnquiryApi.partnerPath}/withdraw');
-      expect(adapter.requests.last.data, {'uuid': 'inquiry-1'});
-    },
-  );
+        action: 'reject',
+        reason: 'x' * 1001,
+      )).isSuccess,
+      false,
+    );
+    expect(adapter.requests, isEmpty);
+    await EnquiryApi.respond(
+      institution: false,
+      uuid: 'inquiry-1',
+      action: 'reject',
+      reason: ' Terms changed ',
+    );
+    expect(adapter.requests.last.data, {
+      'uuid': 'inquiry-1',
+      'reason': 'Terms changed',
+    });
+    expect(adapter.requests.last.path, '${EnquiryApi.partnerPath}/reject');
+    final accepted = await EnquiryApi.accept(uuid: 'inquiry-1', investorId: 22);
+    expect(adapter.requests.last.data, {
+      'uuid': 'inquiry-1',
+      'investor_id': 22,
+    });
+    expect(accepted.isSuccess, true);
+    expect(accepted.r!.mandateSent, false);
+    expect(accepted.r!.tradeSide, 'sell');
+    expect(accepted.r!.orderSource, 'enquiry');
+    await EnquiryApi.respond(
+      institution: false,
+      uuid: 'inquiry-1',
+      action: 'withdraw',
+    );
+    expect(adapter.requests.last.path, '${EnquiryApi.partnerPath}/withdraw');
+    expect(adapter.requests.last.data, {'uuid': 'inquiry-1'});
+  });
 
   test(
     'institution rejection accepts no reason and no data response',
@@ -244,7 +248,10 @@ void main() {
       settlementDays: 3,
     );
     expect(result.isSuccess, true);
-    expect(adapter.requests.single.path, '${EnquiryApi.institutionPath}/accept');
+    expect(
+      adapter.requests.single.path,
+      '${EnquiryApi.institutionPath}/accept',
+    );
     expect(adapter.requests.single.data, {
       'uuid': 'inquiry-1',
       'settlement_days': 3,
@@ -479,7 +486,7 @@ void main() {
           return response({
             'status': 1,
             'data': [
-              {'id': 22, 'name': 'Alex'},
+              {'id': 22, 'name': 'Alex', 'preipo_kyc_status': 1},
             ],
           });
         }
@@ -517,8 +524,6 @@ void main() {
       await tester.tap(confirm);
       await tester.pumpAndSettle();
       expect(adapter.requests.where((r) => r.method == 'POST'), isEmpty);
-      await tester.tap(find.byType(DropdownButtonFormField<int>));
-      await tester.pumpAndSettle();
       await tester.tap(find.text('Alex').last);
       await tester.pumpAndSettle();
       await tester.tap(confirm);
@@ -546,76 +551,69 @@ void main() {
     },
   );
 
-  testWidgets(
-    'sell inquiry disables investors without completed KYC',
-    (tester) async {
-      await app.setUser(prefUser: identity('Wealth Manager'));
-      bool converted = false;
-      final adapter = FakeAdapter((request) async {
-        if (request.path == 'v2/business/investor') {
-          return response({
-            'status': 1,
-            'data': [
-              {'id': 22, 'name': 'Alex', 'preipo_kyc_status': 0},
-              {'id': 23, 'name': 'Blake', 'preipo_kyc_status': 1},
-            ],
-          });
-        }
-        if (request.method == 'POST') {
-          converted = true;
-          return response({
-            'status': 1,
-            'message': 'Enquiry accepted.',
-            'data': {
-              'id': 482,
-              'transaction_invoice_no': 'TX-482',
-              'order_step': 'mandate_pending',
-              'trade_side': 'sell',
-              'order_source': 'enquiry',
-            },
-          });
-        }
+  testWidgets('sell inquiry disables investors without completed KYC', (
+    tester,
+  ) async {
+    await app.setUser(prefUser: identity('Wealth Manager'));
+    bool converted = false;
+    final adapter = FakeAdapter((request) async {
+      if (request.path == 'v2/business/investor') {
         return response({
           'status': 1,
           'data': [
-            inquiry(converted ? 'converted' : 'locked', side: 'sell'),
+            {'id': 22, 'name': 'Alex', 'preipo_kyc_status': 0},
+            {'id': 23, 'name': 'Blake', 'preipo_kyc_status': 1},
           ],
         });
+      }
+      if (request.method == 'POST') {
+        converted = true;
+        return response({
+          'status': 1,
+          'message': 'Enquiry accepted.',
+          'data': {
+            'id': 482,
+            'transaction_invoice_no': 'TX-482',
+            'order_step': 'mandate_pending',
+            'trade_side': 'sell',
+            'order_source': 'enquiry',
+          },
+        });
+      }
+      return response({
+        'status': 1,
+        'data': [inquiry(converted ? 'converted' : 'locked', side: 'sell')],
       });
-      dioConfig.dio.httpClientAdapter = adapter;
-      await tester.pumpWidget(
-        const GetMaterialApp(home: Scaffold(body: EnquiriesPage())),
-      );
-      await tester.pumpAndSettle();
-      await tester.tap(find.widgetWithText(FilledButton, 'Approve'));
-      await tester.pumpAndSettle();
-      final confirm = find.descendant(
-        of: find.byType(EnquiryDecisionDialog),
-        matching: find.widgetWithText(FilledButton, 'Approve'),
-      );
-      await tester.tap(find.byType(DropdownButtonFormField<int>));
-      await tester.pumpAndSettle();
-      expect(find.text('Alex (KYC pending)'), findsOneWidget);
-      expect(find.text('Blake'), findsOneWidget);
-      final disabledItem = tester.widget<DropdownMenuItem<int>>(
-        find.widgetWithText(DropdownMenuItem<int>, 'Alex (KYC pending)'),
-      );
-      expect(disabledItem.enabled, isFalse);
-      expect(disabledItem.value, 22);
-      final enabledItem = tester.widget<DropdownMenuItem<int>>(
-        find.widgetWithText(DropdownMenuItem<int>, 'Blake'),
-      );
-      expect(enabledItem.enabled, isTrue);
-      expect(enabledItem.value, 23);
-      await tester.tap(find.text('Blake').last);
-      await tester.pumpAndSettle();
-      await tester.tap(confirm);
-      await tester.pumpAndSettle();
-      expect(adapter.requests.where((r) => r.method == 'POST').single.data, {
-        'uuid': 'inquiry-1',
-        'investor_id': 23,
-      });
-      expect(tester.takeException(), isNull);
-    },
-  );
+    });
+    dioConfig.dio.httpClientAdapter = adapter;
+    await tester.pumpWidget(
+      const GetMaterialApp(home: Scaffold(body: EnquiriesPage())),
+    );
+    await tester.pumpAndSettle();
+    await tester.tap(find.widgetWithText(FilledButton, 'Approve'));
+    await tester.pumpAndSettle();
+    final confirm = find.descendant(
+      of: find.byType(EnquiryDecisionDialog),
+      matching: find.widgetWithText(FilledButton, 'Approve'),
+    );
+    final disabledItem = tester.widget<InvestorSelectionCard>(
+      find.byKey(const ValueKey('investor-option-22')),
+    );
+    expect(disabledItem.onSelect, isNull);
+    expect(find.text('Complete KYC'), findsOneWidget);
+    final enabledItem = tester.widget<InvestorSelectionCard>(
+      find.byKey(const ValueKey('investor-option-23')),
+    );
+    expect(enabledItem.onSelect, isNotNull);
+    await tester.ensureVisible(find.text('Blake'));
+    await tester.tap(find.text('Blake').last);
+    await tester.pumpAndSettle();
+    await tester.tap(confirm);
+    await tester.pumpAndSettle();
+    expect(adapter.requests.where((r) => r.method == 'POST').single.data, {
+      'uuid': 'inquiry-1',
+      'investor_id': 23,
+    });
+    expect(tester.takeException(), isNull);
+  });
 }

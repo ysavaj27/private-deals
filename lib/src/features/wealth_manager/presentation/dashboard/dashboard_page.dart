@@ -1,3 +1,4 @@
+import 'package:private_deals/src/features/investors/presentation/complete_investor_kyc_button.dart';
 import 'package:private_deals/src/features/wealth_manager/presentation/dashboard/desktop_dashboard_view.dart';
 import 'package:private_deals/src/features/catalog/presentation/primary/sector_startup_dialog.dart';
 import 'package:private_deals/src/shared/app_exports.dart';
@@ -19,7 +20,6 @@ class DashboardPage extends StatelessWidget {
     }
   }
 }
-
 
 class InvestmentPieChart extends StatelessWidget {
   final DashboardPageCtrl c = Get.find<DashboardPageCtrl>();
@@ -69,7 +69,7 @@ class InvestmentPieChart extends StatelessWidget {
               fontWeight: FontWeight.w500,
             ),
           ),
-        )
+        ),
       ],
 
       // onTooltipRender: (TooltipArgs args) {
@@ -82,7 +82,7 @@ class InvestmentPieChart extends StatelessWidget {
   }
 
   /// Returns the pie series.
-/*
+  /*
   List<PieSeries<ChartSampleData, String>> _getRadiusPieSeries() {
     return <PieSeries<ChartSampleData, String>>[
       PieSeries<ChartSampleData, String>(
@@ -113,11 +113,7 @@ class ChartSampleData {
   double y;
   String text;
 
-  ChartSampleData({
-    required this.y,
-    required this.text,
-    required this.x,
-  });
+  ChartSampleData({required this.y, required this.text, required this.x});
 }
 
 class NumberPieChartWidget extends StatelessWidget {
@@ -169,7 +165,7 @@ class NumberPieChartWidget extends StatelessWidget {
               fontWeight: FontWeight.w500,
             ),
           ),
-        )
+        ),
       ],
       // onTooltipRender: (TooltipArgs args) {
       //   final NumberFormat format = NumberFormat.decimalPattern();
@@ -237,7 +233,7 @@ class ActiveInvestorPieChart extends StatelessWidget {
               fontWeight: FontWeight.w500,
             ),
           ),
-        )
+        ),
       ],
       // onTooltipRender: (TooltipArgs args) {
       //   final NumberFormat format = NumberFormat.decimalPattern();
@@ -306,7 +302,7 @@ class KycInvestorPieChart extends StatelessWidget {
               fontWeight: FontWeight.w500,
             ),
           ),
-        )
+        ),
       ],
       // onTooltipRender: (TooltipArgs args) {
       //   final NumberFormat format = NumberFormat.decimalPattern();
@@ -317,7 +313,6 @@ class KycInvestorPieChart extends StatelessWidget {
     );
   }
 }
-
 
 class InvestorsListDialog extends StatelessWidget {
   final List<Active> investorList;
@@ -346,10 +341,7 @@ class InvestorsListDialog extends StatelessWidget {
             children: [
               const Text(
                 "Investors",
-                style: TextStyle(
-                  fontSize: 16,
-                  fontWeight: FontWeight.w500,
-                ),
+                style: TextStyle(fontSize: 16, fontWeight: FontWeight.w500),
               ),
               IconButton(
                 padding: EdgeInsets.zero,
@@ -373,7 +365,9 @@ class InvestorsListDialog extends StatelessWidget {
                       children: investorList.map((model) {
                         return Padding(
                           padding: const EdgeInsets.symmetric(
-                              horizontal: 6, vertical: 3),
+                            horizontal: 6,
+                            vertical: 3,
+                          ),
                           child: Row(
                             mainAxisAlignment: MainAxisAlignment.spaceBetween,
                             children: [
@@ -385,34 +379,20 @@ class InvestorsListDialog extends StatelessWidget {
                               ),
                               Visibility(
                                 visible: isKyc,
-                                child: CustomElevatedButton(
-                                  padding: context.isPhone
-                                      ? const EdgeInsets.symmetric(
-                                          horizontal: 8, vertical: 4)
-                                      : null,
-                                  width: 80,
-                                  height: 35,
-                                  text: isCompleted
-                                      ? "Completed"
-                                      : "Complete KYC",
-                                  onPressed: isCompleted
-                                      ? null
-                                      : () {
+                                child: isCompleted
+                                    ? const Text('Completed')
+                                    : CompleteInvestorKycButton(
+                                        investor: InvestorModel(
+                                          id: model.id,
+                                          name: model.name,
+                                          email: model.email,
+                                        ),
+                                        onSaved: () async {
                                           Get.back();
-                                          var investor =
-                                              InvestorModel.fromJson({});
-                                          investor.id = model.id;
-                                          investor.name = model.name;
-                                          investor.email = model.email;
-                                          investor.kycStatus = model.kycStatus;
-
-                                          // Get.toNamed(Routes())
-                                          Get.toNamed(
-                                            Routes.kycPath(Get.currentRoute,
-                                                investor.uuid),
-                                          );
+                                          await Get.find<DashboardPageCtrl>()
+                                              .getData();
                                         },
-                                ),
+                                      ),
                               ),
                             ],
                           ),
@@ -421,7 +401,7 @@ class InvestorsListDialog extends StatelessWidget {
                     ),
                   )
                 : const InlineEmptyView(height: 200),
-          )
+          ),
         ],
       ),
     );

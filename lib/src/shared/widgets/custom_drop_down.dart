@@ -31,9 +31,7 @@ class CustomDropDown<T> extends StatelessWidget {
         fontWeight: FontWeight.w600,
         fontSize: 15,
       ),
-      hint: Text(
-        hintText ?? "",
-      ),
+      hint: Text(hintText ?? ""),
       decoration: InputDecoration(
         isDense: true,
         filled: true,
@@ -41,26 +39,28 @@ class CustomDropDown<T> extends StatelessWidget {
         // fillColor: context.isDarkMode
         //     ? context.theme.shadowColor
         //     : context.theme.scaffoldBackgroundColor,
-
         label: label.isNotEmpty
             ? RichText(
                 text: TextSpan(
-                    text: label,
-                    style: const TextStyle(
-                        color: Colors.grey, fontWeight: FontWeight.w600),
-                    children: [
-                      TextSpan(
-                          text: isMandatory ? ' *' : "",
-                          style: const TextStyle(
-                              fontSize: 14,
-                              fontWeight: FontWeight.w500,
-                              color: Colors.red))
-                    ]),
+                  text: label,
+                  style: const TextStyle(
+                    color: Colors.grey,
+                    fontWeight: FontWeight.w600,
+                  ),
+                  children: [
+                    TextSpan(
+                      text: isMandatory ? ' *' : "",
+                      style: const TextStyle(
+                        fontSize: 14,
+                        fontWeight: FontWeight.w500,
+                        color: Colors.red,
+                      ),
+                    ),
+                  ],
+                ),
               )
             : null,
-        border: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(12),
-        ),
+        border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
       ),
       items: items,
       onChanged: onChanged,
@@ -71,7 +71,8 @@ class CustomDropDown<T> extends StatelessWidget {
     return OutlineInputBorder(
       borderRadius: BorderRadius.circular(12),
       borderSide: BorderSide(
-          color: Get.isDarkMode ? Color(0xff232323) : Colors.grey.shade400),
+        color: Get.isDarkMode ? Color(0xff232323) : Colors.grey.shade400,
+      ),
     );
   }
 }
@@ -85,15 +86,16 @@ class CustomLabelDropDown<T> extends StatelessWidget {
   final List<DropdownMenuItem<T>>? items;
   final void Function(T?)? onChanged;
 
-  CustomLabelDropDown(
-      {super.key,
-      this.isRequired = false,
-      this.value,
-      this.hintText = '',
-      this.validator,
-      required this.label,
-      this.items,
-      this.onChanged});
+  const CustomLabelDropDown({
+    super.key,
+    this.isRequired = false,
+    this.value,
+    this.hintText = '',
+    this.validator,
+    required this.label,
+    this.items,
+    this.onChanged,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -103,9 +105,10 @@ class CustomLabelDropDown<T> extends StatelessWidget {
         Text.rich(
           TextSpan(
             style: TextStyle(
-                fontWeight: FontWeight.w500,
-                color: context.theme.colorScheme.onSurfaceVariant,
-                fontSize: context.isPhone ? 14 : 16),
+              fontWeight: FontWeight.w500,
+              color: context.theme.colorScheme.onSurfaceVariant,
+              fontSize: context.isPhone ? 14 : 16,
+            ),
             children: [
               TextSpan(text: label),
               TextSpan(

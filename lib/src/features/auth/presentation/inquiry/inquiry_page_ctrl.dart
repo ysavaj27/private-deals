@@ -20,7 +20,10 @@ class InquiryPageCtrl extends GetxController {
       }
       isLoading(true);
       var res = await IAuthApi.registerInquiry(
-          nameCTRL.text, emailCTRL.text, mobileNoCTRL.text);
+        nameCTRL.text,
+        emailCTRL.text,
+        mobileNoCTRL.text,
+      );
       isLoading(false);
       if (res.isSuccess) {
         Get.back();
@@ -45,7 +48,7 @@ class InquiryPageCtrl extends GetxController {
         toast(res.m, MessageEnum.alert);
       }
     }
-    otpCTRL.clear();
+    if (!isClosed) otpCTRL.clear();
   }
 
   @override
@@ -59,9 +62,10 @@ class InquiryPageCtrl extends GetxController {
 
   @override
   void onClose() {
-    nameCTRL.clear();
-    emailCTRL.clear();
-    mobileNoCTRL.clear();
+    nameCTRL.dispose();
+    emailCTRL.dispose();
+    mobileNoCTRL.dispose();
+    otpCTRL.dispose();
     super.onClose();
   }
 }

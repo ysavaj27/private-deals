@@ -1,7 +1,7 @@
 import 'dart:async';
 import 'dart:typed_data';
 
-import 'package:dio/dio.dart' show Dio, FormData, ResponseBody;
+import 'package:dio/dio.dart' show FormData, ResponseBody;
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:get/get.dart' hide FormData, MultipartFile;
@@ -58,35 +58,33 @@ void main() {
     'seller profile uses v2 business profile photo and institution text APIs',
     () async {
       await app.setUser(prefUser: identity());
-      final adapter = FakeAdapter(
-        (request) async {
-          if (request.path.contains('/seller/')) return response({}, 401);
-          if (request.path.contains('/institution/profile')) {
-            return response({
-              'status': 1,
-              'message': 'Profile',
-              'data': {
-                'years_of_experience': '12',
-                'total_trades_executed': '340',
-                'total_investor_base': '1200',
-                'verified_status': 'Verified Seller',
-                'companies_previously_listed': 'Oyo, NSE',
-                'geographic_presence': 'Mumbai, Delhi',
-                'approach': 'We source unlisted shares.',
-              },
-            });
-          }
+      final adapter = FakeAdapter((request) async {
+        if (request.path.contains('/seller/')) return response({}, 401);
+        if (request.path.contains('/institution/profile')) {
           return response({
             'status': 1,
+            'message': 'Profile',
             'data': {
-              ...identity(),
-              'name': 'Institution name',
-              'profile_photo':
-                  'https://images.example.com/storage/avatar.png?sig=1',
+              'years_of_experience': '12',
+              'total_trades_executed': '340',
+              'total_investor_base': '1200',
+              'verified_status': 'Verified Seller',
+              'companies_previously_listed': 'Oyo, NSE',
+              'geographic_presence': 'Mumbai, Delhi',
+              'approach': 'We source unlisted shares.',
             },
           });
-        },
-      );
+        }
+        return response({
+          'status': 1,
+          'data': {
+            ...identity(),
+            'name': 'Institution name',
+            'profile_photo':
+                'https://images.example.com/storage/avatar.png?sig=1',
+          },
+        });
+      });
       dioConfig.dio.httpClientAdapter = adapter;
       final controller = SellerProfilePageCtrl();
       expect(await controller.refreshProfile(), isTrue);
@@ -111,10 +109,7 @@ void main() {
       expect(controller.editing.value, isTrue);
       // No logo selected yet — save must not hit the update endpoint.
       await controller.save();
-      expect(
-        adapter.requests.where((r) => r.method == 'POST').isEmpty,
-        isTrue,
-      );
+      expect(adapter.requests.where((r) => r.method == 'POST').isEmpty, isTrue);
       controller.cancel();
       expect(controller.editing.value, isFalse);
     },
@@ -170,7 +165,10 @@ void main() {
     );
     await controller.save();
     expect(controller.editing.value, isFalse);
-    expect(controller.profile.value.logo, 'https://cdn.example.com/new-logo.png');
+    expect(
+      controller.profile.value.logo,
+      'https://cdn.example.com/new-logo.png',
+    );
     final post = adapter.requests.lastWhere(
       (r) => r.method == 'POST' && r.uri.path == '/api/v2/business/profile',
     );
@@ -248,30 +246,28 @@ void main() {
       addTearDown(tester.view.resetPhysicalSize);
       addTearDown(tester.view.resetDevicePixelRatio);
       await app.setUser(prefUser: {...identity(), 'name': 'Test institution'});
-      final adapter = FakeAdapter(
-        (request) async {
-          if (request.path.contains('/seller/')) return response({}, 401);
-          if (request.path.contains('/institution/profile')) {
-            return response({
-              'status': 1,
-              'message': 'Profile',
-              'data': {
-                'years_of_experience': '',
-                'total_trades_executed': '',
-                'total_investor_base': '',
-                'verified_status': '',
-                'companies_previously_listed': '',
-                'geographic_presence': '',
-                'approach': '',
-              },
-            });
-          }
+      final adapter = FakeAdapter((request) async {
+        if (request.path.contains('/seller/')) return response({}, 401);
+        if (request.path.contains('/institution/profile')) {
           return response({
             'status': 1,
-            'data': {...identity(), 'name': 'Test institution'},
+            'message': 'Profile',
+            'data': {
+              'years_of_experience': '',
+              'total_trades_executed': '',
+              'total_investor_base': '',
+              'verified_status': '',
+              'companies_previously_listed': '',
+              'geographic_presence': '',
+              'approach': '',
+            },
           });
-        },
-      );
+        }
+        return response({
+          'status': 1,
+          'data': {...identity(), 'name': 'Test institution'},
+        });
+      });
       dioConfig.dio.httpClientAdapter = adapter;
       await tester.pumpWidget(
         const GetMaterialApp(home: Scaffold(body: ProfilePageView())),

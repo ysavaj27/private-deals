@@ -44,7 +44,7 @@ class PreIPOInvestorCard extends StatelessWidget {
                 ),
                 IconButton(
                   tooltip: 'Remove investor',
-                  onPressed: () => c.investorList.remove(model),
+                  onPressed: () => c.removeInvestor(model),
                   icon: Icon(
                     Icons.delete_outline_rounded,
                     size: 18,

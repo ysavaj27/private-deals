@@ -1,4 +1,6 @@
+import 'package:private_deals/src/features/investors/presentation/complete_investor_kyc_button.dart';
 import 'package:private_deals/src/shared/app_exports.dart';
+
 import 'kyc_pending_investor_page_ctrl.dart';
 import '../widgets/workspace_widgets.dart';
 
@@ -96,9 +98,8 @@ class _PendingTasksViewState extends State<PendingTasksView> {
           kyc
               ? 'Review investor details and continue their verification.'
               : 'Review the current status and next step for each investment.',
-          style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-            color: Theme.of(context).colorScheme.onSurfaceVariant,
-          ),
+          style: Theme.of(context).textTheme.bodyMedium
+              ?.copyWith(color: Theme.of(context).colorScheme.onSurfaceVariant),
         ),
         const SizedBox(height: AppSpace.lg),
         WorkspaceSearch(
@@ -191,15 +192,9 @@ class _PendingTasksViewState extends State<PendingTasksView> {
               ),
             ),
             const SizedBox(height: AppSpace.lg),
-            FilledButton.icon(
-              onPressed: () async {
-                final result = await Get.toNamed(
-                  Routes.kycPath(Get.currentRoute, investor.uuid),
-                );
-                if (result == true) await c.refreshData();
-              },
-              icon: const Icon(Icons.arrow_forward_rounded, size: 18),
-              label: const Text('Complete KYC'),
+            CompleteInvestorKycButton(
+              investor: investor,
+              onSaved: c.refreshData,
             ),
           ],
         ),
@@ -241,9 +236,8 @@ class _PendingTasksViewState extends State<PendingTasksView> {
                     const SizedBox(height: AppSpace.xs),
                     Text(
                       transaction.investor.name,
-                      style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                        color: colors.onSurfaceVariant,
-                      ),
+                      style: Theme.of(context).textTheme.bodyMedium
+                          ?.copyWith(color: colors.onSurfaceVariant),
                     ),
                   ],
                 ),

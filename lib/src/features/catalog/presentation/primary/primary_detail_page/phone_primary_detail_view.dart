@@ -2,7 +2,6 @@ import 'package:private_deals/src/shared/app_exports.dart';
 import 'package:private_deals/src/shared/functions/on_back_logic.dart';
 
 import 'package:private_deals/src/features/catalog/presentation/primary/primary_detail_page/investor_list_dialog/investor_list_dialog.dart';
-import 'package:private_deals/src/features/catalog/presentation/primary/primary_detail_page/investor_list_dialog/investor_list_dialog_ctrl.dart';
 import 'package:private_deals/src/features/catalog/presentation/primary/primary_detail_page/primary_detail_page.dart';
 import 'package:private_deals/src/features/catalog/presentation/primary/primary_detail_page/primary_detail_page_ctrl.dart';
 
@@ -303,7 +302,6 @@ class PhonePrimaryDetailView extends StatelessWidget {
                               onPressed: () async {
                                 var res = await showCustomDialog(
                                     InvestorListDialog());
-                                Get.delete<InvestorListDialogCtrl>();
                                 if (res is InvestorModel) {
                                   var route = Routes.primaryInvestmentPath(
                                       Get.currentRoute, res.uuid);

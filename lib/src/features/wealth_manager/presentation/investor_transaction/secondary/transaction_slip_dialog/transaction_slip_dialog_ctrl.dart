@@ -11,7 +11,10 @@ class TransactionSlipDialogCtrl extends GetxController {
   Future<void> uploadSlip() async {
     isUploading(true);
     var res = await WSecondaryTransactionApi.receiptUpload(
-        transactionId: model.id, receipt: receipt(), status: model.status);
+      transactionId: model.id,
+      receipt: receipt(),
+      status: model.status,
+    );
     isUploading(false);
     if (res.isSuccess) {
       Get.back(result: true);
@@ -19,5 +22,11 @@ class TransactionSlipDialogCtrl extends GetxController {
     } else {
       toast(res.m);
     }
+  }
+
+  @override
+  void onClose() {
+    receiptCTRL.dispose();
+    super.onClose();
   }
 }

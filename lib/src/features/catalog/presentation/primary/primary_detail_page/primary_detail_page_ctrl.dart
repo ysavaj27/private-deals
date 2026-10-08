@@ -11,14 +11,17 @@ class PrimaryDetailPageCtrl extends GetxController
   Rx<StartupModel> startupDetailModel = StartupModel.fromJson({}).obs;
   Rx<StartupDetailEnum> currentTab = StartupDetailEnum.idea.obs;
   ScrollController scrollController = ScrollController();
-  final List<GlobalKey> keys =
-      List.generate(StartupDetailEnum.values.length, (index) => GlobalKey());
+  final List<GlobalKey> keys = List.generate(
+    StartupDetailEnum.values.length,
+    (index) => GlobalKey(),
+  );
   RxInt selectedIndex = 0.obs;
 
   ScrollController parentController = ScrollController();
   ScrollController childController = ScrollController();
 
-  late TabController tabController;
+  TabController? _tabController;
+  TabController get tabController => _tabController!;
 
   // Observable to control which scroll view should be active
   var isParentScrolling = true.obs;
@@ -62,10 +65,13 @@ class PrimaryDetailPageCtrl extends GetxController
     final keyContext = keys[index].currentContext;
     if (keyContext != null) {
       final box = keyContext.findRenderObject() as RenderBox;
-      final position = box.localToGlobal(Offset.zero,
-          ancestor: Get.context?.findRenderObject());
+      final position = box.localToGlobal(
+        Offset.zero,
+        ancestor: Get.context?.findRenderObject(),
+      );
       final screenWidth = MediaQuery.of(Get.context!).size.width;
-      final targetScrollOffset = scrollController.offset +
+      final targetScrollOffset =
+          scrollController.offset +
           position.dx -
           (screenWidth / 2) +
           (box.size.width / 2);
@@ -100,10 +106,14 @@ class PrimaryDetailPageCtrl extends GetxController
     }
   }
 
-  Future<void> applyPitch(
-      {required int startupId, required int pitchId}) async {
-    var res =
-        await LivePitchApi.applyPitch(pitchId: pitchId, startupId: startupId);
+  Future<void> applyPitch({
+    required int startupId,
+    required int pitchId,
+  }) async {
+    var res = await LivePitchApi.applyPitch(
+      pitchId: pitchId,
+      startupId: startupId,
+    );
     if (res.isSuccess) {
       toast(res.m, MessageEnum.success);
     } else {
@@ -127,16 +137,19 @@ class PrimaryDetailPageCtrl extends GetxController
   void onInit() {
     listener();
     getData();
-    tabController = TabController(length: 7, vsync: this);
+    _tabController?.dispose();
+    _tabController = TabController(length: 7, vsync: this);
     super.onInit();
   }
 
   @override
   void onClose() {
-    commitCTRL.clear();
     parentController.dispose();
     childController.dispose();
     // app.fromSecondary = false;
+    commitCTRL.dispose();
+    scrollController.dispose();
+    _tabController?.dispose();
     super.onClose();
   }
 }

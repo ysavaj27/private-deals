@@ -20,24 +20,28 @@ class FilePickers {
     FileType type = FileType.any,
     List<String>? allowedExtensions,
   }) async {
-    final result = await FilePicker.pickFiles(
-      allowMultiple: multiple,
-      type: type,
-      allowedExtensions: allowedExtensions,
-      withData: true,
-    );
-    if (result == null) return [];
-    return result.files
-        .where((file) => file.bytes != null)
-        .map(
-          (file) => MediaModel(
-            type: type,
-            name: file.name,
-            uint8list: file.bytes,
-            dataType: FileDataType.bytes,
-          ),
-        )
-        .toList();
+    final List<PlatformFile> files;
+    if (multiple) {
+      files = await FilePicker.pickFiles(
+        type: type,
+        allowedExtensions: allowedExtensions,
+      );
+    } else {
+      final file = await FilePicker.pickFile(
+        type: type,
+        allowedExtensions: allowedExtensions,
+      );
+      files = file == null ? [] : [file];
+    }
+    return [
+      for (final file in files)
+        MediaModel(
+          type: type,
+          name: file.name,
+          uint8list: await file.readAsBytes(),
+          dataType: FileDataType.bytes,
+        ),
+    ];
   }
 
   Future<MediaModel?> pickSingleImage({bool isCropper = false}) async {

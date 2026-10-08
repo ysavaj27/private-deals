@@ -30,35 +30,41 @@ HEADTOKEN = os.environ.get(
     "PD_HEADTOKEN",
     "FBvBeiP253uCFK0VEUO6RWQhXlXp4PmeK1ZY1NbzhahertMCcgjoCMfpmWpe",
 )
-TARGET_NOTIONAL = 15000.0
-SETTLEMENT_DAYS = 2
+TARGET_NOTIONAL = 35000.0
+SETTLEMENT_DAYS = 1
 
-# Selling Price from 07-Oct-26 rate sheet. CNC rows omitted.
+# Strootaay Partner Price List 08-Oct-26 (Indicative Reference Price).
+# "not quoted" rows omitted.
 BASE_PRICES: dict[str, float] = {
-    "APOLLO GREEN": 61.95,
-    "BOOTES": 1023.75,
-    "CARE INSURANCE": 153.3,
-    "COCHIN INT AIRPORT": 467.25,
-    "CSK": 255.15,
-    "CREMICA FOOD": 183.75,
-    "GOODLUCK DEFENCE": 464.1,
-    "HDFC SECURITIES": 8452.5,
-    "HINDUJA FINANCE": 244.65,
-    "HVR SOLAR": 273.0,
-    "INDOFIL": 1879.5,
-    "INCRED": 158.55,
-    "MSEI": 6.9825,
-    "MOTILAL HOME FIN": 11.8125,
-    "MOHAN MEAKIN": 2362.5,
-    "NCDEX": 388.5,
-    "MODERN BAZAAR": 54.6,
-    "OYO": 24.045,
-    "OYO ASSET": 8.4,
-    "ORBIS FINANCE": 383.25,
-    "PARAG PARIKH": 19320.0,
-    "PHARMEASY": 6.72,
-    "POLYMATECH": 47.25,
-    "ZEPTO": 30.45,
+    "PHARMEASY": 6.25,
+    "APOLLO GREEN": 56.50,
+    "CARE INSURANCE": 137.0,
+    "CSK": 237.0,
+    "COCHIN INT AIRPORT": 444.0,
+    "GARUDA AEROSPACE": 408.0,
+    "GFCL EV": 38.0,
+    "GH2 SOLAR": 247.0,
+    "GOODLUCK DEFENCE": 410.0,
+    "HDFC SECURITIES": 7490.0,
+    "HERO FINCORP": 930.0,
+    "HINDUJA FINANCE": 232.0,
+    "INCRED": 149.0,
+    "INDIAN GAS EXCHANGE": 473.0,
+    "KANNUR INT AIRPORT": 122.0,
+    "KINECO": 3205.0,
+    "MOHAN MEAKIN": 2265.0,
+    "MOTILAL HOME FIN": 10.50,
+    "MSEI": 6.60,
+    "NCDEX": 352.0,
+    "ONIX RENEWABLE": 45.0,
+    "ORBIS FINANCE": 326.0,
+    "OYO": 21.50,
+    "POLYMATECH": 44.0,
+    "PARAG PARIKH": 18345.0,
+    "PRISMA AI": 8545.0,
+    "PXIL": 505.0,
+    "ROYAL CARE HOSPITAL": 145.0,
+    "ZEPTO": 28.0,
 }
 
 # Optional aliases → canonical sheet key above.
@@ -66,8 +72,8 @@ ALIASES: dict[str, str] = {
     "APOLLO GREEN ENERGY": "APOLLO GREEN",
     "COCHIN INTERNATIONAL AIRPORT": "COCHIN INT AIRPORT",
     "COCHIN INTERNATIONAL": "COCHIN INT AIRPORT",
+    "COCHIN INTL AIRPORT": "COCHIN INT AIRPORT",
     "CHENNAI SUPER KINGS": "CSK",
-    "CREMICA": "CREMICA FOOD",
     "CARE HEALTH": "CARE INSURANCE",
     "CARE HEALTH INSURANCE": "CARE INSURANCE",
     "GOODLUCK DEFENCE AND AEROSPACE": "GOODLUCK DEFENCE",
@@ -75,16 +81,32 @@ ALIASES: dict[str, str] = {
     "HINDUJA LEYLAND FINANCE": "HINDUJA FINANCE",
     "HINDUJA": "HINDUJA FINANCE",
     "HDFC": "HDFC SECURITIES",
+    "HERO FIN CORP": "HERO FINCORP",
     "MOTILAL OSWAL HOME FINANCE": "MOTILAL HOME FIN",
     "MOTILAL OSWAL": "MOTILAL HOME FIN",
     "METROPOLITAN STOCK EXCHANGE": "MSEI",
     "METROPOLITAN STOCK EXCHANGE OF INDIA": "MSEI",
-    "MODERN BAZAR": "MODERN BAZAAR",
     "API HOLDINGS": "PHARMEASY",
     "PHARMEASY API": "PHARMEASY",
     "AXELIA SOLUTIONS": "PHARMEASY",
     "PPFAS": "PARAG PARIKH",
+    "PPFAS AMC": "PARAG PARIKH",
     "PARAG PARIKH FINANCIAL ADVISORY SERVICES": "PARAG PARIKH",
+    "GARUDA": "GARUDA AEROSPACE",
+    "GFCL EV PRODUCTS": "GFCL EV",
+    "KIAL": "KANNUR INT AIRPORT",
+    "KANNUR INTERNATIONAL AIRPORT": "KANNUR INT AIRPORT",
+    "KANNUR INTERNATIONAL": "KANNUR INT AIRPORT",
+    "ONIX": "ONIX RENEWABLE",
+    "ORBIS FINANCIAL": "ORBIS FINANCE",
+    "POWER EXCHANGE INDIA": "PXIL",
+    "POWER EXCHANGE": "PXIL",
+    "ROYALCARE": "ROYAL CARE HOSPITAL",
+    "ROYAL CARE": "ROYAL CARE HOSPITAL",
+    "ROYALCARE SUPER SPECIALITY HOSPITAL": "ROYAL CARE HOSPITAL",
+    "PRISM": "OYO",
+    "ORAVELSTAYS": "OYO",
+    "INCRED HOLDINGS": "INCRED",
 }
 
 INSTITUTES = [
@@ -417,7 +439,31 @@ def main() -> int:
         choices=(1, 2, 3, 4),
         help="Run only one institute index",
     )
+    parser.add_argument(
+        "--notional",
+        type=float,
+        default=None,
+        help="Target min notional (min_qty ≈ notional/base). Default from script.",
+    )
+    parser.add_argument(
+        "--settlement",
+        type=int,
+        default=None,
+        help="Settlement days (T+N). Default from script.",
+    )
+    parser.add_argument(
+        "--markup",
+        type=float,
+        default=None,
+        help="Override markup fraction (e.g. 0 for PDF×1.0, 0.01 for +1%).",
+    )
     args = parser.parse_args()
+
+    global TARGET_NOTIONAL, SETTLEMENT_DAYS
+    if args.notional is not None:
+        TARGET_NOTIONAL = args.notional
+    if args.settlement is not None:
+        SETTLEMENT_DAYS = args.settlement
 
     if not args.password:
         print(
@@ -431,11 +477,12 @@ def main() -> int:
     for i, institute in enumerate(INSTITUTES, start=1):
         if args.only is not None and args.only != i:
             continue
+        markup = institute["markup"] if args.markup is None else args.markup
         code = run_institute(
             mobile=mobiles[i - 1],
             password=args.password,
             label=institute["label"],
-            markup=institute["markup"],
+            markup=markup,
             confirm=args.confirm,
         )
         if code != 0:

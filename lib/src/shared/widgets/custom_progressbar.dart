@@ -1,4 +1,3 @@
-import 'package:flutter/material.dart';
 import 'package:private_deals/src/shared/app_exports.dart';
 
 class CustomProgressBar extends StatefulWidget {
@@ -9,19 +8,20 @@ class CustomProgressBar extends StatefulWidget {
   final List<Color> gradientColors;
   final double radius;
 
-  const CustomProgressBar(
-      {super.key,
-        required this.progress,
-        this.width = double.infinity,
-        this.height = 13.0,
-        this.backgroundColor,
-        this.gradientColors = const [
-          Color(0xFF0B0B0B),
-          Color(0xFF405D24),
-          Color(0xFF50752B),
-          Color(0xFF608D35),
-        ],
-        this.radius = 5});
+  const CustomProgressBar({
+    super.key,
+    required this.progress,
+    this.width = double.infinity,
+    this.height = 13.0,
+    this.backgroundColor,
+    this.gradientColors = const [
+      Color(0xFF0B0B0B),
+      Color(0xFF405D24),
+      Color(0xFF50752B),
+      Color(0xFF608D35),
+    ],
+    this.radius = 5,
+  });
 
   @override
   State<CustomProgressBar> createState() => _CustomProgressBarState();
@@ -92,17 +92,18 @@ class _CustomProgressBarState extends State<CustomProgressBar> {
   }
 }
 
-
 class CustomPercentageProgressBar extends StatefulWidget {
   final double progress;
 
   const CustomPercentageProgressBar(this.progress, {super.key});
 
   @override
-  State<CustomPercentageProgressBar> createState() => _CustomPercentageProgressBarState();
+  State<CustomPercentageProgressBar> createState() =>
+      _CustomPercentageProgressBarState();
 }
 
-class _CustomPercentageProgressBarState extends State<CustomPercentageProgressBar> {
+class _CustomPercentageProgressBarState
+    extends State<CustomPercentageProgressBar> {
   @override
   Widget build(BuildContext context) {
     return Container(

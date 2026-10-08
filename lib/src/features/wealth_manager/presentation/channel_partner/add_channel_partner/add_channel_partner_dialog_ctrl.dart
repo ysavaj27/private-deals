@@ -72,4 +72,14 @@ class AddChannelPartnerDialogCtrl extends GetxController {
     }
     super.onInit();
   }
+
+  @override
+  void onClose() {
+    nameCTRL.dispose();
+    mobileCTRL.dispose();
+    emailCTRL.dispose();
+    passwordCTRL.dispose();
+    commissionCTRL.dispose();
+    super.onClose();
+  }
 }

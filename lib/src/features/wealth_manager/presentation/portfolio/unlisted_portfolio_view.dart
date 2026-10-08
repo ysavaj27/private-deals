@@ -1,4 +1,6 @@
+import 'package:private_deals/src/features/investors/presentation/complete_investor_kyc_button.dart';
 import 'package:private_deals/src/shared/app_exports.dart';
+
 import 'pre_ipo_sell_share_dialog/pre_ipo_sell_share_dialog.dart';
 import 'pre_ipo_sell_share_dialog/pre_ipo_sell_share_dialog_ctrl.dart';
 
@@ -414,9 +416,8 @@ class _HoldingCard extends StatelessWidget {
               children: [
                 Text(
                   '${_quantity(holding.availableShares)} shares available',
-                  style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                    color: colors.onSurfaceVariant,
-                  ),
+                  style: Theme.of(context).textTheme.bodySmall
+                      ?.copyWith(color: colors.onSurfaceVariant),
                 ),
                 if (holding.onSellShares > 0)
                   Chip(
@@ -425,7 +426,14 @@ class _HoldingCard extends StatelessWidget {
                     ),
                     visualDensity: VisualDensity.compact,
                   ),
-                if (holding.isAvailableShare)
+                if (holding.isAvailableShare &&
+                    !holding.investor.isPreIpoKycComplete)
+                  CompleteInvestorKycButton(
+                    investor: holding.investor,
+                    onSaved: onRefresh,
+                  ),
+                if (holding.isAvailableShare &&
+                    holding.investor.isPreIpoKycComplete)
                   OutlinedButton.icon(
                     icon: const Icon(Icons.sell_outlined, size: 16),
                     label: const Text('Sell shares'),
