@@ -109,7 +109,7 @@ void main() {
       expect(find.text('Unlisted'), findsWidgets);
       expect(find.text('LP Secondary'), findsWidgets);
       expect(find.text('Deal of the day'), findsOneWidget);
-      expect(find.text('Inquiry'), findsOneWidget);
+      expect(find.text('Enquiry'), findsOneWidget);
       await tester.tap(find.text('Unlisted').first);
       await tester.pumpAndSettle();
       expect(find.text('Manage Company'), findsWidgets);
@@ -117,7 +117,7 @@ void main() {
       await tester.tap(find.text('LP Secondary').first);
       await tester.pumpAndSettle();
       expect(find.text('Manage Deals'), findsOneWidget);
-      await tester.tap(find.text('Inquiry'));
+      await tester.tap(find.text('Enquiry'));
       await tester.pumpAndSettle();
       expect(Get.currentRoute, '/institution/sell-enquiries');
       expect(

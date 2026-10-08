@@ -63,7 +63,7 @@ class DSideBarWidget extends StatelessWidget {
             const SizedBox(height: 8),
             DTabTileWidget(
               icon: Icons.sell_outlined,
-              title: 'Inquiry',
+              title: 'Enquiry',
               tab: WTabBarEnum.sellEnquiries,
             ),
             Padding(

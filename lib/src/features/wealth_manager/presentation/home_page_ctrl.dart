@@ -109,7 +109,7 @@ class HomePageCtrl extends GetxController {
   String get appBarName {
     switch (currentTab()) {
       case WTabBarEnum.myInquiries:
-        return 'My Inquiries';
+        return 'My Enquiries';
       case WTabBarEnum.dashboard:
         return 'Dashboard';
       case WTabBarEnum.investorTransactions:

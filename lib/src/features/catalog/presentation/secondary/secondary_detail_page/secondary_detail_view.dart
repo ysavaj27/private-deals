@@ -265,7 +265,7 @@ class _SecondaryActionPanel extends StatelessWidget {
           const Divider(height: 1),
           const SizedBox(height: 16),
           Text(
-            'Inquire for bulk pricing?',
+            'Enquire for bulk pricing?',
             style: theme.textTheme.bodyMedium?.copyWith(
               color: colors.onSurfaceVariant,
             ),

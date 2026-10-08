@@ -266,7 +266,7 @@ class _PreIpoTransactionDetailDialogState
             _field(
               context,
               'Source',
-              row.orderSource == 'enquiry' ? 'Inquiry' : 'Direct order',
+              row.orderSource == 'enquiry' ? 'Enquiry' : 'Direct order',
             ),
           _field(context, 'Investor', _label(row.investor.displayName)),
           if (row.createdAt != null)

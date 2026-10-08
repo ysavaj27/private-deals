@@ -1,8 +1,9 @@
 import 'package:private_deals/src/features/investors/presentation/complete_investor_kyc_button.dart';
 import 'package:private_deals/src/shared/app_exports.dart';
 
-import 'pre_ipo_sell_share_dialog/pre_ipo_sell_share_dialog.dart';
-import 'pre_ipo_sell_share_dialog/pre_ipo_sell_share_dialog_ctrl.dart';
+// Temporarily unused while Sell is hidden on the Unlisted portfolio tab.
+// import 'pre_ipo_sell_share_dialog/pre_ipo_sell_share_dialog.dart';
+// import 'pre_ipo_sell_share_dialog/pre_ipo_sell_share_dialog_ctrl.dart';
 
 /// Shared desktop and mobile presentation; values use the holding model's basis.
 class UnlistedPortfolioView extends StatefulWidget {
@@ -432,19 +433,20 @@ class _HoldingCard extends StatelessWidget {
                     investor: holding.investor,
                     onSaved: onRefresh,
                   ),
-                if (holding.isAvailableShare &&
-                    holding.investor.isPreIpoKycComplete)
-                  OutlinedButton.icon(
-                    icon: const Icon(Icons.sell_outlined, size: 16),
-                    label: const Text('Sell shares'),
-                    onPressed: () async {
-                      final result = await showCustomDialog(
-                        PreIPOSellShareDialog(holding),
-                      );
-                      Get.delete<PreIPOSellShareDialogCtrl>();
-                      if (result == true) await onRefresh();
-                    },
-                  ),
+                // Temporarily hidden: Sell button on WM portfolio Unlisted tab
+                // if (holding.isAvailableShare &&
+                //     holding.investor.isPreIpoKycComplete)
+                //   OutlinedButton.icon(
+                //     icon: const Icon(Icons.sell_outlined, size: 16),
+                //     label: const Text('Sell shares'),
+                //     onPressed: () async {
+                //       final result = await showCustomDialog(
+                //         PreIPOSellShareDialog(holding),
+                //       );
+                //       Get.delete<PreIPOSellShareDialogCtrl>();
+                //       if (result == true) await onRefresh();
+                //     },
+                //   ),
               ],
             ),
           ],

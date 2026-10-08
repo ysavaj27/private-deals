@@ -51,9 +51,9 @@ class _EnquiryDecisionDialogState extends State<EnquiryDecisionDialog> {
       insetPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 24),
       title: Row(
         children: [
-          Expanded(child: Text('$label inquiry')),
+          Expanded(child: Text('$label enquiry')),
           IconButton(
-            tooltip: 'Close inquiry',
+            tooltip: 'Close enquiry',
             onPressed: () => Navigator.pop(context),
             icon: const Icon(Icons.close_rounded),
           ),
@@ -101,9 +101,9 @@ class _EnquiryDecisionDialogState extends State<EnquiryDecisionDialog> {
                   Text(
                     widget.action == 'accept'
                         ? (_pickSettlement
-                              ? 'Choose the settlement cycle for this buy inquiry. It will be locked to you while the wealth manager decides.'
-                              : 'This inquiry will be locked to you while the wealth manager makes their decision.')
-                        : 'Withdraw this open inquiry?',
+                              ? 'Choose the settlement cycle for this buy enquiry. It will be locked to you while the wealth manager decides.'
+                              : 'This enquiry will be locked to you while the wealth manager makes their decision.')
+                        : 'Withdraw this open enquiry?',
                   ),
                   if (_pickSettlement) ...[
                     const SizedBox(height: 16),

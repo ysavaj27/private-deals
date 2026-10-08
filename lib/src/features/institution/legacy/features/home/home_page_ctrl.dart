@@ -161,7 +161,7 @@ class SellerHomePageCtrl extends GetxController {
       case WTabBarEnum.primaryList:
         return 'Private Equity';
       case WTabBarEnum.sellEnquiries:
-        return 'Inquiry';
+        return 'Enquiry';
       case WTabBarEnum.companyDeals:
         return 'Deal of the Day';
       case WTabBarEnum.secondaryDeals:

@@ -84,7 +84,7 @@ class PSideBarWidget extends StatelessWidget {
           ),
           DTabTileWidget(
             icon: Icons.sell_outlined,
-            title: 'Inquiry',
+            title: 'Enquiry',
             tab: WTabBarEnum.sellEnquiries,
           ),
         ],

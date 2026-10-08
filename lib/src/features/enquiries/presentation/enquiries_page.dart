@@ -52,7 +52,7 @@ class _EnquiriesPageState extends State<EnquiriesPage> {
         _items = response.r ?? [];
       } else {
         _error = response.m.isEmpty
-            ? 'Unable to load inquiries. Please retry.'
+            ? 'Unable to load enquiries. Please retry.'
             : response.m;
       }
     });
@@ -227,8 +227,8 @@ class _EnquiriesPageState extends State<EnquiriesPage> {
                   children: [
                     Text(
                       widget.institution
-                          ? 'Incoming Inquiries'
-                          : 'My Inquiries',
+                          ? 'Incoming Enquiries'
+                          : 'My Enquiries',
                       style: text.headlineSmall?.copyWith(
                         fontWeight: FontWeight.w700,
                       ),
@@ -237,7 +237,7 @@ class _EnquiriesPageState extends State<EnquiriesPage> {
                     Text(
                       widget.institution
                           ? 'Review buy and sell requests from wealth managers.'
-                          : 'Track inquiries you raised and respond once a seller locks them.',
+                          : 'Track enquiries you raised and respond once a seller locks them.',
                       style: text.bodyMedium?.copyWith(
                         color: colors.onSurfaceVariant,
                       ),
@@ -246,7 +246,7 @@ class _EnquiriesPageState extends State<EnquiriesPage> {
                 ),
               ),
               IconButton.filledTonal(
-                tooltip: 'Refresh inquiries',
+                tooltip: 'Refresh enquiries',
                 onPressed: _loading || _acting ? null : _load,
                 icon: const Icon(Icons.refresh_rounded),
               ),
@@ -313,7 +313,7 @@ class _EnquiriesPageState extends State<EnquiriesPage> {
           else if (_error.isNotEmpty)
             _EmptyPanel(
               icon: Icons.error_outline_rounded,
-              title: 'Could not load inquiries',
+              title: 'Could not load enquiries',
               message: _error,
               actionLabel: 'Retry',
               onAction: _acting ? null : _load,
@@ -321,12 +321,12 @@ class _EnquiriesPageState extends State<EnquiriesPage> {
           else if (items.isEmpty)
             _EmptyPanel(
               icon: Icons.inbox_outlined,
-              title: 'No inquiries found',
+              title: 'No enquiries found',
               message: _query.isNotEmpty || _status != 'all' || _type != 'all'
-                  ? 'Try another search, inquiry type, or status filter.'
+                  ? 'Try another search, enquiry type, or status filter.'
                   : widget.institution
-                  ? 'New buy and sell inquiries from wealth managers will appear here.'
-                  : 'Inquiries you submit for companies will appear here.',
+                  ? 'New buy and sell enquiries from wealth managers will appear here.'
+                  : 'Enquiries you submit for companies will appear here.',
             )
           else
             ...items.map(

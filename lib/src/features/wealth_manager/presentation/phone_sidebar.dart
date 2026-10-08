@@ -93,7 +93,7 @@ class PSideBarWidget extends StatelessWidget {
                   const SizedBox(height: 5),
                   PTabTileWidget(
                     icon: AppAssets.sendDocumentsIc,
-                    title: 'My Inquiries',
+                    title: 'My Enquiries',
                     tab: WTabBarEnum.myInquiries,
                   ),
                   const SizedBox(height: 5),

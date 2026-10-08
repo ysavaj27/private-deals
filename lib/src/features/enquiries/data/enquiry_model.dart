@@ -38,9 +38,9 @@ class EnquiryModel {
   bool get canWithdraw => canSellerRespond;
   bool get canPartnerRespond => uuid.isNotEmpty && status == 'locked';
   String get typeLabel => switch (dealType) {
-    'buy' => 'Buy inquiry',
-    'sell' => 'Sell inquiry',
-    _ => 'Inquiry',
+    'buy' => 'Buy enquiry',
+    'sell' => 'Sell enquiry',
+    _ => 'Enquiry',
   };
   String statusLabel(bool institution) => switch (status) {
     'open' => 'Open',

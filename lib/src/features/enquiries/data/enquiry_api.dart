@@ -40,7 +40,7 @@ class EnquiryApi {
         !(institution ? ['accept', 'reject'] : ['withdraw', 'reject']).contains(
           action,
         )) {
-      return BaseModel.fromError('This inquiry action is not available.');
+      return BaseModel.fromError('This enquiry action is not available.');
     }
     final trimmedReason = reason?.trim() ?? '';
     if (action == 'reject' &&

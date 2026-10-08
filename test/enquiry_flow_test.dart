@@ -86,7 +86,7 @@ void main() {
       expect(item.canWithdraw, status == 'open');
       expect(item.canSellerRespond, status == 'open');
       expect(item.canPartnerRespond, status == 'locked');
-      expect(item.typeLabel, 'Sell inquiry');
+      expect(item.typeLabel, 'Sell enquiry');
       expect(item.basePrice, 100);
       expect(item.sharePrice, 101);
       expect(item.companyLogo, isEmpty);
@@ -383,14 +383,14 @@ void main() {
 
           await tester.tap(find.byKey(const ValueKey('inquiry-type-buy')));
           await tester.pumpAndSettle();
-          expect(find.text('Buy inquiry'), findsOneWidget);
-          expect(find.text('Sell inquiry'), findsNothing);
+          expect(find.text('Buy enquiry'), findsOneWidget);
+          expect(find.text('Sell enquiry'), findsNothing);
           expect(find.text('Alpha Buy'), findsOneWidget);
           expect(find.text('All statuses (1)'), findsOneWidget);
 
           await tester.tap(find.byKey(const ValueKey('inquiry-type-sell')));
           await tester.pumpAndSettle();
-          expect(find.text('Buy inquiry'), findsNothing);
+          expect(find.text('Buy enquiry'), findsNothing);
           expect(find.text('All statuses (2)'), findsOneWidget);
           await tester.tap(find.widgetWithText(ChoiceChip, 'Open (1)'));
           await tester.pumpAndSettle();
@@ -399,16 +399,16 @@ void main() {
 
           await tester.enterText(find.byType(TextField), 'Alpha');
           await tester.pumpAndSettle();
-          expect(find.text('No inquiries found'), findsOneWidget);
+          expect(find.text('No enquiries found'), findsOneWidget);
           expect(find.text('Sell (1)'), findsOneWidget);
           await tester.tap(
             find.widgetWithText(ChoiceChip, 'Awaiting decision (1)'),
           );
           await tester.pumpAndSettle();
           expect(find.text('Alpha Sell'), findsOneWidget);
-          expect(find.text('Sell inquiry'), findsOneWidget);
+          expect(find.text('Sell enquiry'), findsOneWidget);
 
-          await tester.tap(find.byTooltip('Refresh inquiries'));
+          await tester.tap(find.byTooltip('Refresh enquiries'));
           await tester.pumpAndSettle();
           expect(find.text('Alpha Sell'), findsOneWidget);
           expect(
@@ -425,7 +425,7 @@ void main() {
           await tester.tap(find.widgetWithText(ChoiceChip, 'All statuses (1)'));
           await tester.pumpAndSettle();
           expect(find.text('Other Company'), findsOneWidget);
-          expect(find.text('Inquiry'), findsOneWidget);
+          expect(find.text('Enquiry'), findsOneWidget);
           expect(tester.takeException(), isNull);
           expect(adapter.requests.length, 2);
         },
@@ -460,13 +460,13 @@ void main() {
           ),
         );
         await tester.pumpAndSettle();
-        expect(find.text('Sell inquiry'), findsOneWidget);
+        expect(find.text('Sell enquiry'), findsOneWidget);
         expect(find.text('Modify'), findsNothing);
         await tester.tap(find.widgetWithText(OutlinedButton, 'Reject'));
         await tester.pumpAndSettle();
         await tester.tap(find.widgetWithText(FilledButton, 'Reject'));
         await tester.pumpAndSettle();
-        expect(find.text('No inquiries found'), findsOneWidget);
+        expect(find.text('No enquiries found'), findsOneWidget);
         expect(adapter.requests.where((r) => r.method == 'POST').single.data, {
           'uuid': 'inquiry-1',
           'reason': null,
@@ -540,7 +540,7 @@ void main() {
       );
       await tester.pumpAndSettle();
       expect(find.text('This enquiry is no longer open.'), findsOneWidget);
-      expect(find.text('No inquiries found'), findsOneWidget);
+      expect(find.text('No enquiries found'), findsOneWidget);
       expect(adapter.requests.where((r) => r.method == 'POST').length, 1);
       expect(adapter.requests.where((r) => r.method == 'POST').single.data, {
         'uuid': 'inquiry-1',

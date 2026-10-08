@@ -8,7 +8,7 @@ extension InvestmentTypeEnumX on InvestmentTypeEnum {
       case InvestmentTypeEnum.sell:
         return "Sell";
       case InvestmentTypeEnum.inquiry:
-        return "Inquiry";
+        return "Enquiry";
       case InvestmentTypeEnum.none:
         return "";
     }

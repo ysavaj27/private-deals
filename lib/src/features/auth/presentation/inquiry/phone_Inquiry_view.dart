@@ -10,7 +10,7 @@ class PhoneInquiryView extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text("Partner Inquiry")),
+      appBar: AppBar(title: const Text("Partner Enquiry")),
       body: SingleChildScrollView(
         physics: const BouncingScrollPhysics(),
         padding: const EdgeInsets.symmetric(vertical: 20, horizontal: 20),

@@ -41,7 +41,7 @@ class DesktopInquiryView extends StatelessWidget {
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
                     const Text(
-                      "Inquiry",
+                      "Enquiry",
                       style: TextStyle(
                         fontSize: 28,
                         fontWeight: FontWeight.bold,

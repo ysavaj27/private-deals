@@ -66,7 +66,7 @@ class DSideBarWidget extends StatelessWidget {
             const SizedBox(height: 8),
             DTabTileWidget(
               icon: Icons.question_answer_outlined,
-              title: 'My Inquiries',
+              title: 'My Enquiries',
               tab: WTabBarEnum.myInquiries,
             ),
             const SizedBox(height: 8),
