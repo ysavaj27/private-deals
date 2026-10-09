@@ -22,7 +22,7 @@ class DesktopForgotPasswordView extends StatelessWidget {
             top: 43,
             child: Image.asset(AppAssets.newLogo, height: 72),
           ),
-          DesktopMainWidget(),
+          AppFadeIn(child: DesktopMainWidget()),
         ],
       ),
     );

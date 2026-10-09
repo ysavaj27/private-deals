@@ -17,26 +17,31 @@ class TabButton<T> extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Obx(() {
-      bool isSelected = currentIndex() == type;
+      final isSelected = currentIndex() == type;
+      final scheme = context.theme.colorScheme;
       return Clickable(
         onTap: onTap,
         borderRadius: BorderRadius.circular(14),
-        child: CustomCardWidget(
-          radius: 12,
-          color: isSelected
-              ? context.theme.colorScheme.primaryContainer
-              : context.theme.colorScheme.surfaceContainerHigh,
-          isBorder: true,
-          borderColor: context.theme.colorScheme.outlineVariant,
-          padding: EdgeInsets.symmetric(horizontal: 27, vertical: 10),
+        child: AnimatedContainer(
+          duration: AppMotion.duration(context, AppMotion.fast),
+          curve: AppMotion.easeOut,
+          padding: const EdgeInsets.symmetric(horizontal: 27, vertical: 10),
+          decoration: BoxDecoration(
+            color: isSelected
+                ? scheme.primaryContainer
+                : scheme.surfaceContainerHigh,
+            borderRadius: BorderRadius.circular(12),
+            border: Border.all(color: scheme.outlineVariant),
+          ),
           child: Text(
             title,
             style: TextStyle(
-                fontWeight: isSelected ? FontWeight.w600 : FontWeight.w400,
-                fontSize: 14,
-                color: isSelected
-                    ? context.theme.colorScheme.onPrimaryContainer
-                    : context.theme.colorScheme.onSurface),
+              fontWeight: isSelected ? FontWeight.w600 : FontWeight.w400,
+              fontSize: 14,
+              color: isSelected
+                  ? scheme.onPrimaryContainer
+                  : scheme.onSurface,
+            ),
           ),
         ),
       );

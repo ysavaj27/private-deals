@@ -1,23 +1,36 @@
 import 'package:private_deals/src/shared/app_exports.dart';
 
-import 'package:private_deals/src/features/wealth_manager/presentation/channel_partner/add_channel_partner/add_channel_partner_dialog_ctrl.dart';
-import 'package:private_deals/src/features/wealth_manager/presentation/channel_partner/add_channel_partner/desktop_add_channel_partner_view.dart';
-import 'package:private_deals/src/features/wealth_manager/presentation/channel_partner/add_channel_partner/phone_add_channel_partner_view.dart';
+import 'add_channel_partner_dialog_ctrl.dart';
+import 'add_channel_partner_form.dart';
 
-class AddChannelPartnerDialog extends StatelessWidget {
-   final PartnerUser? model;
- late   final AddChannelPartnerDialogCtrl c ;
+class AddChannelPartnerDialog extends StatefulWidget {
+  const AddChannelPartnerDialog({super.key});
 
-  AddChannelPartnerDialog({super.key,this.model}){
-    Get.put(AddChannelPartnerDialogCtrl(this.model));
+  @override
+  State<AddChannelPartnerDialog> createState() =>
+      _AddChannelPartnerDialogState();
+}
+
+class _AddChannelPartnerDialogState extends State<AddChannelPartnerDialog> {
+  @override
+  void initState() {
+    super.initState();
+    Get.put(AddChannelPartnerDialogCtrl(null));
   }
 
   @override
-  Widget build(BuildContext context) {
-    if (context.isPhone) {
-      return PhoneAddChannelPartnerView();
-    } else {
-      return DesktopAddChannelPartnerView();
-    }
+  void dispose() {
+    Get.delete<AddChannelPartnerDialogCtrl>();
+    super.dispose();
   }
+
+  @override
+  Widget build(BuildContext context) => Dialog(
+    insetPadding: const EdgeInsets.all(16),
+    clipBehavior: Clip.antiAlias,
+    child: ConstrainedBox(
+      constraints: const BoxConstraints(maxWidth: 820, maxHeight: 900),
+      child: const AddChannelPartnerForm(),
+    ),
+  );
 }

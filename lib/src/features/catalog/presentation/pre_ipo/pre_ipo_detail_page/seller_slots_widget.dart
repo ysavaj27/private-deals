@@ -2,69 +2,177 @@ import 'package:private_deals/src/features/catalog/presentation/pre_ipo/pre_ipo_
 import 'package:private_deals/src/features/catalog/presentation/pre_ipo/pre_ipo_investment/pre_ipo_offer.dart';
 import 'package:private_deals/src/features/catalog/presentation/secondary/enquiry/desktop_enquiry_dialog_view.dart';
 import 'package:private_deals/src/shared/app_exports.dart';
+
 import 'pre_ipo_detail_page_ctrl.dart';
 
-/// Offers stay compact on the page; their terms and actions live in a dialog.
-class SellerSlotsWidget extends StatelessWidget {
-  SellerSlotsWidget({super.key});
-
-  final PreIPODetailPageCtrl c = Get.find<PreIPODetailPageCtrl>();
+/// One trade panel with fixed tabs and enquiry, and a scrollable offer list.
+class SellerSlotsWidget extends StatefulWidget {
+  const SellerSlotsWidget({super.key});
 
   @override
-  Widget build(BuildContext context) => Obx(() {
-    final deals = availablePreIPODeals(c.model());
-    final hotDeals = deals.where((deal) => deal.isHotDeal).toList();
-    final regularDeals = deals.where((deal) => !deal.isHotDeal).toList();
-    final slots = c.model().sellerSharePrices;
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.stretch,
-      children: [
-        if (hotDeals.isNotEmpty) ...[
-          _offerGroup(
-            context,
-            key: const ValueKey('hot-deals-section'),
-            title: 'Deal of the day',
-            featured: true,
-            rows: [for (final deal in hotDeals) _dealRow(context, deal)],
+  State<SellerSlotsWidget> createState() => _SellerSlotsWidgetState();
+}
+
+class _SellerSlotsWidgetState extends State<SellerSlotsWidget> {
+  final PreIPODetailPageCtrl c = Get.find<PreIPODetailPageCtrl>();
+  final ScrollController _offersScroll = ScrollController();
+  bool _buy = true;
+
+  @override
+  void dispose() {
+    _offersScroll.dispose();
+    super.dispose();
+  }
+
+  void _selectSide(bool buy) {
+    if (_buy == buy) return;
+    if (_offersScroll.hasClients) _offersScroll.jumpTo(0);
+    setState(() => _buy = buy);
+  }
+
+  @override
+  Widget build(BuildContext context) => LayoutBuilder(
+    builder: (context, constraints) {
+      final height = constraints.hasBoundedHeight
+          ? constraints.maxHeight
+          : (MediaQuery.sizeOf(context).height * 0.75).clamp(320.0, 760.0);
+      final colors = Theme.of(context).colorScheme;
+      return SizedBox(
+        height: height,
+        child: Container(
+          key: const ValueKey('pre-ipo-trade-panel'),
+          clipBehavior: Clip.antiAlias,
+          decoration: BoxDecoration(
+            color: colors.surface,
+            borderRadius: BorderRadius.circular(16),
+            border: Border.all(color: colors.outlineVariant),
           ),
-          const SizedBox(height: 20),
-        ],
-        _offerGroup(
-          context,
-          key: const ValueKey('available-offers-section'),
-          title: 'Available offers',
-          rows: [
-            for (final deal in regularDeals) _dealRow(context, deal),
-            for (final slot in slots)
-              _OfferRow(
-                seller: slot.seller,
-                price: slot.sellPrice,
-                minimumQty: slot.minQty,
-                label: 'Seller',
-                onTap: () => _showSeller(context, slot),
-              ),
-          ],
-          showEnquiry: true,
+          child: Obx(() {
+            final deals = availablePreIPODeals(c.model());
+            final buyDeals = deals
+                .where((deal) => PreIPOOffer.fromDeal(deal).isSellDeal)
+                .toList();
+            final sellDeals = deals
+                .where((deal) => !PreIPOOffer.fromDeal(deal).isSellDeal)
+                .toList();
+            final activeDeals = _buy ? buyDeals : sellDeals;
+            final hotDeals = activeDeals
+                .where((deal) => deal.isHotDeal)
+                .toList();
+            final normalDeals = activeDeals
+                .where((deal) => !deal.isHotDeal)
+                .toList();
+            final slots = _buy
+                ? c.model().sellerSharePrices
+                : <SellerSharePriceModel>[];
+            return Column(
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              children: [
+                _TradeHeader(
+                  buy: _buy,
+                  buyCount:
+                      buyDeals.length + c.model().sellerSharePrices.length,
+                  sellCount: sellDeals.length,
+                  onChanged: _selectSide,
+                ),
+                const Divider(height: 1),
+                Expanded(
+                  child: Scrollbar(
+                    controller: _offersScroll,
+                    child: SingleChildScrollView(
+                      key: const ValueKey('pre-ipo-offers-scroll'),
+                      controller: _offersScroll,
+                      primary: false,
+                      padding: const EdgeInsets.symmetric(vertical: 8),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.stretch,
+                        children: [
+                          if (hotDeals.isNotEmpty) ...[
+                            _offerGroup(
+                              context,
+                              key: const ValueKey('hot-deals-section'),
+                              title: 'Deal of the day',
+                              featured: true,
+                              rows: [
+                                for (final deal in hotDeals)
+                                  _dealRow(context, deal),
+                              ],
+                            ),
+                            const SizedBox(height: 8),
+                          ],
+                          _offerGroup(
+                            context,
+                            key: const ValueKey('available-offers-section'),
+                            title: 'Available offers',
+                            rows: [
+                              for (final deal in normalDeals)
+                                _dealRow(context, deal),
+                              for (final slot in slots)
+                                _OfferRow(
+                                  seller: slot.seller,
+                                  price: slot.sellPrice,
+                                  minimumQty: slot.minQty,
+                                  label: 'Seller',
+                                  onTap: () => _showSeller(context, slot),
+                                ),
+                            ],
+                          ),
+                        ],
+                      ),
+                    ),
+                  ),
+                ),
+                const Divider(height: 1),
+                Padding(
+                  key: const ValueKey('pre-ipo-enquiry-footer'),
+                  padding: const EdgeInsets.fromLTRB(20, 14, 20, 16),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.stretch,
+                    children: [
+                      Text(
+                        'Buying or selling in bulk?',
+                        style: Theme.of(context).textTheme.titleSmall,
+                      ),
+                      const SizedBox(height: 10),
+                      OutlinedButton.icon(
+                        onPressed: _enquire,
+                        icon: const Icon(
+                          Icons.chat_bubble_outline_rounded,
+                          size: 17,
+                        ),
+                        label: const Text('Enquire'),
+                      ),
+                    ],
+                  ),
+                ),
+              ],
+            );
+          }),
         ),
-      ],
-    );
-  });
+      );
+    },
+  );
 
   Widget _dealRow(BuildContext context, DealModel deal) {
     final offer = PreIPOOffer.fromDeal(deal);
+    final sell = !offer.isSellDeal;
     return Obx(
       () => _OfferRow(
         seller: deal.seller,
         price: deal.sharePrice,
         minimumQty: deal.minimumQty,
         settlementLabel: deal.settlementLabel,
-        label: deal.dealType == 'buy' ? 'Buyer available' : 'Shares for sale',
+        label: sell ? 'Buyer' : 'Seller',
         selected: c.selectedOffer.value?.key == offer.key,
         onTap: () => _showDeal(context, deal),
-        canBuy: offer.canBuy && c.model().canBuy,
-        onBuy: c.investing.value
+        actionLabel: sell ? 'Sell' : 'Buy',
+        showAction: sell || (offer.canBuy && c.model().canBuy),
+        onAction: c.investing.value
             ? null
-            : () => c.selectOffer(offer, phone: context.isPhone),
+            : () {
+                // Sell is intentionally a placeholder until its flow is ready.
+                if (!sell) c.selectOffer(offer, phone: context.isPhone);
+              },
       ),
     );
   }
@@ -75,125 +183,74 @@ class SellerSlotsWidget extends StatelessWidget {
     required String title,
     required List<Widget> rows,
     bool featured = false,
-    bool showEnquiry = false,
   }) {
     final theme = Theme.of(context);
     final colors = theme.colorScheme;
-    return Container(
+    return Column(
       key: key,
-      clipBehavior: Clip.antiAlias,
-      decoration: BoxDecoration(
-        color: colors.surface,
-        borderRadius: BorderRadius.circular(16),
-        border: Border.all(
-          color: featured
-              ? colors.secondary.withValues(alpha: 0.5)
-              : colors.outlineVariant,
-        ),
-      ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.stretch,
-        children: [
-          Padding(
-            padding: const EdgeInsets.all(20),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Row(
-                  children: [
-                    if (featured) ...[
-                      Icon(
-                        Icons.local_fire_department_outlined,
-                        size: 20,
-                        color: colors.secondary,
-                      ),
-                      const SizedBox(width: 8),
-                    ],
-                    Expanded(
-                      child: Text(title, style: theme.textTheme.titleMedium),
-                    ),
-                    const SizedBox(width: 8),
-                    Container(
-                      padding: const EdgeInsets.symmetric(
-                        horizontal: 8,
-                        vertical: 4,
-                      ),
-                      decoration: BoxDecoration(
-                        color: featured
-                            ? colors.secondaryContainer
-                            : colors.primaryContainer,
-                        borderRadius: BorderRadius.circular(6),
-                      ),
-                      child: Text(
-                        '${rows.length}',
-                        style: theme.textTheme.labelMedium?.copyWith(
-                          color: featured
-                              ? colors.onSecondaryContainer
-                              : colors.onPrimaryContainer,
-                        ),
-                      ),
-                    ),
-                  ],
+      crossAxisAlignment: CrossAxisAlignment.stretch,
+      children: [
+        Padding(
+          padding: const EdgeInsets.fromLTRB(20, 16, 20, 12),
+          child: Row(
+            children: [
+              if (featured) ...[
+                Icon(
+                  Icons.local_fire_department_outlined,
+                  size: 18,
+                  color: colors.secondary,
                 ),
-                const SizedBox(height: 8),
-                Text(
-                  rows.isEmpty
-                      ? 'Contact us to explore availability.'
-                      : featured
-                      ? 'Featured hot deals. Prices per share.'
-                      : 'Prices per share. Select an offer for details.',
-                  style: theme.textTheme.bodySmall?.copyWith(
-                    color: colors.onSurfaceVariant,
-                  ),
-                ),
+                const SizedBox(width: 8),
               ],
-            ),
+              Expanded(
+                child: Text(
+                  title,
+                  style: theme.textTheme.titleSmall?.copyWith(
+                    color: featured ? colors.secondary : colors.onSurface,
+                  ),
+                ),
+              ),
+              const SizedBox(width: 8),
+              Text(
+                '${rows.length}',
+                style: theme.textTheme.labelMedium?.copyWith(
+                  color: colors.onSurfaceVariant,
+                ),
+              ),
+            ],
           ),
-          if (rows.isNotEmpty) ...[
-            const Divider(height: 1),
-            ListView.separated(
-              shrinkWrap: true,
-              primary: false,
-              physics: const NeverScrollableScrollPhysics(),
-              itemCount: rows.length,
-              separatorBuilder: (_, _) =>
-                  const Divider(height: 1, indent: 20, endIndent: 20),
-              itemBuilder: (_, index) => rows[index],
-            ),
-          ],
-          if (showEnquiry) ...[
-            if (rows.isNotEmpty) const Divider(height: 1),
-            Padding(
-              padding: const EdgeInsets.all(20),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.stretch,
-                children: [
-                  Text(
-                    'Buying or selling in bulk?',
-                    style: theme.textTheme.titleSmall,
-                  ),
-                  const SizedBox(height: 5),
-                  Text(
-                    'Get in touch for your requirements.',
-                    style: theme.textTheme.bodySmall?.copyWith(
-                      color: colors.onSurfaceVariant,
-                    ),
-                  ),
-                  const SizedBox(height: 14),
-                  OutlinedButton.icon(
-                    onPressed: _enquire,
-                    icon: const Icon(
-                      Icons.chat_bubble_outline_rounded,
-                      size: 17,
-                    ),
-                    label: const Text('Enquire'),
-                  ),
-                ],
+        ),
+        if (rows.isEmpty)
+          Padding(
+            padding: const EdgeInsets.fromLTRB(20, 4, 20, 24),
+            child: Text(
+              _buy
+                  ? 'No regular buy offers at the moment.'
+                  : 'No regular sell offers at the moment.',
+              style: theme.textTheme.bodySmall?.copyWith(
+                color: colors.onSurfaceVariant,
               ),
             ),
-          ],
+          ),
+        for (var index = 0; index < rows.length; index++) ...[
+          if (index > 0) const Divider(height: 1, indent: 20, endIndent: 20),
+          if (featured)
+            Container(
+              margin: const EdgeInsets.symmetric(horizontal: 12),
+              decoration: BoxDecoration(
+                color: colors.secondaryContainer.withValues(alpha: 0.18),
+                borderRadius: BorderRadius.circular(12),
+                border: Border.all(
+                  color: colors.secondary.withValues(alpha: 0.3),
+                ),
+              ),
+              clipBehavior: Clip.antiAlias,
+              child: rows[index],
+            )
+          else
+            rows[index],
         ],
-      ),
+      ],
     );
   }
 
@@ -209,7 +266,7 @@ class SellerSlotsWidget extends StatelessWidget {
   Future<void> _showDeal(BuildContext context, DealModel deal) async {
     final phone = context.isPhone;
     final offer = PreIPOOffer.fromDeal(deal);
-    final buyerWanted = deal.dealType == 'buy';
+    final buyerWanted = !offer.isSellDeal;
     final proceed = await showDialog<bool>(
       context: context,
       builder: (dialogContext) => _OfferDialog(
@@ -310,10 +367,7 @@ class SellerSlotsWidget extends StatelessWidget {
       builder: (dialogContext) => _OfferDialog(
         title: 'Seller details',
         child: _OfferSplitPane(
-          profile: SellerProfileWidget(
-            seller: slot.seller,
-            showDetails: true,
-          ),
+          profile: SellerProfileWidget(seller: slot.seller, showDetails: true),
           offer: Column(
             crossAxisAlignment: CrossAxisAlignment.stretch,
             mainAxisSize: MainAxisSize.min,
@@ -347,6 +401,87 @@ class SellerSlotsWidget extends StatelessWidget {
   }
 }
 
+class _TradeHeader extends StatelessWidget {
+  const _TradeHeader({
+    required this.buy,
+    required this.buyCount,
+    required this.sellCount,
+    required this.onChanged,
+  });
+  final bool buy;
+  final int buyCount;
+  final int sellCount;
+  final ValueChanged<bool> onChanged;
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    return Padding(
+      key: const ValueKey('pre-ipo-trade-header'),
+      padding: const EdgeInsets.fromLTRB(20, 20, 20, 16),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        children: [
+          Text('Trade unlisted shares', style: theme.textTheme.titleMedium),
+          const SizedBox(height: 4),
+          Text(
+            'Compare offers. Prices per share.',
+            style: theme.textTheme.bodySmall?.copyWith(
+              color: theme.colorScheme.onSurfaceVariant,
+            ),
+          ),
+          const SizedBox(height: 16),
+          Row(
+            children: [
+              Expanded(child: _tab(context, true, buyCount)),
+              const SizedBox(width: 8),
+              Expanded(child: _tab(context, false, sellCount)),
+            ],
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _tab(BuildContext context, bool isBuy, int count) {
+    final colors = Theme.of(context).colorScheme;
+    final selected = buy == isBuy;
+    return Semantics(
+      selected: selected,
+      child: TextButton(
+        key: ValueKey(isBuy ? 'buy-deals-tab' : 'sell-deals-tab'),
+        onPressed: () => onChanged(isBuy),
+        style: TextButton.styleFrom(
+          minimumSize: const Size(0, 44),
+          backgroundColor: selected
+              ? colors.primaryContainer
+              : colors.surfaceContainer,
+          foregroundColor: selected
+              ? colors.onPrimaryContainer
+              : colors.onSurfaceVariant,
+          side: BorderSide(
+            color: selected ? colors.primary : colors.outlineVariant,
+          ),
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(10),
+          ),
+          padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
+        ),
+        child: Wrap(
+          alignment: WrapAlignment.center,
+          crossAxisAlignment: WrapCrossAlignment.center,
+          spacing: 8,
+          runSpacing: 4,
+          children: [
+            Text(isBuy ? 'Buy' : 'Sell'),
+            Text('$count', style: const TextStyle(fontSize: 11)),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
 class _OfferRow extends StatelessWidget {
   const _OfferRow({
     required this.seller,
@@ -356,8 +491,9 @@ class _OfferRow extends StatelessWidget {
     required this.onTap,
     this.settlementLabel,
     this.selected = false,
-    this.canBuy = false,
-    this.onBuy,
+    this.showAction = false,
+    this.actionLabel = 'Buy',
+    this.onAction,
   });
   final SharePriceSellerModel seller;
   final double price;
@@ -366,8 +502,9 @@ class _OfferRow extends StatelessWidget {
   final String label;
   final VoidCallback onTap;
   final bool selected;
-  final bool canBuy;
-  final VoidCallback? onBuy;
+  final bool showAction;
+  final String actionLabel;
+  final VoidCallback? onAction;
 
   @override
   Widget build(BuildContext context) {
@@ -431,10 +568,10 @@ class _OfferRow extends StatelessWidget {
                       ],
                     ),
                   ),
-                  if (canBuy) ...[
+                  if (showAction) ...[
                     const SizedBox(width: 12),
                     FilledButton(
-                      onPressed: onBuy,
+                      onPressed: onAction,
                       style: FilledButton.styleFrom(
                         minimumSize: const Size(68, 44),
                         padding: const EdgeInsets.symmetric(
@@ -442,7 +579,7 @@ class _OfferRow extends StatelessWidget {
                           vertical: 10,
                         ),
                       ),
-                      child: const Text('Buy'),
+                      child: Text(actionLabel),
                     ),
                   ],
                 ],
@@ -587,9 +724,8 @@ class _OfferBadge extends StatelessWidget {
     ),
     child: Text(
       label,
-      style: Theme.of(context).textTheme.labelSmall?.copyWith(
-        color: Theme.of(context).colorScheme.onSecondaryContainer,
-      ),
+      style: Theme.of(context).textTheme.labelSmall
+          ?.copyWith(color: Theme.of(context).colorScheme.onSecondaryContainer),
     ),
   );
 }

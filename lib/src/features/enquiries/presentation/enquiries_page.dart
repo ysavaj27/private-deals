@@ -103,12 +103,13 @@ class _EnquiriesPageState extends State<EnquiriesPage> {
       setState(() => _submitting = false);
       if (order == null) return;
       final createdOrder = order;
+      final reference = createdOrder.transactionInvoiceNo?.trim() ?? '';
       await showDialog<void>(
         context: context,
         builder: (dialogContext) => AlertDialog(
           title: const Text('Transaction created'),
           content: Text(
-            '${createdOrder.transactionInvoiceNo ?? '#${createdOrder.id}'}\n\n${createdOrder.mandateSent == false ? response.m : 'The investor can sign the mandate using the SMS or WhatsApp link.'}',
+            '${reference.isEmpty ? '' : '#$reference\n\n'}${createdOrder.mandateSent == false ? response.m : 'The investor can sign the mandate using the SMS or WhatsApp link.'}',
           ),
           actions: [
             TextButton(

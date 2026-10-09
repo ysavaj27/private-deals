@@ -35,6 +35,7 @@ import 'package:private_deals/src/features/institution/deals/presentation/bulk_d
 import 'package:private_deals/src/shared/widgets/partner_shell.dart';
 
 class Pages {
+  /// Shell / tab routes — instant swap (no page transition).
   static GetPage privatePage(
     String name,
     Widget Function() builder, {
@@ -46,16 +47,55 @@ class Pages {
     middlewares: [AuthMiddleware(scope: scope)],
   );
 
+  /// True page pushes (detail, forms, settings) — short fade.
+  static GetPage privatePushPage(
+    String name,
+    Widget Function() builder, {
+    AccessScope? scope,
+  }) => GetPage(
+    name: name,
+    page: builder,
+    transition: Transition.fadeIn,
+    transitionDuration: AppMotion.normal,
+    middlewares: [AuthMiddleware(scope: scope)],
+  );
+
   static final List<GetPage> pages = [
     GetPage(name: '/', page: () => InitScreen()),
     GetPage(name: Routes.init, page: () => InitScreen()),
-    GetPage(name: Routes.signIn, page: () => LoginPage()),
-    GetPage(name: Routes.forgotPasswordPage, page: () => ForgotPasswordPage()),
-    GetPage(name: Routes.inquiryPage, page: () => InquiryPage()),
-    GetPage(name: '/session', page: () => const SessionRetryPage()),
-    GetPage(name: '/access-denied', page: () => const AccessDeniedPage()),
+    GetPage(
+      name: Routes.signIn,
+      page: () => LoginPage(),
+      transition: Transition.fadeIn,
+      transitionDuration: AppMotion.normal,
+    ),
+    GetPage(
+      name: Routes.forgotPasswordPage,
+      page: () => ForgotPasswordPage(),
+      transition: Transition.fadeIn,
+      transitionDuration: AppMotion.normal,
+    ),
+    GetPage(
+      name: Routes.inquiryPage,
+      page: () => InquiryPage(),
+      transition: Transition.fadeIn,
+      transitionDuration: AppMotion.normal,
+    ),
+    GetPage(
+      name: '/session',
+      page: () => const SessionRetryPage(),
+      transition: Transition.fadeIn,
+      transitionDuration: AppMotion.normal,
+    ),
+    GetPage(
+      name: '/access-denied',
+      page: () => const AccessDeniedPage(),
+      transition: Transition.fadeIn,
+      transitionDuration: AppMotion.normal,
+    ),
     GetPage(name: '/not-found', page: () => const NotFoundPage()),
-    privatePage(Routes.option, () => OptionPage()),
+    // Shell / product select — option is a push; home tabs stay instant.
+    privatePushPage(Routes.option, () => OptionPage()),
     privatePage(Routes.home, () => HomePage()),
     privatePage(
       Routes.primaryListPage,
@@ -67,42 +107,42 @@ class Pages {
       () => PreIPOListPage(),
       scope: AccessScope.unlisted,
     ),
-    privatePage(Routes.addInvestorPage, () => AddInvestorPage()),
-    privatePage(Routes.kycPage, () => KYCPage()),
-    privatePage(Routes.notificationPage, () => NotificationPage()),
-    privatePage(
+    privatePushPage(Routes.addInvestorPage, () => AddInvestorPage()),
+    privatePushPage(Routes.kycPage, () => KYCPage()),
+    privatePushPage(Routes.notificationPage, () => NotificationPage()),
+    privatePushPage(
       Routes.primaryDetailPage,
       () => PrimaryDetailPage(),
       scope: AccessScope.primary,
     ),
-    privatePage(
+    privatePushPage(
       Routes.secondaryDetailPage,
       () => SecondaryDetailPage(),
       scope: AccessScope.secondary,
     ),
-    privatePage(
+    privatePushPage(
       Routes.preIPOInvestmentPage,
       () => PreIPOInvestmentPage(),
       scope: AccessScope.unlisted,
     ),
-    privatePage(
+    privatePushPage(
       '${Routes.secondaryDetailPage}/investment',
       () => PreIPOInvestmentPage(),
       scope: AccessScope.secondary,
     ),
-    privatePage(
+    privatePushPage(
       Routes.primaryInvestmentPage,
       () => PrimaryInvestmentPage(),
       scope: AccessScope.primary,
     ),
-    privatePage(
+    privatePushPage(
       Routes.changePassword,
       () => ChangePasswordPage(),
       scope: AccessScope.account,
     ),
-    privatePage(Routes.blogDetailPage, () => BlogDetailPage()),
-    privatePage(Routes.blogListDetailPage, () => BlogDetailPage()),
-    privatePage(
+    privatePushPage(Routes.blogDetailPage, () => BlogDetailPage()),
+    privatePushPage(Routes.blogListDetailPage, () => BlogDetailPage()),
+    privatePushPage(
       Routes.newsListPage,
       () => NewsListPage(),
       scope: AccessScope.unlisted,
@@ -112,12 +152,12 @@ class Pages {
       () => SecondaryLandingPage(),
       scope: AccessScope.secondary,
     ),
-    privatePage(
+    privatePushPage(
       Routes.preIPODetailPage,
       () => PreIPODetailPage(),
       scope: AccessScope.unlisted,
     ),
-    privatePage(
+    privatePushPage(
       '/account',
       () => const AccountPage(),
       scope: AccessScope.account,
@@ -149,17 +189,17 @@ class Pages {
         ),
         scope: AccessScope.institution,
       ),
-      privatePage(
+      privatePushPage(
         '/institution/companies/$type/create',
         () => CreateCompanyPage(),
         scope: AccessScope.institution,
       ),
-      privatePage(
+      privatePushPage(
         '/institution/companies/$type/:slug/promoters',
         () => CompanyPromotersPage(),
         scope: AccessScope.institution,
       ),
-      privatePage(
+      privatePushPage(
         '/institution/companies/$type/:slug/shareholders',
         () => CompanyShareholdersPage(),
         scope: AccessScope.institution,
@@ -176,13 +216,13 @@ class Pages {
           ),
           scope: AccessScope.institution,
         ),
-        privatePage(
+        privatePushPage(
           '/institution/deals/$section/$type/create',
           () => CreateDealPage(),
           scope: AccessScope.institution,
         ),
       ],
-    privatePage(
+    privatePushPage(
       '/institution/bulk-deals',
       () => const BulkDealsPage(),
       scope: AccessScope.institution,

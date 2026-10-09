@@ -20,23 +20,37 @@ class PhonePrimaryTransactionView extends StatelessWidget {
           const SizedBox(height: 16),
           Expanded(
             child: Obx(() {
-              if (c.isLoading.isTrue) return const Loader();
-              if (c.finalList.isEmpty) {
-                return NoDataView(onPressed: c.getData);
-              }
-              return RefreshIndicator(
-                onRefresh: c.getData,
-                child: ListView.builder(
-                  itemCount: c.finalList.length,
-                  physics: const BouncingScrollPhysics(
-                    parent: AlwaysScrollableScrollPhysics(),
+              final Widget child;
+              if (c.isLoading.isTrue) {
+                child = const Loader(key: ValueKey('tx-loading'));
+              } else if (c.finalList.isEmpty) {
+                child = NoDataView(
+                  key: const ValueKey('tx-empty'),
+                  onPressed: c.getData,
+                );
+              } else {
+                child = RefreshIndicator(
+                  key: ValueKey('tx-list-${c.finalList.length}'),
+                  onRefresh: c.getData,
+                  child: ListView.builder(
+                    itemCount: c.finalList.length,
+                    physics: const BouncingScrollPhysics(
+                      parent: AlwaysScrollableScrollPhysics(),
+                    ),
+                    itemBuilder: (context, index) {
+                      return FadeInUp(
+                        child:
+                            _PrimaryTransactionCard(model: c.finalList[index]),
+                      );
+                    },
                   ),
-                  itemBuilder: (context, index) {
-                    return FadeInUp(
-                      child: _PrimaryTransactionCard(model: c.finalList[index]),
-                    );
-                  },
-                ),
+                );
+              }
+              return AnimatedSwitcher(
+                duration: AppMotion.duration(context, AppMotion.normal),
+                switchInCurve: AppMotion.easeOut,
+                switchOutCurve: AppMotion.easeInOut,
+                child: child,
               );
             }),
           ),

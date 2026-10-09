@@ -3,7 +3,6 @@ import 'package:private_deals/src/shared/functions/on_back_logic.dart';
 
 import 'pre_ipo_detail_page_ctrl.dart';
 import 'pre_ipo_detail_sections.dart';
-import 'pre_ipo_investor_card.dart';
 import 'seller_slots_widget.dart';
 
 /// Both layouts share the same information hierarchy and existing controller.
@@ -52,9 +51,8 @@ class PreIPODetailView extends StatelessWidget {
                     child: Text(
                       'Company overview',
                       overflow: TextOverflow.ellipsis,
-                      style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                        color: colors.onSurfaceVariant,
-                      ),
+                      style: Theme.of(context).textTheme.bodySmall
+                          ?.copyWith(color: colors.onSurfaceVariant),
                     ),
                   ),
                 ],
@@ -78,7 +76,7 @@ class PreIPODetailView extends StatelessWidget {
                           PreIPOCompanyHeader(company: c.model()),
                           const SizedBox(height: 24),
                           if (!split) ...[
-                            _InvestmentPanel(c: c, phone: phone),
+                            SellerSlotsWidget(),
                             const SizedBox(height: 24),
                           ],
                           PreIPODetailSections(
@@ -107,36 +105,12 @@ class PreIPODetailView extends StatelessWidget {
                                         28,
                                         24,
                                       ),
-                                      child: Column(
-                                        children: [
-                                          Expanded(
-                                            child: SingleChildScrollView(
-                                              primary: false,
-                                              child: _InvestmentPanel(
-                                                c: c,
-                                                phone: phone,
-                                              ),
-                                            ),
-                                          ),
-                                          _InvestButton(c: c),
-                                        ],
-                                      ),
+                                      child: const SellerSlotsWidget(),
                                     ),
                                   ),
                                 ],
                               )
-                            : Column(
-                                children: [
-                                  Expanded(child: content),
-                                  if (!phone)
-                                    Padding(
-                                      padding: const EdgeInsets.symmetric(
-                                        horizontal: 28,
-                                      ),
-                                      child: _InvestButton(c: c),
-                                    ),
-                                ],
-                              ),
+                            : content,
                       ),
                     );
                   },
@@ -227,75 +201,4 @@ class _SectionNavigation extends StatelessWidget {
       ),
     );
   }
-}
-
-class _InvestmentPanel extends StatelessWidget {
-  const _InvestmentPanel({required this.c, required this.phone});
-  final PreIPODetailPageCtrl c;
-  final bool phone;
-
-  @override
-  Widget build(BuildContext context) => Column(
-    crossAxisAlignment: CrossAxisAlignment.stretch,
-    children: [
-      SellerSlotsWidget(),
-      if (!phone)
-        Form(
-          key: c.desktopFormKey,
-          autovalidateMode: AutovalidateMode.onUserInteraction,
-          child: Obx(
-            () => Column(
-              crossAxisAlignment: CrossAxisAlignment.stretch,
-              children: [
-                if (c.investorList.isNotEmpty) ...[
-                  const SizedBox(height: 24),
-                  Text(
-                    'Your investment',
-                    style: Theme.of(context).textTheme.titleMedium,
-                  ),
-                  const SizedBox(height: 4),
-                  Text(
-                    'Review quantity and price for each investor.',
-                    style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                      color: Theme.of(context).colorScheme.onSurfaceVariant,
-                    ),
-                  ),
-                  const SizedBox(height: 16),
-                  for (final investor in c.investorList)
-                    Padding(
-                      padding: const EdgeInsets.only(bottom: 12),
-                      child: PreIPOInvestorCard(
-                        key: ObjectKey(investor),
-                        model: investor,
-                      ),
-                    ),
-                ],
-              ],
-            ),
-          ),
-        ),
-    ],
-  );
-}
-
-class _InvestButton extends StatelessWidget {
-  const _InvestButton({required this.c});
-  final PreIPODetailPageCtrl c;
-
-  @override
-  Widget build(BuildContext context) => Obx(() {
-    if (c.investorList.isEmpty) return const SizedBox.shrink();
-    return Padding(
-      padding: const EdgeInsets.symmetric(vertical: 12),
-      child: CustomElevatedButton(
-        radius: 12,
-        isLoading: c.investing.value,
-        backgroundColor: AppColors.preIpoButton(context),
-        onPressed: () {
-          if (c.desktopFormKey.currentState?.validate() ?? false) c.onPress();
-        },
-        text: 'Invest',
-      ),
-    );
-  });
 }

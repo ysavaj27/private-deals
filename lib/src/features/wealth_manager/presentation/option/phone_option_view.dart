@@ -121,84 +121,85 @@ class CardWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Padding(
-      padding: const EdgeInsets.all(16),
-      child: Stack(
-        alignment: Alignment.topCenter,
-        children: [
-          Padding(
-            padding: const EdgeInsets.only(top: 2),
-            child: InkWell(
-              onTap: onPressed,
-              borderRadius: BorderRadius.circular(20),
-              child: CustomCardWidget(
-                radius: 20,
-                width: context.width,
-                child: Container(
-                  decoration: BoxDecoration(
-                    // color: Colors.black,
-                    borderRadius: BorderRadius.circular(20),
-                    gradient: RadialGradient(
-                      center: const Alignment(0.0, -2.0),
-                      radius: 1.8,
-                      colors: context.isDarkMode
-                          ? [
-                              color, // Light glow
-                              Colors.transparent, // Fades to transparent
-                            ]
-                          : [
-                              color,
-                              Colors.white10,
-                            ],
-                      stops: const [0.1, 0.8],
+    return AppFadeIn(
+      child: Padding(
+        padding: const EdgeInsets.all(16),
+        child: Stack(
+          alignment: Alignment.topCenter,
+          children: [
+            Padding(
+              padding: const EdgeInsets.only(top: 2),
+              child: Clickable(
+                onTap: onPressed,
+                borderRadius: BorderRadius.circular(20),
+                child: CustomCardWidget(
+                  radius: 20,
+                  width: context.width,
+                  child: Container(
+                    decoration: BoxDecoration(
+                      borderRadius: BorderRadius.circular(20),
+                      gradient: RadialGradient(
+                        center: const Alignment(0.0, -2.0),
+                        radius: 1.8,
+                        colors: context.isDarkMode
+                            ? [
+                                color,
+                                Colors.transparent,
+                              ]
+                            : [
+                                color,
+                                Colors.white10,
+                              ],
+                        stops: const [0.1, 0.8],
+                      ),
                     ),
-                  ),
-                  child: Column(
-                    children: [
-                      const SizedBox(height: 26),
-                      Text(
-                        title,
-                        style: context.textTheme.titleLarge,
-                      ),
-                      const SizedBox(height: 8),
-                      Text(
-                        subTitle,
-                        textAlign: TextAlign.center,
-                        style: context.textTheme.bodySmall,
-                      ),
-                      const SizedBox(height: 14),
-                      Semantics(
-                        button: true,
-                        label: 'Enter $title',
-                        child: TextButton.icon(
-                          iconAlignment: IconAlignment.end,
-                          style: TextButton.styleFrom(
-                              foregroundColor: context.iconColor),
-                          onPressed: onPressed,
-                          label: Text(
-                            "Enter",
-                            style: context.textTheme.titleMedium?.copyWith(
-                              fontWeight: FontWeight.w400,
-                            ),
-                          ),
-                          icon: const Icon(Icons.arrow_forward),
+                    child: Column(
+                      children: [
+                        const SizedBox(height: 26),
+                        Text(
+                          title,
+                          style: context.textTheme.titleLarge,
                         ),
-                      ),
-                    ],
+                        const SizedBox(height: 8),
+                        Text(
+                          subTitle,
+                          textAlign: TextAlign.center,
+                          style: context.textTheme.bodySmall,
+                        ),
+                        const SizedBox(height: 14),
+                        Semantics(
+                          button: true,
+                          label: 'Enter $title',
+                          child: TextButton.icon(
+                            iconAlignment: IconAlignment.end,
+                            style: TextButton.styleFrom(
+                                foregroundColor: context.iconColor),
+                            onPressed: onPressed,
+                            label: Text(
+                              "Enter",
+                              style: context.textTheme.titleMedium?.copyWith(
+                                fontWeight: FontWeight.w400,
+                              ),
+                            ),
+                            icon: const Icon(Icons.arrow_forward),
+                          ),
+                        ),
+                      ],
+                    ),
                   ),
                 ),
               ),
             ),
-          ),
-          Container(
-            height: 4,
-            width: 100,
-            decoration: BoxDecoration(
-              borderRadius: BorderRadius.circular(14),
-              color: color,
+            Container(
+              height: 4,
+              width: 100,
+              decoration: BoxDecoration(
+                borderRadius: BorderRadius.circular(14),
+                color: color,
+              ),
             ),
-          ),
-        ],
+          ],
+        ),
       ),
     );
   }

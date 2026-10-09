@@ -84,38 +84,59 @@ class WorkspacePage extends StatelessWidget {
                 ),
               ),
             ),
-            if (loading)
-              const SliverToBoxAdapter(
-                child: Padding(
-                  padding: EdgeInsets.all(64),
-                  child: Center(child: CircularProgressIndicator()),
-                ),
-              )
-            else if (error.isNotEmpty || itemCount == 0)
-              SliverPadding(
-                padding: EdgeInsets.symmetric(horizontal: padding),
-                sliver: SliverToBoxAdapter(
-                  child: error.isNotEmpty
-                      ? WorkspaceEmpty(
-                          icon: Icons.cloud_off_outlined,
-                          title: 'Unable to load data',
-                          message: error,
-                          onRetry: onRefresh,
+            SliverPadding(
+              padding: EdgeInsets.symmetric(horizontal: padding),
+              sliver: SliverToBoxAdapter(
+                child: AnimatedSwitcher(
+                  duration: AppMotion.duration(context, AppMotion.normal),
+                  switchInCurve: AppMotion.easeOut,
+                  switchOutCurve: AppMotion.easeInOut,
+                  layoutBuilder: (currentChild, previousChildren) {
+                    return Stack(
+                      alignment: Alignment.topCenter,
+                      children: <Widget>[
+                        ...previousChildren,
+                        if (currentChild != null) currentChild,
+                      ],
+                    );
+                  },
+                  child: loading
+                      ? const Padding(
+                          key: ValueKey('workspace-loading'),
+                          padding: EdgeInsets.all(64),
+                          child: Center(child: CircularProgressIndicator()),
                         )
-                      : empty,
-                ),
-              )
-            else
-              SliverPadding(
-                padding: EdgeInsets.symmetric(horizontal: padding),
-                sliver: SliverList.builder(
-                  itemCount: itemCount,
-                  itemBuilder: (context, index) => Padding(
-                    padding: const EdgeInsets.only(bottom: AppSpace.md),
-                    child: itemBuilder(context, index),
-                  ),
+                      : error.isNotEmpty || itemCount == 0
+                      ? KeyedSubtree(
+                          key: ValueKey(
+                            error.isNotEmpty
+                                ? 'workspace-error'
+                                : 'workspace-empty',
+                          ),
+                          child: error.isNotEmpty
+                              ? WorkspaceEmpty(
+                                  icon: Icons.cloud_off_outlined,
+                                  title: 'Unable to load data',
+                                  message: error,
+                                  onRetry: onRefresh,
+                                )
+                              : empty,
+                        )
+                      : Column(
+                          key: ValueKey('workspace-list-$itemCount'),
+                          children: [
+                            for (var index = 0; index < itemCount; index++)
+                              Padding(
+                                padding: const EdgeInsets.only(
+                                  bottom: AppSpace.md,
+                                ),
+                                child: itemBuilder(context, index),
+                              ),
+                          ],
+                        ),
                 ),
               ),
+            ),
             const SliverToBoxAdapter(child: SizedBox(height: AppSpace.xxl)),
           ],
         ),

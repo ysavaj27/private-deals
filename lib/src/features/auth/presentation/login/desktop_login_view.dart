@@ -23,7 +23,8 @@ class DesktopLoginView extends StatelessWidget {
               height: 72,
             ),
           ),
-          CustomCardWidget(
+          AppFadeIn(
+            child: CustomCardWidget(
             borderColor: context.theme.dividerColor.withValues(alpha: 0.4),
             width: 564.66,
             radius: 16,
@@ -174,6 +175,7 @@ class DesktopLoginView extends StatelessWidget {
                 ],
               ),
             ),
+          ),
           ),
         ],
       ),

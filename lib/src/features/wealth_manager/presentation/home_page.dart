@@ -50,47 +50,43 @@ class MainWidgets extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Obx(() {
-      switch (c.currentTab()) {
-        case WTabBarEnum.myInquiries:
-          return const EnquiriesPage();
-        case WTabBarEnum.dashboard:
-          return DashboardPage();
-        // return DashboardPage();
-        case WTabBarEnum.investorTransactions:
-          return InvestorTransactionPage();
-        case WTabBarEnum.myEarnings:
-          return MyEarningPage();
-        case WTabBarEnum.profile:
-          return ProfilePage();
-        case WTabBarEnum.investors:
-          return InvestorsPage();
-        case WTabBarEnum.pendingTasks:
-          return KycPendingInvestorPage();
-        case WTabBarEnum.sendDocuments:
-          return SendDocumentPage();
-        case WTabBarEnum.channelPartner:
-          return ChannelPartnerPage();
-        case WTabBarEnum.notifications:
-          return Container();
-        case WTabBarEnum.primary:
-          return PrimaryLandingPage();
-        case WTabBarEnum.secondary:
-          return SecondaryLandingPage();
-        case WTabBarEnum.preIPO:
-          return PreIPOLandingPage();
-        case WTabBarEnum.logout:
-          return Container();
-        case WTabBarEnum.changePassword:
-          return ChangePasswordPage();
-        case WTabBarEnum.mis:
-          return MISPage();
-        case WTabBarEnum.uploadPortfolio:
-          return UploadPortfolioPage();
-        case WTabBarEnum.portfolio:
-          return PortfolioPage();
-        // case WTabBarEnum.pendingTasks:
-        //   return PendingTaskPage();
-      }
+      final tab = c.currentTab();
+      final Widget page = switch (tab) {
+        WTabBarEnum.myInquiries => const EnquiriesPage(),
+        WTabBarEnum.dashboard => DashboardPage(),
+        WTabBarEnum.investorTransactions => InvestorTransactionPage(),
+        WTabBarEnum.myEarnings => MyEarningPage(),
+        WTabBarEnum.profile => ProfilePage(),
+        WTabBarEnum.investors => InvestorsPage(),
+        WTabBarEnum.pendingTasks => KycPendingInvestorPage(),
+        WTabBarEnum.sendDocuments => SendDocumentPage(),
+        WTabBarEnum.channelPartner => ChannelPartnerPage(),
+        WTabBarEnum.notifications => const SizedBox.shrink(),
+        WTabBarEnum.primary => PrimaryLandingPage(),
+        WTabBarEnum.secondary => SecondaryLandingPage(),
+        WTabBarEnum.preIPO => PreIPOLandingPage(),
+        WTabBarEnum.logout => const SizedBox.shrink(),
+        WTabBarEnum.changePassword => ChangePasswordPage(),
+        WTabBarEnum.mis => MISPage(),
+        WTabBarEnum.uploadPortfolio => UploadPortfolioPage(),
+        WTabBarEnum.portfolio => PortfolioPage(),
+      };
+      return AnimatedSwitcher(
+        duration: AppMotion.duration(context, AppMotion.normal),
+        switchInCurve: AppMotion.easeOut,
+        switchOutCurve: AppMotion.easeInOut,
+        layoutBuilder: (currentChild, previousChildren) {
+          return Stack(
+            fit: StackFit.expand,
+            alignment: Alignment.topCenter,
+            children: <Widget>[
+              ...previousChildren,
+              if (currentChild != null) currentChild,
+            ],
+          );
+        },
+        child: KeyedSubtree(key: ValueKey(tab), child: page),
+      );
     });
   }
 }

@@ -112,8 +112,11 @@ The Institution dashboard contains supported workflow links. No financial totals
 ```sh
 flutter test --no-pub
 flutter analyze --no-pub --no-fatal-infos
-flutter build web --release --no-pub
+bash tools/build_web.sh --no-pub
 ```
+
+Use this wrapper for deployable web builds: it embeds the full `pubspec.yaml` version so
+open tabs can detect updates. See [web deployment](docs/web-deployment.md).
 
 ### API smoke checklist
 

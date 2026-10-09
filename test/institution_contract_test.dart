@@ -80,10 +80,21 @@ void main() {
       uuid: 'owned',
       finalPrice: '105',
       minimumQuantity: '1',
+      isHotDeal: true,
     );
     expect(update['share_price'], 105);
+    expect(update['is_hot_deal'], 1);
     expect(update.containsKey('base_price'), false);
     expect(update.containsKey('company_id'), false);
+    expect(
+      DealPayloads.update(
+        uuid: 'owned',
+        finalPrice: '105',
+        minimumQuantity: '1',
+        isHotDeal: false,
+      )['is_hot_deal'],
+      0,
+    );
   });
   test(
     'Bulk creates exact buy/sell contracts and skips blank or zero rows',

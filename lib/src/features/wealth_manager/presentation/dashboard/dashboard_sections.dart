@@ -1,301 +1,248 @@
-import 'package:private_deals/src/features/wealth_manager/presentation/dashboard/dashboard_page_ctrl.dart';
+import 'package:private_deals/src/shared/app_exports.dart';
 import 'package:private_deals/src/features/wealth_manager/presentation/home_page_ctrl.dart';
 import 'package:private_deals/src/features/wealth_manager/presentation/kyc_pending_investor/kyc_pending_investor_page_ctrl.dart';
-import 'package:private_deals/src/shared/app_exports.dart';
 
-/// Section label used across dashboard blocks.
-class DashboardSectionHeader extends StatelessWidget {
-  const DashboardSectionHeader({
+import 'dashboard_components.dart';
+import 'dashboard_details.dart';
+import 'dashboard_insights.dart';
+
+class DashboardOverview extends StatelessWidget {
+  const DashboardOverview({
     super.key,
-    required this.title,
-    this.subtitle,
-    this.trailing,
+    required this.model,
+    required this.isPrimary,
   });
-
-  final String title;
-  final String? subtitle;
-  final Widget? trailing;
+  final WDashboardModel model;
+  final bool isPrimary;
 
   @override
   Widget build(BuildContext context) {
-    final colors = Theme.of(context).colorScheme;
-    final textTheme = Theme.of(context).textTheme;
-    return Row(
-      crossAxisAlignment: CrossAxisAlignment.end,
-      children: [
-        Expanded(
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Text(title, style: textTheme.titleMedium),
-              if (subtitle != null) ...[
-                const SizedBox(height: 2),
-                Text(
-                  subtitle!,
-                  style: textTheme.bodySmall?.copyWith(
-                    color: colors.onSurfaceVariant,
-                  ),
-                ),
-              ],
-            ],
-          ),
-        ),
-        if (trailing != null) trailing!,
-      ],
-    );
-  }
-}
-
-/// Hero: total AUM + avg ticket — primary visual focus from [WDashboardModel].
-class DashboardHeroCard extends StatelessWidget {
-  const DashboardHeroCard({super.key});
-
-  @override
-  Widget build(BuildContext context) {
-    final c = Get.find<DashboardPageCtrl>();
-    final textTheme = Theme.of(context).textTheme;
-    final isDark = Theme.of(context).brightness == Brightness.dark;
-
-    return Obx(() {
-      final m = c.model();
-      return Container(
-        width: double.infinity,
-        padding: const EdgeInsets.fromLTRB(22, 24, 22, 22),
-        decoration: BoxDecoration(
-          borderRadius: AppRadii.lgAll,
-          gradient: LinearGradient(
-            begin: Alignment.topLeft,
-            end: Alignment.bottomRight,
-            colors: isDark
-                ? const [
-                    BrandColors.navyContainerDark,
-                    Color(0xFF0D1117),
-                    Color(0xFF1A2E48),
-                  ]
-                : const [
-                    BrandColors.navy,
-                    BrandColors.navyAction,
-                    Color(0xFF3D7AB5),
-                  ],
-          ),
-          boxShadow: [
-            BoxShadow(
-              color: BrandColors.navy.withValues(alpha: isDark ? 0.35 : 0.28),
-              blurRadius: 24,
-              offset: const Offset(0, 10),
-            ),
-          ],
-        ),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Row(
-              children: [
-                Container(
-                  padding: const EdgeInsets.symmetric(
-                    horizontal: 10,
-                    vertical: 4,
-                  ),
-                  decoration: BoxDecoration(
-                    color: Colors.white.withValues(alpha: 0.14),
-                    borderRadius: AppRadii.pill,
-                  ),
-                  child: Text(
-                    'Assets under management',
-                    style: textTheme.labelMedium?.copyWith(
-                      color: Colors.white.withValues(alpha: 0.9),
-                      letterSpacing: 0.2,
-                    ),
-                  ),
-                ),
-                const Spacer(),
-                Icon(
-                  Icons.trending_up_rounded,
-                  color: BrandColors.gold.withValues(alpha: 0.95),
-                  size: 22,
-                ),
-              ],
-            ),
-            const SizedBox(height: 18),
-            Text(
-              m.totalAmountInvested.toFormattedPrice,
-              style: textTheme.headlineMedium?.copyWith(
-                color: Colors.white,
-                fontWeight: FontWeight.w700,
-                letterSpacing: -0.6,
-              ),
-            ),
-            const SizedBox(height: 6),
-            Text(
-              'Avg ticket  ·  ${m.averageTicketSize.toFormattedPrice}',
-              style: textTheme.bodyMedium?.copyWith(
-                color: Colors.white.withValues(alpha: 0.78),
-              ),
-            ),
-            const SizedBox(height: 20),
-            Container(height: 1, color: Colors.white.withValues(alpha: 0.12)),
-            const SizedBox(height: 16),
-            Row(
-              children: [
-                _HeroStat(label: 'Investors', value: '${m.totalInvestors}'),
-                _HeroStat(
-                  label: c.isPrimary ? 'Startups' : 'Companies',
-                  value: '${m.totalStartups}',
-                ),
-                _HeroStat(
-                  label: 'Pending',
-                  value:
-                      '${m.pendingKyc + m.pendingDocumentSign + m.pendingPayment.toInt()}',
-                ),
-              ],
-            ),
-          ],
-        ),
-      );
-    });
-  }
-}
-
-class _HeroStat extends StatelessWidget {
-  const _HeroStat({required this.label, required this.value});
-
-  final String label;
-  final String value;
-
-  @override
-  Widget build(BuildContext context) {
-    final textTheme = Theme.of(context).textTheme;
-    return Expanded(
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Text(
-            value,
-            style: textTheme.titleLarge?.copyWith(
-              color: Colors.white,
-              fontWeight: FontWeight.w700,
-            ),
-          ),
-          const SizedBox(height: 2),
-          Text(
-            label,
-            style: textTheme.labelSmall?.copyWith(
-              color: Colors.white.withValues(alpha: 0.65),
-            ),
-          ),
-        ],
+    final theme = Theme.of(context);
+    final items = [
+      (
+        'Total invested',
+        dashboardMoney(model.totalAmountInvested),
+        Icons.account_balance_wallet_outlined,
+        'Invested capital',
       ),
-    );
-  }
-}
-
-/// Compact secondary KPIs under the hero (same model fields, quieter UI).
-class DashboardKpiStrip extends StatelessWidget {
-  const DashboardKpiStrip({super.key, this.compact = false});
-
-  final bool compact;
-
-  @override
-  Widget build(BuildContext context) {
-    final c = Get.find<DashboardPageCtrl>();
-    return Obx(() {
-      final m = c.model();
-      final items = [
-        _KpiTileData(
-          icon: Icons.payments_outlined,
-          title: 'Avg ticket',
-          value: m.averageTicketSize.toFormattedPrice,
-          accent: BrandColors.gold,
-        ),
-        _KpiTileData(
-          icon: Icons.groups_outlined,
-          title: 'Investors',
-          value: '${m.totalInvestors}',
-          accent: BrandColors.navyAction,
-        ),
-        _KpiTileData(
-          icon: Icons.apartment_outlined,
-          title: c.isPrimary ? 'Startups' : 'Companies',
-          value: '${m.totalStartups}',
-          accent: const Color(0xFF0F766E),
-        ),
-      ];
-
-      if (compact) {
-        return Row(
+      (
+        'Average ticket',
+        dashboardMoney(model.averageTicketSize),
+        Icons.payments_outlined,
+        'Per investment',
+      ),
+      (
+        'Investors',
+        '${model.totalInvestors}',
+        Icons.people_outline_rounded,
+        'In this portfolio',
+      ),
+      (
+        isPrimary ? 'Startups' : 'Companies',
+        '${model.totalStartups}',
+        Icons.apartment_rounded,
+        'In this portfolio',
+      ),
+    ];
+    return LayoutBuilder(
+      builder: (context, constraints) {
+        final columns = constraints.maxWidth >= 900
+            ? 4
+            : constraints.maxWidth >=
+                  MediaQuery.textScalerOf(context).scale(300)
+            ? 2
+            : 1;
+        final width = (constraints.maxWidth - (columns - 1) * 12) / columns;
+        return Wrap(
+          spacing: 12,
+          runSpacing: 12,
           children: [
-            for (var i = 0; i < items.length; i++) ...[
-              if (i > 0) const SizedBox(width: AppSpace.sm),
-              Expanded(child: _KpiTile(data: items[i])),
-            ],
+            for (var i = 0; i < items.length; i++)
+              SizedBox(
+                width: width,
+                child: CustomCardWidget(
+                  padding: const EdgeInsets.all(20),
+                  color: i == 0 ? theme.colorScheme.primaryContainer : null,
+                  borderColor: i == 0
+                      ? theme.colorScheme.primary.withValues(alpha: .35)
+                      : null,
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Icon(
+                        items[i].$3,
+                        size: 21,
+                        color: theme.colorScheme.primary,
+                      ),
+                      const SizedBox(height: 20),
+                      Tooltip(
+                        message: i < 2
+                            ? dashboardMoney(
+                                i == 0
+                                    ? model.totalAmountInvested
+                                    : model.averageTicketSize,
+                                full: true,
+                              )
+                            : items[i].$2,
+                        child: Text(
+                          items[i].$2,
+                          style: theme.textTheme.headlineSmall?.copyWith(
+                            fontWeight: FontWeight.w700,
+                          ),
+                        ),
+                      ),
+                      const SizedBox(height: 5),
+                      Text(items[i].$1, style: theme.textTheme.titleSmall),
+                      const SizedBox(height: 4),
+                      Text(
+                        items[i].$4,
+                        style: theme.textTheme.bodySmall?.copyWith(
+                          color: theme.colorScheme.onSurfaceVariant,
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ),
           ],
         );
-      }
-
-      return Row(
-        children: [
-          for (var i = 0; i < items.length; i++) ...[
-            if (i > 0) const SizedBox(width: AppSpace.md),
-            Expanded(child: _KpiTile(data: items[i], tall: true)),
-          ],
-        ],
-      );
-    });
+      },
+    );
   }
 }
 
-class _KpiTileData {
-  const _KpiTileData({
-    required this.icon,
-    required this.title,
-    required this.value,
-    required this.accent,
+class DashboardPriorities extends StatelessWidget {
+  const DashboardPriorities({
+    super.key,
+    required this.model,
+    this.readOnly = false,
   });
+  final WDashboardModel model;
+  final bool readOnly;
 
-  final IconData icon;
-  final String title;
-  final String value;
-  final Color accent;
-}
-
-class _KpiTile extends StatelessWidget {
-  const _KpiTile({required this.data, this.tall = false});
-
-  final _KpiTileData data;
-  final bool tall;
+  void _open(PendingTaskEnum type) {
+    Get.find<HomePageCtrl>().onTap(WTabBarEnum.pendingTasks);
+    // Select on the destination page after its route has created the controller.
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (Get.isRegistered<KycPendingInvestorPageCtrl>() &&
+          Get.isRegistered<HomePageCtrl>() &&
+          Get.find<HomePageCtrl>().currentTab() == WTabBarEnum.pendingTasks) {
+        Get.find<KycPendingInvestorPageCtrl>().selectType(type);
+      }
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
-    final colors = Theme.of(context).colorScheme;
-    final textTheme = Theme.of(context).textTheme;
-
+    final theme = Theme.of(context);
+    final clear =
+        model.pendingKyc == 0 &&
+        model.pendingDocumentSign == 0 &&
+        model.pendingPayment == 0;
+    final items = [
+      (
+        'KYC pending',
+        '${model.pendingKyc}',
+        model.pendingKyc > 0,
+        PendingTaskEnum.kyc,
+      ),
+      (
+        'Documents to sign',
+        '${model.pendingDocumentSign}',
+        model.pendingDocumentSign > 0,
+        PendingTaskEnum.document,
+      ),
+      // The dashboard payment field has no confirmed count/amount contract.
+      // Keep its actionable state without adding it to task totals.
+      (
+        'Fund transfers',
+        model.pendingPayment > 0 ? 'Review' : 'Clear',
+        model.pendingPayment > 0,
+        PendingTaskEnum.fundTransfer,
+      ),
+    ];
     return CustomCardWidget(
-      padding: EdgeInsets.all(tall ? 18 : 14),
+      padding: const EdgeInsets.all(20),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Container(
-            width: 34,
-            height: 34,
-            decoration: BoxDecoration(
-              color: data.accent.withValues(alpha: 0.12),
-              borderRadius: AppRadii.smAll,
-            ),
-            child: Icon(data.icon, size: 18, color: data.accent),
+          Wrap(
+            spacing: 10,
+            runSpacing: 6,
+            crossAxisAlignment: WrapCrossAlignment.center,
+            children: [
+              Icon(
+                clear ? Icons.check_circle_outline : Icons.task_alt_rounded,
+                size: 20,
+                color: theme.colorScheme.primary,
+              ),
+              Text('Investor priorities', style: theme.textTheme.titleSmall),
+              Text(
+                clear
+                    ? 'No pending actions reported'
+                    : 'Follow up to move investments forward',
+                style: theme.textTheme.bodySmall?.copyWith(
+                  color: theme.colorScheme.onSurfaceVariant,
+                ),
+              ),
+            ],
           ),
-          SizedBox(height: tall ? 16 : 12),
-          Text(
-            data.value,
-            maxLines: 1,
-            overflow: TextOverflow.ellipsis,
-            style: textTheme.titleMedium?.copyWith(fontWeight: FontWeight.w700),
-          ),
-          const SizedBox(height: 2),
-          Text(
-            data.title,
-            style: textTheme.bodySmall?.copyWith(
-              color: colors.onSurfaceVariant,
-            ),
+          const SizedBox(height: 14),
+          LayoutBuilder(
+            builder: (context, constraints) {
+              final columns = constraints.maxWidth >= 640 ? 3 : 1;
+              return Wrap(
+                spacing: 12,
+                runSpacing: 8,
+                children: [
+                  for (final item in items)
+                    SizedBox(
+                      width:
+                          (constraints.maxWidth - (columns - 1) * 12) / columns,
+                      child: Material(
+                        color: theme.colorScheme.surfaceContainerHigh
+                            .withValues(alpha: .5),
+                        borderRadius: BorderRadius.circular(10),
+                        child: InkWell(
+                          borderRadius: BorderRadius.circular(10),
+                          onTap: readOnly ? null : () => _open(item.$4),
+                          child: Padding(
+                            padding: const EdgeInsets.symmetric(
+                              horizontal: 14,
+                              vertical: 14,
+                            ),
+                            child: Row(
+                              children: [
+                                Expanded(
+                                  child: Text(
+                                    item.$1,
+                                    style: theme.textTheme.bodySmall,
+                                  ),
+                                ),
+                                const SizedBox(width: 8),
+                                Text(
+                                  item.$2,
+                                  style: theme.textTheme.titleSmall?.copyWith(
+                                    color: item.$3
+                                        ? theme.colorScheme.primary
+                                        : theme.colorScheme.onSurfaceVariant,
+                                  ),
+                                ),
+                                const SizedBox(width: 6),
+                                Icon(
+                                  Icons.arrow_forward_rounded,
+                                  size: 16,
+                                  color: theme.colorScheme.onSurfaceVariant,
+                                ),
+                              ],
+                            ),
+                          ),
+                        ),
+                      ),
+                    ),
+                ],
+              );
+            },
           ),
         ],
       ),
@@ -303,325 +250,137 @@ class _KpiTile extends StatelessWidget {
   }
 }
 
-/// Pending KYC / Document / Fund Transfer — navigates to Pending Tasks tab.
-class DashboardPendingStrip extends StatelessWidget {
-  const DashboardPendingStrip({super.key});
-
-  void _open(PendingTaskEnum type) {
-    final home = Get.find<HomePageCtrl>();
-    home.onTap(WTabBarEnum.pendingTasks);
-    final taskCtrl = Get.put(KycPendingInvestorPageCtrl());
-    taskCtrl.type(type);
-  }
+class DashboardTopInvestors extends StatelessWidget {
+  const DashboardTopInvestors({super.key, required this.model});
+  final WDashboardModel model;
 
   @override
   Widget build(BuildContext context) {
-    final c = Get.find<DashboardPageCtrl>();
-    final colors = Theme.of(context).colorScheme;
-    final textTheme = Theme.of(context).textTheme;
-
-    return Obx(() {
-      final m = c.model();
-      final total =
-          m.pendingKyc + m.pendingDocumentSign + m.pendingPayment.toInt();
-      final tiles = [
-        (
-          'KYC',
-          '${m.pendingKyc}',
-          Icons.badge_outlined,
-          PendingTaskEnum.kyc,
-          colors.primary,
-        ),
-        (
-          'Documents',
-          '${m.pendingDocumentSign}',
-          Icons.description_outlined,
-          PendingTaskEnum.document,
-          BrandColors.gold,
-        ),
-        (
-          'Fund transfer',
-          '${m.pendingPayment.toInt()}',
-          Icons.account_balance_wallet_outlined,
-          PendingTaskEnum.fundTransfer,
-          const Color(0xFFDB2777),
-        ),
-      ];
-
-      return CustomCardWidget(
-        padding: AppSpace.paddingLg,
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Row(
-              children: [
-                Expanded(
-                  child: DashboardSectionHeader(
-                    title: 'Action required',
-                    subtitle: total == 0
-                        ? 'You are all caught up'
-                        : '$total items need attention',
-                  ),
-                ),
-                if (total > 0)
-                  Container(
-                    padding: const EdgeInsets.symmetric(
-                      horizontal: 10,
-                      vertical: 4,
-                    ),
-                    decoration: BoxDecoration(
-                      color: colors.error.withValues(alpha: 0.12),
-                      borderRadius: AppRadii.pill,
-                    ),
-                    child: Text(
-                      '$total',
-                      style: textTheme.labelMedium?.copyWith(
-                        color: colors.error,
-                        fontWeight: FontWeight.w700,
-                      ),
-                    ),
-                  ),
-              ],
+    final theme = Theme.of(context);
+    final list = [...model.topInvestors]
+      ..sort((a, b) => b.amountInvested.compareTo(a.amountInvested));
+    return DashboardPanel(
+      title: 'Leading investors',
+      subtitle: 'Ranked by invested capital in this portfolio.',
+      trailing: model.investors.isEmpty
+          ? null
+          : TextButton.icon(
+              onPressed: () =>
+                  showDashboardInvestorDirectory(context, model.investors),
+              icon: const Icon(Icons.people_outline, size: 18),
+              label: const Text('View investor directory'),
             ),
-            const SizedBox(height: AppSpace.md),
-            Row(
+      child: list.isEmpty
+          ? const DashboardEmpty(
+              title: 'No leading investors yet',
+              message: 'Investor contributions will appear here when investment data is available.',
+              icon: Icons.people_outline,
+            )
+          : Column(
               children: [
-                for (var i = 0; i < tiles.length; i++) ...[
-                  if (i > 0) const SizedBox(width: AppSpace.sm),
-                  Expanded(
-                    child: _PendingTile(
-                      title: tiles[i].$1,
-                      value: tiles[i].$2,
-                      icon: tiles[i].$3,
-                      accent: tiles[i].$5,
-                      onTap: () => _open(tiles[i].$4),
-                    ),
+                for (var i = 0; i < list.take(5).length; i++) ...[
+                  if (i > 0) const Divider(height: 28),
+                  Row(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      CircleAvatar(
+                        radius: 16,
+                        backgroundColor: theme.colorScheme.primaryContainer,
+                        child: Text(
+                          '${i + 1}',
+                          style: theme.textTheme.labelMedium?.copyWith(
+                            color: theme.colorScheme.onPrimaryContainer,
+                          ),
+                        ),
+                      ),
+                      const SizedBox(width: 14),
+                      Expanded(
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(
+                              list[i].name.isEmpty
+                                  ? 'Unnamed investor'
+                                  : list[i].name,
+                              style: theme.textTheme.titleSmall,
+                            ),
+                            const SizedBox(height: 5),
+                            Wrap(
+                              spacing: 16,
+                              runSpacing: 6,
+                              children: [
+                                DashboardAmount(
+                                  list[i].amountInvested,
+                                  style: theme.textTheme.titleSmall?.copyWith(
+                                    color: theme.colorScheme.primary,
+                                  ),
+                                ),
+                                Text(
+                                  '${list[i].totalStartups} companies',
+                                  style: theme.textTheme.bodySmall,
+                                ),
+                                if (list[i].commissionEarned > 0)
+                                  Text(
+                                    'Commission ${dashboardMoney(list[i].commissionEarned)}',
+                                    style: theme.textTheme.bodySmall,
+                                  ),
+                              ],
+                            ),
+                          ],
+                        ),
+                      ),
+                    ],
                   ),
                 ],
+                if (list.length > 5)
+                  Padding(
+                    padding: const EdgeInsets.only(top: 16),
+                    child: TextButton(
+                      onPressed: () =>
+                          showDashboardInvestorDirectory(context, list),
+                      child: Text('View all ${list.length} leading investors'),
+                    ),
+                  ),
               ],
             ),
-          ],
-        ),
-      );
-    });
-  }
-}
-
-class _PendingTile extends StatelessWidget {
-  const _PendingTile({
-    required this.title,
-    required this.value,
-    required this.icon,
-    required this.accent,
-    required this.onTap,
-  });
-
-  final String title;
-  final String value;
-  final IconData icon;
-  final Color accent;
-  final VoidCallback onTap;
-
-  @override
-  Widget build(BuildContext context) {
-    final colors = Theme.of(context).colorScheme;
-    final textTheme = Theme.of(context).textTheme;
-
-    return Material(
-      color: colors.surfaceContainerLow,
-      borderRadius: AppRadii.mdAll,
-      child: InkWell(
-        onTap: onTap,
-        borderRadius: AppRadii.mdAll,
-        child: Container(
-          padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 14),
-          decoration: BoxDecoration(
-            borderRadius: AppRadii.mdAll,
-            border: Border.all(color: colors.outlineVariant),
-          ),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Icon(icon, size: 20, color: accent),
-              const SizedBox(height: 12),
-              Text(
-                value,
-                style: textTheme.headlineSmall?.copyWith(
-                  fontWeight: FontWeight.w700,
-                  height: 1,
-                ),
-              ),
-              const SizedBox(height: 6),
-              Text(
-                title,
-                maxLines: 1,
-                overflow: TextOverflow.ellipsis,
-                style: textTheme.labelSmall?.copyWith(
-                  color: colors.onSurfaceVariant,
-                ),
-              ),
-            ],
-          ),
-        ),
-      ),
     );
   }
 }
 
-/// Ranked top investors from [WDashboardModel.topInvestors].
-class DashboardTopInvestors extends StatelessWidget {
-  const DashboardTopInvestors({super.key, this.onViewAll});
-
-  final VoidCallback? onViewAll;
-
+class DashboardGettingStarted extends StatelessWidget {
+  const DashboardGettingStarted({super.key, required this.isPrimary});
+  final bool isPrimary;
   @override
-  Widget build(BuildContext context) {
-    final c = Get.find<DashboardPageCtrl>();
-    final colors = Theme.of(context).colorScheme;
-
-    return Obx(() {
-      final list = c.model().topInvestors;
-      if (list.isEmpty) return const SizedBox.shrink();
-
-      return CustomCardWidget(
-        padding: AppSpace.paddingLg,
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            DashboardSectionHeader(
-              title: 'Top investors',
-              subtitle: 'Most active by amount invested',
-              trailing: onViewAll != null && c.model().investors.isNotEmpty
-                  ? TextButton(
-                      onPressed: onViewAll,
-                      child: const Text('View all'),
-                    )
-                  : null,
-            ),
-            const SizedBox(height: AppSpace.md),
-            for (var i = 0; i < list.length; i++) ...[
-              if (i > 0) Divider(height: 20, color: colors.outlineVariant),
-              _InvestorRankRow(
-                rank: i + 1,
-                name: list[i].name,
-                photo: list[i].profilePhoto,
-                amount: list[i].amountInvested.toFormattedPrice,
-                startups: list[i].totalStartups,
-                commission: list[i].commissionEarned,
-              ),
-            ],
-          ],
-        ),
-      );
-    });
-  }
-}
-
-class _InvestorRankRow extends StatelessWidget {
-  const _InvestorRankRow({
-    required this.rank,
-    required this.name,
-    required this.photo,
-    required this.amount,
-    required this.startups,
-    required this.commission,
-  });
-
-  final int rank;
-  final String name;
-  final String photo;
-  final String amount;
-  final int startups;
-  final double commission;
-
-  Color _rankColor(BuildContext context) {
-    switch (rank) {
-      case 1:
-        return BrandColors.gold;
-      case 2:
-        return const Color(0xFF94A3B8);
-      case 3:
-        return const Color(0xFFB45309);
-      default:
-        return Theme.of(context).colorScheme.primary;
-    }
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    final colors = Theme.of(context).colorScheme;
-    final textTheme = Theme.of(context).textTheme;
-    final initial = name.trim().isEmpty
-        ? '?'
-        : name.trim().substring(0, 1).toUpperCase();
-    final accent = _rankColor(context);
-
-    return Row(
+  Widget build(BuildContext context) => DashboardPanel(
+    title: 'A clear view, from your first investment',
+    subtitle: 'Your portfolio insights will build as investments are recorded.',
+    child: Column(
       children: [
-        Container(
-          width: 28,
-          height: 28,
-          alignment: Alignment.center,
-          decoration: BoxDecoration(
-            color: accent.withValues(alpha: 0.15),
-            shape: BoxShape.circle,
-          ),
-          child: Text(
-            '$rank',
-            style: textTheme.labelMedium?.copyWith(
-              color: accent,
-              fontWeight: FontWeight.w700,
-            ),
-          ),
+        const DashboardEmpty(
+          title: 'No investments to show yet',
+          message: 'Explore opportunities for your investors. Once investments are available, you will see activity, sector exposure and company performance here.',
+          icon: Icons.account_balance_wallet_outlined,
         ),
-        const SizedBox(width: AppSpace.md),
-        CircleAvatar(
-          radius: 20,
-          backgroundColor: colors.primaryContainer,
-          foregroundImage: photo.isNotEmpty ? NetworkImage(photo) : null,
-          child: photo.isEmpty
-              ? Text(
-                  initial,
-                  style: textTheme.titleSmall?.copyWith(
-                    color: colors.onPrimaryContainer,
-                    fontWeight: FontWeight.w700,
-                  ),
-                )
-              : null,
-        ),
-        const SizedBox(width: AppSpace.md),
-        Expanded(
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Text(
-                name,
-                maxLines: 1,
-                overflow: TextOverflow.ellipsis,
-                style: textTheme.titleSmall,
+        Wrap(
+          alignment: WrapAlignment.center,
+          spacing: 12,
+          runSpacing: 8,
+          children: [
+            FilledButton.icon(
+              onPressed: () => Get.find<HomePageCtrl>().onTap(
+                isPrimary ? WTabBarEnum.primary : WTabBarEnum.preIPO,
               ),
-              if (startups > 0 || commission > 0) ...[
-                const SizedBox(height: 2),
-                Text(
-                  [
-                    if (startups > 0) '$startups deals',
-                    if (commission > 0) 'Comm ${commission.toFormattedPrice}',
-                  ].join(' · '),
-                  maxLines: 1,
-                  overflow: TextOverflow.ellipsis,
-                  style: textTheme.bodySmall?.copyWith(
-                    color: colors.onSurfaceVariant,
-                  ),
-                ),
-              ],
-            ],
-          ),
-        ),
-        Text(
-          amount,
-          style: textTheme.titleSmall?.copyWith(fontWeight: FontWeight.w700),
+              icon: const Icon(Icons.explore_outlined, size: 18),
+              label: const Text('Explore opportunities'),
+            ),
+            TextButton(
+              onPressed: () =>
+                  Get.find<HomePageCtrl>().onTap(WTabBarEnum.investors),
+              child: const Text('View investors'),
+            ),
+          ],
         ),
       ],
-    );
-  }
+    ),
+  );
 }

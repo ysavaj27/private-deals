@@ -51,20 +51,38 @@ class CustomOutlinedButton extends StatelessWidget {
           borderRadius: BorderRadius.circular(borderRadius ?? 12.0),
         ),
       ),
-      child: isLoading
-          ? Loader(
-              color: scheme.primary,
-              size: 25,
-            )
-          : child ??
-              Text(
-                text,
-                style: TextStyle(
-                  fontSize: 14.0,
-                  color: resolvedForeground,
-                  fontWeight: FontWeight.w500,
-                ),
+      child: AnimatedSwitcher(
+        duration: AppMotion.duration(context, AppMotion.fast),
+        switchInCurve: AppMotion.easeOut,
+        switchOutCurve: AppMotion.easeInOut,
+        layoutBuilder: (currentChild, previousChildren) {
+          return Stack(
+            alignment: Alignment.center,
+            children: <Widget>[
+              ...previousChildren,
+              if (currentChild != null) currentChild,
+            ],
+          );
+        },
+        child: isLoading
+            ? Loader(
+                key: const ValueKey('loading'),
+                color: scheme.primary,
+                size: 25,
+              )
+            : KeyedSubtree(
+                key: const ValueKey('label'),
+                child: child ??
+                    Text(
+                      text,
+                      style: TextStyle(
+                        fontSize: 14.0,
+                        color: resolvedForeground,
+                        fontWeight: FontWeight.w500,
+                      ),
+                    ),
               ),
+      ),
     );
   }
 }

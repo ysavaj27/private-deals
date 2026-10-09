@@ -2,8 +2,9 @@ import 'package:private_deals/src/features/investors/presentation/complete_inves
 
 import 'unlisted_portfolio_view.dart';
 
-import 'package:private_deals/src/features/wealth_manager/presentation/portfolio/primary_sell_share_dialog/primary_sell_share_dialog.dart';
-import 'package:private_deals/src/features/wealth_manager/presentation/portfolio/primary_sell_share_dialog/primary_sell_share_dialog_ctrl.dart';
+// Temporarily unused while Sell is hidden on the WM portfolio Primary tab.
+// import 'package:private_deals/src/features/wealth_manager/presentation/portfolio/primary_sell_share_dialog/primary_sell_share_dialog.dart';
+// import 'package:private_deals/src/features/wealth_manager/presentation/portfolio/primary_sell_share_dialog/primary_sell_share_dialog_ctrl.dart';
 import 'package:private_deals/src/shared/app_exports.dart';
 
 import 'package:private_deals/src/features/wealth_manager/presentation/portfolio/portfolio_page_ctrl.dart';
@@ -175,14 +176,21 @@ class PreIpoListWidget extends StatelessWidget {
   final PortfolioPageCtrl c = Get.find<PortfolioPageCtrl>();
   PreIpoListWidget({super.key});
   @override
-  Widget build(BuildContext context) => Obx(
-    () => c.isLoading.isTrue
-        ? const Loader()
+  Widget build(BuildContext context) => Obx(() {
+    final child = c.isLoading.isTrue
+        ? const Loader(key: ValueKey('portfolio-preipo-loading'))
         : UnlistedPortfolioView(
+            key: const ValueKey('portfolio-preipo-content'),
             list: c.preIpoList.toList(),
             onRefresh: c.getStartupPortfolio,
-          ),
-  );
+          );
+    return AnimatedSwitcher(
+      duration: AppMotion.duration(context, AppMotion.normal),
+      switchInCurve: AppMotion.easeOut,
+      switchOutCurve: AppMotion.easeInOut,
+      child: child,
+    );
+  });
 }
 
 class ListWidget extends StatelessWidget {
@@ -195,6 +203,7 @@ class ListWidget extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Obx(() {
+      final Widget child;
       if (c.isLoading.isFalse) {
         List<StartupPortfolioListModel> list = [];
         if (c.isSearching.isFalse) {
@@ -203,7 +212,8 @@ class ListWidget extends StatelessWidget {
           list = c.searchList;
         }
         if (list.isNotEmpty) {
-          return RefreshIndicator(
+          child = RefreshIndicator(
+            key: ValueKey('portfolio-list-${list.length}'),
             onRefresh: c.getStartupPortfolio,
             child: StartUpPortfolioWidget(
               list: list,
@@ -211,14 +221,21 @@ class ListWidget extends StatelessWidget {
             ),
           );
         } else {
-          return NoDataView(
+          child = NoDataView(
+            key: const ValueKey('portfolio-empty'),
             onPressed: c.getStartupPortfolio,
             isRefreshButton: c.isSearching.isTrue ? false : true,
           );
         }
       } else {
-        return const Loader();
+        child = const Loader(key: ValueKey('portfolio-loading'));
       }
+      return AnimatedSwitcher(
+        duration: AppMotion.duration(context, AppMotion.normal),
+        switchInCurve: AppMotion.easeOut,
+        switchOutCurve: AppMotion.easeInOut,
+        child: child,
+      );
     });
   }
 }
@@ -492,32 +509,41 @@ class StartupPortfolioCard extends StatelessWidget {
                     ),
                   ),
                   Visibility(
-                    visible: model.canSell,
-                    child: !model.investor.isPreIpoKycComplete
-                        ? CompleteInvestorKycButton(
-                            investor: model.investor,
-                            onSaved: () async {
-                              await onRefresh();
-                            },
-                          )
-                        : CustomElevatedButton(
-                            onPressed: () async {
-                              var res = await showCustomDialog(
-                                PrimarySellShareDialog(model),
-                              );
-                              Get.delete<PrimarySellShareDialogCtrl>();
-                              if (res == true) {
-                                onRefresh();
-                              }
-                            },
-                            padding: EdgeInsets.zero,
-                            text: 'Sell',
-                            size: const Size(65, 35),
-                            // width: 187,
-                            // height: 44,
-                            radius: 8,
-                          ),
+                    visible: model.canSell &&
+                        !model.investor.isPreIpoKycComplete,
+                    child: CompleteInvestorKycButton(
+                      investor: model.investor,
+                      onSaved: () async {
+                        await onRefresh();
+                      },
+                    ),
                   ),
+                  // Temporarily hidden: Sell button on WM portfolio Primary tab
+                  // Visibility(
+                  //   visible: model.canSell,
+                  //   child: !model.investor.isPreIpoKycComplete
+                  //       ? CompleteInvestorKycButton(
+                  //           investor: model.investor,
+                  //           onSaved: () async {
+                  //             await onRefresh();
+                  //           },
+                  //         )
+                  //       : CustomElevatedButton(
+                  //           onPressed: () async {
+                  //             var res = await showCustomDialog(
+                  //               PrimarySellShareDialog(model),
+                  //             );
+                  //             Get.delete<PrimarySellShareDialogCtrl>();
+                  //             if (res == true) {
+                  //               onRefresh();
+                  //             }
+                  //           },
+                  //           padding: EdgeInsets.zero,
+                  //           text: 'Sell',
+                  //           size: const Size(65, 35),
+                  //           radius: 8,
+                  //         ),
+                  // ),
                 ],
               ),
             ],

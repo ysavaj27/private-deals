@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 
 import 'package:private_deals/src/shared/theme/brand_colors.dart';
 import 'package:private_deals/src/shared/theme/section_accents.dart';
+import 'package:private_deals/src/shared/theme/app_picker_theme.dart';
 
 export 'package:private_deals/src/shared/theme/brand_colors.dart' show BrandColors, partnerActionBlue;
 
@@ -170,6 +171,8 @@ ThemeData _buildTheme(ColorScheme colors) {
     dividerColor: colors.outlineVariant,
     disabledColor: colors.onSurface.withAlpha(97),
     textTheme: textTheme,
+    datePickerTheme: AppPickerTheme.date(colors, textTheme),
+    timePickerTheme: AppPickerTheme.time(colors, textTheme),
     appBarTheme: AppBarTheme(
       centerTitle: false,
       elevation: 0,

@@ -83,7 +83,8 @@ void main() {
           'verified_status': 'Verified Seller',
           'companies_previously_listed': 'Oyo, NSE',
           'geographic_presence': 'Mumbai, Delhi',
-          'approach': 'We source unlisted shares and settle in the agreed window.',
+          'approach':
+              'We source unlisted shares and settle in the agreed window.',
         },
       },
     });
@@ -211,5 +212,68 @@ void main() {
       availablePreIPODeals(CompanyModel.fromJson({'deals': null})),
       isEmpty,
     );
+  });
+
+  test('nested sell groups are buyable and buy groups offer selling', () {
+    Map<String, dynamic> entry(int id) => {
+      ...deal.toJson(),
+      'id': id,
+      'uuid': 'grouped-$id',
+      // The grouping supplies these fields in the new response.
+      'deal_type': null,
+      'is_hot_deal': null,
+    };
+    final company = CompanyModel.fromJson({
+      'deals': {
+        'sell': {
+          'hot': [entry(1)],
+          'normal': [entry(2), entry(3), entry(4)],
+        },
+        'buy': {
+          'hot': [entry(5)],
+          'normal': [
+            entry(6),
+            {...entry(7), 'status': 'sold'},
+          ],
+        },
+      },
+    });
+
+    // Serialization and copying must retain the normalized direction and tier.
+    final restored = CompanyModel.fromJson(company.toJson());
+    final available = availablePreIPODeals(restored);
+    final buyable = available.where((d) => PreIPOOffer.fromDeal(d).canBuy);
+    final sellable = available.where(
+      (d) => !PreIPOOffer.fromDeal(d).isSellDeal,
+    );
+    expect(buyable.map((d) => d.id), [1, 2, 3, 4]);
+    expect(sellable.map((d) => d.id), [5, 6]);
+    expect(available.where((d) => d.isHotDeal).map((d) => d.id), [1, 5]);
+    expect(buyable.first.seller.id, deal.seller.id);
+    expect(PreIPOOffer.fromDeal(buyable.first).dealUuid, 'grouped-1');
+    expect(sellable.every((d) => !PreIPOOffer.fromDeal(d).canBuy), isTrue);
+  });
+
+  test('empty and partial grouped responses remain valid', () {
+    for (final groups in [
+      <String, dynamic>{},
+      {'sell': null, 'buy': null},
+      {'sell': <String, dynamic>{}},
+      {
+        'buy': {'hot': null, 'normal': []},
+      },
+    ]) {
+      expect(CompanyModel.fromJson({'deals': groups}).deals, isEmpty);
+    }
+    final company = CompanyModel.fromJson({
+      'deals': {
+        'buy': {
+          'normal': [deal.toJson()],
+        },
+      },
+    });
+    expect(company.deals.single.dealType, 'buy');
+    expect(company.deals.single.isHotDeal, isFalse);
+    expect(PreIPOOffer.fromDeal(company.deals.single).canBuy, isFalse);
   });
 }

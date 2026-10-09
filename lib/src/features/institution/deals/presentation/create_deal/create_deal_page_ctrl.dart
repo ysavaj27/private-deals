@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:private_deals/src/shared/widgets/app_date_time_picker.dart';
 import 'package:get/get.dart';
 import 'package:private_deals/src/core/session/auth_session.dart';
 import 'package:private_deals/src/features/institution/data/api/company_api.dart';
@@ -44,9 +45,8 @@ class CreateDealPageCtrl extends GetxController {
 
   bool get isBuyDeal => dealType.value == 'buy';
 
-  // Read isBuyDeal first so Obx always tracks dealType (avoids GetX error on LP Secondary).
-  bool get requiresSettlement =>
-      !isBuyDeal && companyType == CompanyType.unlisted;
+  // Settlement applies to every sell deal, including LP Secondary.
+  bool get requiresSettlement => dealType.value == 'sell';
 
   String get availableQuantityLabel =>
       isBuyDeal ? 'Required total quantity' : 'Available total quantity';
@@ -161,14 +161,15 @@ class CreateDealPageCtrl extends GetxController {
     final today = DateTime(nowIST.year, nowIST.month, nowIST.day);
     final selected = expiryDate.value;
 
-    final result = await showDatePicker(
+    final result = await AppDateTimePicker.date(
       context: context,
       initialDate: selected != null && !selected.isBefore(today)
           ? selected
           : today,
       firstDate: today,
+      currentDate: today,
       lastDate: DateTime(2100, 12, 31),
-      helpText: 'Select expiry date · IST',
+      title: 'Expiry date · IST',
     );
 
     if (result == null || isClosed) return;
@@ -180,12 +181,13 @@ class CreateDealPageCtrl extends GetxController {
   Future<void> pickExpiryTime(BuildContext context) async {
     final nowIST = DateTime.now().toUtc().add(istOffset);
 
-    final result = await showTimePicker(
+    final result = await AppDateTimePicker.time(
       context: context,
       initialTime:
           expiryTime.value ??
           TimeOfDay(hour: nowIST.hour, minute: nowIST.minute),
-      helpText: 'Select expiry time · IST',
+      title: 'Expiry time · IST',
+      use24HourFormat: true,
     );
 
     if (result == null || isClosed) return;

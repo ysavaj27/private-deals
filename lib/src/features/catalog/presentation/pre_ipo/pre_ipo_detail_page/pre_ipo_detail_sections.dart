@@ -185,14 +185,19 @@ class PreIPODetailSections extends StatelessWidget {
                   return Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Text(
-                        shorten && !expanded
-                            ? '${company.about.substring(0, 100)}…'
-                            : company.about,
-                        style: TextStyle(
-                          fontSize: 14,
-                          height: 1.85,
-                          color: colors.onSurfaceVariant,
+                      AnimatedSize(
+                        duration: AppMotion.duration(context, AppMotion.normal),
+                        curve: AppMotion.easeInOut,
+                        alignment: Alignment.topLeft,
+                        child: Text(
+                          shorten && !expanded
+                              ? '${company.about.substring(0, 100)}…'
+                              : company.about,
+                          style: TextStyle(
+                            fontSize: 14,
+                            height: 1.85,
+                            color: colors.onSurfaceVariant,
+                          ),
                         ),
                       ),
                       if (shorten)

@@ -9,6 +9,12 @@ import 'package:private_deals/src/features/catalog/presentation/pre_ipo/pre_ipo_
 import 'package:private_deals/src/features/catalog/presentation/pre_ipo/pre_ipo_detail_page/pre_ipo_detail_table.dart';
 import 'package:private_deals/src/features/catalog/presentation/pre_ipo/pre_ipo_investment/pre_ipo_offer.dart';
 import 'package:private_deals/src/features/catalog/presentation/pre_ipo/pre_ipo_investment/seller_profile_widget.dart';
+import 'package:private_deals/src/features/catalog/presentation/pre_ipo/pre_ipo_detail_page/pre_ipo_investment_dialog.dart';
+import 'package:private_deals/src/features/catalog/presentation/pre_ipo/pre_ipo_detail_page/pre_ipo_investor_card.dart';
+import 'package:private_deals/src/features/investors/presentation/investor_picker.dart';
+
+import 'investor_picker_ui_test.dart' show investors;
+import 'session_and_api_test.dart' show FakeAdapter, identity, response;
 
 class _DetailController extends PreIPODetailPageCtrl {
   _DetailController(CompanyModel company) {
@@ -16,6 +22,7 @@ class _DetailController extends PreIPODetailPageCtrl {
   }
   int investorSelections = 0;
   int submissions = 0;
+  bool submitOrders = false;
 
   @override
   Future<void> getData() async {}
@@ -23,22 +30,13 @@ class _DetailController extends PreIPODetailPageCtrl {
   @override
   Future<void> addInvestor() async {
     investorSelections++;
-    investorList.add(
-      SelectInvestorModel(
-        investorId: investorSelections,
-        investorName: 'An investor with a long name that should wrap correctly',
-        isSelf: true,
-        isMarket: true,
-        price: purchasePrice,
-        priceCTRL: TextEditingController(text: purchasePrice.toString()),
-        quantityCTRL: TextEditingController(),
-      ),
-    );
+    await super.addInvestor();
   }
 
   @override
   Future<void> onPress() async {
     submissions++;
+    if (submitOrders) await super.onPress();
   }
 }
 
@@ -176,8 +174,9 @@ Future<_DetailController> _pump(
   CompanyModel? company,
   GlobalKey? captureKey,
   double textScale = 1,
+  double height = 1000,
 }) async {
-  tester.view.physicalSize = Size(width, 1000);
+  tester.view.physicalSize = Size(width, height);
   tester.view.devicePixelRatio = 1;
   addTearDown(tester.view.resetPhysicalSize);
   addTearDown(tester.view.resetDevicePixelRatio);
@@ -211,9 +210,8 @@ Future<_DetailController> _pump(
         debugShowCheckedModeBanner: false,
         initialRoute: '/detail/northstar',
         builder: (context, child) => MediaQuery(
-          data: MediaQuery.of(
-            context,
-          ).copyWith(textScaler: TextScaler.linear(textScale)),
+          data: MediaQuery.of(context)
+              .copyWith(textScaler: TextScaler.linear(textScale)),
           child: child!,
         ),
         getPages: [
@@ -224,6 +222,10 @@ Future<_DetailController> _pump(
           GetPage(
             name: '/detail/northstar/investment',
             page: () => const Scaffold(body: Text('Investment page')),
+          ),
+          GetPage(
+            name: '/wealth-manager/investor-transactions',
+            page: () => const Scaffold(body: Text('Unlisted transactions')),
           ),
         ],
       ),
@@ -240,18 +242,24 @@ Future<void> _capture(WidgetTester tester, GlobalKey key, String name) async {
         key.currentContext!.findRenderObject()! as RenderRepaintBoundary;
     final image = await boundary.toImage();
     final bytes = await image.toByteData(format: ui.ImageByteFormat.png);
-    await File(
-      '/tmp/pre-ipo-$name.png',
-    ).writeAsBytes(bytes!.buffer.asUint8List());
+    await File('/tmp/pre-ipo-$name.png')
+        .writeAsBytes(bytes!.buffer.asUint8List());
     image.dispose();
   });
 }
 
 void main() {
-  setUp(() {
+  setUp(() async {
     Get.testMode = true;
+    app.persist = false;
+    await app.clear();
+    await app.setUser(prefUser: identity('Wealth Manager'));
+    dioConfig.dio.httpClientAdapter = FakeAdapter(
+      (_) async => response({'status': 1, 'data': investors}),
+    );
   });
-  tearDown(() {
+  tearDown(() async {
+    await app.clear();
     Get.reset();
   });
 
@@ -353,15 +361,240 @@ void main() {
     },
   );
 
-  testWidgets('Direct desktop buy preserves selection and validation', (
+  for (final width in [390.0, 1280.0]) {
+    testWidgets('Grouped deals show matching Buy and Sell actions at $width', (
+      tester,
+    ) async {
+      final source = _company();
+      Map<String, dynamic> entry(int id, String name) => {
+        ...source.deals.first.toJson(),
+        'id': id,
+        'uuid': 'grouped-$id',
+        'deal_type': null,
+        'is_hot_deal': null,
+        'seller': {'id': id, 'company_name': name},
+      };
+      final company = source;
+      company.sellerSharePrices = [];
+      company.deals = CompanyModel.fromJson({
+        'deals': {
+          'sell': {
+            'hot': [entry(1, 'Featured seller')],
+            'normal': [for (var i = 2; i <= 4; i++) entry(i, 'Seller $i')],
+          },
+          'buy': {
+            'hot': [entry(5, 'Featured buyer')],
+            'normal': [entry(6, 'Regular buyer')],
+          },
+        },
+      }).deals;
+      final capture = GlobalKey();
+      final c = await _pump(
+        tester,
+        width,
+        company: company,
+        captureKey: capture,
+        height: 820,
+      );
+      await tester.ensureVisible(
+        find.byKey(const ValueKey('pre-ipo-trade-panel')),
+      );
+      await tester.pumpAndSettle();
+      final buyTab = find.byKey(const ValueKey('buy-deals-tab'));
+      final sellTab = find.byKey(const ValueKey('sell-deals-tab'));
+      final hot = find.byKey(const ValueKey('hot-deals-section'));
+      final normal = find.byKey(const ValueKey('available-offers-section'));
+      expect(
+        find.descendant(of: buyTab, matching: find.text('4')),
+        findsOneWidget,
+      );
+      expect(
+        find.descendant(of: sellTab, matching: find.text('2')),
+        findsOneWidget,
+      );
+      expect(find.widgetWithText(FilledButton, 'Buy'), findsNWidgets(4));
+      expect(
+        find.descendant(of: hot, matching: find.text('Featured seller')),
+        findsOneWidget,
+      );
+      expect(
+        find.descendant(of: normal, matching: find.text('Seller 2')),
+        findsOneWidget,
+      );
+      expect(tester.getTopLeft(hot).dy, lessThan(tester.getTopLeft(normal).dy));
+      await _capture(tester, capture, '${width.toInt()}-buy-tab');
+
+      await tester.tap(sellTab);
+      await tester.pumpAndSettle();
+      expect(find.widgetWithText(FilledButton, 'Sell'), findsNWidgets(2));
+      expect(find.widgetWithText(FilledButton, 'Buy'), findsNothing);
+      expect(
+        find.descendant(of: hot, matching: find.text('Featured buyer')),
+        findsOneWidget,
+      );
+      expect(
+        find.descendant(of: normal, matching: find.text('Regular buyer')),
+        findsOneWidget,
+      );
+      expect(tester.getTopLeft(hot).dy, lessThan(tester.getTopLeft(normal).dy));
+      await _capture(tester, capture, '${width.toInt()}-sell-tab');
+      await tester.tap(find.widgetWithText(FilledButton, 'Sell').first);
+      await tester.pumpAndSettle();
+      expect(c.selectedOffer.value, isNull);
+      expect(c.investorSelections, 0);
+      expect(find.byType(Dialog), findsNothing);
+
+      await tester.tap(find.text('Featured buyer'));
+      await tester.pumpAndSettle();
+      expect(find.text('Buyer details'), findsOneWidget);
+      expect(find.text('Buy Now'), findsNothing);
+      await tester.tap(find.widgetWithText(CustomOutlinedButton, 'Sell'));
+      await tester.pumpAndSettle();
+      expect(c.selectedOffer.value, isNull);
+      expect(c.investorSelections, 0);
+      await tester.tap(find.byTooltip('Close'));
+      await tester.pumpAndSettle();
+
+      c.model.update((company) {
+        company!.deals = company.deals
+            .where((deal) => deal.dealType == 'sell')
+            .toList();
+      });
+      await tester.pumpAndSettle();
+      expect(
+        find.text('No regular sell offers at the moment.'),
+        findsOneWidget,
+      );
+      expect(find.widgetWithText(FilledButton, 'Sell'), findsNothing);
+      expect(hot, findsNothing);
+      expect(
+        find.descendant(of: buyTab, matching: find.text('4')),
+        findsOneWidget,
+      );
+      expect(
+        find.descendant(of: sellTab, matching: find.text('0')),
+        findsOneWidget,
+      );
+
+      await tester.tap(buyTab);
+      await tester.pumpAndSettle();
+      await tester.tap(find.widgetWithText(FilledButton, 'Buy').first);
+      await tester.pumpAndSettle();
+      expect(c.selectedOffer.value?.dealUuid, 'grouped-1');
+      if (width < 600) {
+        expect(find.text('Investment page'), findsOneWidget);
+      } else {
+        expect(find.byType(PreIPOInvestmentDialog), findsOneWidget);
+      }
+      expect(tester.takeException(), isNull);
+    });
+
+    testWidgets(
+      'Trade tabs and enquiry stay fixed while offers scroll at $width',
+      (tester) async {
+        final company = _company();
+        final source = company.deals.first;
+        for (var i = 0; i < 10; i++) {
+          company.deals.add(
+            source.copyWith(id: 100 + i, uuid: 'normal-$i', isHotDeal: false),
+          );
+        }
+        company.deals.add(
+          source.copyWith(
+            id: 200,
+            uuid: 'buyer-hot',
+            dealType: 'buy',
+            seller: const SharePriceSellerModel(
+              id: 20,
+              companyName: 'Featured buyer',
+            ),
+          ),
+        );
+        company.deals.add(
+          source.copyWith(
+            id: 201,
+            uuid: 'buyer-normal',
+            dealType: 'buy',
+            isHotDeal: false,
+            seller: const SharePriceSellerModel(
+              id: 21,
+              companyName: 'Regular buyer',
+            ),
+          ),
+        );
+        final c = await _pump(tester, width, company: company, height: 820);
+        final panel = find.byKey(const ValueKey('pre-ipo-trade-panel'));
+        await tester.ensureVisible(panel);
+        await tester.pumpAndSettle();
+        final header = find.byKey(const ValueKey('pre-ipo-trade-header'));
+        final footer = find.byKey(const ValueKey('pre-ipo-enquiry-footer'));
+        final list = find.byKey(const ValueKey('pre-ipo-offers-scroll'));
+        final headerBefore = tester.getTopLeft(header);
+        final footerBefore = tester.getTopLeft(footer);
+        final pageBefore = c.scrollController.offset;
+        final listController = tester
+            .widget<SingleChildScrollView>(list)
+            .controller!;
+        await tester.drag(list, const Offset(0, -600));
+        await tester.pumpAndSettle();
+        expect(listController.offset, greaterThan(0));
+        expect(tester.getTopLeft(header), headerBefore);
+        expect(tester.getTopLeft(footer), footerBefore);
+        expect(c.scrollController.offset, pageBefore);
+        await tester.tap(find.byKey(const ValueKey('sell-deals-tab')));
+        await tester.pumpAndSettle();
+        expect(listController.offset, 0);
+        expect(find.text('Featured buyer'), findsOneWidget);
+        expect(find.text('Regular buyer'), findsOneWidget);
+        expect(find.text('Meridian Capital'), findsNothing);
+        expect(find.widgetWithText(FilledButton, 'Sell'), findsNWidgets(2));
+        expect(find.widgetWithText(FilledButton, 'Buy'), findsNothing);
+        await tester.tap(find.widgetWithText(FilledButton, 'Sell').first);
+        await tester.pumpAndSettle();
+        expect(find.byType(Dialog), findsNothing);
+        expect(c.selectedOffer.value, isNull);
+        expect(c.investorSelections, 0);
+        await tester.tap(find.byKey(const ValueKey('buy-deals-tab')));
+        await tester.pumpAndSettle();
+        expect(find.text('Featured buyer'), findsNothing);
+        expect(find.widgetWithText(FilledButton, 'Buy'), findsWidgets);
+        expect(tester.takeException(), isNull);
+      },
+    );
+  }
+
+  testWidgets('Desktop review stays in the dialog with four or more sellers', (
     tester,
   ) async {
-    final c = await _pump(tester, 1280);
-    await tester.tap(find.text('Buy').first);
+    final company = _company();
+    company.deals.add(company.deals.last.copyWith(id: 50, uuid: 'offer-extra'));
+    final capture = GlobalKey();
+    final c = await _pump(
+      tester,
+      1280,
+      company: company,
+      height: 720,
+      captureKey: capture,
+    );
+    await tester.tap(find.widgetWithText(FilledButton, 'Buy').first);
     await tester.pumpAndSettle();
     expect(find.text('Offer details'), findsNothing);
     expect(c.selectedOffer.value?.dealId, 42);
     expect(c.investorSelections, 1);
+    final dialogRoute = ModalRoute.of(
+      tester.element(find.byType(PreIPOInvestmentDialog)),
+    );
+    await tester.tap(find.byKey(const ValueKey('investor-option-1')));
+    await tester.pumpAndSettle();
+    await tester.tap(find.text('Continue (1)'));
+    await tester.pumpAndSettle();
+    expect(find.text('Review investment'), findsOneWidget);
+    expect(
+      ModalRoute.of(tester.element(find.byType(PreIPOInvestorCard))),
+      same(dialogRoute),
+    );
+    expect(find.text('Invest').hitTestable(), findsOneWidget);
+    expect(find.text('Seller: Meridian Capital'), findsOneWidget);
     await tester.tap(find.text('Invest'));
     await tester.pumpAndSettle();
     expect(c.submissions, 0);
@@ -372,19 +605,218 @@ void main() {
     await tester.pumpAndSettle();
     expect(c.submissions, 1);
     expect(c.investorList.single.totalPrice.value, 124000);
+    await _capture(tester, capture, 'investment-review-dark');
     await tester.ensureVisible(find.byTooltip('Remove investor'));
     await tester.tap(find.byTooltip('Remove investor'));
     await tester.pumpAndSettle();
     expect(c.investorList, isEmpty);
+    expect(
+      tester
+          .widget<FilledButton>(find.widgetWithText(FilledButton, 'Invest'))
+          .onPressed,
+      isNull,
+    );
+    await tester.tap(find.byTooltip('Close investment'));
+    await tester.pumpAndSettle();
+    expect(find.byType(PreIPOInvestorCard), findsNothing);
+    expect(find.text('Invest'), findsNothing);
     expect(tester.takeException(), isNull);
   });
+
+  testWidgets(
+    'Back preserves drafts, applies deselection, and changes offers safely',
+    (tester) async {
+      final c = await _pump(tester, 1280, height: 720);
+      await tester.tap(find.widgetWithText(FilledButton, 'Buy').first);
+      await tester.pumpAndSettle();
+      await tester.tap(find.byKey(const ValueKey('investor-option-1')));
+      await tester.pumpAndSettle();
+      await tester.tap(find.text('Continue (1)'));
+      await tester.pumpAndSettle();
+      await tester.enterText(find.byType(TextFormField).first, '250');
+      final original = c.investorList.single;
+      await tester.tap(find.text('Back'));
+      await tester.pumpAndSettle();
+      expect(
+        tester
+            .widget<InvestorSelectionCard>(
+              find.byKey(const ValueKey('investor-option-1')),
+            )
+            .selected,
+        isTrue,
+      );
+      await tester.ensureVisible(find.text('Northstar Ventures'));
+      await tester.tap(find.text('Northstar Ventures'));
+      await tester.pumpAndSettle();
+      await tester.tap(find.text('Continue (2)'));
+      await tester.pumpAndSettle();
+      expect(c.investorList.first, same(original));
+      expect(original.quantityCTRL!.text, '250');
+      await tester.tap(find.text('Back'));
+      await tester.pumpAndSettle();
+      await tester.tap(find.byKey(const ValueKey('investor-option-1')));
+      await tester.pumpAndSettle();
+      await tester.tap(find.text('Continue (1)'));
+      await tester.pumpAndSettle();
+      expect(c.investorList.single.investorId, 3);
+      expect(original.quantityCTRL, isNull);
+      await tester.enterText(find.byType(TextFormField).first, '150');
+      await tester.enterText(find.byType(TextFormField).last, '1300');
+      await tester.pumpAndSettle();
+      expect(c.investorList.single.totalPrice.value, 195000);
+      await tester.tap(find.byTooltip('Close investment'));
+      await tester.pumpAndSettle();
+      await tester.tap(find.widgetWithText(FilledButton, 'Buy').first);
+      await tester.pumpAndSettle();
+      expect(find.text('Review investment'), findsOneWidget);
+      expect(c.investorList.single.quantityCTRL!.text, '150');
+      expect(c.investorList.single.priceCTRL!.text, '1300');
+      await tester.tap(find.byTooltip('Close investment'));
+      await tester.pumpAndSettle();
+      await tester.ensureVisible(
+        find.widgetWithText(FilledButton, 'Buy').at(1),
+      );
+      await tester.tap(find.widgetWithText(FilledButton, 'Buy').at(1));
+      await tester.pumpAndSettle();
+      expect(c.investorList, isEmpty);
+      expect(find.text('Select investors'), findsOneWidget);
+      expect(c.selectedOffer.value?.dealId, 43);
+      await tester.tap(find.byTooltip('Close investor selection'));
+      await tester.pumpAndSettle();
+      expect(tester.takeException(), isNull);
+    },
+  );
+
+  testWidgets('Many investors scroll while review actions remain visible', (
+    tester,
+  ) async {
+    final c = await _pump(
+      tester,
+      800,
+      height: 650,
+      dark: false,
+      textScale: 1.4,
+    );
+    c.selectedOffer.value = PreIPOOffer.fromDeal(c.model().deals.first);
+    c.setInvestors([
+      for (var id = 1; id <= 6; id++)
+        InvestorModel.fromJson({
+          ...investors.first,
+          'id': id,
+          'name': 'Selected investor $id',
+        }),
+    ]);
+    c.addInvestor();
+    await tester.pumpAndSettle();
+    expect(find.text('Invest').hitTestable(), findsOneWidget);
+    expect(find.text('Back').hitTestable(), findsOneWidget);
+    await tester.ensureVisible(find.byTooltip('Remove investor').last);
+    await tester.pumpAndSettle();
+    expect(find.text('Invest').hitTestable(), findsOneWidget);
+    await tester.tap(find.text('Invest'));
+    await tester.pumpAndSettle();
+    expect(c.submissions, 0);
+    expect(find.text('Enter a whole number of shares'), findsNWidgets(6));
+    c.investing(true);
+    await tester.pump();
+    expect(
+      tester
+          .widget<OutlinedButton>(find.widgetWithText(OutlinedButton, 'Back'))
+          .onPressed,
+      isNull,
+    );
+    expect(
+      tester
+          .widget<IconButton>(
+            find.byWidgetPredicate(
+              (widget) =>
+                  widget is IconButton && widget.tooltip == 'Close investment',
+            ),
+          )
+          .onPressed,
+      isNull,
+    );
+    expect(
+      await Navigator.of(tester.element(find.byType(PreIPOInvestmentDialog)))
+          .maybePop(),
+      isTrue,
+    );
+    await tester.pump();
+    expect(find.text('Review investment'), findsOneWidget);
+    c.investing(false);
+    await tester.pumpAndSettle();
+    await tester.tap(find.byTooltip('Close investment'));
+    await tester.pumpAndSettle();
+    expect(tester.takeException(), isNull);
+  });
+
+  testWidgets(
+    'Failed submission preserves review and retry navigates after success',
+    (tester) async {
+      final c = await _pump(tester, 1280, height: 720);
+      c.submitOrders = true;
+      var succeed = false;
+      final adapter = FakeAdapter(
+        (request) async => response(
+          request.method == 'GET'
+              ? {'status': 1, 'data': investors}
+              : {
+                  'status': succeed ? 1 : 0,
+                  'message': succeed ? 'Orders placed' : 'Please try again',
+                  'data': [],
+                },
+        ),
+      );
+      dioConfig.dio.httpClientAdapter = adapter;
+      await tester.tap(find.widgetWithText(FilledButton, 'Buy').first);
+      await tester.pumpAndSettle();
+      await tester.tap(find.byKey(const ValueKey('investor-option-1')));
+      await tester.pumpAndSettle();
+      await tester.tap(find.text('Continue (1)'));
+      await tester.pumpAndSettle();
+      await tester.enterText(find.byType(TextFormField).first, '200');
+      await tester.tap(find.text('Invest'));
+      await tester.pumpAndSettle();
+      expect(find.text('Review investment'), findsOneWidget);
+      expect(c.investorList.single.quantityCTRL!.text, '200');
+      expect(c.investing.value, isFalse);
+      expect(
+        adapter.requests
+            .where((request) => request.method == 'POST')
+            .single
+            .data,
+        {
+          'orders': [
+            {
+              'deal_id': 42,
+              'deal_uuid': 'offer-0',
+              'investor_id': 1,
+              'shares': 200,
+              'share_price': 1240.0,
+            },
+          ],
+        },
+      );
+      await tester.pump(const Duration(seconds: 3));
+      await tester.pumpAndSettle();
+      succeed = true;
+      await tester.tap(find.text('Invest'));
+      await tester.pumpAndSettle();
+      expect(find.text('Unlisted transactions'), findsOneWidget);
+      expect(find.byType(PreIPOInvestmentDialog), findsNothing);
+      expect(c.investorList, isEmpty);
+      await tester.pump(const Duration(seconds: 3));
+      await tester.pumpAndSettle();
+      expect(tester.takeException(), isNull);
+    },
+  );
 
   testWidgets('Direct phone buy preserves investment route and arguments', (
     tester,
   ) async {
     final c = await _pump(tester, 390);
-    await tester.ensureVisible(find.text('Buy').first);
-    await tester.tap(find.text('Buy').first);
+    await tester.ensureVisible(find.widgetWithText(FilledButton, 'Buy').first);
+    await tester.tap(find.widgetWithText(FilledButton, 'Buy').first);
     await tester.pumpAndSettle();
     expect(find.text('Investment page'), findsOneWidget);
     final selection = Get.arguments as PreIPOInvestmentSelection;

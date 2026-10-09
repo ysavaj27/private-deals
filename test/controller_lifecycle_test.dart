@@ -88,8 +88,6 @@ void main() {
         primary.completedDealController,
         primary.blogController,
         dashboard.scrollController,
-        dashboard.trendingPageController,
-        dashboard.chartPageController,
         detail.scrollController,
         detail.amountCTRL,
         list.scrollController,

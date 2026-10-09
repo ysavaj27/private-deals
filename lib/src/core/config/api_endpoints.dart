@@ -175,8 +175,8 @@ class AppUrl {
   static String wRelationManager = "${version}business/relation-manager";
   static String wUpdateInvestor = "${version}business/investor/update";
 
-  static String wChannelPartnerList = "${version}business/channel-partner";
-  static String wAddChannelPartner = "${version}business/channel-partner";
+  static String wChannelPartnerList = "${newVersion}business/channel-partner";
+  static String wAddChannelPartner = "${newVersion}business/channel-partner";
 
   static String wNotification = "${version}business/notifications";
   static String wDocument = "${version}business/document";

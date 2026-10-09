@@ -1,5 +1,7 @@
 library;
 
+export 'package:private_deals/src/shared/widgets/app_date_time_picker.dart';
+
 ///THEME
 
 ///ROUTES
@@ -7,6 +9,7 @@ export 'package:private_deals/src/app/routing/pages.dart';
 export 'package:private_deals/src/app/routing/routes.dart';
 export 'package:private_deals/src/shared/theme/app_theme.dart';
 export 'package:private_deals/src/shared/theme/app_tokens.dart';
+export 'package:private_deals/src/shared/theme/app_motion.dart';
 export 'package:private_deals/src/shared/theme/brand_colors.dart';
 export 'package:private_deals/src/shared/theme/section_accents.dart';
 
@@ -139,6 +142,7 @@ export 'package:private_deals/src/shared/widgets/buttons/custom_text_button.dart
 export 'package:private_deals/src/shared/widgets/buttons/download_button.dart';
 export 'package:private_deals/src/shared/widgets/buttons/tab_button.dart';
 export 'package:private_deals/src/shared/widgets/clickable.dart';
+export 'package:private_deals/src/shared/widgets/fade_in.dart';
 export 'package:private_deals/src/shared/widgets/company_deal_card.dart';
 export 'package:private_deals/src/shared/widgets/auth_background.dart';
 export 'package:private_deals/src/shared/widgets/custom_card_widget.dart';

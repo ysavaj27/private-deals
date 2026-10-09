@@ -19,7 +19,8 @@ class DesktopChangePasswordView extends StatelessWidget {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             const SizedBox(height: 36),
-            CustomCardWidget(
+            AppFadeIn(
+              child: CustomCardWidget(
               radius: 12,
               padding: const EdgeInsets.symmetric(vertical: 52, horizontal: 88),
               child: Form(
@@ -113,6 +114,7 @@ class DesktopChangePasswordView extends StatelessWidget {
                   ],
                 ),
               ),
+            ),
             ),
           ],
         ),

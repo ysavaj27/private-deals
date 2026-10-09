@@ -152,9 +152,7 @@ class CompanyModel {
               .map((e) => PeerRatioModel.fromJson(e))
               .toList()
           : [],
-      deals: json['deals'] != null
-          ? (json['deals'] as List).map((e) => DealModel.fromJson(e)).toList()
-          : [],
+      deals: _parseDeals(json['deals']),
       sellerSharePrices: (json['seller_share_prices'] as List? ?? [])
           .map((e) => SellerSharePriceModel.fromJson(e))
           .toList(),
@@ -196,6 +194,25 @@ class CompanyModel {
         "peerratio": List<dynamic>.from(peerRatios.map((x) => x.toJson())),
         "price_updated_today": priceUpdatedToday,
       };
+
+  static List<DealModel> _parseDeals(dynamic value) {
+    // Landing pages can still return the original flat deal list.
+    if (value is List) {
+      return value.map((item) => DealModel.fromJson(item)).toList();
+    }
+    if (value is! Map) return [];
+
+    return [
+      // Both the group and deal_type describe the institution's side:
+      // sell offers are buyable, while buy offers are shown with Sell.
+      for (final side in ['sell', 'buy'])
+        if (value[side] is Map)
+          for (final bucket in ['hot', 'normal'])
+            for (final item in value[side][bucket] as List? ?? [])
+              DealModel.fromJson(item)
+                  .copyWith(dealType: side, isHotDeal: bucket == 'hot'),
+    ];
+  }
 }
 
 class ShareHolderYearModel {

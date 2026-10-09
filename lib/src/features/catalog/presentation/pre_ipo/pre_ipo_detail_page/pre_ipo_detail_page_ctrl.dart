@@ -1,8 +1,9 @@
 import 'package:private_deals/src/features/catalog/presentation/investor_draft_lifecycle.dart';
 import 'package:private_deals/src/features/catalog/presentation/pre_ipo/pre_ipo_investment/pre_ipo_offer.dart';
-import 'package:private_deals/src/features/catalog/presentation/pre_ipo/pre_ipo_investment/select_investor_dialog.dart';
 import 'package:private_deals/src/features/catalog/presentation/pre_ipo/pre_ipo_detail_page/pre_ipo_detail_sections.dart';
 import 'package:private_deals/src/shared/app_exports.dart';
+
+import 'pre_ipo_investment_dialog.dart';
 
 class PreIPODetailPageCtrl extends GetxController
     with InvestorDraftLifecycle
@@ -197,7 +198,6 @@ class PreIPODetailPageCtrl extends GetxController
   TextEditingController amountCTRL = TextEditingController();
   RxBool isQty = true.obs;
 
-  GlobalKey<FormState> desktopFormKey = GlobalKey<FormState>();
   GlobalKey<FormState> phoneFormKey = GlobalKey<FormState>();
 
   void setData() {
@@ -211,31 +211,27 @@ class PreIPODetailPageCtrl extends GetxController
   }
 
   Future<void> addInvestor() async {
-    var res = await showCustomDialog(
-      SelectInvestorDialog(
-        selectedInvestorIds: investorList
-            .map((item) => item.investorId)
-            .toList(),
-      ),
-    );
-    if (isClosed) return;
-    if (res != null && res is List<InvestorModel>) {
-      for (var i = 0; i < res.length; i++) {
-        var e = res[i];
-        var data = investorList.firstWhereOrNull((a) => e.id == a.investorId);
-        if (data == null) {
-          investorList.add(
-            SelectInvestorModel(
-              investorId: e.id,
-              investorName: e.displayName,
-              isSelf: e.isSelf,
-              isMarket: true,
-              price: purchasePrice,
-              priceCTRL: TextEditingController(text: purchasePrice.toString()),
-              quantityCTRL: TextEditingController(),
-            ),
-          );
-        }
+    await showCustomDialog(PreIPOInvestmentDialog(controller: this), false);
+  }
+
+  void setInvestors(List<InvestorModel> selected) {
+    final selectedIds = selected.map((investor) => investor.id).toSet();
+    for (final draft in investorList.toList()) {
+      if (!selectedIds.contains(draft.investorId)) removeInvestor(draft);
+    }
+    for (final investor in selected) {
+      if (!investorList.any((draft) => draft.investorId == investor.id)) {
+        investorList.add(
+          SelectInvestorModel(
+            investorId: investor.id,
+            investorName: investor.displayName,
+            isSelf: investor.isSelf,
+            isMarket: true,
+            price: purchasePrice,
+            priceCTRL: TextEditingController(text: purchasePrice.toString()),
+            quantityCTRL: TextEditingController(),
+          ),
+        );
       }
     }
   }

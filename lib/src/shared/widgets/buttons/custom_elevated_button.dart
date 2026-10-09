@@ -71,24 +71,41 @@ class CustomElevatedButton extends StatelessWidget {
             borderRadius: borderRadius ?? BorderRadius.circular(radius),
           ),
         ),
-        child: isLoading
-            ? Loader(
-                color: textColor ?? color ?? Colors.white,
-                // duration: Duration(seconds: 2),
-                size: 25,
-              )
-            : child ??
-                Text(
-                  text,
-                  style: style ??
-                      TextStyle(
-                        fontSize: fontSize ?? 14.0,
-                        color: onPressed == null
-                            ? context.theme.disabledColor
-                            : color,
-                        fontWeight: fontWeight ?? FontWeight.w600,
+        child: AnimatedSwitcher(
+          duration: AppMotion.duration(context, AppMotion.fast),
+          switchInCurve: AppMotion.easeOut,
+          switchOutCurve: AppMotion.easeInOut,
+          layoutBuilder: (currentChild, previousChildren) {
+            return Stack(
+              alignment: Alignment.center,
+              children: <Widget>[
+                ...previousChildren,
+                if (currentChild != null) currentChild,
+              ],
+            );
+          },
+          child: isLoading
+              ? Loader(
+                  key: const ValueKey('loading'),
+                  color: textColor ?? color ?? Colors.white,
+                  size: 25,
+                )
+              : KeyedSubtree(
+                  key: const ValueKey('label'),
+                  child: child ??
+                      Text(
+                        text,
+                        style: style ??
+                            TextStyle(
+                              fontSize: fontSize ?? 14.0,
+                              color: onPressed == null
+                                  ? context.theme.disabledColor
+                                  : color,
+                              fontWeight: fontWeight ?? FontWeight.w600,
+                            ),
                       ),
                 ),
+        ),
       ),
     );
   }

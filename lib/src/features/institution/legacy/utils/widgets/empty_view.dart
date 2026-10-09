@@ -3,6 +3,7 @@ import 'package:private_deals/src/features/institution/support/theme/app_spacing
 
 import 'package:private_deals/src/shared/institution_widgets/app_button.dart';
 import 'package:private_deals/src/shared/institution_widgets/gap.dart';
+import 'package:private_deals/src/shared/widgets/fade_in.dart';
 
 /// A centered empty-state placeholder with an optional call to action.
 ///
@@ -25,31 +26,33 @@ class EmptyView extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
-    return Center(
-      child: Padding(
-        padding: const EdgeInsets.all(AppSpacing.lg),
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            Icon(icon, size: 48, color: theme.colorScheme.onSurfaceVariant),
-            const Gap(AppSpacing.md),
-            Text(
-              message,
-              textAlign: TextAlign.center,
-              style: theme.textTheme.bodyLarge?.copyWith(
-                color: theme.colorScheme.onSurface.withValues(alpha: 0.8),
-                height: 1.35,
+    return AppFadeIn(
+      child: Center(
+        child: Padding(
+          padding: const EdgeInsets.all(AppSpacing.lg),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Icon(icon, size: 48, color: theme.colorScheme.onSurfaceVariant),
+              const Gap(AppSpacing.md),
+              Text(
+                message,
+                textAlign: TextAlign.center,
+                style: theme.textTheme.bodyLarge?.copyWith(
+                  color: theme.colorScheme.onSurface.withValues(alpha: 0.8),
+                  height: 1.35,
+                ),
               ),
-            ),
-            if (actionLabel != null && onAction != null) ...[
-              const Gap(AppSpacing.lg),
-              AppButton(
-                label: actionLabel!,
-                onPressed: onAction,
-                variant: AppButtonVariant.secondary,
-              ),
+              if (actionLabel != null && onAction != null) ...[
+                const Gap(AppSpacing.lg),
+                AppButton(
+                  label: actionLabel!,
+                  onPressed: onAction,
+                  variant: AppButtonVariant.secondary,
+                ),
+              ],
             ],
-          ],
+          ),
         ),
       ),
     );

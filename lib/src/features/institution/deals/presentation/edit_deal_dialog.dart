@@ -66,6 +66,7 @@ class _EditDealState extends State<_EditDealDialog> {
         totalQuantity: total.text,
         dealType: widget.deal.dealType,
         status: widget.deal.status,
+        isHotDeal: widget.deal.isHotDeal,
         settlementDays: requiresSettlement ? settlementDays : null,
       );
       setState(() {

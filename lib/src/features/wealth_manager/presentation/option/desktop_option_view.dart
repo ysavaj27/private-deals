@@ -99,7 +99,8 @@ class CardWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return ConstrainedBox(
+    return AppFadeIn(
+      child: ConstrainedBox(
       constraints: BoxConstraints(maxWidth: 375.62, minWidth: 100),
       child: Stack(
         alignment: Alignment.topCenter,
@@ -177,6 +178,7 @@ class CardWidget extends StatelessWidget {
             ),
           ),
         ],
+      ),
       ),
     );
   }

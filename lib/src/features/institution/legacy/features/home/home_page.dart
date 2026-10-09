@@ -14,6 +14,7 @@ import 'package:private_deals/src/features/institution/legacy/utils/widgets/empt
 import 'package:private_deals/src/features/institution/legacy/features/home/desktop_home_page_view.dart';
 import 'package:private_deals/src/features/institution/legacy/features/home/home_page_ctrl.dart';
 import 'package:private_deals/src/features/institution/legacy/features/home/phone_home_page_view.dart';
+import 'package:private_deals/src/shared/theme/app_motion.dart';
 
 class HomePage extends StatelessWidget {
   final Widget? child;
@@ -45,43 +46,49 @@ class MainWidgets extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Obx(() {
-      switch (c.currentTab()) {
-        case WTabBarEnum.investors:
-          return const SizedBox.shrink();
-        case WTabBarEnum.dashboard:
-          return const DashboardPage();
-        case WTabBarEnum.preIPOList:
-          return CompanyListPage(key: ValueKey(Get.currentRoute));
-        case WTabBarEnum.secondaryList:
-          return CompanyListPage(key: ValueKey(Get.currentRoute));
-        case WTabBarEnum.transactions:
-          return Container();
-        case WTabBarEnum.sendDocuments:
-          return Container();
-        case WTabBarEnum.profile:
-          return ProfilePageView();
-        case WTabBarEnum.changePassword:
-          return ChangePasswordPage();
-        case WTabBarEnum.primaryList:
-          return Container();
-        case WTabBarEnum.sellEnquiries:
-          return const SellEnquiriesPage();
-        case WTabBarEnum.companyDeals:
-          return DealListView(key: ValueKey(Get.currentRoute));
-        case WTabBarEnum.secondaryDeals:
-          return DealListView(key: ValueKey(Get.currentRoute));
-        case WTabBarEnum.priceUpdate:
-          return UpdateSharePricePage();
-        case WTabBarEnum.manageDeals:
-          return DealListView(key: ValueKey(Get.currentRoute));
-        case WTabBarEnum.preIPOTransactions:
-          return PreIPOTransactionPage();
-        case WTabBarEnum.secondaryTransactions:
-          return const EmptyView(
-            message: 'LP Secondary transactions will be available soon.',
-            icon: Icons.receipt_long_outlined,
+      final tab = c.currentTab();
+      final Widget page = switch (tab) {
+        WTabBarEnum.investors => const SizedBox.shrink(),
+        WTabBarEnum.dashboard => const DashboardPage(),
+        WTabBarEnum.preIPOList =>
+          CompanyListPage(key: ValueKey(Get.currentRoute)),
+        WTabBarEnum.secondaryList =>
+          CompanyListPage(key: ValueKey(Get.currentRoute)),
+        WTabBarEnum.transactions => const SizedBox.shrink(),
+        WTabBarEnum.sendDocuments => const SizedBox.shrink(),
+        WTabBarEnum.profile => ProfilePageView(),
+        WTabBarEnum.changePassword => ChangePasswordPage(),
+        WTabBarEnum.primaryList => const SizedBox.shrink(),
+        WTabBarEnum.sellEnquiries => const SellEnquiriesPage(),
+        WTabBarEnum.companyDeals =>
+          DealListView(key: ValueKey(Get.currentRoute)),
+        WTabBarEnum.secondaryDeals =>
+          DealListView(key: ValueKey(Get.currentRoute)),
+        WTabBarEnum.priceUpdate => UpdateSharePricePage(),
+        WTabBarEnum.manageDeals =>
+          DealListView(key: ValueKey(Get.currentRoute)),
+        WTabBarEnum.preIPOTransactions => PreIPOTransactionPage(),
+        WTabBarEnum.secondaryTransactions => const EmptyView(
+          message: 'LP Secondary transactions will be available soon.',
+          icon: Icons.receipt_long_outlined,
+        ),
+      };
+      return AnimatedSwitcher(
+        duration: AppMotion.duration(context, AppMotion.normal),
+        switchInCurve: AppMotion.easeOut,
+        switchOutCurve: AppMotion.easeInOut,
+        layoutBuilder: (currentChild, previousChildren) {
+          return Stack(
+            fit: StackFit.expand,
+            alignment: Alignment.topCenter,
+            children: <Widget>[
+              ...previousChildren,
+              if (currentChild != null) currentChild,
+            ],
           );
-      }
+        },
+        child: KeyedSubtree(key: ValueKey(tab), child: page),
+      );
     });
   }
 }

@@ -831,8 +831,9 @@ class CustomTabBarButton extends StatelessWidget {
             }
           },
           borderRadius: BorderRadius.circular(15),
-          child: Container(
-            // duration: const Duration(milliseconds: 400),
+          child: AnimatedContainer(
+            duration: AppMotion.duration(context, AppMotion.fast),
+            curve: AppMotion.easeOut,
             padding: EdgeInsets.symmetric(
                 horizontal: context.isPhone ? 10 : 25, vertical: 10),
             decoration: BoxDecoration(

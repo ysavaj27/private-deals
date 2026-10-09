@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:private_deals/src/shared/theme/app_motion.dart';
 
 enum AppButtonVariant { primary, secondary, outline, text }
 
@@ -24,34 +25,53 @@ class AppButton extends StatelessWidget {
   Widget build(BuildContext context) {
     final colors = Theme.of(context).colorScheme;
     final callback = isLoading ? null : onPressed;
+    final duration = AppMotion.duration(context, AppMotion.fast);
 
     // Builder reads the foreground style provided by the button.
     final child = Builder(
       builder: (buttonContext) {
-        if (isLoading) {
-          return Semantics(
-            label: '$label, loading',
-            liveRegion: true,
-            child: SizedBox(
-              width: 20,
-              height: 20,
-              child: CircularProgressIndicator(
-                strokeWidth: 2.5,
-                color: DefaultTextStyle.of(buttonContext).style.color,
-              ),
-            ),
-          );
-        }
+        final content = isLoading
+            ? Semantics(
+                key: const ValueKey('loading'),
+                label: '$label, loading',
+                liveRegion: true,
+                child: SizedBox(
+                  width: 20,
+                  height: 20,
+                  child: CircularProgressIndicator(
+                    strokeWidth: 2.5,
+                    color: DefaultTextStyle.of(buttonContext).style.color,
+                  ),
+                ),
+              )
+            : KeyedSubtree(
+                key: const ValueKey('label'),
+                child: icon == null
+                    ? Text(label)
+                    : Row(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          Icon(icon, size: 20),
+                          const SizedBox(width: 8),
+                          Flexible(child: Text(label)),
+                        ],
+                      ),
+              );
 
-        if (icon == null) return Text(label);
-
-        return Row(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            Icon(icon, size: 20),
-            const SizedBox(width: 8),
-            Flexible(child: Text(label)),
-          ],
+        return AnimatedSwitcher(
+          duration: duration,
+          switchInCurve: AppMotion.easeOut,
+          switchOutCurve: AppMotion.easeInOut,
+          layoutBuilder: (currentChild, previousChildren) {
+            return Stack(
+              alignment: Alignment.center,
+              children: <Widget>[
+                ...previousChildren,
+                if (currentChild != null) currentChild,
+              ],
+            );
+          },
+          child: content,
         );
       },
     );

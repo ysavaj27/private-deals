@@ -127,7 +127,9 @@ void main() {
       await show(tester);
       expect(find.text('₹ 1,25,500'), findsOneWidget);
       expect(find.text('Payment pending'), findsOneWidget);
-      expect(find.text('Invoice PRE-IPO-481'), findsOneWidget);
+      expect(find.text('#PRE-IPO-481'), findsOneWidget);
+      expect(find.text('Order #481'), findsNothing);
+      expect(find.text('#481'), findsNothing);
       expect(find.text('Placed 05 Oct 2026'), findsOneWidget);
       await tester.tap(find.text('View details'));
       await tester.tap(find.text('Upload receipt'));
@@ -152,6 +154,7 @@ void main() {
         await show(
           tester,
           model: PreIpoOrderModel(
+            id: 987654,
             orderStep: step,
             next: 'Stale next step',
             cancellationReason: step == 'cancelled'
@@ -160,6 +163,7 @@ void main() {
           ),
         );
         expect(find.text('Next: Stale next step'), findsNothing);
+        expect(find.textContaining('987654'), findsNothing);
         expect(find.text('₹ 0'), findsNWidgets(2));
         expect(find.text('Upload receipt'), findsNothing);
         if (step == 'cancelled') {

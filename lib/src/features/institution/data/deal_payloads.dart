@@ -27,6 +27,7 @@ class DealPayloads {
     required String uuid,
     required String finalPrice,
     required String minimumQuantity,
+    required bool isHotDeal,
     String totalQuantity = '',
     String dealType = '',
     String status = '',
@@ -46,6 +47,7 @@ class DealPayloads {
       'minimum_qty': min,
       if (total != null) 'available_quantity': total,
       if (status.isNotEmpty) 'status': status,
+      'is_hot_deal': isHotDeal ? 1 : 0,
       if (settlementDays != null)
         'settlement_days': DealPayloads.settlementDays(settlementDays),
     };

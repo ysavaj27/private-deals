@@ -572,9 +572,11 @@ class InvestorPickerDialog extends StatefulWidget {
     this.requirePreIpoAccess = false,
     this.selectedInvestorIds = const [],
     this.allowRegistration = false,
+    this.onContinue,
   });
   final bool multiple, requirePreIpoAccess, allowRegistration;
   final List<int> selectedInvestorIds;
+  final ValueChanged<List<InvestorModel>>? onContinue;
   @override
   State<InvestorPickerDialog> createState() => _InvestorPickerDialogState();
 }
@@ -717,9 +719,17 @@ class _InvestorPickerDialogState extends State<InvestorPickerDialog> {
                     FilledButton.icon(
                       onPressed: _selected.isEmpty
                           ? null
-                          : () => Navigator.of(context).pop(
-                              widget.multiple ? _selected : _selected.single,
-                            ),
+                          : () {
+                              if (widget.onContinue != null) {
+                                widget.onContinue!(_selected);
+                              } else {
+                                Navigator.of(context).pop(
+                                  widget.multiple
+                                      ? _selected
+                                      : _selected.single,
+                                );
+                              }
+                            },
                       icon: const Icon(Icons.arrow_forward_rounded, size: 18),
                       iconAlignment: IconAlignment.end,
                       label: Text(

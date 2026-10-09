@@ -1,4 +1,5 @@
 import 'package:private_deals/src/shared/app_exports.dart';
+
 import 'pre_ipo_detail_page_ctrl.dart';
 
 class PreIPOInvestorCard extends StatelessWidget {
@@ -24,7 +25,8 @@ class PreIPOInvestorCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return CustomCardWidget(
+    return AppFadeIn(
+      child: CustomCardWidget(
       radius: 12,
       child: Column(
         children: [
@@ -108,7 +110,6 @@ class PreIPOInvestorCard extends StatelessWidget {
                     ),
                     const SizedBox(height: 9),
                     CustomTextField(
-                      autofocus: !model.isSelf,
                       isFilled: true,
                       borderColor: context.theme.disabledColor.withValues(
                         alpha: 0.2,
@@ -168,6 +169,7 @@ class PreIPOInvestorCard extends StatelessWidget {
             ),
           ),
         ],
+      ),
       ),
     );
   }

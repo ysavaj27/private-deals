@@ -1,4 +1,31 @@
+import 'dart:convert';
+import 'dart:io';
+
 import 'package:private_deals/src/shared/app_exports.dart';
+
+// #region agent log
+void _agentDebugLogDialog({
+  required String location,
+  required String message,
+  required String hypothesisId,
+  Map<String, dynamic>? data,
+}) {
+  try {
+    final payload = <String, dynamic>{
+      'sessionId': 'cb4ba8',
+      'timestamp': DateTime.now().millisecondsSinceEpoch,
+      'location': location,
+      'message': message,
+      'hypothesisId': hypothesisId,
+      'runId': 'pre-fix',
+      'data': ?data,
+    };
+    File(
+      '/Users/kd/Development/Project/PrivateDeals/Application/private_deals/.cursor/debug-cb4ba8.log',
+    ).writeAsStringSync('${jsonEncode(payload)}\n', mode: FileMode.append);
+  } catch (_) {}
+}
+// #endregion
 
 class AddChannelPartnerDialogCtrl extends GetxController {
   final TextEditingController nameCTRL = TextEditingController();
@@ -22,16 +49,42 @@ class AddChannelPartnerDialogCtrl extends GetxController {
   final GlobalKey<FormState> phoneFormKey = GlobalKey<FormState>();
 
   Future<void> onPress() async {
+    if (isLoading() || isUpdate || partnerType() == null || gender() == null) {
+      return;
+    }
+    // #region agent log
+    _agentDebugLogDialog(
+      location: 'add_channel_partner_dialog_ctrl.dart:onPress',
+      message: 'Save tapped — form state',
+      hypothesisId: 'C,D',
+      data: {
+        'partnerType': partnerType.value,
+        'gender': gender.value,
+        'isPrimary': isPrimary.value,
+        'isSecondary': isSecondary.value,
+        'isPreIpo': isPreIpo.value,
+        'wUserType': app.wUser.type,
+        'commissionEmpty': commissionCTRL.text.trim().isEmpty,
+      },
+    );
+    // #endregion
     isLoading(true);
     var res = await ChannelPartnerApi.addChannelPartner(
       name: nameCTRL.text.trim(),
       email: emailCTRL.text.toLowerCase().trim(),
       mobile: mobileCTRL.text.trim(),
       password: passwordCTRL.text.trim(),
-      commission: commissionCTRL.text.trim(),
+      commission:
+          partnerType() == app.config.enumValues.partnerType.relationManager
+          ? ''
+          : commissionCTRL.text.trim(),
       partner: partnerType()!,
       gender: gender()!,
+      isPrimaryAccess: isPrimary() && app.wUser.isPrimaryAccess,
+      isSecondaryAccess: isSecondary() && app.wUser.isSecondaryAccess,
+      isPreIpoAccess: isPreIpo() && app.wUser.isPreIpoAccess,
     );
+    if (isClosed) return;
     isLoading(false);
     if (res.isSuccess) {
       Get.back(result: true);

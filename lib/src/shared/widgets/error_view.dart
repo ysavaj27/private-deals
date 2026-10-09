@@ -18,46 +18,48 @@ class ErrorView extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final scheme = context.theme.colorScheme;
-    return Center(
-      child: Padding(
-        padding: const EdgeInsets.all(AppSpace.xl),
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            Icon(
-              Icons.error_outline_rounded,
-              size: 56,
-              color: scheme.error,
-            ),
-            const SizedBox(height: AppSpace.lg),
-            Text(
-              title,
-              style: context.textTheme.titleLarge?.copyWith(
-                fontWeight: FontWeight.w600,
+    return AppFadeIn(
+      child: Center(
+        child: Padding(
+          padding: const EdgeInsets.all(AppSpace.xl),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Icon(
+                Icons.error_outline_rounded,
+                size: 56,
+                color: scheme.error,
               ),
-              textAlign: TextAlign.center,
-            ),
-            if (message != null && message!.isNotEmpty) ...[
-              const SizedBox(height: AppSpace.sm),
+              const SizedBox(height: AppSpace.lg),
               Text(
-                message!,
-                style: context.textTheme.bodyMedium?.copyWith(
-                  color: scheme.onSurfaceVariant,
+                title,
+                style: context.textTheme.titleLarge?.copyWith(
+                  fontWeight: FontWeight.w600,
                 ),
                 textAlign: TextAlign.center,
               ),
+              if (message != null && message!.isNotEmpty) ...[
+                const SizedBox(height: AppSpace.sm),
+                Text(
+                  message!,
+                  style: context.textTheme.bodyMedium?.copyWith(
+                    color: scheme.onSurfaceVariant,
+                  ),
+                  textAlign: TextAlign.center,
+                ),
+              ],
+              if (onRetry != null) ...[
+                const SizedBox(height: AppSpace.xl),
+                CustomElevatedButton(
+                  text: retryLabel,
+                  radius: AppRadii.md,
+                  width: context.isPhone ? 140 : 200,
+                  height: 44,
+                  onPressed: onRetry,
+                ),
+              ],
             ],
-            if (onRetry != null) ...[
-              const SizedBox(height: AppSpace.xl),
-              CustomElevatedButton(
-                text: retryLabel,
-                radius: AppRadii.md,
-                width: context.isPhone ? 140 : 200,
-                height: 44,
-                onPressed: onRetry,
-              ),
-            ],
-          ],
+          ),
         ),
       ),
     );

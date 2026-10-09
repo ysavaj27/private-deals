@@ -165,16 +165,9 @@ class UnlistedTransactionCard extends StatelessWidget {
             spacing: 16,
             runSpacing: 6,
             children: [
-              if (order.id > 0)
-                Text(
-                  'Order #${order.id}',
-                  style: theme.textTheme.bodySmall?.copyWith(
-                    color: colors.onSurfaceVariant,
-                  ),
-                ),
               if (invoice != null && invoice.isNotEmpty)
                 Text(
-                  'Invoice $invoice',
+                  '#$invoice',
                   style: theme.textTheme.bodySmall?.copyWith(
                     color: colors.onSurfaceVariant,
                   ),
