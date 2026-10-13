@@ -18,6 +18,9 @@ class PreIpoOrderModel {
   final double payableAmount;
   final String? cancellationReason;
   final bool? mandateSent;
+  final String orderCase;
+  final PreIpoOrderParty? buyer;
+  final PreIpoOrderParty? seller;
   final PreIpoOrderInvestor investor;
   final PreIpoOrderCompany company;
   final PreIpoPaymentDetails? paymentDetails;
@@ -57,6 +60,9 @@ class PreIpoOrderModel {
     this.payableAmount = 0,
     this.cancellationReason,
     this.mandateSent,
+    this.orderCase = '',
+    this.buyer,
+    this.seller,
     this.investor = const PreIpoOrderInvestor(),
     this.company = const PreIpoOrderCompany(),
     this.paymentDetails,
@@ -98,6 +104,78 @@ class PreIpoOrderModel {
 
   bool hasActionNamed(String name) => action?.contains(name) ?? false;
 
+  bool get isEnquiry => orderSource == 'enquiry';
+
+  String get orderCaseLabel => switch (orderCase) {
+    'partner_buys' => 'Partner buys from Institution',
+    'institution_buys' => 'Institution buys from partner',
+    'institution_to_institution' => 'Institution to Institution',
+    'partner_to_partner' => 'Partner to partner',
+    _ => '',
+  };
+
+  /// Which side the logged-in partner is on. Only `buyer` / `seller` decide
+  /// this; [tradeSide] is not guaranteed to be from the viewer's perspective.
+  PreIpoOrderSide viewerSide(int myPartnerId) {
+    if (myPartnerId <= 0) return PreIpoOrderSide.unknown;
+    if (buyer?.partnerId == myPartnerId) return PreIpoOrderSide.buyer;
+    if (seller?.partnerId == myPartnerId) return PreIpoOrderSide.seller;
+    return PreIpoOrderSide.unknown;
+  }
+
+  /// Party on the other side from the viewer, when the viewer is known.
+  PreIpoOrderParty? counterparty(int myPartnerId) =>
+      switch (viewerSide(myPartnerId)) {
+        PreIpoOrderSide.buyer => seller,
+        PreIpoOrderSide.seller => buyer,
+        PreIpoOrderSide.unknown => null,
+      };
+
+  /// Server [action] list with actions that never belong to the viewer removed.
+  /// Enquiry orders skip share confirmation, so they never take Approve or
+  /// Reject; the buyer pays and confirms shares, the seller confirms payment
+  /// and transfers shares.
+  /// One-line side summary for list rows, e.g. "Buying from X".
+  String sideSummary(int myPartnerId) {
+    final other = counterparty(myPartnerId)?.displayName ?? '';
+    switch (viewerSide(myPartnerId)) {
+      case PreIpoOrderSide.buyer:
+        return other.isEmpty ? 'Buying' : 'Buying from $other';
+      case PreIpoOrderSide.seller:
+        return other.isEmpty ? 'Selling' : 'Selling to $other';
+      case PreIpoOrderSide.unknown:
+        if (tradeSide.isEmpty) return '';
+        return tradeSide == 'sell' ? 'Sell' : 'Buy';
+    }
+  }
+
+  bool hasVisibleActions(int myPartnerId) =>
+      visibleActions(myPartnerId).isNotEmpty;
+
+  List<String> visibleActions(int myPartnerId) {
+    final actions = action ?? const <String>[];
+    if (actions.isEmpty) return const [];
+    final side = viewerSide(myPartnerId);
+    return actions.where((name) {
+      if (isEnquiry &&
+          (name == PreIpoOrderAction.approve ||
+              name == PreIpoOrderAction.reject)) {
+        return false;
+      }
+      if (side == PreIpoOrderSide.seller &&
+          (name == PreIpoOrderAction.confirmShareTransfer ||
+              name == PreIpoOrderAction.uploadPaymentReceipt)) {
+        return false;
+      }
+      if (side == PreIpoOrderSide.buyer &&
+          (name == PreIpoOrderAction.confirmPayment ||
+              name == PreIpoOrderAction.uploadShareTransferReceipt)) {
+        return false;
+      }
+      return true;
+    }).toList();
+  }
+
   factory PreIpoOrderModel.fromJson(Map<String, dynamic> json) {
     List<String>? actions;
     final rawAction = json['action'];
@@ -128,6 +206,9 @@ class PreIpoOrderModel {
       mandateSent: json.containsKey('mandate_sent')
           ? Parse.toBool(json['mandate_sent'])
           : null,
+      orderCase: Parse.toStrings(json['order_case']),
+      buyer: PreIpoOrderParty.tryParse(json['buyer']),
+      seller: PreIpoOrderParty.tryParse(json['seller']),
       investor: PreIpoOrderInvestor.fromJson(
         Map<String, dynamic>.from(json['investor'] ?? {}),
       ),
@@ -260,6 +341,46 @@ class PreIpoOrderInvestor {
       name: Parse.toStrings(json['name']),
       isSelf: Parse.toBool(json['is_self']),
       partnerId: Parse.toInt(json['partner_id']),
+    );
+  }
+}
+
+enum PreIpoOrderSide { buyer, seller, unknown }
+
+/// One side of an order from `buyer` / `seller`. `partner` may arrive as an
+/// object (`{id, name}`) or as a bare id.
+class PreIpoOrderParty {
+  final String name;
+  final int partnerId;
+  final String partnerName;
+  final String side;
+
+  const PreIpoOrderParty({
+    this.name = '',
+    this.partnerId = 0,
+    this.partnerName = '',
+    this.side = '',
+  });
+
+  String get displayName {
+    final investorName = name.trim();
+    final partner = partnerName.trim();
+    if (investorName.isEmpty) return partner;
+    if (partner.isEmpty || partner == investorName) return investorName;
+    return '$investorName · $partner';
+  }
+
+  static PreIpoOrderParty? tryParse(dynamic value) {
+    if (value is! Map) return null;
+    final json = Map<String, dynamic>.from(value);
+    final partner = json['partner'];
+    return PreIpoOrderParty(
+      name: Parse.toStrings(json['name']),
+      partnerId: partner is Map
+          ? Parse.toInt(partner['id'])
+          : Parse.toInt(partner ?? json['partner_id']),
+      partnerName: partner is Map ? Parse.toStrings(partner['name']) : '',
+      side: Parse.toStrings(json['side']),
     );
   }
 }
@@ -441,7 +562,7 @@ abstract final class PreIpoOrderAction {
       case viewShareTransferReceipt:
         return 'View transfer';
       case confirmShareTransfer:
-        return 'Confirm transfer';
+        return 'Confirm shares';
       default:
         return action.replaceAll('_', ' ');
     }

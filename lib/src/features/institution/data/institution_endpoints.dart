@@ -27,4 +27,6 @@ abstract final class InstitutionEndpoints {
   static const preIpoConfirmPayment = '$preIpoTransaction/confirm-payment';
   static const preIpoShareTransferReceipt =
       '$preIpoTransaction/share-transfer-receipt';
+  static const preIpoConfirmShareTransfer =
+      '$preIpoTransaction/confirm-share-transfer';
 }

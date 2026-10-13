@@ -14,13 +14,15 @@ class PhonePreIPOInvestmentView extends StatelessWidget {
       appBar: AppBar(
         title: const Text("Unlisted Shares Investment"),
         actions: [
-          IconButton(
-            onPressed: c.addInvestor,
-            icon: Icon(
-              Icons.add_circle_outline,
-              color: context.theme.iconTheme.color,
+          if (!c.buysAsSelf)
+            IconButton(
+              tooltip: 'Add investor',
+              onPressed: c.addInvestor,
+              icon: Icon(
+                Icons.add_circle_outline,
+                color: context.theme.iconTheme.color,
+              ),
             ),
-          ),
         ],
       ),
       body: SafeArea(
@@ -52,7 +54,9 @@ class PhonePreIPOInvestmentView extends StatelessWidget {
                             ),
                           ),
                           const SizedBox(height: 8),
-                          Row(
+                          Wrap(
+                            spacing: 12,
+                            runSpacing: 4,
                             children: [
                               Text(
                                 "Distributor price",
@@ -64,7 +68,6 @@ class PhonePreIPOInvestmentView extends StatelessWidget {
                                       .onSurfaceVariant,
                                 ),
                               ),
-                              const Spacer(),
                               Text(
                                 c.purchasePrice.fixDigit,
                                 style: const TextStyle(fontSize: 13),
@@ -157,6 +160,17 @@ class PhonePreIPOInvestmentView extends StatelessWidget {
                           },
                         );
                       } else {
+                        if (c.buysAsSelf) {
+                          return const Center(
+                            child: Padding(
+                              padding: EdgeInsets.symmetric(horizontal: 24),
+                              child: Text(
+                                'Your self investor is not set up yet. Contact support to buy deals.',
+                                textAlign: TextAlign.center,
+                              ),
+                            ),
+                          );
+                        }
                         return Center(
                           child: CustomElevatedButton(
                             width: 200,
@@ -232,29 +246,34 @@ class CardView extends StatelessWidget {
             child: Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                Text(
-                  model.investorName,
-                  style: const TextStyle(
-                    fontSize: 16,
-                    fontWeight: FontWeight.w500,
-                  ),
-                ),
-                InkWell(
-                  onTap: () => c.removeInvestor(model),
-                  child: Container(
-                    padding: const EdgeInsets.all(4),
-                    decoration: BoxDecoration(
-                      borderRadius: BorderRadius.circular(4),
-                      border: Border.all(color: AppColors.borderColor(context)),
-                    ),
-                    alignment: Alignment.center,
-                    child: const Icon(
-                      Icons.delete,
-                      size: 18,
-                      color: Colors.red,
+                Expanded(
+                  child: Text(
+                    model.investorName,
+                    style: const TextStyle(
+                      fontSize: 16,
+                      fontWeight: FontWeight.w500,
                     ),
                   ),
                 ),
+                if (!c.buysAsSelf)
+                  InkWell(
+                    onTap: () => c.removeInvestor(model),
+                    child: Container(
+                      padding: const EdgeInsets.all(4),
+                      decoration: BoxDecoration(
+                        borderRadius: BorderRadius.circular(4),
+                        border: Border.all(
+                          color: AppColors.borderColor(context),
+                        ),
+                      ),
+                      alignment: Alignment.center,
+                      child: const Icon(
+                        Icons.delete,
+                        size: 18,
+                        color: Colors.red,
+                      ),
+                    ),
+                  ),
               ],
             ),
           ),
@@ -310,8 +329,10 @@ class CardView extends StatelessWidget {
                             : () {
                                 model.isMarket.toggle();
                                 if (model.isMarket.isTrue) {
-                                  model.priceCTRL?.text = c.sharePrice
-                                      .toStringAsFixed(0);
+                                  final price = c.sharePrice;
+                                  model.priceCTRL?.text = price.toString();
+                                  model.price(price);
+                                  model.totalPrice(model.quantity() * price);
                                 }
                               },
                         child: Row(
@@ -391,11 +412,12 @@ class CardView extends StatelessWidget {
                   );
                 }),
                 const SizedBox(height: 10),
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.end,
+                Wrap(
+                  alignment: WrapAlignment.end,
+                  spacing: 10,
+                  runSpacing: 4,
                   children: [
                     const Text("Total Amount :"),
-                    const SizedBox(width: 10),
                     Obx(() {
                       return Text(
                         model.totalPrice().toCurrency,

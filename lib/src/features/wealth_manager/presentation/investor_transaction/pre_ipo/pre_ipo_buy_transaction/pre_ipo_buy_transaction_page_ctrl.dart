@@ -145,6 +145,7 @@ class PreIPOBuyTransactionPageCtrl extends GetxController {
         await _openReceipt(order, shareTransfer: true);
         break;
       case PreIpoOrderAction.confirmShareTransfer:
+        if (!await showPreIpoConfirmSharesDialog(order)) return;
         await _runMutation(
           order.id,
           () => WPreIpoTransactionApi.confirmShareTransfer(

@@ -2,6 +2,7 @@ import 'package:private_deals/src/features/institution/legacy/features/dashboard
 import 'package:private_deals/src/features/institution/legacy/features/sell_enquiries/sell_enquiries_page.dart';
 import 'package:private_deals/src/features/institution/legacy/features/transaction/pre_ipo_transaction/pre_ipo_transaction_page.dart';
 import 'package:flutter/material.dart';
+import 'package:private_deals/src/features/wealth_manager/presentation/portfolio/portfolio_page.dart';
 import 'package:get/get.dart';
 import 'package:private_deals/src/features/institution/data/models/common/enums.dart';
 import 'package:private_deals/src/features/auth/presentation/change_password/change_password_page.dart';
@@ -53,6 +54,7 @@ class MainWidgets extends StatelessWidget {
       final Widget page = switch (tab) {
         WTabBarEnum.investors => const SizedBox.shrink(),
         WTabBarEnum.dashboard => const DashboardPage(),
+        WTabBarEnum.portfolio => PortfolioPage(),
         WTabBarEnum.preIPOList =>
           CompanyListPage(key: ValueKey(Get.currentRoute)),
         WTabBarEnum.secondaryList =>

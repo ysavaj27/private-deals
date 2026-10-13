@@ -45,12 +45,24 @@ class PreIPOOffer {
 
   bool get hasDealRef => dealId > 0 || dealUuid.isNotEmpty;
 
-  bool get canBuy => isDeal && isSellDeal && hasDealRef;
+  /// The logged-in partner listed this deal, so it cannot trade against it.
+  bool get isOwnDeal => isOwnDealFor(app.wUser);
+
+  bool isOwnDealFor(PartnerUser me) {
+    if (!isDeal) return false;
+    if (seller.uuid.isNotEmpty && me.uuid.isNotEmpty) {
+      return seller.uuid == me.uuid;
+    }
+    return seller.id > 0 && seller.id == me.id;
+  }
+
+  bool get canBuy => isDeal && isSellDeal && hasDealRef && !isOwnDeal;
 
   String? get buyBlockedReason {
     if (!isDeal) {
       return 'Buy orders require an Institution sell deal. Use Enquire instead.';
     }
+    if (isOwnDeal) return 'This is your own deal and cannot be bought.';
     if (!isSellDeal) {
       return 'This is a buy deal. Selling from here is not available.';
     }

@@ -126,16 +126,11 @@ class KycPendingInvestorPageCtrl extends GetxController {
     required int transactionId,
     required PreIpoOrderModel seed,
   }) async {
-    var current = seed;
     final actions = _PendingPreIpoOrderActions();
     await showPreIpoOrderDetailDialog(
       order: seed,
-      loadDetail: () async {
-        final detail = await actions.loadDetail(transactionId);
-        if (detail != null) current = detail;
-        return detail;
-      },
-      onAction: (action) => actions.handleAction(current, action),
+      loadDetail: () => actions.loadDetail(transactionId),
+      onAction: actions.handleAction,
     );
     if (!isClosed) await refreshData();
   }

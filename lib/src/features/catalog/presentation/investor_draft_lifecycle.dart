@@ -1,11 +1,48 @@
-import 'package:flutter/widgets.dart';
-import 'package:get/get.dart';
-import 'package:private_deals/src/features/investors/data/investor_model.dart';
+import 'package:private_deals/src/core/permissions/partner_role.dart';
+import 'package:private_deals/src/shared/app_exports.dart';
 
 /// Owns the input controllers created for a screen's selected investors.
 mixin InvestorDraftLifecycle on GetxController {
   final RxList<SelectInvestorModel> investorList = <SelectInvestorModel>[].obs;
   final Set<SelectInvestorModel> _retiredDrafts = {};
+
+  /// An Institution always buys for its own self investor, never for clients.
+  bool get buysAsSelf => app.role == PartnerRole.institution;
+
+  bool hasSelfInvestor() {
+    final id = app.wUser.selfInvestorId;
+    if (id != null && id > 0) return true;
+    toast(
+      'Your self investor is not set up yet. Contact support to buy deals.',
+      MessageEnum.alert,
+    );
+    return false;
+  }
+
+  /// Replaces the drafts with the Institution's self investor. Returns false
+  /// (after telling the user) when the account has no self investor yet.
+  bool seedSelfInvestor(double price) {
+    if (!hasSelfInvestor()) return false;
+    final id = app.wUser.selfInvestorId!;
+    if (investorList.length == 1 &&
+        investorList.first.investorId == id &&
+        investorList.first.price() == price) {
+      return true;
+    }
+    clearInvestors();
+    investorList.add(
+      SelectInvestorModel(
+        investorId: id,
+        investorName: 'My account',
+        isSelf: true,
+        isMarket: true,
+        price: price,
+        priceCTRL: TextEditingController(text: price.toString()),
+        quantityCTRL: TextEditingController(),
+      ),
+    );
+    return true;
+  }
 
   void removeInvestor(SelectInvestorModel investor) {
     if (investorList.remove(investor)) _retire([investor]);

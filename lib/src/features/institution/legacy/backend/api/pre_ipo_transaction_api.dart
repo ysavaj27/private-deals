@@ -16,10 +16,7 @@ class PreIPOTransactionApi {
         res.data,
         (data) => data
             .map((e) => PreIpoOrderModel.fromJson(Map<String, dynamic>.from(e)))
-            .where(
-              (order) =>
-                  order.isNewFlow && order.orderStep != 'mandate_pending',
-            )
+            .where((order) => order.isNewFlow)
             .toList(),
       );
     } catch (e, t) {
@@ -97,6 +94,24 @@ class PreIPOTransactionApi {
       );
     } catch (e, t) {
       logger.e('Unable to confirm payment', error: e, stackTrace: t);
+      return BaseModel.fromError(e.toString());
+    }
+  }
+
+  static Future<BaseModel<PreIpoOrderModel>> confirmShareTransfer({
+    required int transactionId,
+  }) async {
+    try {
+      final res = await dioConfig.post(
+        InstitutionEndpoints.preIpoConfirmShareTransfer,
+        {'transaction_id': transactionId},
+      );
+      return BaseModel.fromJson(
+        res.data,
+        (data) => PreIpoOrderModel.fromJson(data),
+      );
+    } catch (e, t) {
+      logger.e('Unable to confirm share transfer', error: e, stackTrace: t);
       return BaseModel.fromError(e.toString());
     }
   }

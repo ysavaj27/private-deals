@@ -208,8 +208,7 @@ class WPreIpoTransactionApi {
         "company_slug": companySlug,
         "quantity": quantity,
         "share_price": offerPrice,
-        if (type == InvestmentTypeEnum.sell && settlementDays != null)
-          "settlement_days": settlementDays,
+        if (settlementDays != null) "settlement_days": settlementDays,
       };
       body.addAllIf(notes.isNotEmpty, {"notes": notes});
 

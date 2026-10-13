@@ -91,6 +91,73 @@ void main() {
   });
 
   for (final institution in [false, true]) {
+    testWidgets(
+      'catalog sell enquiry submits offer terms for institution=$institution',
+      (tester) async {
+        await app.setUser(
+          prefUser: identity(institution ? 'Institution' : 'Wealth Manager'),
+        );
+        final originalConfig = app.config;
+        addTearDown(() => app.configModel(originalConfig));
+        app.configModel(
+          ConfigModel.fromJson({
+            'settlement_days': [
+              {'value': 2, 'label': 'T+2'},
+            ],
+          }),
+        );
+        final adapter = FakeAdapter((_) async => response({'status': 1}));
+        dioConfig.dio.httpClientAdapter = adapter;
+        await mountFlow(tester, () {
+          final c = Get.put<PreIPODetailPageCtrl>(_DetailCtrl());
+          c.model.value = CompanyModel.fromJson({
+            'slug': 'test-company',
+            'deals': [
+              {
+                'id': 42,
+                'uuid': 'buyer-offer',
+                'deal_type': 'buy',
+                'status': 'available',
+                'minimum_qty': 10,
+                'share_price': 120.75,
+                'settlement_days': 2,
+                'seller': {'id': 8, 'company_name': 'Test Buyer'},
+              },
+            ],
+          });
+          return const Scaffold(
+            body: SingleChildScrollView(child: SellerSlotsWidget()),
+          );
+        });
+        await tester.tap(find.byKey(const ValueKey('sell-deals-tab')));
+        await tester.pumpAndSettle();
+        await tester.tap(find.widgetWithText(FilledButton, 'Enquire to sell'));
+        await tester.pumpAndSettle();
+        expect(find.textContaining('open sell enquiry'), findsOneWidget);
+        expect(find.text('10'), findsOneWidget);
+        expect(find.text('120.75'), findsOneWidget);
+        await tester.ensureVisible(find.text('Submit'));
+        final submit = tester.widget<CustomElevatedButton>(
+          find.ancestor(
+            of: find.text('Submit'),
+            matching: find.byType(CustomElevatedButton),
+          ),
+        );
+        await tester.runAsync(submit.onPressed as Future<void> Function());
+        await tester.pumpAndSettle();
+        expect(adapter.requests.single.path, 'v2/business/enquiries/deals');
+        expect(adapter.requests.single.data, {
+          'deal_type': 'sell',
+          'company_slug': 'test-company',
+          'quantity': 10,
+          'share_price': 120.75,
+          'settlement_days': 2,
+        });
+        expect(Get.currentRoute, Routes.enquiriesPath());
+        expect(tester.takeException(), isNull);
+      },
+    );
+
     for (final mobile in [false, true]) {
       for (final success in [false, true]) {
         testWidgets(

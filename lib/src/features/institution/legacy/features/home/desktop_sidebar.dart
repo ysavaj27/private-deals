@@ -62,6 +62,12 @@ class DSideBarWidget extends StatelessWidget {
             ),
             const SizedBox(height: 8),
             DTabTileWidget(
+              icon: Icons.account_balance_wallet_outlined,
+              title: 'Portfolio',
+              tab: WTabBarEnum.portfolio,
+            ),
+            const SizedBox(height: 8),
+            DTabTileWidget(
               icon: Icons.sell_outlined,
               title: 'Enquiry',
               tab: WTabBarEnum.sellEnquiries,

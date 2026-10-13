@@ -86,6 +86,8 @@ extension WTabBarRouteX on WTabBarEnum {
         return 'investors';
       case WTabBarEnum.dashboard:
         return 'dashboard';
+      case WTabBarEnum.portfolio:
+        return 'portfolio';
       case WTabBarEnum.transactions:
         return 'transactions';
       case WTabBarEnum.profile:

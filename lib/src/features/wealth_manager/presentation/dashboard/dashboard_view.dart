@@ -82,10 +82,10 @@ class WealthDashboardView extends StatelessWidget {
                                 onTap: () =>
                                     c.changeTab(DashboardTypeEnum.primary),
                               ),
-                            IconButton.outlined(
+                            AppRefreshButton(
                               tooltip: 'Refresh dashboard',
-                              onPressed: loading || preview ? null : c.getData,
-                              icon: const Icon(Icons.refresh_rounded),
+                              loading: loading,
+                              onPressed: preview ? null : c.getData,
                             ),
                           ],
                         );

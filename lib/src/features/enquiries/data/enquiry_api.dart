@@ -34,7 +34,6 @@ class EnquiryApi {
     required String uuid,
     required String action,
     String? reason,
-    int? settlementDays,
   }) async {
     if (uuid.isEmpty ||
         !(institution ? ['accept', 'reject'] : ['withdraw', 'reject']).contains(
@@ -50,12 +49,6 @@ class EnquiryApi {
         'Enter a rejection reason of up to 1000 characters.',
       );
     }
-    if (institution &&
-        action == 'accept' &&
-        settlementDays != null &&
-        (settlementDays < 1 || settlementDays > 30)) {
-      return BaseModel.fromError('Select a settlement cycle from T+1 to T+30.');
-    }
     try {
       final response = await dioConfig.post(
         '${institution ? institutionPath : partnerPath}/$action',
@@ -63,8 +56,6 @@ class EnquiryApi {
           'uuid': uuid,
           if (action == 'reject')
             'reason': trimmedReason.isEmpty ? null : trimmedReason,
-          if (institution && action == 'accept' && settlementDays != null)
-            'settlement_days': settlementDays,
         },
       );
       // Institution rejection intentionally has no data object.
@@ -74,7 +65,93 @@ class EnquiryApi {
     }
   }
 
+  static Future<BaseModel> sendQuote({
+    required String uuid,
+    required int quantity,
+    required double sharePrice,
+    required int settlementDays,
+  }) async {
+    if (uuid.isEmpty) {
+      return BaseModel.fromError('This enquiry is not available.');
+    }
+    if (quantity < 1) {
+      return BaseModel.fromError('Quantity must be at least 1.');
+    }
+    if (!sharePrice.isFinite || sharePrice < 0.01) {
+      return BaseModel.fromError('Offer price must be greater than 0.');
+    }
+    if (settlementDays < 1 || settlementDays > 30) {
+      return BaseModel.fromError('Select a settlement cycle from T+1 to T+30.');
+    }
+    try {
+      final response = await dioConfig.post('$institutionPath/quote', {
+        'uuid': uuid,
+        'quantity': quantity,
+        'share_price': sharePrice,
+        'settlement_days': settlementDays,
+      });
+      return BaseModel.fromMessage(response.data);
+    } catch (error) {
+      return BaseModel.fromError(error.toString());
+    }
+  }
+
+  static Future<BaseModel> withdrawQuote({required String uuid}) async {
+    if (uuid.isEmpty) {
+      return BaseModel.fromError('This enquiry is not available.');
+    }
+    try {
+      final response = await dioConfig.post('$institutionPath/quote/withdraw', {
+        'uuid': uuid,
+      });
+      return BaseModel.fromMessage(response.data);
+    } catch (error) {
+      return BaseModel.fromError(error.toString());
+    }
+  }
+
+  static Future<BaseModel<PreIpoOrderModel>> acceptQuote({
+    required String uuid,
+    required String quoteUuid,
+    required int investorId,
+  }) async {
+    if (uuid.isEmpty || quoteUuid.isEmpty) {
+      return BaseModel.fromError('This quote is not available.');
+    }
+    if (investorId <= 0) {
+      return BaseModel.fromError('Select an investor.');
+    }
+    final kycError = await WInvestorsApi.transactionKycError([investorId]);
+    if (kycError != null) return BaseModel.fromError(kycError);
+    try {
+      final response = await dioConfig.post('$partnerPath/quotes/accept', {
+        'uuid': uuid,
+        'quote_uuid': quoteUuid,
+        'investor_id': investorId,
+      });
+      return BaseModel.fromJson(response.data, PreIpoOrderModel.fromJson);
+    } catch (error) {
+      return BaseModel.fromError(error.toString());
+    }
+  }
+
   static Future<BaseModel<PreIpoOrderModel>> accept({
+    required String uuid,
+    required int investorId,
+  }) => _acceptWithInvestor('accept', uuid: uuid, investorId: investorId);
+
+  /// A different partner takes the other side of someone else's open enquiry.
+  static Future<BaseModel<PreIpoOrderModel>> acceptCounterparty({
+    required String uuid,
+    required int investorId,
+  }) => _acceptWithInvestor(
+    'accept-counterparty',
+    uuid: uuid,
+    investorId: investorId,
+  );
+
+  static Future<BaseModel<PreIpoOrderModel>> _acceptWithInvestor(
+    String action, {
     required String uuid,
     required int investorId,
   }) async {
@@ -84,7 +161,7 @@ class EnquiryApi {
     final kycError = await WInvestorsApi.transactionKycError([investorId]);
     if (kycError != null) return BaseModel.fromError(kycError);
     try {
-      final response = await dioConfig.post('$partnerPath/accept', {
+      final response = await dioConfig.post('$partnerPath/$action', {
         'uuid': uuid,
         'investor_id': investorId,
       });

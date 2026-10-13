@@ -1,6 +1,5 @@
 import 'package:private_deals/src/features/investors/presentation/investor_picker.dart';
 import 'package:private_deals/src/shared/app_exports.dart';
-import 'package:private_deals/src/shared/widgets/settlement_days_dropdown.dart';
 
 class EnquiryDecisionDialog extends StatefulWidget {
   const EnquiryDecisionDialog({
@@ -9,29 +8,31 @@ class EnquiryDecisionDialog extends StatefulWidget {
     required this.institution,
     required this.companyName,
     this.sell = false,
+    this.counterparty = false,
   });
   final String action, companyName;
+
+  /// [sell] is true when the investor picked here is the one selling.
   final bool institution, sell;
+
+  /// Accepting another partner's open enquiry rather than one's own.
+  final bool counterparty;
 
   @override
   State<EnquiryDecisionDialog> createState() => _EnquiryDecisionDialogState();
 }
 
 class EnquiryDecision {
-  const EnquiryDecision({this.reason, this.investorId, this.settlementDays});
+  const EnquiryDecision({this.reason, this.investorId});
   final String? reason;
   final int? investorId;
-  final int? settlementDays;
 }
 
 class _EnquiryDecisionDialogState extends State<EnquiryDecisionDialog> {
   final _form = GlobalKey<FormState>();
   final _reason = TextEditingController();
   int? _investorId;
-  int? _settlementDays;
   bool get _pickInvestor => !widget.institution && widget.action == 'accept';
-  bool get _pickSettlement =>
-      widget.institution && widget.action == 'accept' && !widget.sell;
 
   @override
   void dispose() {
@@ -42,11 +43,11 @@ class _EnquiryDecisionDialogState extends State<EnquiryDecisionDialog> {
   @override
   Widget build(BuildContext context) {
     final label = switch (widget.action) {
+      'accept' when widget.counterparty => 'Accept',
       'accept' => 'Approve',
       'reject' => 'Reject',
       _ => 'Withdraw',
     };
-    final options = app.config.settlementDays;
     return AlertDialog(
       insetPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 24),
       title: Row(
@@ -87,7 +88,9 @@ class _EnquiryDecisionDialogState extends State<EnquiryDecisionDialog> {
                   )
                 else if (_pickInvestor) ...[
                   Text(
-                    'Select the investor who will ${widget.sell ? 'sell' : 'buy'} the shares. Approval creates a transaction and sends their mandate for signing.',
+                    widget.counterparty
+                        ? 'Select the investor who will ${widget.sell ? 'sell' : 'buy'} the shares on your side. Accepting creates a transaction with the partner who raised this enquiry.'
+                        : 'Select the investor who will ${widget.sell ? 'sell' : 'buy'} the shares. Approval creates a transaction and sends their mandate for signing.',
                   ),
                   const SizedBox(height: 16),
                   InvestorPicker(
@@ -97,28 +100,12 @@ class _EnquiryDecisionDialogState extends State<EnquiryDecisionDialog> {
                           : investors.single.id;
                     }),
                   ),
-                ] else ...[
+                ] else
                   Text(
                     widget.action == 'accept'
-                        ? (_pickSettlement
-                              ? 'Choose the settlement cycle for this buy enquiry. It will be locked to you while the wealth manager decides.'
-                              : 'This enquiry will be locked to you while the wealth manager makes their decision.')
+                        ? 'This enquiry will be locked to you while the wealth manager makes their decision.'
                         : 'Withdraw this open enquiry?',
                   ),
-                  if (_pickSettlement) ...[
-                    const SizedBox(height: 16),
-                    SettlementDaysDropdown(
-                      key: ValueKey('enquiry-settlement-$_settlementDays'),
-                      options: options,
-                      value: _settlementDays,
-                      enabled: options.isNotEmpty,
-                      onChanged: (value) =>
-                          setState(() => _settlementDays = value),
-                      validator: (value) =>
-                          value == null ? 'Select a settlement cycle' : null,
-                    ),
-                  ],
-                ],
               ],
             ),
           ),
@@ -139,9 +126,6 @@ class _EnquiryDecisionDialogState extends State<EnquiryDecisionDialog> {
                       EnquiryDecision(
                         reason: _reason.text.trim(),
                         investorId: _investorId,
-                        settlementDays: _pickSettlement
-                            ? _settlementDays
-                            : null,
                       ),
                     );
                   }

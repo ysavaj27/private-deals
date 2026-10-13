@@ -13,7 +13,7 @@ class PreIPOTransactionDialog extends StatelessWidget {
 
   final int transactionId;
   final PreIpoOrderModel initial;
-  final Future<void> Function(String action) onAction;
+  final Future<void> Function(PreIpoOrderModel order, String action) onAction;
   final Future<PreIpoOrderModel?> Function() loadDetail;
 
   @override

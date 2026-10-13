@@ -1,5 +1,6 @@
 import 'dart:io';
 import 'dart:ui' as ui;
+
 import 'package:flutter/rendering.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:private_deals/src/shared/app_exports.dart';
@@ -101,10 +102,8 @@ void main() {
     expect(order.statusList[3].document?.url, 'https://example.com/slip.pdf');
     expect(order.percentage, isNull);
     expect(
-      PreIpoOrderStatus.fromJson({
-        'date': '2026-10-01',
-        'is_completed': false,
-      }).completed,
+      PreIpoOrderStatus.fromJson({'date': '2026-10-01', 'is_completed': false})
+          .completed,
       isFalse,
     );
     final legacy = PreIpoOrderModel.fromJson({
@@ -133,7 +132,7 @@ void main() {
               body: PreIpoTransactionDetailDialog(
                 initial: order,
                 loadDetail: () async => order,
-                onAction: (_) async {},
+                onAction: (_, _) async {},
               ),
             ),
           ),
@@ -164,9 +163,8 @@ void main() {
                   as RenderRepaintBoundary;
           final image = await boundary.toImage();
           final bytes = await image.toByteData(format: ui.ImageByteFormat.png);
-          await File(
-            '/tmp/transaction-detail-${width.toInt()}.png',
-          ).writeAsBytes(bytes!.buffer.asUint8List());
+          await File('/tmp/transaction-detail-${width.toInt()}.png')
+              .writeAsBytes(bytes!.buffer.asUint8List());
           image.dispose();
         });
       }
@@ -187,7 +185,7 @@ void main() {
         home: Scaffold(
           body: PreIpoTransactionDetailDialog(
             initial: initial,
-            onAction: (action) async => actions.add(action),
+            onAction: (_, action) async => actions.add(action),
             loadDetail: () async {
               loads++;
               return loads == 1 ? initial : sampleOrder();
@@ -197,13 +195,117 @@ void main() {
       ),
     );
     await tester.pumpAndSettle();
-    await tester.ensureVisible(find.text('Confirm transfer'));
-    await tester.tap(find.text('Confirm transfer'));
+    await tester.ensureVisible(find.text('Confirm shares'));
+    await tester.tap(find.text('Confirm shares'));
     await tester.pumpAndSettle();
     expect(actions, ['confirm_share_transfer']);
     expect(loads, 2);
-    expect(find.text('Confirm transfer'), findsNothing);
+    expect(find.text('Confirm shares'), findsNothing);
     expect(find.text('TN-02-NU'), findsOneWidget);
     expect(tester.takeException(), isNull);
+  });
+
+  group('buyer and seller', () {
+    Map<String, dynamic> party(String side, int partnerId, String name) => {
+      'name': name,
+      'partner': {'id': partnerId, 'name': '$name Partner'},
+      'side': side,
+    };
+    const allSides = [
+      'upload_payment_receipt',
+      'confirm_payment',
+      'upload_share_transfer_receipt',
+      'confirm_share_transfer',
+      'view_payment_receipt',
+      'approve',
+      'reject',
+    ];
+    PreIpoOrderModel order({String source = 'direct'}) =>
+        PreIpoOrderModel.fromJson({
+          'id': 1,
+          'order_step': 'payment_pending',
+          'order_source': source,
+          'order_case': 'institution_to_institution',
+          'buyer': party('buy', 7, 'Buyer'),
+          'seller': party('sell', 8, 'Seller'),
+          'action': allSides,
+        });
+
+    test('parse parties and order case', () {
+      final o = order();
+      expect(o.buyer!.partnerId, 7);
+      expect(o.seller!.displayName, 'Seller · Seller Partner');
+      expect(o.orderCaseLabel, 'Institution to Institution');
+      expect(o.viewerSide(7), PreIpoOrderSide.buyer);
+      expect(o.viewerSide(8), PreIpoOrderSide.seller);
+      expect(o.viewerSide(99), PreIpoOrderSide.unknown);
+      expect(o.sideSummary(7), 'Buying from Seller · Seller Partner');
+      expect(o.sideSummary(8), 'Selling to Buyer · Buyer Partner');
+      final bare = PreIpoOrderParty.tryParse({'name': 'X', 'partner': 5});
+      expect(bare!.partnerId, 5);
+      expect(PreIpoOrderParty.tryParse(null), isNull);
+    });
+
+    test('buyer confirms shares and seller confirms payment', () {
+      expect(order().visibleActions(7), [
+        'upload_payment_receipt',
+        'confirm_share_transfer',
+        'view_payment_receipt',
+        'approve',
+        'reject',
+      ]);
+      expect(order().visibleActions(8), [
+        'confirm_payment',
+        'upload_share_transfer_receipt',
+        'view_payment_receipt',
+        'approve',
+        'reject',
+      ]);
+      // Unknown viewer keeps the server list untouched.
+      expect(order().visibleActions(99), allSides);
+    });
+
+    test('enquiry orders never show approve or reject', () {
+      final actions = order(source: 'enquiry').visibleActions(99);
+      expect(actions, isNot(contains('approve')));
+      expect(actions, isNot(contains('reject')));
+    });
+
+    testWidgets('dialog shows parties and hides seller-only actions', (
+      tester,
+    ) async {
+      Get.testMode = true;
+      app.persist = false;
+      await app.setUser(
+        prefUser: {'id': 7, 'token': 't', 'type': 'Institution'},
+      );
+      addTearDown(app.clear);
+      tester.view.devicePixelRatio = 1;
+      tester.view.physicalSize = const Size(390, 1000);
+      addTearDown(tester.view.resetPhysicalSize);
+      addTearDown(tester.view.resetDevicePixelRatio);
+      final o = order();
+      await tester.pumpWidget(
+        GetMaterialApp(
+          theme: AppTheme.lightTheme,
+          home: Scaffold(
+            body: PreIpoTransactionDetailDialog(
+              initial: o,
+              loadDetail: () async => o,
+              onAction: (_, _) async {},
+            ),
+          ),
+        ),
+      );
+      await tester.pumpAndSettle();
+      expect(find.text('You are buying'), findsOneWidget);
+      expect(find.text('Buyer · Buyer Partner'), findsOneWidget);
+      expect(find.text('Seller · Seller Partner'), findsOneWidget);
+      expect(find.text('Trade side'), findsNothing);
+      expect(find.text('Confirm shares'), findsOneWidget);
+      expect(find.text('Confirm payment'), findsNothing);
+      expect(find.text('Upload transfer'), findsNothing);
+      expect(tester.takeException(), isNull);
+    });
   });
 }

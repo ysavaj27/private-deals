@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-10-12T10:21:18.901062Z",
+  "generated_at": "2026-10-13T05:50:58.819369Z",
   "config": "baseUrl=https://www.privatedeals.in/ live=false allowWrites=false roles=none stagingHint=no",
   "mode": "contract_path_alignment+interceptor_findings",
   "roles_env": {
@@ -295,11 +295,11 @@
     },
     {
       "id": 23,
-      "feature": "Send document",
-      "api": "DocumentApi.sendDocument",
-      "method": "POST",
-      "expected_path": "v1/business/send-document",
-      "actual_path": "v1/business/send-document",
+      "feature": "Partner documents",
+      "api": "DocumentApi.list",
+      "method": "GET",
+      "expected_path": "v2/business/documents",
+      "actual_path": "v2/business/documents",
       "priority": "p2",
       "status": "PASS",
       "detail": "path constant aligned"
@@ -309,8 +309,8 @@
       "feature": "My earnings",
       "api": "MyEarningApi.wInvestorEarningList",
       "method": "GET",
-      "expected_path": "v1/business/earning/investor",
-      "actual_path": "v1/business/earning/investor",
+      "expected_path": "v2/business/earning/investor",
+      "actual_path": "v2/business/earning/investor",
       "priority": "p2",
       "status": "PASS",
       "detail": "path constant aligned"

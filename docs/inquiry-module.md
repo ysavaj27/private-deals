@@ -14,12 +14,21 @@ Both seller (Institution) and wealth manager workspaces use the shared feature i
   reused transaction controllers. Completed forms are removed from the app's
   navigation stack to prevent returning to an already-submitted draft.
 - Inquiry creation uses `POST v2/business/enquiries/deals`, with `deal_type`,
-  `company_slug`, `quantity`, `share_price`, and optional `notes`. The price entered
-  is the base price; the returned customer price includes the processing fee.
-  The API contract does not support an expiry or an existing deal identifier.
-- Seller decisions use `v2/business/institution/enquiries/accept` and `/reject`.
-  Rejection reason is optional. The list is refreshed after every decision,
-  including rejected requests caused by another Institution accepting first.
+  `company_slug`, `quantity`, `share_price`, `settlement_days` (required for buy
+  and sell), and optional `notes`. The price entered is the base price; the
+  returned transaction price includes the processing fee. The API contract does not
+  support an expiry or an existing deal identifier.
+- Seller decisions on original terms use `v2/business/institution/enquiries/accept`
+  and `/reject` with `uuid` only on accept (no `settlement_days`). Rejection
+  reason is optional. The list is refreshed after every decision, including
+  rejected requests caused by another Institution accepting first.
+- Institutions can send, replace, or withdraw a single counter-quote via
+  `POST .../institution/enquiries/quote` and `.../quote/withdraw`. While a
+  pending `my_quote` exists, Approve original is unavailable until the quote is
+  withdrawn. The Institution screen shows only `my_quote`, never other
+  Institutions' quotes.
+- Partners see every quote on open enquiries and can accept one with
+  `POST .../enquiries/deals/quotes/accept` (`uuid`, `quote_uuid`, `investor_id`).
 - Partners can withdraw open, unlocked inquiries. Locked inquiries require an
   investor selection to approve or a nonblank reason (maximum 1000 characters)
   to reject. Partner decisions use `v2/business/enquiries/deals/{action}`.
@@ -35,8 +44,9 @@ Both seller (Institution) and wealth manager workspaces use the shared feature i
 
 The inquiry API tests use a fake HTTP adapter; no live decisions or transactions
 are made. `test/enquiry_flow_test.dart` covers contract payloads, state rules,
-rejection validation, investor selection, seller lock races, responsive screens,
-mandate delivery failure, transaction handoff, and sell-side endpoints.
+rejection validation, investor selection, seller lock races, quote
+send/replace/withdraw, partner quote accept, responsive screens, mandate
+delivery failure, transaction handoff, and sell-side endpoints.
 `test/pre_ipo_navigation_test.dart` covers purchase success/failure navigation,
 enquiry success/failure/cancellation at phone and desktop sizes, both workspaces'
 converted-enquiry links, and synchronized transaction tabs.

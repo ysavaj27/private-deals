@@ -85,6 +85,7 @@ enum ITabBarEnum {
 enum WTabBarEnum {
   investors,
   dashboard,
+  portfolio,
   transactions,
   sendDocuments,
   primaryList,

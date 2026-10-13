@@ -13,10 +13,6 @@ class AppKey {
       'FBvBeiP253uCFK0VEUO6RWQhXlXp4PmeK1ZY1NbzhahertMCcgjoCMfpmWpe';
 
   //APP LINKS
-  // static const rateUsAndroid =
-  //     'https://play.google.com/store/apps/details?id=(bundle_name)';
-  // static const rateUsIOS = 'https://apps.apple.com/us/app/(app_name)/(app_id)';
-
   static const investorIOS =
       'https://apps.apple.com/us/app/shuru-up/id6736905561';
   static const wealthManagerIOS =
@@ -25,10 +21,6 @@ class AppKey {
       'https://play.google.com/store/apps/details?id=com.shuruup.investor';
   static const wealthMangerAndroid =
       'https://play.google.com/store/apps/details?id=com.privatedeals.partner';
-  static String wealthMangerEXE =
-      app.config.s3Baseurl + app.config.build.windows.distributer;
-  static String investorEXE =
-      app.config.s3Baseurl + app.config.build.windows.investor;
 
   static String get updateUrl {
     final isInvestor = app.userType == UserType.investor;
@@ -37,7 +29,6 @@ class AppKey {
       TargetPlatform.iOS: [investorIOS, wealthManagerIOS],
       TargetPlatform.android: [investorAndroid, wealthMangerAndroid],
       TargetPlatform.macOS: [investorIOS, wealthManagerIOS],
-      TargetPlatform.windows: [investorEXE, wealthMangerEXE],
     };
 
     final urls = platformUrls[defaultTargetPlatform] ?? [];

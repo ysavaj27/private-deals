@@ -110,28 +110,8 @@ class PSideBarWidget extends StatelessWidget {
                           app.wUser.isSecondaryAccess,
                       child: PTabTileWidget(
                         icon: AppAssets.sendDocumentsIc,
-                        title: 'Send Documents',
+                        title: 'Documents',
                         tab: WTabBarEnum.sendDocuments,
-                      ),
-                    );
-                  }),
-                  Obx(() {
-                    return Visibility(
-                      visible:
-                          app.wUser.isPrimaryAccess ||
-                          app.wUser.isSecondaryAccess,
-                      child: const SizedBox(height: 5),
-                    );
-                  }),
-                  Obx(() {
-                    return Visibility(
-                      visible:
-                          app.wUser.isPrimaryAccess ||
-                          app.wUser.isSecondaryAccess,
-                      child: PTabTileWidget(
-                        icon: AppAssets.misIc,
-                        title: 'MIS',
-                        tab: WTabBarEnum.mis,
                       ),
                     );
                   }),
@@ -150,12 +130,6 @@ class PSideBarWidget extends StatelessWidget {
                       title: 'Channel Partner',
                       tab: WTabBarEnum.channelPartner,
                     ),
-                  ),
-                  const SizedBox(height: 5),
-                  PTabTileWidget(
-                    icon: AppAssets.uploadIc,
-                    title: 'Upload Portfolio',
-                    tab: WTabBarEnum.uploadPortfolio,
                   ),
                   const SizedBox(height: 5),
                   PTabTileWidget(

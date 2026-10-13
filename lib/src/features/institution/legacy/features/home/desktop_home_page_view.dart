@@ -23,7 +23,7 @@ class DesktopHomePageView extends StatelessWidget {
         children: [
           Column(
             children: [
-              const SizedBox(height: 66),
+              const SizedBox(height: 82),
               Expanded(
                 child: Stack(
                   alignment: Alignment.centerLeft,

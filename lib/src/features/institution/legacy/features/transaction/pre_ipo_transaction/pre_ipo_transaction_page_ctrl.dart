@@ -8,6 +8,7 @@ import 'package:private_deals/src/shared/plugins/toast.dart';
 import 'package:private_deals/src/shared/widgets/pre_ipo_order/pre_ipo_order_widgets.dart';
 
 enum PreIPOTransactionFilter {
+  all('All'),
   pending('Pending'),
   processing('Processing'),
   completed('Completed'),
@@ -18,13 +19,17 @@ enum PreIPOTransactionFilter {
 }
 
 class PreIPOTransactionPageCtrl extends GetxController {
+  static const _pendingSteps = {
+    'mandate_pending',
+    'share_confirmation_pending',
+  };
   final transactions = <PreIpoOrderModel>[].obs;
   final filtered = <PreIpoOrderModel>[].obs;
   final loading = false.obs;
   final actionLoadingId = 0.obs;
   final error = ''.obs;
   final searchQuery = ''.obs;
-  final filter = PreIPOTransactionFilter.pending.obs;
+  final filter = PreIPOTransactionFilter.all.obs;
 
   @override
   void onInit() {
@@ -48,12 +53,14 @@ class PreIPOTransactionPageCtrl extends GetxController {
     filtered.assignAll(
       transactions.where((item) {
         final inFilter = switch (filter.value) {
-          PreIPOTransactionFilter.pending =>
-            item.orderStep == 'share_confirmation_pending',
+          PreIPOTransactionFilter.all => true,
+          PreIPOTransactionFilter.pending => _pendingSteps.contains(
+            item.orderStep,
+          ),
           PreIPOTransactionFilter.processing =>
             !item.isCompleted &&
                 !item.isCancelled &&
-                item.orderStep != 'share_confirmation_pending',
+                !_pendingSteps.contains(item.orderStep),
           PreIPOTransactionFilter.completed => item.isCompleted,
           PreIPOTransactionFilter.cancelled => item.isCancelled,
         };
@@ -140,6 +147,7 @@ class PreIPOTransactionPageCtrl extends GetxController {
           ),
         );
         break;
+      case PreIpoOrderAction.showMandateSignLink:
       case PreIpoOrderAction.showDealSlipSignLink:
         final detail = await loadDetail(order.id);
         if (detail == null) return;
@@ -175,7 +183,7 @@ class PreIPOTransactionPageCtrl extends GetxController {
         );
         break;
       case PreIpoOrderAction.viewPaymentReceipt:
-        await _openPaymentReceipt(order);
+        await _openReceipt(order, shareTransfer: false);
         break;
       case PreIpoOrderAction.confirmPayment:
         await _runMutation(
@@ -196,19 +204,37 @@ class PreIPOTransactionPageCtrl extends GetxController {
           ),
         );
         break;
+      case PreIpoOrderAction.viewShareTransferReceipt:
+        await _openReceipt(order, shareTransfer: true);
+        break;
+      case PreIpoOrderAction.confirmShareTransfer:
+        if (!await showPreIpoConfirmSharesDialog(order)) return;
+        await _runMutation(
+          order.id,
+          () => PreIPOTransactionApi.confirmShareTransfer(
+            transactionId: order.id,
+          ),
+        );
+        break;
       default:
         toast('Unsupported action', MessageEnum.alert);
     }
   }
 
-  Future<void> _openPaymentReceipt(PreIpoOrderModel order) async {
+  Future<void> _openReceipt(
+    PreIpoOrderModel order, {
+    required bool shareTransfer,
+  }) async {
     var current = order;
-    if (current.paymentReceipt == null) {
+    if ((shareTransfer && current.shareTransferReceipt == null) ||
+        (!shareTransfer && current.paymentReceipt == null)) {
       final detail = await loadDetail(order.id);
       if (detail == null) return;
       current = detail;
     }
-    final url = current.paymentReceipt?.url;
+    final url = shareTransfer
+        ? current.shareTransferReceipt?.url
+        : current.paymentReceipt?.url;
     if (url == null || url.isEmpty) {
       toast('Receipt is not available', MessageEnum.alert);
       return;

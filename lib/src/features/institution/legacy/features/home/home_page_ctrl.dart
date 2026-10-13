@@ -2,6 +2,7 @@ import 'dart:async';
 
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:private_deals/src/features/wealth_manager/presentation/portfolio/portfolio_page_ctrl.dart';
 import 'package:private_deals/src/features/institution/data/models/common/enums.dart';
 import 'package:private_deals/src/features/institution/legacy/router/routes/routes.dart';
 import 'package:private_deals/src/core/session/auth_session.dart';
@@ -64,9 +65,11 @@ class SellerHomePageCtrl extends GetxController {
         return 2;
       case WTabBarEnum.priceUpdate:
         return 3;
+      case WTabBarEnum.portfolio:
+        return 4;
       case WTabBarEnum.profile:
       case WTabBarEnum.changePassword:
-        return 4;
+        return 5;
       default:
         return 0;
     }
@@ -83,6 +86,8 @@ class SellerHomePageCtrl extends GetxController {
       case 3:
         onTap(WTabBarEnum.priceUpdate);
       case 4:
+        onTap(WTabBarEnum.portfolio);
+      case 5:
         onTap(WTabBarEnum.profile);
     }
   }
@@ -127,6 +132,9 @@ class SellerHomePageCtrl extends GetxController {
 
   @override
   void onInit() {
+    if (!Get.isRegistered<PortfolioPageCtrl>()) {
+      Get.lazyPut(() => PortfolioPageCtrl(), fenix: true);
+    }
     WidgetsBinding.instance.addPostFrameCallback((_) {
       setData();
     });
@@ -146,6 +154,8 @@ class SellerHomePageCtrl extends GetxController {
         return 'Investors';
       case WTabBarEnum.dashboard:
         return 'Dashboard';
+      case WTabBarEnum.portfolio:
+        return 'Portfolio';
       case WTabBarEnum.transactions:
         return 'Transactions';
       case WTabBarEnum.profile:

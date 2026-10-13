@@ -12,6 +12,7 @@ import 'package:private_deals/src/features/catalog/presentation/pre_ipo/pre_ipo_
 import 'package:private_deals/src/features/catalog/presentation/pre_ipo/pre_ipo_detail_page/pre_ipo_investment_dialog.dart';
 import 'package:private_deals/src/features/catalog/presentation/pre_ipo/pre_ipo_detail_page/pre_ipo_investor_card.dart';
 import 'package:private_deals/src/features/investors/presentation/investor_picker.dart';
+import 'package:private_deals/src/features/catalog/presentation/secondary/enquiry/desktop_enquiry_dialog_view.dart';
 
 import 'investor_picker_ui_test.dart' show investors;
 import 'session_and_api_test.dart' show FakeAdapter, identity, response;
@@ -547,7 +548,10 @@ void main() {
 
       await tester.tap(sellTab);
       await tester.pumpAndSettle();
-      expect(find.widgetWithText(FilledButton, 'Sell'), findsNWidgets(2));
+      expect(
+        find.widgetWithText(FilledButton, 'Enquire to sell'),
+        findsNWidgets(2),
+      );
       expect(find.widgetWithText(FilledButton, 'Buy'), findsNothing);
       expect(
         find.descendant(of: hot, matching: find.text('Featured buyer')),
@@ -559,21 +563,33 @@ void main() {
       );
       expect(tester.getTopLeft(hot).dy, lessThan(tester.getTopLeft(normal).dy));
       await _capture(tester, capture, '${width.toInt()}-sell-tab');
-      await tester.tap(find.widgetWithText(FilledButton, 'Sell').first);
+      await tester.tap(
+        find.widgetWithText(FilledButton, 'Enquire to sell').first,
+      );
       await tester.pumpAndSettle();
       expect(c.selectedOffer.value, isNull);
       expect(c.investorSelections, 0);
-      expect(find.byType(Dialog), findsNothing);
+      final enquiry = tester.widget<DesktopEnquiryDialogView>(
+        find.byType(DesktopEnquiryDialogView),
+      );
+      expect(enquiry.initialType, InvestmentTypeEnum.sell);
+      expect(enquiry.initialQuantity, 100);
+      expect(enquiry.initialOfferPrice, 1240);
+      expect(find.textContaining('open sell enquiry'), findsOneWidget);
+      await tester.tap(find.widgetWithText(CustomOutlinedButton, 'Close'));
+      await tester.pumpAndSettle();
 
       await tester.tap(find.text('Featured buyer'));
       await tester.pumpAndSettle();
       expect(find.text('Buyer details'), findsOneWidget);
       expect(find.text('Buy Now'), findsNothing);
-      await tester.tap(find.widgetWithText(OutlinedButton, 'Sell'));
+      await tester.tap(find.widgetWithText(OutlinedButton, 'Enquire to sell'));
       await tester.pumpAndSettle();
       expect(c.selectedOffer.value, isNull);
       expect(c.investorSelections, 0);
-      await tester.tap(find.byTooltip('Close'));
+      expect(find.text('Buyer details'), findsNothing);
+      expect(find.byType(DesktopEnquiryDialogView), findsOneWidget);
+      await tester.tap(find.widgetWithText(CustomOutlinedButton, 'Close'));
       await tester.pumpAndSettle();
 
       c.model.update((company) {
@@ -586,7 +602,10 @@ void main() {
         find.text('No regular sell offers at the moment.'),
         findsOneWidget,
       );
-      expect(find.widgetWithText(FilledButton, 'Sell'), findsNothing);
+      expect(
+        find.widgetWithText(FilledButton, 'Enquire to sell'),
+        findsNothing,
+      );
       expect(hot, findsNothing);
       expect(
         find.descendant(of: buyTab, matching: find.text('4')),
@@ -668,13 +687,20 @@ void main() {
         expect(find.text('Featured buyer'), findsOneWidget);
         expect(find.text('Regular buyer'), findsOneWidget);
         expect(find.text('Meridian Capital'), findsNothing);
-        expect(find.widgetWithText(FilledButton, 'Sell'), findsNWidgets(2));
+        expect(
+          find.widgetWithText(FilledButton, 'Enquire to sell'),
+          findsNWidgets(2),
+        );
         expect(find.widgetWithText(FilledButton, 'Buy'), findsNothing);
-        await tester.tap(find.widgetWithText(FilledButton, 'Sell').first);
+        await tester.tap(
+          find.widgetWithText(FilledButton, 'Enquire to sell').first,
+        );
         await tester.pumpAndSettle();
-        expect(find.byType(Dialog), findsNothing);
+        expect(find.byType(DesktopEnquiryDialogView), findsOneWidget);
         expect(c.selectedOffer.value, isNull);
         expect(c.investorSelections, 0);
+        await tester.tap(find.widgetWithText(CustomOutlinedButton, 'Close'));
+        await tester.pumpAndSettle();
         await tester.tap(find.byKey(const ValueKey('buy-deals-tab')));
         await tester.pumpAndSettle();
         expect(find.text('Featured buyer'), findsNothing);

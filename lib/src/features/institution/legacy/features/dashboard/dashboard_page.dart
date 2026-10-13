@@ -9,6 +9,7 @@ import 'package:private_deals/src/features/institution/data/models/common/enums.
 import 'package:private_deals/src/features/institution/legacy/utils/constant/app_url.dart';
 import 'package:private_deals/src/features/institution/legacy/features/home/home_page_ctrl.dart';
 import 'package:private_deals/src/features/institution/legacy/features/dashboard/phone_dashboard_view.dart';
+import 'package:private_deals/src/shared/widgets/buttons/app_refresh_button.dart';
 
 const _purple = Color(0xFF2B5996);
 const _green = Color(0xFF26A88A);
@@ -211,12 +212,10 @@ class _DashboardPageState extends State<DashboardPage> {
                         ),
                       ],
                     ),
-                    OutlinedButton.icon(
-                      onPressed: loading ? null : _load,
-                      icon: const Icon(Icons.refresh_rounded, size: 17),
-                      label: Text(
-                        loading ? 'Refreshing…' : 'Refresh dashboard',
-                      ),
+                    AppRefreshButton(
+                      tooltip: 'Refresh dashboard',
+                      loading: loading,
+                      onPressed: _load,
                     ),
                   ],
                 ),

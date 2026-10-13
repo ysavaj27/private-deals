@@ -36,12 +36,6 @@ class HomePageCtrl extends GetxController {
   //   }
   // }
 
-  @override
-  void onReady() {
-    init.forceUpdate();
-    super.onReady();
-  }
-
   void setData() {
     final tabFromUrl = WTabBarRouteX.fromSlug(Get.parameters['tab']);
     final routeArg = Get.arguments;
@@ -123,7 +117,7 @@ class HomePageCtrl extends GetxController {
       case WTabBarEnum.pendingTasks:
         return 'Pending Tasks';
       case WTabBarEnum.sendDocuments:
-        return 'Send Documents';
+        return 'Documents';
       case WTabBarEnum.channelPartner:
         return 'Channel Partner';
       case WTabBarEnum.notifications:

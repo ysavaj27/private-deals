@@ -398,13 +398,27 @@ void main() {
       );
     });
 
-    test('#23 send document', () async {
+    test('#23 partner documents list', () async {
       await expectContractPath(
         smokeCase: _case(23),
         adapter: adapter,
         action: () async {
-          await DocumentApi.sendDocument(1, 'agreement');
+          await DocumentApi.list();
         },
+      );
+      await DocumentApi.send(documentId: 1, channel: 'email');
+      expect(
+        adapter.requests.any(
+          (r) => pathMatches(r.path, 'v2/business/documents/send'),
+        ),
+        isTrue,
+      );
+      await DocumentApi.download(1);
+      expect(
+        adapter.requests.any(
+          (r) => pathMatches(r.path, 'v2/business/documents/download'),
+        ),
+        isTrue,
       );
     });
 

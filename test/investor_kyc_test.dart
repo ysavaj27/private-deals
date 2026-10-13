@@ -1,4 +1,5 @@
 import 'dart:typed_data';
+
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -12,6 +13,7 @@ import 'package:private_deals/src/features/investors/presentation/investor_kyc_d
 import 'package:private_deals/src/features/investors/presentation/legacy/investor_list_card.dart';
 import 'package:private_deals/src/features/investors/presentation/legacy/investors_page_ctrl.dart';
 import 'package:private_deals/src/shared/models/enums.dart';
+
 import 'session_and_api_test.dart' show FakeAdapter, identity, response;
 
 final _pdf = CmlDocument(
@@ -39,21 +41,33 @@ void main() {
     Get.reset();
   });
 
-  test('legacy investor APIs and Institution KYC remain blocked', () async {
-    final adapter = FakeAdapter((_) async => response({'status': 1}));
-    dioConfig.dio.httpClientAdapter = adapter;
-    await expectLater(
-      dioConfig.post('v1/investor/kyc/save', {}),
-      throwsA(isA<DioException>()),
-    );
-    await app.setUser(prefUser: identity('Institution'));
-    expect((await CmlApi.read(88, _pdf)).isSuccess, isFalse);
-    expect(
-      (await CmlApi.save(InvestorModel(id: 88), _details, null)).isSuccess,
-      isFalse,
-    );
-    expect(adapter.requests, isEmpty);
-  });
+  test(
+    'legacy investor APIs remain blocked; Institution self KYC uses v2',
+    () async {
+      final adapter = FakeAdapter((_) async => response({'status': 1}));
+      dioConfig.dio.httpClientAdapter = adapter;
+      await expectLater(
+        dioConfig.post('v1/investor/kyc/save', {}),
+        throwsA(isA<DioException>()),
+      );
+      expect(adapter.requests, isEmpty);
+      await app.setUser(prefUser: identity('Institution'));
+      final self = InvestorModel(id: app.wUser.selfInvestorId!)..isSelf = true;
+      expect((await CmlApi.read(self.id, _pdf)).isSuccess, isTrue);
+      expect((await CmlApi.save(self, _details, null)).isSuccess, isTrue);
+      expect(adapter.requests.map((request) => request.path), [
+        '${CmlApi.base}/read',
+        '${CmlApi.base}/save',
+      ]);
+      for (final request in adapter.requests) {
+        expect(
+          Map.fromEntries((request.data as FormData).fields)['investor_id'],
+          '${self.id}',
+        );
+        expect(request.headers['Authorization'], 'Bearer test-token-7');
+      }
+    },
+  );
 
   test('standalone investor and CML routes are removed', () {
     expect(
@@ -100,21 +114,18 @@ void main() {
     },
   );
 
-  test(
-    'bank account and IFSC are required before sending; manual save permits no PDF',
-    () async {
-      final adapter = FakeAdapter((_) async => response({'status': 1}));
-      dioConfig.dio.httpClientAdapter = adapter;
-      final investor = InvestorModel(id: 88);
-      for (final field in ['account_number', 'ifsc_code']) {
-        final fields = {..._details, field: '   '};
-        expect((await CmlApi.save(investor, fields, null)).isSuccess, isFalse);
-      }
-      expect(adapter.requests, isEmpty);
-      expect((await CmlApi.save(investor, _details, null)).isSuccess, isTrue);
-      expect((adapter.requests.single.data as FormData).files, isEmpty);
-    },
-  );
+  test('bank account and IFSC are required before sending; manual save permits no PDF', () async {
+    final adapter = FakeAdapter((_) async => response({'status': 1}));
+    dioConfig.dio.httpClientAdapter = adapter;
+    final investor = InvestorModel(id: 88);
+    for (final field in ['account_number', 'ifsc_code']) {
+      final fields = {..._details, field: '   '};
+      expect((await CmlApi.save(investor, fields, null)).isSuccess, isFalse);
+    }
+    expect(adapter.requests, isEmpty);
+    expect((await CmlApi.save(investor, _details, null)).isSuccess, isTrue);
+    expect((adapter.requests.single.data as FormData).files, isEmpty);
+  });
 
   test(
     'business failure preserves pending status even with HTTP 200',
@@ -250,40 +261,65 @@ void main() {
     });
   }
 
-  testWidgets('failed save keeps entered details and dialog open', (
-    tester,
-  ) async {
-    dioConfig.dio.httpClientAdapter = FakeAdapter(
-      (_) async => response({'status': 0, 'message': 'Investor not found'}),
-    );
-    await tester.pumpWidget(
-      MaterialApp(
-        home: Scaffold(
-          body: InvestorKycDialog(investor: InvestorModel(id: 88)),
-        ),
-      ),
-    );
-    for (final field in _details.entries) {
-      await tester.enterText(
-        find.byKey(ValueKey('kyc_${field.key}')),
-        field.value,
+  testWidgets(
+    'CML is required before save; failed save keeps details and dialog open',
+    (tester) async {
+      final adapter = FakeAdapter(
+        (_) async => response({'status': 0, 'message': 'Investor not found'}),
       );
-    }
-    await tester.tap(find.text('Save KYC'));
-    await tester.pumpAndSettle();
-    expect(find.text('Investor not found'), findsOneWidget);
-    expect(find.byType(InvestorKycDialog), findsOneWidget);
-    expect(
-      tester
-          .widget<TextFormField>(
-            find.byKey(const ValueKey('kyc_account_number')),
-          )
-          .controller!
-          .text,
-      '000123456789',
-    );
-    expect(tester.takeException(), isNull);
-  });
+      dioConfig.dio.httpClientAdapter = adapter;
+      await tester.pumpWidget(
+        MaterialApp(
+          home: Scaffold(
+            body: InvestorKycDialog(
+              investor: InvestorModel(id: 88),
+              pickDocument: () async => _pdf,
+            ),
+          ),
+        ),
+      );
+      for (final field in _details.entries) {
+        await tester.enterText(
+          find.byKey(ValueKey('kyc_${field.key}')),
+          field.value,
+        );
+      }
+      await tester.tap(find.text('Save KYC'));
+      await tester.pumpAndSettle();
+      expect(find.text('Upload a CML PDF before saving KYC.'), findsOneWidget);
+      expect(adapter.requests, isEmpty);
+      expect(find.byType(InvestorKycDialog), findsOneWidget);
+      await tester.ensureVisible(find.text('Upload CML PDF'));
+      await tester.tap(find.text('Upload CML PDF'));
+      await tester.pumpAndSettle();
+      for (final field in _details.entries) {
+        await tester.enterText(
+          find.byKey(ValueKey('kyc_${field.key}')),
+          field.value,
+        );
+      }
+      await tester.tap(find.text('Save KYC'));
+      await tester.pumpAndSettle();
+      expect(adapter.requests.last.path, endsWith('/save'));
+      expect(
+        (adapter.requests.last.data as FormData).files.single.key,
+        'cml_file',
+      );
+
+      expect(find.text('Investor not found'), findsOneWidget);
+      expect(find.byType(InvestorKycDialog), findsOneWidget);
+      expect(
+        tester
+            .widget<TextFormField>(
+              find.byKey(const ValueKey('kyc_account_number')),
+            )
+            .controller!
+            .text,
+        '000123456789',
+      );
+      expect(tester.takeException(), isNull);
+    },
+  );
 
   testWidgets('KYC badge and action use preipo status rather than legacy KYC', (
     tester,

@@ -24,6 +24,8 @@ Auth: header `headtoken`; after login also `Authorization: Bearer <token>`.
 ## Master / config
 
 - GET /api/get-config
+  - `enum.document_type` is the client document-type filter only (no SSA/PAN/Aadhaar/cheque).
+  - App does not read removed keys: `secondary_banners`, `preipo_banners`, `app_version`, `build`, `app_tutorial_video`, `investment_process`, `calendly_url`.
 - GET /api/master/get-blog
 - GET /api/master/get-sector
 
@@ -77,19 +79,34 @@ Auth: header `headtoken`; after login also `Authorization: Bearer <token>`.
 - POST /api/v1/business/pre-ipo/sell
 - POST /api/v2/business/pre-ipo/buy
 - POST /api/v2/business/pre-ipo/transaction/confirm-payment
+- POST /api/v2/business/pre-ipo/transaction/confirm-share-transfer
 - POST /api/v2/business/pre-ipo/transaction/share-transfer-receipt
 
 ## Enquiries
 
+- GET /api/v2/business/enquiries/deals
 - POST /api/v2/business/enquiries/deals
+- POST /api/v2/business/enquiries/deals/accept
+- POST /api/v2/business/enquiries/deals/accept-counterparty
+- POST /api/v2/business/enquiries/deals/quotes/accept
+- POST /api/v2/business/enquiries/deals/reject
+- POST /api/v2/business/enquiries/deals/withdraw
+- GET /api/v2/business/institution/enquiries
+- POST /api/v2/business/institution/enquiries/accept
+- POST /api/v2/business/institution/enquiries/quote
+- POST /api/v2/business/institution/enquiries/quote/withdraw
+- POST /api/v2/business/institution/enquiries/reject
 
 ## Ops (earnings/MIS/tasks/docs/notif)
 
 - GET /api/v1/business/earning/partner
+- GET /api/v2/business/earning/investor
 - GET /api/v1/business/invested-startup-mis
 - GET /api/v1/business/notifications
 - GET /api/v2/business/pending-tasks
-- POST /api/v1/business/send-document
+- GET /api/v2/business/documents
+- GET /api/v2/business/documents/download
+- POST /api/v2/business/documents/send
 
 ## Institution
 
@@ -113,13 +130,13 @@ Auth: header `headtoken`; after login also `Authorization: Bearer <token>`.
 - POST /api/v2/business/institution/company/shareholders
 - POST /api/v2/business/institution/pre-ipo/transaction/approve
 - POST /api/v2/business/institution/pre-ipo/transaction/confirm-payment
+- POST /api/v2/business/institution/pre-ipo/transaction/confirm-share-transfer
 - POST /api/v2/business/institution/pre-ipo/transaction/payment-receipt
 - POST /api/v2/business/institution/pre-ipo/transaction/reject
 - POST /api/v2/business/institution/profile
 
 ## Investor leftovers (still called from WM UI)
 
-- GET /api/v1/business/earning/investor
 - GET /api/v1/investor/company-startup-list
 - POST /api/v1/investor/pitch
 - POST /api/v1/investor/secondary-invest/sell-now

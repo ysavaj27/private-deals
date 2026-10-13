@@ -229,6 +229,7 @@ class Pages {
       ],
     ],
     for (final tab in [
+      'portfolio',
       'sell-enquiries',
       'unlisted-transactions',
       'secondary-transactions',

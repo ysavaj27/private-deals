@@ -56,11 +56,13 @@ class AppUrl {
   /// Dashboard / earnings / ops
   static String wDashboard = "${version}business/dashboard";
   static String wPreIPODashboard = "${version}business/dashboard-pre-ipo";
-  static String wInvestorEarning = "${version}business/earning/investor";
+  static String wInvestorEarning = "v2/business/earning/investor";
   static String wPartnerEarning = "${version}business/earning/partner";
   static String wMis = "${version}business/invested-startup-mis";
   static String wNotification = "${version}business/notifications";
-  static String wSendDocument = "${version}business/send-document";
+  static String wDocuments = "${newVersion}business/documents";
+  static String wDocumentsDownload = "${newVersion}business/documents/download";
+  static String wDocumentsSend = "${newVersion}business/documents/send";
   static String wPendingTasks = "${newVersion}business/pending-tasks";
 
   /// Portfolio

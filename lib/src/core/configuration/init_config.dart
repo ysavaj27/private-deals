@@ -77,17 +77,6 @@ class InitConfig extends GetxService {
     SystemChrome.setPreferredOrientations([DeviceOrientation.portraitUp]);
   }
 
-  void forceUpdate() async {
-    if (kIsWeb) return;
-    logger.d(
-      "Version :$version Config :${app.config.version.currentVersionCode} Condition :${app.config.version.currentVersionCode < version}\n API VERSION :${app.config.currentApiVersion}",
-    );
-    if (version < app.config.version.currentVersionCode) {
-      logger.d("Force Update :${app.config.version.toJson()}");
-      await showCustomDialog(ForceUpdateDialog(), false);
-    }
-  }
-
   Future<void> _getPackageInfo() async {
     PackageInfo packageInfo = await PackageInfo.fromPlatform();
     logger.d("Package Name :${packageInfo.packageName}");

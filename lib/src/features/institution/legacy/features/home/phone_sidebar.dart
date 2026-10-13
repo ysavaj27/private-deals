@@ -83,6 +83,11 @@ class PSideBarWidget extends StatelessWidget {
             tab: WTabBarEnum.preIPOTransactions,
           ),
           DTabTileWidget(
+            icon: Icons.account_balance_wallet_outlined,
+            title: 'Portfolio',
+            tab: WTabBarEnum.portfolio,
+          ),
+          DTabTileWidget(
             icon: Icons.sell_outlined,
             title: 'Enquiry',
             tab: WTabBarEnum.sellEnquiries,

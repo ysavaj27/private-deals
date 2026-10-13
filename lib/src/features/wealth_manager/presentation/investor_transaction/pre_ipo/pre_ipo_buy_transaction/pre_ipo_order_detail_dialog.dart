@@ -3,7 +3,8 @@ import 'package:private_deals/src/shared/widgets/pre_ipo_order/pre_ipo_transacti
 
 Future<void> showPreIpoOrderDetailDialog({
   required PreIpoOrderModel order,
-  required Future<void> Function(String action) onAction,
+  required Future<void> Function(PreIpoOrderModel order, String action)
+  onAction,
   required Future<PreIpoOrderModel?> Function() loadDetail,
 }) async {
   await showDialog<void>(

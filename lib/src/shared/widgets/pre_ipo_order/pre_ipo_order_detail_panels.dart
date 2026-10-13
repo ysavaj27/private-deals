@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:private_deals/src/shared/models/pre_ipo_order_model.dart';
 import 'package:private_deals/src/shared/app_exports.dart' show Launcher;
+
 import 'pre_ipo_order_widgets.dart';
 
 String _date(DateTime value) =>

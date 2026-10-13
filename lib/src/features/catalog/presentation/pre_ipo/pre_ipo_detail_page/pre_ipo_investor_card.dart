@@ -4,8 +4,9 @@ import 'pre_ipo_detail_page_ctrl.dart';
 
 class PreIPOInvestorCard extends StatelessWidget {
   final SelectInvestorModel model;
+  final bool removable;
 
-  PreIPOInvestorCard({super.key, required this.model});
+  PreIPOInvestorCard({super.key, required this.model, this.removable = true});
 
   final PreIPODetailPageCtrl c = Get.find<PreIPODetailPageCtrl>();
 
@@ -44,15 +45,18 @@ class PreIPOInvestorCard extends StatelessWidget {
                     ),
                   ),
                 ),
-                IconButton(
-                  tooltip: 'Remove investor',
-                  onPressed: () => c.removeInvestor(model),
-                  icon: Icon(
-                    Icons.delete_outline_rounded,
-                    size: 18,
-                    color: context.theme.colorScheme.error,
-                  ),
-                ),
+                if (removable)
+                  IconButton(
+                    tooltip: 'Remove investor',
+                    onPressed: () => c.removeInvestor(model),
+                    icon: Icon(
+                      Icons.delete_outline_rounded,
+                      size: 18,
+                      color: context.theme.colorScheme.error,
+                    ),
+                  )
+                else
+                  const SizedBox(height: 40),
               ],
             ),
           ),

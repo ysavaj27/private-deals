@@ -52,6 +52,10 @@ class PreIPOInvestmentPageCtrl extends GetxController
   }
 
   void addInvestor() async {
+    if (buysAsSelf) {
+      seedSelfInvestor(sharePrice);
+      return;
+    }
     var res = await showCustomDialog(
       SelectInvestorDialog(
         selectedInvestorIds: investorList

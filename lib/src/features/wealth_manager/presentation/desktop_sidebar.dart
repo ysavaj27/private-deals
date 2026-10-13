@@ -81,12 +81,6 @@ class DSideBarWidget extends StatelessWidget {
               title: 'My Earnings',
               tab: WTabBarEnum.myEarnings,
             ),
-            const SizedBox(height: 8),
-            DTabTileWidget(
-              icon: Icons.upload_file_outlined,
-              title: 'Upload Portfolio',
-              tab: WTabBarEnum.uploadPortfolio,
-            ),
             Obx(() {
               final showDocs =
                   app.wUser.isPrimaryAccess || app.wUser.isSecondaryAccess;
@@ -96,14 +90,8 @@ class DSideBarWidget extends StatelessWidget {
                   const SizedBox(height: 8),
                   DTabTileWidget(
                     icon: Icons.send_outlined,
-                    title: 'Send Documents',
+                    title: 'Documents',
                     tab: WTabBarEnum.sendDocuments,
-                  ),
-                  const SizedBox(height: 8),
-                  DTabTileWidget(
-                    icon: Icons.analytics_outlined,
-                    title: 'MIS',
-                    tab: WTabBarEnum.mis,
                   ),
                 ],
               );

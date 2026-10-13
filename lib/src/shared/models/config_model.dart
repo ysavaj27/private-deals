@@ -1,5 +1,3 @@
-import 'package:private_deals/src/core/configuration/init_config.dart';
-
 import 'package:private_deals/src/shared/functions/parse.dart';
 import 'package:private_deals/src/shared/models/settlement_option.dart';
 
@@ -15,8 +13,6 @@ class ConfigModel {
   List<String> notes;
   String preIpoBuyButton;
   String currentApiVersion;
-  List<AppVersionModel> appVersion;
-  BuildModel build;
   List<SettlementOption> settlementDays;
 
   ConfigModel({
@@ -31,16 +27,8 @@ class ConfigModel {
     required this.notes,
     this.currentApiVersion = '',
     this.preIpoBuyButton = '',
-    this.appVersion = const [],
-    required this.build,
     this.settlementDays = const [],
   });
-
-  InfoModel get version {
-    var model = appVersion.firstWhere((e) => e.type == init.packageName);
-    var data = model.data.firstWhere((e) => e.device == init.deviceOs);
-    return data;
-  }
 
   factory ConfigModel.fromJson(Map<String, dynamic> json) => ConfigModel(
         document: Document.fromJson(json["document"] ?? {}),
@@ -50,17 +38,12 @@ class ConfigModel {
         appPaginationPageLimit: Parse.toInt(json["app_pagination_page_limit"]),
         preIpoMinSellAmount: Parse.toDouble(json["pre_ipo_min_sell_amount"]),
         enumValues: EnumValues.fromJson(json["enum"] ?? {}),
-        build: BuildModel.fromJson(json["build"] ?? {}),
         preIpoBuyButton: Parse.toStrings(json["preipo_buy_button"]),
         landingBanner: LandingBanner.fromJson(json["landing_banner"] ?? {}),
         notes: json["notes"] != null
             ? List<String>.from(json["notes"].map((x) => Parse.toStrings(x)))
             : [],
         currentApiVersion: Parse.toStrings(json["current_api_version"]),
-        appVersion: json["app_version"] != null
-            ? List<AppVersionModel>.from(
-                json["app_version"].map((x) => AppVersionModel.fromJson(x)))
-            : [],
         settlementDays: json["settlement_days"] is List
             ? (json["settlement_days"] as List)
                 .whereType<Map>()
@@ -84,9 +67,7 @@ class ConfigModel {
         "enum": enumValues.toJson(),
         "landing_banner": landingBanner.toJson(),
         "notes": List<dynamic>.from(notes.map((x) => x)),
-        "app_version": List<dynamic>.from(appVersion.map((x) => x)),
         "current_api_version": currentApiVersion,
-        "build": build.toJson(),
         "preipo_buy_button": preIpoBuyButton,
         "settlement_days":
             List<dynamic>.from(settlementDays.map((x) => x.toJson())),
@@ -164,7 +145,7 @@ class EnumValues {
         gender: Gender.fromJson(json["gender"] ?? {}),
         bankAccountType:
             BankAccountType.fromJson(json["bank_account_type"] ?? {}),
-        documentType: DocumentType.fromJson(json["document_type"] ?? {}),
+        documentType: DocumentType.fromJson(json["document_type"]),
         instrumentType: InstrumentType.fromJson(json["instrument_type"] ?? {}),
         investorProfileVisibility: InvestorProfileVisibility.fromJson(
             json["investor_profile_visibility"] ?? {}),
@@ -265,63 +246,53 @@ class BankAccountType {
       };
 }
 
+/// One entry from get-config `enum.document_type` (client document types only).
+class DocumentTypeOption {
+  final String value;
+  final String label;
+
+  const DocumentTypeOption({required this.value, required this.label});
+}
+
+/// Dynamic document types from get-config. Do not hardcode SSA/PAN/etc.
 class DocumentType {
-  String ssa;
-  String loi;
-  String offer;
-  String mgtzip;
-  String mgtchallan;
-  String pas;
-  String sha;
-  String rtgsreceipt;
-  String chequecounterslip;
-  String secondarysh;
-  String paymentreceipt;
-  String sharereceipt;
+  final List<DocumentTypeOption> options;
 
-  DocumentType({
-    this.ssa = '',
-    this.loi = '',
-    this.offer = '',
-    this.mgtzip = '',
-    this.mgtchallan = '',
-    this.pas = '',
-    this.sha = '',
-    this.rtgsreceipt = '',
-    this.chequecounterslip = '',
-    this.secondarysh = '',
-    this.paymentreceipt = '',
-    this.sharereceipt = '',
-  });
+  const DocumentType({this.options = const []});
 
-  factory DocumentType.fromJson(Map<String, dynamic> json) => DocumentType(
-        ssa: json["ssa"] ?? '',
-        loi: json["loi"] ?? '',
-        offer: json["offer"] ?? '',
-        mgtzip: json["mgtzip"] ?? '',
-        mgtchallan: json["mgtchallan"] ?? '',
-        pas: json["pas"] ?? '',
-        sha: json["sha"] ?? '',
-        rtgsreceipt: json["rtgsreceipt"] ?? '',
-        chequecounterslip: json["chequecounterslip"] ?? '',
-        secondarysh: json["secondarysh"] ?? '',
-        paymentreceipt: json["paymentreceipt"] ?? '',
-        sharereceipt: json["sharereceipt"] ?? '',
-      );
+  List<String> get values =>
+      options.map((option) => option.value).toList(growable: false);
+
+  factory DocumentType.fromJson(dynamic raw) {
+    if (raw is List) {
+      final options = <DocumentTypeOption>[];
+      for (final item in raw) {
+        final value = Parse.toStrings(item).trim();
+        if (value.isEmpty) continue;
+        options.add(DocumentTypeOption(value: value, label: value));
+      }
+      return DocumentType(options: options);
+    }
+
+    if (raw is Map) {
+      final options = <DocumentTypeOption>[];
+      raw.forEach((key, value) {
+        final keyText = Parse.toStrings(key).trim();
+        final valueText = Parse.toStrings(value).trim();
+        // Prefer the API string (value) when present; fall back to key.
+        final filterValue = valueText.isNotEmpty ? valueText : keyText;
+        if (filterValue.isEmpty) return;
+        final label = valueText.isNotEmpty ? valueText : keyText;
+        options.add(DocumentTypeOption(value: filterValue, label: label));
+      });
+      return DocumentType(options: options);
+    }
+
+    return const DocumentType();
+  }
 
   Map<String, dynamic> toJson() => {
-        "ssa": ssa,
-        "loi": loi,
-        "offer": offer,
-        "mgtzip": mgtzip,
-        "mgtchallan": mgtchallan,
-        "pas": pas,
-        "sha": sha,
-        "rtgsreceipt": rtgsreceipt,
-        "chequecounterslip": chequecounterslip,
-        "secondarysh": secondarysh,
-        "paymentreceipt": paymentreceipt,
-        "sharereceipt": sharereceipt,
+        for (final option in options) option.value: option.label,
       };
 }
 
@@ -791,76 +762,6 @@ class MinInvestmentType {
       };
 }
 
-class AppVersionModel {
-  String type;
-  List<InfoModel> data;
-
-  AppVersionModel({
-    this.type = '',
-    this.data = const [],
-  });
-
-  factory AppVersionModel.fromJson(Map<String, dynamic> json) =>
-      AppVersionModel(
-        type: json["type"] ?? "",
-        data: json["data"] != null
-            ? List<InfoModel>.from(
-                json["data"].map((x) => InfoModel.fromJson(x)))
-            : [],
-      );
-
-  Map<String, dynamic> toJson() => {
-        "type": type,
-        "data": List<dynamic>.from(data.map((x) => x.toJson())),
-      };
-}
-
-class InfoModel {
-  String device;
-
-  // int lastVersionCode;
-  int currentVersionCode;
-
-  // int lastVersion;
-  // int currentVersion;
-  bool forceUpdate;
-  String title;
-  String description;
-
-  InfoModel({
-    this.device = '',
-    // this.lastVersionCode = 0,
-    this.currentVersionCode = 1,
-    // this.lastVersion = 0,
-    // this.currentVersion = 0,
-    this.forceUpdate = false,
-    this.title = '',
-    this.description = '',
-  });
-
-  factory InfoModel.fromJson(Map<String, dynamic> json) => InfoModel(
-        device: json["device"] ?? "",
-        // lastVersionCode: json["last_version_code"] ?? 0,
-        currentVersionCode: json["current_version_code"] ?? 0,
-        // lastVersion: json["last_version"] ?? 0,
-        // currentVersion: json["current_version"] ?? 0,
-        forceUpdate: json["force_update"] ?? false,
-        title: json["title"]?.toString() ?? "",
-        description: json["description"]?.toString() ?? "",
-      );
-
-  Map<String, dynamic> toJson() => {
-        "device": device,
-        // "last_version_code": lastVersionCode,
-        "current_version_code": currentVersionCode,
-        // "last_version": lastVersion,
-        // "current_version": currentVersion,
-        "force_update": forceUpdate,
-        "title": title,
-        "description": description,
-      };
-}
-
 class LandingBanner {
   List<String> preipo;
   List<String> secondary;
@@ -888,42 +789,6 @@ class LandingBanner {
         "preipo": List<dynamic>.from(preipo.map((x) => x)),
         "secondary": List<dynamic>.from(secondary.map((x) => x)),
         "primary": List<dynamic>.from(primary.map((x) => x)),
-      };
-}
-
-class BuildModel {
-  Windows windows;
-
-  BuildModel({
-    required this.windows,
-  });
-
-  factory BuildModel.fromJson(Map<String, dynamic> json) => BuildModel(
-        windows: Windows.fromJson(json["windows"] ?? {}),
-      );
-
-  Map<String, dynamic> toJson() => {
-        "windows": windows.toJson(),
-      };
-}
-
-class Windows {
-  String investor;
-  String distributer;
-
-  Windows({
-    required this.investor,
-    required this.distributer,
-  });
-
-  factory Windows.fromJson(Map<String, dynamic> json) => Windows(
-        investor: json["investor"] ?? "",
-        distributer: json["distributer"] ?? "",
-      );
-
-  Map<String, dynamic> toJson() => {
-        "investor": investor,
-        "distributer": distributer,
       };
 }
 

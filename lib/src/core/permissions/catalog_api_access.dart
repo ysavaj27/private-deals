@@ -1,6 +1,6 @@
 import 'package:private_deals/src/core/config/api_endpoints.dart';
 
-/// APIs used by the shared catalog and its investment/enquiry dialogs.
+/// APIs used by the shared catalog, portfolio and investment/enquiry dialogs.
 /// Seller pages keep using these endpoints; unrelated business operations
 /// remain protected by their existing workspace policy.
 class CatalogApiAccess {
@@ -19,6 +19,8 @@ class CatalogApiAccess {
         AppUrl.wInvestorList,
         AppUrl.wInvestorDetail,
         AppUrl.wTransaction,
+        AppUrl.wPortfolio,
+        AppUrl.wPreIpoPortfolio,
       },
       'POST' => {
         AppUrl.wAddInvestor,

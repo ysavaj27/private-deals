@@ -157,6 +157,7 @@ class _SellerSlotsWidgetState extends State<SellerSlotsWidget> {
   Widget _dealRow(BuildContext context, DealModel deal) {
     final offer = PreIPOOffer.fromDeal(deal);
     final sell = !offer.isSellDeal;
+    final own = offer.isOwnDeal;
     return Obx(
       () => _OfferRow(
         seller: deal.seller,
@@ -166,13 +167,17 @@ class _SellerSlotsWidgetState extends State<SellerSlotsWidget> {
         label: sell ? 'Buyer' : 'Seller',
         selected: c.selectedOffer.value?.key == offer.key,
         onTap: () => _showDeal(context, deal),
-        actionLabel: sell ? 'Sell' : 'Buy',
-        showAction: sell || (offer.canBuy && c.model().canBuy),
+        ownDeal: own,
+        actionLabel: sell ? 'Enquire to sell' : 'Buy',
+        showAction: !own && (sell || (offer.canBuy && c.model().canBuy)),
         onAction: c.investing.value
             ? null
             : () {
-                // Sell is intentionally a placeholder until its flow is ready.
-                if (!sell) c.selectOffer(offer, phone: context.isPhone);
+                if (sell) {
+                  _enquire(sellOffer: deal);
+                } else {
+                  c.selectOffer(offer, phone: context.isPhone);
+                }
               },
       ),
     );
@@ -255,9 +260,21 @@ class _SellerSlotsWidgetState extends State<SellerSlotsWidget> {
     );
   }
 
-  Future<void> _enquire() async {
+  Future<void> _enquire({DealModel? sellOffer}) async {
     final created = await showCustomDialog(
-      DesktopEnquiryDialogView(c.model().slug),
+      DesktopEnquiryDialogView(
+        c.model().slug,
+        initialType: sellOffer != null || !_buy
+            ? InvestmentTypeEnum.sell
+            : InvestmentTypeEnum.buy,
+        initialQuantity: sellOffer?.minimumQty,
+        initialOfferPrice: sellOffer?.sharePrice,
+        initialSettlementDays: sellOffer?.settlementDays,
+        explanation: sellOffer == null
+            ? null
+            : 'Create an open sell enquiry using these terms. A counterparty '
+                  'must accept the enquiry before a transaction is created.',
+      ),
     );
     if (created == true && !c.isClosed) {
       Get.offAllNamed(Routes.enquiriesPath());
@@ -268,6 +285,7 @@ class _SellerSlotsWidgetState extends State<SellerSlotsWidget> {
     final phone = context.isPhone;
     final offer = PreIPOOffer.fromDeal(deal);
     final buyerWanted = !offer.isSellDeal;
+    final own = offer.isOwnDeal;
     final proceed = await showDialog<bool>(
       context: context,
       builder: (dialogContext) => Obx(() {
@@ -284,25 +302,37 @@ class _SellerSlotsWidgetState extends State<SellerSlotsWidget> {
               ? deal.availableQuantity.toShowNum
               : null,
           badges: [
+            if (own) 'Your deal',
             buyerWanted ? 'Buyer available' : 'Shares for sale',
             if (deal.isHotDeal) 'Hot deal',
             if (selected) 'Selected',
           ],
-          footerText: buyerWanted
-              ? 'Review the buyer’s offer and minimum quantity.'
+          footerText: own
+              ? 'This is your own deal. Other partners can trade against it.'
+              : buyerWanted
+              ? 'Use this price and minimum quantity to raise a sell enquiry.'
               : canBuy
-              ? 'Select investors and quantity in the next step.'
+              ? (c.buysAsSelf
+                    ? 'Enter the quantity for your own account in the next step.'
+                    : 'Select investors and quantity in the next step.')
               : offer.buyBlockedReason ??
                     'Buying is not available for this deal.',
-          action: buyerWanted
-              ? OutlinedButton(onPressed: () {}, child: const Text('Sell'))
+          action: own
+              ? null
+              : buyerWanted
+              ? OutlinedButton(
+                  onPressed: c.investing.value
+                      ? null
+                      : () => Navigator.of(dialogContext).pop(true),
+                  child: const Text('Enquire to sell'),
+                )
               : canBuy
               ? FilledButton(
                   onPressed: c.investing.value
                       ? null
                       : () => Navigator.of(dialogContext).pop(true),
                   child: Text(
-                    selected && c.investorList.isNotEmpty
+                    !c.buysAsSelf && selected && c.investorList.isNotEmpty
                         ? 'Add Investors'
                         : 'Buy Now',
                   ),
@@ -312,7 +342,13 @@ class _SellerSlotsWidgetState extends State<SellerSlotsWidget> {
       }),
     );
     // Close the information dialog before opening the existing investment flow.
-    if (proceed == true) await c.selectOffer(offer, phone: phone);
+    if (proceed == true && mounted && !c.isClosed) {
+      if (buyerWanted) {
+        await _enquire(sellOffer: deal);
+      } else {
+        await c.selectOffer(offer, phone: phone);
+      }
+    }
   }
 
   Future<void> _showSeller(
@@ -429,11 +465,13 @@ class _OfferRow extends StatelessWidget {
     required this.onTap,
     this.settlementLabel,
     this.selected = false,
+    this.ownDeal = false,
     this.showAction = false,
     this.actionLabel = 'Buy',
     this.onAction,
   });
   final SharePriceSellerModel seller;
+  final bool ownDeal;
   final double price;
   final int minimumQty;
   final String? settlementLabel;
@@ -506,6 +544,27 @@ class _OfferRow extends StatelessWidget {
                       ],
                     ),
                   ),
+                  if (ownDeal) ...[
+                    const SizedBox(width: 12),
+                    Container(
+                      key: const ValueKey('own-deal-tag'),
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 10,
+                        vertical: 6,
+                      ),
+                      decoration: BoxDecoration(
+                        color: colors.surfaceContainerHighest,
+                        borderRadius: BorderRadius.circular(8),
+                      ),
+                      child: Text(
+                        'Your deal',
+                        style: theme.textTheme.labelMedium?.copyWith(
+                          color: colors.onSurfaceVariant,
+                          fontWeight: FontWeight.w600,
+                        ),
+                      ),
+                    ),
+                  ],
                   if (showAction) ...[
                     const SizedBox(width: 12),
                     FilledButton(

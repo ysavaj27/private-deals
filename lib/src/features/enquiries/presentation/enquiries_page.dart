@@ -3,6 +3,7 @@ import 'package:private_deals/src/shared/app_exports.dart';
 import 'package:private_deals/src/features/enquiries/data/enquiry_api.dart';
 import 'package:private_deals/src/features/enquiries/data/enquiry_model.dart';
 import 'package:private_deals/src/features/enquiries/presentation/enquiry_decision_dialog.dart';
+import 'package:private_deals/src/features/enquiries/presentation/enquiry_quote_dialog.dart';
 import 'package:private_deals/src/features/wealth_manager/presentation/investor_transaction/pre_ipo/pre_ipo_buy_transaction/pre_ipo_buy_transaction_page_ctrl.dart';
 import 'package:private_deals/src/features/wealth_manager/presentation/investor_transaction/pre_ipo/pre_ipo_buy_transaction/pre_ipo_order_detail_dialog.dart';
 
@@ -58,7 +59,11 @@ class _EnquiriesPageState extends State<EnquiriesPage> {
     });
   }
 
-  Future<void> _act(EnquiryModel item, String action) async {
+  Future<void> _act(
+    EnquiryModel item,
+    String action, {
+    bool counterparty = false,
+  }) async {
     if (_acting || _loading) return;
     setState(() => _acting = true);
     try {
@@ -68,7 +73,9 @@ class _EnquiriesPageState extends State<EnquiriesPage> {
           action: action,
           institution: widget.institution,
           companyName: item.companyName,
-          sell: item.dealType == 'sell',
+          // The counterparty takes the opposite side of the raiser.
+          sell: counterparty ? item.isBuy : item.isSell,
+          counterparty: counterparty,
         ),
       );
       if (decision == null || !mounted) return;
@@ -76,10 +83,15 @@ class _EnquiriesPageState extends State<EnquiriesPage> {
       PreIpoOrderModel? order;
       final BaseModel response;
       if (!widget.institution && action == 'accept') {
-        final result = await EnquiryApi.accept(
-          uuid: item.uuid,
-          investorId: decision.investorId!,
-        );
+        final result = counterparty
+            ? await EnquiryApi.acceptCounterparty(
+                uuid: item.uuid,
+                investorId: decision.investorId!,
+              )
+            : await EnquiryApi.accept(
+                uuid: item.uuid,
+                investorId: decision.investorId!,
+              );
         response = result;
         if (result.isSuccess) order = result.r;
       } else {
@@ -88,44 +100,10 @@ class _EnquiriesPageState extends State<EnquiriesPage> {
           uuid: item.uuid,
           action: action,
           reason: decision.reason,
-          settlementDays: item.isBuy && action == 'accept'
-              ? decision.settlementDays
-              : null,
         );
       }
       if (!mounted) return;
-      ScaffoldMessenger.of(context)
-          .showSnackBar(SnackBar(content: Text(response.m)));
-      // A competing Institution may have locked the inquiry. Always refresh,
-      // including business failures, so stale actions cannot remain available.
-      await _load();
-      if (!mounted) return;
-      setState(() => _submitting = false);
-      if (order == null) return;
-      final createdOrder = order;
-      final reference = createdOrder.transactionInvoiceNo?.trim() ?? '';
-      await showDialog<void>(
-        context: context,
-        builder: (dialogContext) => AlertDialog(
-          title: const Text('Transaction created'),
-          content: Text(
-            '${reference.isEmpty ? '' : '#$reference\n\n'}${createdOrder.mandateSent == false ? response.m : 'The investor can sign the mandate using the SMS or WhatsApp link.'}',
-          ),
-          actions: [
-            TextButton(
-              onPressed: () => Navigator.pop(dialogContext),
-              child: const Text('Close'),
-            ),
-            FilledButton(
-              onPressed: () {
-                Navigator.pop(dialogContext);
-                _openOrder(createdOrder);
-              },
-              child: const Text('View transaction'),
-            ),
-          ],
-        ),
-      );
+      await _finishAction(response, order: order);
     } finally {
       if (mounted) {
         setState(() {
@@ -136,19 +114,155 @@ class _EnquiriesPageState extends State<EnquiriesPage> {
     }
   }
 
+  Future<void> _sendOrReplaceQuote(EnquiryModel item, {required bool replace}) async {
+    if (_acting || _loading) return;
+    setState(() => _acting = true);
+    try {
+      final draft = await showDialog<EnquiryQuoteDraft>(
+        context: context,
+        builder: (_) => EnquiryQuoteDialog(
+          companyName: item.companyName,
+          replace: replace,
+          enquiry: item,
+          existing: replace ? item.myQuote : null,
+        ),
+      );
+      if (draft == null || !mounted) return;
+      setState(() => _submitting = true);
+      final response = await EnquiryApi.sendQuote(
+        uuid: item.uuid,
+        quantity: draft.quantity,
+        sharePrice: draft.sharePrice,
+        settlementDays: draft.settlementDays,
+      );
+      if (!mounted) return;
+      await _finishAction(response);
+    } finally {
+      if (mounted) {
+        setState(() {
+          _acting = false;
+          _submitting = false;
+        });
+      }
+    }
+  }
+
+  Future<void> _withdrawQuote(EnquiryModel item) async {
+    if (_acting || _loading) return;
+    setState(() => _acting = true);
+    try {
+      final confirmed = await showDialog<bool>(
+        context: context,
+        builder: (dialogContext) => AlertDialog(
+          title: const Text('Withdraw quote'),
+          content: Text(
+            'Withdraw your quote on ${item.companyName.isEmpty ? 'this enquiry' : item.companyName}? You can send a new quote afterwards.',
+          ),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.pop(dialogContext, false),
+              child: const Text('Cancel'),
+            ),
+            FilledButton(
+              onPressed: () => Navigator.pop(dialogContext, true),
+              child: const Text('Withdraw quote'),
+            ),
+          ],
+        ),
+      );
+      if (confirmed != true || !mounted) return;
+      setState(() => _submitting = true);
+      final response = await EnquiryApi.withdrawQuote(uuid: item.uuid);
+      if (!mounted) return;
+      await _finishAction(response);
+    } finally {
+      if (mounted) {
+        setState(() {
+          _acting = false;
+          _submitting = false;
+        });
+      }
+    }
+  }
+
+  Future<void> _acceptQuote(EnquiryModel item, EnquiryQuote quote) async {
+    if (_acting || _loading) return;
+    setState(() => _acting = true);
+    try {
+      final decision = await showDialog<EnquiryDecision>(
+        context: context,
+        builder: (_) => EnquiryDecisionDialog(
+          action: 'accept',
+          institution: false,
+          companyName: item.companyName,
+          sell: item.isSell,
+        ),
+      );
+      if (decision?.investorId == null || !mounted) return;
+      setState(() => _submitting = true);
+      final result = await EnquiryApi.acceptQuote(
+        uuid: item.uuid,
+        quoteUuid: quote.uuid,
+        investorId: decision!.investorId!,
+      );
+      if (!mounted) return;
+      await _finishAction(result, order: result.isSuccess ? result.r : null);
+    } finally {
+      if (mounted) {
+        setState(() {
+          _acting = false;
+          _submitting = false;
+        });
+      }
+    }
+  }
+
+  Future<void> _finishAction(
+    BaseModel response, {
+    PreIpoOrderModel? order,
+  }) async {
+    ScaffoldMessenger.of(context)
+        .showSnackBar(SnackBar(content: Text(response.m)));
+    // A competing Institution may have locked the inquiry. Always refresh,
+    // including business failures, so stale actions cannot remain available.
+    await _load();
+    if (!mounted) return;
+    setState(() => _submitting = false);
+    if (order == null) return;
+    final createdOrder = order;
+    final reference = createdOrder.transactionInvoiceNo?.trim() ?? '';
+    await showDialog<void>(
+      context: context,
+      builder: (dialogContext) => AlertDialog(
+        title: const Text('Transaction created'),
+        content: Text(
+          '${reference.isEmpty ? '' : '#$reference\n\n'}${createdOrder.mandateSent == false ? response.m : 'The investor can sign the mandate using the SMS or WhatsApp link.'}',
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(dialogContext),
+            child: const Text('Close'),
+          ),
+          FilledButton(
+            onPressed: () {
+              Navigator.pop(dialogContext);
+              _openOrder(createdOrder);
+            },
+            child: const Text('View transaction'),
+          ),
+        ],
+      ),
+    );
+  }
+
   Future<void> _openOrder(PreIpoOrderModel order) async {
     final controller = Get.isRegistered<PreIPOBuyTransactionPageCtrl>()
         ? Get.find<PreIPOBuyTransactionPageCtrl>()
         : Get.put(PreIPOBuyTransactionPageCtrl());
-    var current = order;
     await showPreIpoOrderDetailDialog(
-      order: current,
-      onAction: (action) => controller.handleAction(current, action),
-      loadDetail: () async {
-        final detail = await controller.loadDetail(order.id);
-        if (detail != null) current = detail;
-        return detail;
-      },
+      order: order,
+      onAction: controller.handleAction,
+      loadDetail: () => controller.loadDetail(order.id),
     );
   }
 
@@ -227,9 +341,7 @@ class _EnquiriesPageState extends State<EnquiriesPage> {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text(
-                      widget.institution
-                          ? 'Incoming Enquiries'
-                          : 'My Enquiries',
+                      widget.institution ? 'Incoming Enquiries' : 'Enquiries',
                       style: text.headlineSmall?.copyWith(
                         fontWeight: FontWeight.w700,
                       ),
@@ -238,7 +350,7 @@ class _EnquiriesPageState extends State<EnquiriesPage> {
                     Text(
                       widget.institution
                           ? 'Review buy and sell requests from wealth managers.'
-                          : 'Track enquiries you raised and respond once a seller locks them.',
+                          : 'Track your enquiries and accept open ones from other partners.',
                       style: text.bodyMedium?.copyWith(
                         color: colors.onSurfaceVariant,
                       ),
@@ -246,10 +358,10 @@ class _EnquiriesPageState extends State<EnquiriesPage> {
                   ],
                 ),
               ),
-              IconButton.filledTonal(
+              AppRefreshButton(
                 tooltip: 'Refresh enquiries',
-                onPressed: _loading || _acting ? null : _load,
-                icon: const Icon(Icons.refresh_rounded),
+                loading: _loading || _submitting,
+                onPressed: _acting || _loading ? null : _load,
               ),
             ],
           ),
@@ -272,7 +384,7 @@ class _EnquiriesPageState extends State<EnquiriesPage> {
                 decoration: InputDecoration(
                   hintText: widget.institution
                       ? 'Search company or wealth manager'
-                      : 'Search company or seller',
+                      : 'Search company or partner',
                   prefixIcon: const Icon(Icons.search_rounded),
                   filled: true,
                   fillColor: colors.surfaceContainerLow,
@@ -338,8 +450,14 @@ class _EnquiriesPageState extends State<EnquiriesPage> {
                   institution: widget.institution,
                   acting: _acting || _loading,
                   onApprove: () => _act(item, 'accept'),
+                  onAcceptCounterparty: () =>
+                      _act(item, 'accept', counterparty: true),
                   onReject: () => _act(item, 'reject'),
                   onWithdraw: () => _act(item, 'withdraw'),
+                  onSendQuote: () => _sendOrReplaceQuote(item, replace: false),
+                  onReplaceQuote: () => _sendOrReplaceQuote(item, replace: true),
+                  onWithdrawQuote: () => _withdrawQuote(item),
+                  onAcceptQuote: (quote) => _acceptQuote(item, quote),
                   onViewTransactions: () => Get.offNamed(
                     Routes.unlistedTransactionsPath(
                       institution: widget.institution,
@@ -360,8 +478,13 @@ class _EnquiryCard extends StatelessWidget {
     required this.institution,
     required this.acting,
     required this.onApprove,
+    required this.onAcceptCounterparty,
     required this.onReject,
     required this.onWithdraw,
+    required this.onSendQuote,
+    required this.onReplaceQuote,
+    required this.onWithdrawQuote,
+    required this.onAcceptQuote,
     required this.onViewTransactions,
   });
 
@@ -369,15 +492,26 @@ class _EnquiryCard extends StatelessWidget {
   final bool institution;
   final bool acting;
   final VoidCallback onApprove;
+  final VoidCallback onAcceptCounterparty;
   final VoidCallback onReject;
   final VoidCallback onWithdraw;
+  final VoidCallback onSendQuote;
+  final VoidCallback onReplaceQuote;
+  final VoidCallback onWithdrawQuote;
+  final ValueChanged<EnquiryQuote> onAcceptQuote;
   final VoidCallback onViewTransactions;
 
   static final _qty = NumberFormat.decimalPattern('en_IN');
   static final _money = NumberFormat.currency(locale: 'en_IN', symbol: '₹');
 
-  bool get _canRespond =>
-      institution ? item.canSellerRespond : item.canPartnerRespond;
+  bool get _canRespond => institution
+      ? item.canAcceptOriginal || item.hasPendingQuote
+      : item.canPartnerRespond(app.wUser);
+
+  bool get _canAcceptCounterparty =>
+      !institution && item.canAcceptCounterparty(app.wUser);
+
+  bool get _canWithdraw => !institution && item.canWithdraw(app.wUser);
 
   ({Color fg, Color bg}) _statusColors(ColorScheme colors) {
     return switch (item.status) {
@@ -414,16 +548,25 @@ class _EnquiryCard extends StatelessWidget {
         ? (item.partnerName.isEmpty
               ? null
               : 'Wealth manager · ${item.partnerName}')
+        : !item.isMine(app.wUser)
+        ? (item.partnerName.isEmpty
+              ? 'Raised by another partner'
+              : 'Raised by ${item.partnerName}')
         : (item.institutionName.isEmpty
               ? null
-              : 'Seller · ${item.institutionName}');
+              : '${item.isSell ? 'Buyer' : 'Seller'} · ${item.institutionName}');
 
-    final metrics = <({String label, String value})>[
-      (label: 'Qty', value: _qty.format(item.quantity)),
-      (label: 'Offered', value: _money.format(item.basePrice)),
-      (label: 'Customer', value: _money.format(item.sharePrice)),
+    final metrics = <({String label, String value, String? hint})>[
+      (label: 'Qty', value: _qty.format(item.quantity), hint: null),
+      (
+        label: 'Offered price',
+        value: _money.format(item.basePrice),
+        hint: item.sharePrice > 0 && item.sharePrice != item.basePrice
+            ? 'Transaction price ${_money.format(item.sharePrice)}'
+            : null,
+      ),
       if (item.settlementLabel != null)
-        (label: 'Settlement', value: item.settlementLabel!),
+        (label: 'Settlement', value: item.settlementLabel!, hint: null),
     ];
 
     return Container(
@@ -487,7 +630,10 @@ class _EnquiryCard extends StatelessWidget {
                             crossAxisAlignment: WrapCrossAlignment.center,
                             children: [
                               _Chip(
-                                label: item.statusLabel(institution),
+                                label: item.statusLabel(
+                                  institution,
+                                  mine: institution || item.isMine(app.wUser),
+                                ),
                                 foreground: status.fg,
                                 background: status.bg,
                               ),
@@ -508,11 +654,44 @@ class _EnquiryCard extends StatelessWidget {
                         onPressed: acting ? null : onReject,
                         child: const Text('Reject'),
                       ),
-                      FilledButton(
-                        onPressed: acting ? null : onApprove,
-                        child: const Text('Approve'),
-                      ),
+                      if (institution && item.canSendQuote)
+                        OutlinedButton(
+                          key: ValueKey('enquiry-send-quote-${item.uuid}'),
+                          onPressed: acting ? null : onSendQuote,
+                          child: const Text('Send quote'),
+                        ),
+                      if (institution && item.canWithdrawQuote)
+                        OutlinedButton(
+                          key: ValueKey('enquiry-withdraw-quote-${item.uuid}'),
+                          onPressed: acting ? null : onWithdrawQuote,
+                          child: const Text('Withdraw quote'),
+                        ),
+                      if (institution && item.canReplaceQuote)
+                        FilledButton(
+                          key: ValueKey('enquiry-replace-quote-${item.uuid}'),
+                          onPressed: acting ? null : onReplaceQuote,
+                          child: const Text('Replace quote'),
+                        ),
+                      if (!institution || item.canAcceptOriginal)
+                        FilledButton(
+                          onPressed: acting ? null : onApprove,
+                          child: const Text('Approve'),
+                        ),
                     ],
+                  ),
+                ],
+                if (_canAcceptCounterparty) ...[
+                  const SizedBox(height: AppSpace.md),
+                  FilledButton.icon(
+                    key: ValueKey('enquiry-accept-counterparty-${item.uuid}'),
+                    onPressed: acting ? null : onAcceptCounterparty,
+                    icon: Icon(
+                      item.isSell
+                          ? Icons.south_west_rounded
+                          : Icons.north_east_rounded,
+                      size: 18,
+                    ),
+                    label: Text(item.isSell ? 'Accept & buy' : 'Accept & sell'),
                   ),
                 ],
                 if (counterparty != null || created.isNotEmpty) ...[
@@ -543,10 +722,41 @@ class _EnquiryCard extends StatelessWidget {
                     runSpacing: AppSpace.md,
                     children: [
                       for (final metric in metrics)
-                        _MetricInline(label: metric.label, value: metric.value),
+                        _MetricInline(
+                          label: metric.label,
+                          value: metric.value,
+                          hint: metric.hint,
+                        ),
                     ],
                   ),
                 ),
+                if (institution && item.myQuote != null) ...[
+                  const SizedBox(height: AppSpace.md),
+                  _QuotePanel(
+                    title: 'Your quote',
+                    quote: item.myQuote!,
+                    acting: acting,
+                  ),
+                ],
+                if (!institution && item.quotes.isNotEmpty) ...[
+                  const SizedBox(height: AppSpace.md),
+                  for (final quote in item.quotes) ...[
+                    _QuotePanel(
+                      title: quote.institutionName.isEmpty
+                          ? 'Quote'
+                          : quote.institutionName,
+                      quote: quote,
+                      acting: acting,
+                      onAccept: item.actionableQuotes.any(
+                        (entry) => entry.uuid == quote.uuid,
+                      )
+                          ? () => onAcceptQuote(quote)
+                          : null,
+                    ),
+                    if (quote != item.quotes.last)
+                      const SizedBox(height: AppSpace.sm),
+                  ],
+                ],
                 if (item.notes.isNotEmpty) ...[
                   const SizedBox(height: AppSpace.md),
                   _InfoBanner(
@@ -573,14 +783,13 @@ class _EnquiryCard extends StatelessWidget {
                     tone: _InfoTone.success,
                   ),
                 ],
-                if ((!institution && item.canWithdraw) ||
-                    item.status == 'converted') ...[
+                if (_canWithdraw || item.status == 'converted') ...[
                   const SizedBox(height: AppSpace.md),
                   Wrap(
                     spacing: AppSpace.sm,
                     runSpacing: AppSpace.sm,
                     children: [
-                      if (!institution && item.canWithdraw)
+                      if (_canWithdraw)
                         OutlinedButton(
                           onPressed: acting ? null : onWithdraw,
                           child: const Text('Withdraw'),
@@ -670,10 +879,11 @@ class _CompanyLogo extends StatelessWidget {
 }
 
 class _MetricInline extends StatelessWidget {
-  const _MetricInline({required this.label, required this.value});
+  const _MetricInline({required this.label, required this.value, this.hint});
 
   final String label;
   final String value;
+  final String? hint;
 
   @override
   Widget build(BuildContext context) {
@@ -691,7 +901,104 @@ class _MetricInline extends StatelessWidget {
           value,
           style: text.titleSmall?.copyWith(fontWeight: FontWeight.w700),
         ),
+        if (hint != null) ...[
+          const SizedBox(height: 2),
+          Text(
+            hint!,
+            style: text.labelSmall?.copyWith(color: colors.onSurfaceVariant),
+          ),
+        ],
       ],
+    );
+  }
+}
+
+class _QuotePanel extends StatelessWidget {
+  const _QuotePanel({
+    required this.title,
+    required this.quote,
+    required this.acting,
+    this.onAccept,
+  });
+
+  final String title;
+  final EnquiryQuote quote;
+  final bool acting;
+  final VoidCallback? onAccept;
+
+  static final _qty = NumberFormat.decimalPattern('en_IN');
+  static final _money = NumberFormat.currency(locale: 'en_IN', symbol: '₹');
+
+  @override
+  Widget build(BuildContext context) {
+    final colors = Theme.of(context).colorScheme;
+    final text = Theme.of(context).textTheme;
+    final metrics = <({String label, String value, String? hint})>[
+      (label: 'Qty', value: _qty.format(quote.quantity), hint: null),
+      (
+        label: 'Offered price',
+        value: _money.format(quote.basePrice),
+        hint: quote.sharePrice > 0 && quote.sharePrice != quote.basePrice
+            ? 'Transaction price ${_money.format(quote.sharePrice)}'
+            : null,
+      ),
+      if (quote.settlementLabel != null)
+        (label: 'Settlement', value: quote.settlementLabel!, hint: null),
+    ];
+
+    return Container(
+      width: double.infinity,
+      padding: const EdgeInsets.all(AppSpace.md),
+      decoration: BoxDecoration(
+        color: colors.surfaceContainerLow,
+        borderRadius: AppRadii.mdAll,
+        border: Border.all(color: colors.outlineVariant),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            children: [
+              Expanded(
+                child: Text(
+                  title,
+                  style: text.titleSmall?.copyWith(fontWeight: FontWeight.w700),
+                ),
+              ),
+              _Chip(
+                label: quote.statusLabel,
+                foreground: quote.isPending
+                    ? colors.onSecondaryContainer
+                    : colors.onSurfaceVariant,
+                background: quote.isPending
+                    ? colors.secondaryContainer
+                    : colors.surfaceContainerHighest,
+              ),
+            ],
+          ),
+          const SizedBox(height: AppSpace.md),
+          Wrap(
+            spacing: AppSpace.xl,
+            runSpacing: AppSpace.md,
+            children: [
+              for (final metric in metrics)
+                _MetricInline(
+                  label: metric.label,
+                  value: metric.value,
+                  hint: metric.hint,
+                ),
+            ],
+          ),
+          if (onAccept != null) ...[
+            const SizedBox(height: AppSpace.md),
+            FilledButton(
+              key: ValueKey('enquiry-accept-quote-${quote.uuid}'),
+              onPressed: acting ? null : onAccept,
+              child: const Text('Accept quote'),
+            ),
+          ],
+        ],
+      ),
     );
   }
 }

@@ -5,15 +5,43 @@ import 'package:private_deals/src/shared/widgets/settlement_days_dropdown.dart';
 
 class DesktopEnquiryDialogView extends StatefulWidget {
   final String slug;
+  final InvestmentTypeEnum initialType;
+  final int? initialQuantity;
+  final double? initialOfferPrice;
+  final int? initialSettlementDays;
+  final String? explanation;
 
-  const DesktopEnquiryDialogView(this.slug, {super.key});
+  const DesktopEnquiryDialogView(
+    this.slug, {
+    super.key,
+    this.initialType = InvestmentTypeEnum.buy,
+    this.initialQuantity,
+    this.initialOfferPrice,
+    this.initialSettlementDays,
+    this.explanation,
+  });
 
   @override
   State<DesktopEnquiryDialogView> createState() => _EnquiryDialogState();
 }
 
 class _EnquiryDialogState extends State<DesktopEnquiryDialogView> {
-  late final EnquiryDialogCtrl c = EnquiryDialogCtrl(slug: widget.slug);
+  late final EnquiryDialogCtrl c;
+
+  @override
+  void initState() {
+    super.initState();
+    c = EnquiryDialogCtrl(slug: widget.slug)
+      ..selectEnquiryType(widget.initialType);
+    c.quantityCtrl.text = widget.initialQuantity?.toString() ?? '';
+    c.offerPriceCtrl.text = widget.initialOfferPrice?.toString() ?? '';
+    if (c.requiresSettlement &&
+        app.config.settlementDays.any(
+          (option) => option.value == widget.initialSettlementDays,
+        )) {
+      c.settlementDays.value = widget.initialSettlementDays;
+    }
+  }
 
   @override
   void dispose() {
@@ -37,6 +65,10 @@ class _EnquiryDialogState extends State<DesktopEnquiryDialogView> {
               "Enquiry",
               style: TextStyle(fontSize: 32, fontWeight: FontWeight.w600),
             ),
+            if (widget.explanation != null) ...[
+              const SizedBox(height: 12),
+              Text(widget.explanation!),
+            ],
             const SizedBox(height: 30),
 
             // Enquiry type — buy / sell radio tiles

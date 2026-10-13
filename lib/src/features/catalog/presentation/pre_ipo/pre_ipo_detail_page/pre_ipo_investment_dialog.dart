@@ -17,7 +17,8 @@ class PreIPOInvestmentDialog extends StatefulWidget {
 class _PreIPOInvestmentDialogState extends State<PreIPOInvestmentDialog> {
   final _formKey = GlobalKey<FormState>();
   final _scroll = ScrollController();
-  late bool _review = widget.controller.investorList.isNotEmpty;
+  late bool _review =
+      widget.controller.buysAsSelf || widget.controller.investorList.isNotEmpty;
 
   @override
   void dispose() {
@@ -66,6 +67,7 @@ class _PreIPOInvestmentDialogState extends State<PreIPOInvestmentDialog> {
                 112)
             .clamp(100.0, 760.0);
     final investors = c.investorList.toList();
+    final self = c.buysAsSelf;
     final total = investors.fold<double>(
       0,
       (sum, investor) => sum + investor.totalPrice.value,
@@ -83,7 +85,9 @@ class _PreIPOInvestmentDialogState extends State<PreIPOInvestmentDialog> {
                 Text('Review investment', style: theme.textTheme.titleLarge),
                 const SizedBox(height: 4),
                 Text(
-                  'Step 2 of 2 · Confirm quantity and price for each investor.',
+                  self
+                      ? 'Buying for your own account. Enter the quantity.'
+                      : 'Step 2 of 2 · Confirm quantity and price for each investor.',
                   style: theme.textTheme.bodySmall?.copyWith(
                     color: colors.onSurfaceVariant,
                   ),
@@ -126,10 +130,12 @@ class _PreIPOInvestmentDialogState extends State<PreIPOInvestmentDialog> {
                 crossAxisAlignment: CrossAxisAlignment.stretch,
                 children: [
                   if (investors.isEmpty)
-                    const Padding(
-                      padding: EdgeInsets.symmetric(vertical: 24),
+                    Padding(
+                      padding: const EdgeInsets.symmetric(vertical: 24),
                       child: Text(
-                        'No investors selected. Go back to choose investors.',
+                        self
+                            ? 'Your self investor is not available. Close and try again.'
+                            : 'No investors selected. Go back to choose investors.',
                       ),
                     ),
                   for (final investor in investors)
@@ -138,6 +144,7 @@ class _PreIPOInvestmentDialogState extends State<PreIPOInvestmentDialog> {
                       child: PreIPOInvestorCard(
                         key: ObjectKey(investor),
                         model: investor,
+                        removable: !self,
                       ),
                     ),
                 ],
@@ -158,7 +165,9 @@ class _PreIPOInvestmentDialogState extends State<PreIPOInvestmentDialog> {
             runSpacing: 4,
             children: [
               Text(
-                '${investors.length} ${investors.length == 1 ? 'investor' : 'investors'}',
+                self
+                    ? 'Your account'
+                    : '${investors.length} ${investors.length == 1 ? 'investor' : 'investors'}',
                 style: theme.textTheme.bodySmall,
               ),
               Text(
@@ -170,11 +179,19 @@ class _PreIPOInvestmentDialogState extends State<PreIPOInvestmentDialog> {
           const SizedBox(height: AppSpace.md),
           Row(
             children: [
-              OutlinedButton.icon(
-                onPressed: submitting ? null : _back,
-                icon: const Icon(Icons.arrow_back_rounded, size: 18),
-                label: const Text('Back'),
-              ),
+              if (self)
+                OutlinedButton(
+                  onPressed: submitting
+                      ? null
+                      : () => Navigator.of(context).pop(),
+                  child: const Text('Cancel'),
+                )
+              else
+                OutlinedButton.icon(
+                  onPressed: submitting ? null : _back,
+                  icon: const Icon(Icons.arrow_back_rounded, size: 18),
+                  label: const Text('Back'),
+                ),
               const SizedBox(width: AppSpace.md),
               Expanded(
                 child: FilledButton(

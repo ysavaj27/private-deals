@@ -24,7 +24,11 @@ class PreIPODetailPageCtrl extends GetxController
       toast('Buying is not available for this company', MessageEnum.alert);
       return;
     }
-    if (selectedOffer.value?.key != offer.key) clearInvestors();
+    if (buysAsSelf) {
+      if (phone ? !hasSelfInvestor() : !seedSelfInvestor(offer.price)) return;
+    } else if (selectedOffer.value?.key != offer.key) {
+      clearInvestors();
+    }
     selectedOffer.value = offer;
     minTicketSize = offer.minimumQty.toDouble();
     isQty(true);

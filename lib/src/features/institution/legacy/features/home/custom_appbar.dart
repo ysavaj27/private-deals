@@ -1,5 +1,5 @@
-// import 'package:private_deals/src/shared/widgets/custom_appbar.dart'
-//     show WAppbarOptionSegmented;
+import 'package:private_deals/src/shared/widgets/custom_appbar.dart'
+    show WAppbarOptionSegmented;
 import 'package:private_deals/src/shared/widgets/header_action.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
@@ -42,12 +42,10 @@ class CustomAppBar extends StatelessWidget {
     final colors = Theme.of(context).colorScheme;
     final background = colors.surfaceContainerLow;
     final border = colors.outlineVariant;
-    final foreground = colors.onSurface;
-    final accent = colors.onPrimaryContainer;
 
     return Container(
       width: double.infinity,
-      height: 66,
+      height: 82,
       decoration: BoxDecoration(
         color: background,
         border: Border(bottom: BorderSide(color: border)),
@@ -65,58 +63,10 @@ class CustomAppBar extends StatelessWidget {
               ),
               child: Row(
                 children: [
-                  // Seller catalog tabs are temporarily hidden.
-                  // const Expanded(
-                  //   child: SingleChildScrollView(
-                  //     scrollDirection: Axis.horizontal,
-                  //     child: WAppbarOptionSegmented(institution: true),
-                  //   ),
-                  // ),
-                  Container(
-                    width: 250,
-                    padding: const EdgeInsets.symmetric(horizontal: 8),
-                    child: Row(
-                      children: [
-                        Container(
-                          width: 42,
-                          height: 42,
-                          decoration: BoxDecoration(
-                            color: colors.primaryContainer,
-                            borderRadius: BorderRadius.circular(13),
-                          ),
-                          child: Icon(
-                            Icons.business_center_outlined,
-                            color: accent,
-                            size: 23,
-                          ),
-                        ),
-                        const SizedBox(width: 12),
-                        Expanded(
-                          child: Text(
-                            'Private Deals',
-                            style: TextStyle(
-                              fontSize: 19,
-                              fontWeight: FontWeight.w700,
-                              color: foreground,
-                              letterSpacing: -0.4,
-                            ),
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-
-                  Expanded(
-                    child: Text(
-                      title,
-                      maxLines: 1,
-                      overflow: TextOverflow.ellipsis,
-                      style: TextStyle(
-                        color: foreground,
-                        fontSize: compact ? 18 : 20,
-                        fontWeight: FontWeight.w600,
-                        letterSpacing: -0.4,
-                      ),
+                  const Expanded(
+                    child: SingleChildScrollView(
+                      scrollDirection: Axis.horizontal,
+                      child: WAppbarOptionSegmented(institution: true),
                     ),
                   ),
                   const SizedBox(width: 12),

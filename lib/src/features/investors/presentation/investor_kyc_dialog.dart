@@ -91,13 +91,10 @@ class _InvestorKycDialogState extends State<InvestorKycDialog> {
             final key = entry.key == 'name' ? 'account_holder_name' : entry.key;
             entry.value.text = data[key]?.toString() ?? '';
           }
-          _message =
-              'Review the details below and fill in any missing fields, then save to complete KYC.';
+          _message = 'Review the details below and fill in any missing fields, then save to complete KYC.';
         } else {
           _hasError = true;
-          _message = result.m.isNotEmpty
-              ? result.m
-              : 'Unable to read the PDF. Please retry or enter the details below.';
+          _message = result.m.isNotEmpty ? result.m : 'Unable to read the PDF. Please retry or enter the details below.';
         }
       });
     } on FormatException catch (error) {
@@ -120,7 +117,15 @@ class _InvestorKycDialogState extends State<InvestorKycDialog> {
   }
 
   Future<void> _save() async {
-    if (_working || !_form.currentState!.validate()) return;
+    if (_working) return;
+    if (_document == null) {
+      setState(() {
+        _hasError = true;
+        _message = 'Upload a CML PDF before saving KYC.';
+      });
+      return;
+    }
+    if (!_form.currentState!.validate()) return;
     setState(() {
       _working = true;
       _message = '';
@@ -162,9 +167,8 @@ class _InvestorKycDialogState extends State<InvestorKycDialog> {
         final text = (value ?? '').trim();
         if (required && text.isEmpty) return 'Enter $label';
         if (key == 'dob' && text.isNotEmpty) {
-          final match = RegExp(
-            r'^(\d{1,2})-(\d{1,2})-(\d{4})$',
-          ).firstMatch(text);
+          final match = RegExp(r'^(\d{1,2})-(\d{1,2})-(\d{4})$')
+              .firstMatch(text);
           if (match == null) return 'Use dd-mm-yyyy';
           final day = int.parse(match[1]!);
           final month = int.parse(match[2]!);
@@ -243,7 +247,7 @@ class _InvestorKycDialogState extends State<InvestorKycDialog> {
                   ),
                   const SizedBox(height: 12),
                   const Text(
-                    'Upload a CML PDF to fill in the details, or enter them manually. Review all required fields before saving. Saving also updates the investor’s name.',
+                    'A CML PDF is required to complete KYC. Upload it, then review the extracted details and fill in any missing fields. Saving also updates the investor’s name.',
                   ),
                   const SizedBox(height: 16),
                   OutlinedButton.icon(
@@ -254,7 +258,9 @@ class _InvestorKycDialogState extends State<InvestorKycDialog> {
                     ),
                   ),
                   const SizedBox(height: 8),
-                  Text(_document?.name ?? 'PDF only · Maximum 10 MB'),
+                  Text(
+                    _document?.name ?? 'Required · PDF only · Maximum 10 MB',
+                  ),
                   if (_working)
                     const Padding(
                       padding: EdgeInsets.only(top: 16),

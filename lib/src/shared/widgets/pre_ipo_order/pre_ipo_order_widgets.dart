@@ -1,3 +1,4 @@
+import 'package:intl/intl.dart';
 import 'package:private_deals/src/shared/app_exports.dart';
 
 Future<String?> showPreIpoReasonDialog({
@@ -107,6 +108,65 @@ class _PreIpoReasonDialogState extends State<_PreIpoReasonDialog> {
       ),
     );
   }
+}
+
+/// Buyer-side check before `confirm-share-transfer`; the step cannot be undone.
+Future<bool> showPreIpoConfirmSharesDialog(PreIpoOrderModel order) {
+  final company = order.company.brandName.trim();
+  final shares = NumberFormat.decimalPattern('en_IN').format(order.shares);
+  return showCustomDialog(
+    Builder(
+      builder: (context) {
+        final isPhone = context.isPhone;
+        return CustomCardWidget(
+          color: context.theme.scaffoldBackgroundColor,
+          padding: const EdgeInsets.all(20),
+          child: SizedBox(
+            width: isPhone ? double.infinity : 420,
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  'Confirm shares received',
+                  style: TextStyle(
+                    fontSize: isPhone ? 18 : 22,
+                    fontWeight: FontWeight.w600,
+                  ),
+                ),
+                const SizedBox(height: 12),
+                Text(
+                  'Confirm that $shares shares'
+                  '${company.isEmpty ? '' : ' of $company'} have been credited '
+                  'to the demat account. This completes the order and cannot '
+                  'be undone.',
+                ),
+                const SizedBox(height: 24),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.end,
+                  children: [
+                    CustomOutlinedButton(
+                      width: isPhone ? 100 : 120,
+                      height: 42,
+                      onPressed: () => Get.back(result: false),
+                      text: 'Close',
+                    ),
+                    const SizedBox(width: 16),
+                    CustomElevatedButton(
+                      width: isPhone ? 130 : 160,
+                      height: 42,
+                      onPressed: () => Get.back(result: true),
+                      text: 'Confirm shares',
+                    ),
+                  ],
+                ),
+              ],
+            ),
+          ),
+        );
+      },
+    ),
+  ).then((value) => value == true);
 }
 
 Future<MediaModel?> showPreIpoReceiptUploadDialog({
@@ -369,8 +429,9 @@ class PreIpoOrderStepHeader extends StatelessWidget {
     final colors = context.theme.colorScheme;
     final stepLabel = order.orderStep.replaceAll('_', ' ');
     final current = order.current.isEmpty ? '—' : order.current;
-    final next =
-        order.next != null && order.next != 'N/A' ? order.next!.trim() : '';
+    final next = order.next != null && order.next != 'N/A'
+        ? order.next!.trim()
+        : '';
     final reason = order.cancellationReason?.trim() ?? '';
 
     if (compact) {
@@ -441,12 +502,50 @@ class PreIpoOrderStepHeader extends StatelessWidget {
         ],
         if (reason.isNotEmpty) ...[
           const SizedBox(height: 8),
-          Text(
-            'Reason: $reason',
-            style: TextStyle(color: colors.error),
-          ),
+          Text('Reason: $reason', style: TextStyle(color: colors.error)),
         ],
       ],
+    );
+  }
+}
+
+class PreIpoOrderSideChip extends StatelessWidget {
+  final PreIpoOrderSide side;
+
+  const PreIpoOrderSideChip({super.key, required this.side});
+
+  @override
+  Widget build(BuildContext context) {
+    if (side == PreIpoOrderSide.unknown) return const SizedBox.shrink();
+    final colors = context.theme.colorScheme;
+    final buying = side == PreIpoOrderSide.buyer;
+    final bg = buying ? colors.primaryContainer : colors.tertiaryContainer;
+    final fg = buying ? colors.onPrimaryContainer : colors.onTertiaryContainer;
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
+      decoration: BoxDecoration(
+        color: bg,
+        borderRadius: BorderRadius.circular(8),
+      ),
+      child: Row(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Icon(
+            buying ? Icons.south_west_rounded : Icons.north_east_rounded,
+            size: 14,
+            color: fg,
+          ),
+          const SizedBox(width: 4),
+          Text(
+            buying ? 'You are buying' : 'You are selling',
+            style: TextStyle(
+              fontSize: 12,
+              fontWeight: FontWeight.w600,
+              color: fg,
+            ),
+          ),
+        ],
+      ),
     );
   }
 }
@@ -465,8 +564,15 @@ class PreIpoOrderActionBar extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final actions = order.action ?? const <String>[];
-    if (actions.isEmpty) return const SizedBox.shrink();
+    final visible = order.visibleActions(app.wUser.id);
+    if (visible.isEmpty) return const SizedBox.shrink();
+    // The compact row scrolls sideways; keep the step to take in view.
+    final actions = compact
+        ? [
+            ...visible.where(_ActionButton.isPrimary),
+            ...visible.where((a) => !_ActionButton.isPrimary(a)),
+          ]
+        : visible;
     final buttons = [
       for (final action in actions)
         _ActionButton(
@@ -488,11 +594,7 @@ class PreIpoOrderActionBar extends StatelessWidget {
         ),
       );
     }
-    return Wrap(
-      spacing: 8,
-      runSpacing: 8,
-      children: buttons,
-    );
+    return Wrap(spacing: 8, runSpacing: 8, children: buttons);
   }
 }
 
@@ -507,18 +609,20 @@ class _ActionButton extends StatelessWidget {
     required this.onPressed,
   });
 
+  static bool isPrimary(String action) =>
+      action == PreIpoOrderAction.approve ||
+      action == PreIpoOrderAction.confirmPayment ||
+      action == PreIpoOrderAction.confirmShareTransfer ||
+      action == PreIpoOrderAction.uploadPaymentReceipt ||
+      action == PreIpoOrderAction.uploadShareTransferReceipt;
+
   @override
   Widget build(BuildContext context) {
     final label = PreIpoOrderAction.label(action);
     final isDestructive =
         action == PreIpoOrderAction.cancel ||
         action == PreIpoOrderAction.reject;
-    final isPrimary =
-        action == PreIpoOrderAction.approve ||
-        action == PreIpoOrderAction.confirmPayment ||
-        action == PreIpoOrderAction.confirmShareTransfer ||
-        action == PreIpoOrderAction.uploadPaymentReceipt ||
-        action == PreIpoOrderAction.uploadShareTransferReceipt;
+    final isPrimary = _ActionButton.isPrimary(action);
 
     if (isDestructive) {
       return OutlinedButton(

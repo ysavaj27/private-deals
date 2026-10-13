@@ -304,7 +304,11 @@ class WAppbarOptionSegmented extends StatelessWidget {
                 ?.title ??
             (institution ? null : snapshot.data);
         final visible = wLandingOptions
-            .where((o) => institution || o.isVisible())
+            .where(
+              (o) => institution
+                  ? o.slug != WTabBarEnum.primary.slug
+                  : o.isVisible(),
+            )
             .toList();
         if (visible.isEmpty) return const SizedBox.shrink();
 

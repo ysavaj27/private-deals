@@ -1,4 +1,5 @@
-import 'unlisted_transaction_card.dart';
+import 'package:private_deals/src/shared/widgets/pre_ipo_order/unlisted_transaction_card.dart';
+
 import 'package:private_deals/src/features/wealth_manager/presentation/investor_transaction/pre_ipo/pre_ipo_buy_transaction/pre_ipo_buy_transaction_page_ctrl.dart';
 import 'package:private_deals/src/features/wealth_manager/presentation/investor_transaction/pre_ipo/pre_ipo_buy_transaction/pre_ipo_order_detail_dialog.dart';
 import 'package:private_deals/src/shared/app_exports.dart';
@@ -101,7 +102,7 @@ class _OrderCard extends StatelessWidget {
         isActionLoading: controller.actionLoadingId.value == order.id,
         onDetails: () => showPreIpoOrderDetailDialog(
           order: order,
-          onAction: (action) => controller.handleAction(order, action),
+          onAction: controller.handleAction,
           loadDetail: () => controller.loadDetail(order.id),
         ),
         onAction: (action) => controller.handleAction(order, action),

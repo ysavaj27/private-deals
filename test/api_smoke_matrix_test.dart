@@ -56,7 +56,7 @@ String? _declaredPathFor(int id) {
     case 22:
       return AppUrl.wNewPreIpoTransaction;
     case 23:
-      return AppUrl.wSendDocument;
+      return AppUrl.wDocuments;
     case 24:
       return AppUrl.wInvestorEarning;
     case 25:

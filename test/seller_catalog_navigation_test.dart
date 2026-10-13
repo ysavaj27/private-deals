@@ -178,7 +178,7 @@ void main() {
   );
 
   for (final width in [390.0, 1280.0]) {
-    testWidgets('seller hides tabs and retains routes at $width', (
+    testWidgets('seller can switch visible catalog tabs at $width', (
       tester,
     ) async {
       tester.view.physicalSize = Size(width, 1000);
@@ -200,15 +200,26 @@ void main() {
         ),
       );
       await tester.pumpAndSettle();
-      expect(find.byType(WAppbarOptionSegmented), findsNothing);
+      expect(find.byType(WAppbarOptionSegmented), findsOneWidget);
+      expect(
+        find.descendant(
+          of: find.byType(WAppbarOptionSegmented),
+          matching: find.text('Private Equity'),
+        ),
+        findsNothing,
+      );
       for (final entry in [
-        ('Private Equity', 'private-equity', 'v1/get-home'),
         ('LP Secondary', 'lp-secondary', 'v2/business/home/secondary'),
         ('Unlisted Shares', 'unlisted-shares', 'v2/business/home/pre-ipo'),
       ]) {
-        Get.offAllNamed('/institution/${entry.$2}');
+        final tab = find.descendant(
+          of: find.byType(WAppbarOptionSegmented),
+          matching: find.text(entry.$1),
+        );
+        await tester.ensureVisible(tab);
+        await tester.tap(tab);
         await tester.pumpAndSettle();
-        expect(find.byType(WAppbarOptionSegmented), findsNothing);
+        expect(find.byType(WAppbarOptionSegmented), findsOneWidget);
         expect(Get.currentRoute, '/institution/${entry.$2}');
         expect(Get.find<SellerHomePageCtrl>().appBarName, entry.$1);
         expect(adapter.requests.any((r) => r.path == entry.$3), isTrue);

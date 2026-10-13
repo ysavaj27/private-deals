@@ -18,19 +18,34 @@ class _EarningsViewState extends State<EarningsView> {
     final fromInvestors = c.currentIndex() == MyEarningTypeEnum.investor;
     final loading = c.isLoading();
     final rows =
-        <({String name, double investment, double commission})>[
+        <
+          ({
+            String name,
+            String photo,
+            String subtitle,
+            double investment,
+            int? transactions,
+            double commission,
+          })
+        >[
             if (fromInvestors)
               for (final item in c.investor().investorsList)
                 (
                   name: item.name,
-                  investment: item.totalInvestment,
+                  photo: item.profilePhoto,
+                  subtitle: 'Investor',
+                  investment: item.amountInvested,
+                  transactions: item.totalTransactions,
                   commission: item.commissionEarned,
                 )
             else
               for (final item in c.partner().list)
                 (
                   name: item.name,
+                  photo: '',
+                  subtitle: 'Channel partner',
                   investment: item.partnerTotalInvestment,
+                  transactions: null,
                   commission: item.commissionEarnedFromThisPartner,
                 ),
           ].where((item) => item.name.toLowerCase().contains(_query)).toList()
@@ -70,19 +85,21 @@ class _EarningsViewState extends State<EarningsView> {
           children: [
             WorkspaceMetric(
               label: fromInvestors
-                  ? 'Total investors'
+                  ? 'Total transactions'
                   : 'Total channel partners',
               value: unavailable
                   ? '—'
-                  : '${fromInvestors ? c.investor().totalInvestors : c.partner().totalPartners}',
-              icon: Icons.people_outline_rounded,
+                  : '${fromInvestors ? c.investor().totalTransactions : c.partner().totalPartners}',
+              icon: fromInvestors
+                  ? Icons.receipt_long_outlined
+                  : Icons.people_outline_rounded,
             ),
             WorkspaceMetric(
               label: 'Amount invested',
               value: unavailable
                   ? '—'
                   : (fromInvestors
-                            ? c.investor().totalInvestment
+                            ? c.investor().amountInvested
                             : c.partner().totalInvestment)
                         .toFormattedPrice,
               icon: Icons.account_balance_outlined,
@@ -157,17 +174,29 @@ class _EarningsViewState extends State<EarningsView> {
       itemBuilder: (context, index) {
         final item = rows[index];
         final colors = Theme.of(context).colorScheme;
+        final letter = item.name.trim().isEmpty
+            ? '?'
+            : item.name.trim().characters.first.toUpperCase();
+        final letterAvatar = CircleAvatar(
+          backgroundColor: colors.primaryContainer,
+          foregroundColor: colors.onPrimaryContainer,
+          child: Text(letter),
+        );
         final identity = Row(
           children: [
-            CircleAvatar(
-              backgroundColor: colors.primaryContainer,
-              foregroundColor: colors.onPrimaryContainer,
-              child: Text(
-                item.name.trim().isEmpty
-                    ? '?'
-                    : item.name.trim().characters.first.toUpperCase(),
+            if (item.photo.trim().isEmpty)
+              letterAvatar
+            else
+              ClipOval(
+                child: CacheImage(
+                  url: item.photo,
+                  width: 40,
+                  height: 40,
+                  fit: BoxFit.cover,
+                  placeholderBuilder: (_) => letterAvatar,
+                  errorWidget: (_, _, _) => letterAvatar,
+                ),
               ),
-            ),
             const SizedBox(width: AppSpace.md),
             Expanded(
               child: Column(
@@ -179,7 +208,7 @@ class _EarningsViewState extends State<EarningsView> {
                   ),
                   const SizedBox(height: AppSpace.xs),
                   Text(
-                    fromInvestors ? 'Investor' : 'Channel partner',
+                    item.subtitle,
                     style: Theme.of(context).textTheme.bodySmall?.copyWith(
                       color: colors.onSurfaceVariant,
                     ),
@@ -193,6 +222,12 @@ class _EarningsViewState extends State<EarningsView> {
           label: 'Amount invested',
           value: item.investment.toFormattedPrice,
         );
+        final transactions = item.transactions == null
+            ? null
+            : WorkspaceDetail(
+                label: 'Transactions',
+                value: '${item.transactions}',
+              );
         final commission = WorkspaceDetail(
           label: 'Commission earned',
           value: item.commission.toFormattedPrice,
@@ -211,6 +246,10 @@ class _EarningsViewState extends State<EarningsView> {
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Expanded(child: investment),
+                        if (transactions != null) ...[
+                          const SizedBox(width: AppSpace.md),
+                          Expanded(child: transactions),
+                        ],
                         const SizedBox(width: AppSpace.md),
                         Expanded(child: commission),
                       ],
@@ -223,6 +262,8 @@ class _EarningsViewState extends State<EarningsView> {
                   Expanded(flex: 3, child: identity),
                   const SizedBox(width: AppSpace.lg),
                   Expanded(flex: 2, child: investment),
+                  if (transactions != null)
+                    Expanded(flex: 2, child: transactions),
                   Expanded(flex: 2, child: commission),
                 ],
               );

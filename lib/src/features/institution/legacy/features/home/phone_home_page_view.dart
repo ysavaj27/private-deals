@@ -1,5 +1,5 @@
-// import 'package:private_deals/src/shared/widgets/custom_appbar.dart'
-//     show WAppbarOptionSegmented;
+import 'package:private_deals/src/shared/widgets/custom_appbar.dart'
+    show WAppbarOptionSegmented;
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:get/get.dart';
@@ -59,18 +59,15 @@ class PhoneHomePageView extends StatelessWidget {
             ],
             bottom: PreferredSize(
               preferredSize: Size.fromHeight(
-                // Restore the extra 64 pixels when showing the catalog tabs.
-                // 64 +
-                (showUnlistedSubTabs || showLpSecondarySubTabs ? 48 : 0),
+                64 + (showUnlistedSubTabs || showLpSecondarySubTabs ? 48 : 0),
               ),
               child: Column(
                 children: [
-                  // Seller catalog tabs are temporarily hidden.
-                  // const SingleChildScrollView(
-                  //   scrollDirection: Axis.horizontal,
-                  //   padding: EdgeInsets.symmetric(horizontal: 12, vertical: 4),
-                  //   child: WAppbarOptionSegmented(institution: true),
-                  // ),
+                  const SingleChildScrollView(
+                    scrollDirection: Axis.horizontal,
+                    padding: EdgeInsets.symmetric(horizontal: 12, vertical: 4),
+                    child: WAppbarOptionSegmented(institution: true),
+                  ),
                   if (showUnlistedSubTabs)
                     _PhoneSubTabBar(
                       options: const [
@@ -96,7 +93,7 @@ class PhoneHomePageView extends StatelessWidget {
           drawer: const Drawer(child: SafeArea(child: PSideBarWidget())),
           body: SafeArea(top: false, child: child ?? MainWidgets()),
           bottomNavigationBar: NavigationBar(
-            selectedIndex: c.phoneNavIndex.clamp(0, 4),
+            selectedIndex: c.phoneNavIndex.clamp(0, 5),
             onDestinationSelected: c.onPhoneNavTap,
             height: 68,
             labelBehavior: NavigationDestinationLabelBehavior.alwaysShow,
@@ -120,6 +117,11 @@ class PhoneHomePageView extends StatelessWidget {
                 icon: Icon(Icons.currency_rupee),
                 selectedIcon: Icon(Icons.currency_rupee),
                 label: 'Share Price',
+              ),
+              NavigationDestination(
+                icon: Icon(Icons.account_balance_wallet_outlined),
+                selectedIcon: Icon(Icons.account_balance_wallet),
+                label: 'Portfolio',
               ),
               NavigationDestination(
                 icon: Icon(Icons.person_outline),

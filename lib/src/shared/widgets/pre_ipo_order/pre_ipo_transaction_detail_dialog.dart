@@ -1,15 +1,17 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
+import 'package:private_deals/src/core/session/auth_session.dart';
 import 'package:private_deals/src/shared/models/pre_ipo_order_model.dart';
 import 'package:private_deals/src/shared/plugins/cache_image.dart';
 import 'package:private_deals/src/shared/plugins/loader.dart';
+
 import 'pre_ipo_order_detail_panels.dart';
 import 'pre_ipo_order_widgets.dart';
 
 /// Seller-style details shared by the partner and institution entry points.
 class PreIpoTransactionDetailDialog extends StatefulWidget {
   final PreIpoOrderModel initial;
-  final Future<void> Function(String action) onAction;
+  final Future<void> Function(PreIpoOrderModel order, String action) onAction;
   final Future<PreIpoOrderModel?> Function() loadDetail;
 
   const PreIpoTransactionDetailDialog({
@@ -50,7 +52,7 @@ class _PreIpoTransactionDetailDialogState
     if (actionLoading) return;
     setState(() => actionLoading = true);
     try {
-      await widget.onAction(action);
+      await widget.onAction(order, action);
       if (mounted) {
         setState(() => loading = true);
         await _refresh();
@@ -189,6 +191,9 @@ class _PreIpoTransactionDetailDialogState
     final row = order;
     final theme = Theme.of(context);
     final colors = theme.colorScheme;
+    final me = app.wUser.id;
+    final side = row.viewerSide(me);
+    final hasParties = row.buyer != null || row.seller != null;
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
@@ -213,6 +218,10 @@ class _PreIpoTransactionDetailDialogState
                       color: colors.onSurfaceVariant,
                     ),
                   ),
+                  if (side != PreIpoOrderSide.unknown) ...[
+                    const SizedBox(height: 8),
+                    PreIpoOrderSideChip(side: side),
+                  ],
                 ],
               ),
             ),
@@ -254,12 +263,18 @@ class _PreIpoTransactionDetailDialogState
         ),
         const SizedBox(height: 24),
         _section(context, 'Transaction overview', [
-          if (row.tradeSide.isNotEmpty)
+          if (!hasParties && row.tradeSide.isNotEmpty)
             _field(
               context,
               'Trade side',
               row.tradeSide == 'sell' ? 'Sell' : 'Buy',
             ),
+          if (row.buyer != null)
+            _field(context, 'Buyer', _label(row.buyer!.displayName)),
+          if (row.seller != null)
+            _field(context, 'Seller', _label(row.seller!.displayName)),
+          if (row.orderCaseLabel.isNotEmpty)
+            _field(context, 'Order type', row.orderCaseLabel),
           if (row.orderSource.isNotEmpty)
             _field(
               context,
@@ -299,7 +314,7 @@ class _PreIpoTransactionDetailDialogState
           const SizedBox(height: 24),
           PreIpoOrderDocumentsPanel(documents: order.documents),
         ],
-        if (order.hasAction) ...[
+        if (order.hasVisibleActions(me)) ...[
           const SizedBox(height: 24),
           AbsorbPointer(
             absorbing: actionLoading,
@@ -316,9 +331,8 @@ class _PreIpoTransactionDetailDialogState
         children: [
           Text(
             title,
-            style: Theme.of(
-              context,
-            ).textTheme.titleSmall?.copyWith(fontWeight: FontWeight.w700),
+            style: Theme.of(context).textTheme.titleSmall
+                ?.copyWith(fontWeight: FontWeight.w700),
           ),
           const SizedBox(height: 12),
           ...children,

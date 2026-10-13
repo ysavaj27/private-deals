@@ -1,4 +1,3 @@
-import 'package:private_deals/src/core/configuration/init_config.dart';
 import 'package:private_deals/src/shared/models/config_model.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -20,18 +19,7 @@ void main() {
     Get.testMode = true;
     app.persist = false;
     await app.clear();
-    app.configModel(
-      ConfigModel.fromJson({
-        'app_version': [
-          {
-            'type': init.packageName,
-            'data': [
-              {'device': init.deviceOs, 'current_version_code': 0},
-            ],
-          },
-        ],
-      }),
-    );
+    app.configModel(ConfigModel.fromJson({}));
   });
   tearDown(() async {
     await app.clear();

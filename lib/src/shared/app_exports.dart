@@ -126,6 +126,7 @@ export 'package:private_deals/src/shared/plugins/pdf_viewer.dart';
 export 'package:private_deals/src/shared/plugins/svg_image.dart';
 export 'package:private_deals/src/shared/plugins/toast.dart';
 export 'package:private_deals/src/shared/plugins/video_player.dart';
+export 'package:private_deals/src/shared/widgets/buttons/app_refresh_button.dart';
 export 'package:private_deals/src/shared/widgets/buttons/custom_elevated_button.dart';
 export 'package:private_deals/src/shared/widgets/buttons/custom_outlined_button.dart';
 export 'package:private_deals/src/shared/widgets/buttons/custom_text_button.dart';
@@ -141,7 +142,6 @@ export 'package:private_deals/src/shared/widgets/custom_drop_down.dart';
 /// COMMON WIDGETS
 export 'package:private_deals/src/shared/widgets/custom_text_field.dart';
 export 'package:private_deals/src/shared/widgets/dialog_widget/delete_dialog_widget.dart';
-export 'package:private_deals/src/shared/widgets/dialog_widget/force_update_dialog.dart';
 export 'package:private_deals/src/shared/widgets/dialog_widget/logout_dialog.dart';
 export 'package:private_deals/src/shared/widgets/gradient_text.dart';
 export 'package:private_deals/src/shared/widgets/heading_text.dart';

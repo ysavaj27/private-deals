@@ -71,10 +71,10 @@ class WorkspacePage extends StatelessWidget {
                           ),
                         ),
                         const SizedBox(width: AppSpace.sm),
-                        IconButton.filledTonal(
+                        AppRefreshButton(
                           tooltip: 'Refresh $title',
-                          onPressed: loading ? null : onRefresh,
-                          icon: const Icon(Icons.refresh_rounded),
+                          loading: loading,
+                          onPressed: onRefresh,
                         ),
                       ],
                     ),

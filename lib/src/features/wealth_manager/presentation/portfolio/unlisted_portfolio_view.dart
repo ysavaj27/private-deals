@@ -98,18 +98,10 @@ class _UnlistedPortfolioViewState extends State<UnlistedPortfolioView> {
                         children: [
                           Expanded(child: _searchField()),
                           const SizedBox(width: 8),
-                          IconButton(
+                          AppRefreshButton(
                             tooltip: 'Refresh portfolio',
-                            onPressed: _refreshing ? null : _refresh,
-                            icon: _refreshing
-                                ? const SizedBox(
-                                    width: 20,
-                                    height: 20,
-                                    child: CircularProgressIndicator(
-                                      strokeWidth: 2,
-                                    ),
-                                  )
-                                : const Icon(Icons.refresh_rounded),
+                            loading: _refreshing,
+                            onPressed: _refresh,
                           ),
                         ],
                       ),

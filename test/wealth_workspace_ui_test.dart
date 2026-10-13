@@ -96,18 +96,20 @@ void main() {
     );
     earnings.investor(
       InvestorEarningModel.fromJson({
-        'total_investors': 2,
-        'total_investment': 7500000,
+        'amount_invested': 7500000,
+        'total_transactions': 5,
         'commission_earned': 150000,
         'investors_list': [
           {
             'name': 'Aarav Shah',
-            'total_investment': 2500000,
+            'amount_invested': 2500000,
+            'total_transactions': 2,
             'commission_earned': 50000,
           },
           {
             'name': 'Priya Mehta',
-            'total_investment': 5000000,
+            'amount_invested': 5000000,
+            'total_transactions': 3,
             'commission_earned': 100000,
           },
         ],
@@ -271,6 +273,8 @@ void main() {
 
   testWidgets('Earnings switch source, filter and sort', (tester) async {
     await show(tester, const EarningsView());
+    expect(find.text('Total transactions'), findsOneWidget);
+    expect(find.text('Transactions'), findsWidgets);
     expect(
       tester.getTopLeft(find.text('Priya Mehta')).dy,
       lessThan(tester.getTopLeft(find.text('Aarav Shah')).dy),

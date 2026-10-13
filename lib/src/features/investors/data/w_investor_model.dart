@@ -8,6 +8,7 @@ class WInvestorModel {
   double totalInvestment;
   double commissionEarned;
   double amountInvested;
+  int totalTransactions;
 
   WInvestorModel({
     this.investorId = 0,
@@ -17,25 +18,28 @@ class WInvestorModel {
     this.totalInvestment = 0.0,
     this.commissionEarned = 0.0,
     this.amountInvested = 0.0,
+    this.totalTransactions = 0,
   });
 
   factory WInvestorModel.fromJson(Map<String, dynamic> json) => WInvestorModel(
-    investorId: Parse.toInt(json["investor_id"]),
-    name: Parse.toStrings(json["name"]),
-    profilePhoto: Parse.parseUrl(json["profile_photo"]),
-    totalStartups: Parse.toInt(json["total_startups"]),
-    totalInvestment: Parse.toDouble(json["total_investment"]),
-    commissionEarned: Parse.toDouble(json["commission_earned"]),
-    amountInvested: Parse.toDouble(json["amount_invested"]),
-  );
+        investorId: Parse.toInt(json["investor_id"]),
+        name: Parse.toStrings(json["name"]),
+        profilePhoto: Parse.parseUrl(json["profile_photo"]),
+        totalStartups: Parse.toInt(json["total_startups"]),
+        totalInvestment: Parse.toDouble(json["total_investment"]),
+        commissionEarned: Parse.toDouble(json["commission_earned"]),
+        amountInvested: Parse.toDouble(json["amount_invested"]),
+        totalTransactions: Parse.toInt(json["total_transactions"]),
+      );
 
   Map<String, dynamic> toJson() => {
-    "investor_id": investorId,
-    "name": name,
-    "profile_photo": profilePhoto,
-    "total_startups": totalStartups,
-    "total_investment": totalInvestment,
-    "commission_earned": commissionEarned,
-    "amount_invested": amountInvested,
-  };
+        "investor_id": investorId,
+        "name": name,
+        "profile_photo": profilePhoto,
+        "total_startups": totalStartups,
+        "total_investment": totalInvestment,
+        "commission_earned": commissionEarned,
+        "amount_invested": amountInvested,
+        "total_transactions": totalTransactions,
+      };
 }

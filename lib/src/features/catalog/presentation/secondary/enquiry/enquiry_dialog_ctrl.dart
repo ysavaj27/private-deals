@@ -24,7 +24,7 @@ class EnquiryDialogCtrl extends GetxController {
 
   final RxBool isLoading = false.obs;
 
-  bool get requiresSettlement => enquiryType.value == InvestmentTypeEnum.sell;
+  bool get requiresSettlement => true;
 
   static const int _notesMaxLength = 2000;
 
@@ -39,9 +39,6 @@ class EnquiryDialogCtrl extends GetxController {
   void selectEnquiryType(InvestmentTypeEnum type) {
     enquiryType(type);
     settlementError('');
-    if (type != InvestmentTypeEnum.sell) {
-      settlementDays.value = null;
-    }
   }
 
   /// Returns true and clears errors if valid; otherwise sets error strings.
@@ -93,7 +90,7 @@ class EnquiryDialogCtrl extends GetxController {
       quantity: int.parse(quantityCtrl.text.trim()),
       offerPrice: double.parse(offerPriceCtrl.text.trim()),
       notes: notesCtrl.text,
-      settlementDays: requiresSettlement ? settlementDays.value : null,
+      settlementDays: settlementDays.value,
     );
     if (isClosed) return;
     isLoading(false);
