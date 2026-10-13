@@ -2,6 +2,7 @@ import 'package:chewie/chewie.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/scheduler.dart';
 import 'package:get/get.dart';
+import 'package:private_deals/src/shared/plugins/loader.dart';
 import 'package:video_player/video_player.dart';
 import 'package:visibility_detector/visibility_detector.dart';
 
@@ -157,7 +158,7 @@ class _CustomVideoPlayerState extends State<CustomVideoPlayer> {
               aspectRatio: 16 / 9,
               child: Chewie(controller: _chewieController!),
             ) // Use Chewie for enhanced controls
-          : const Center(child: CircularProgressIndicator()),
+          : const Loader(),
     );
   }
 }

@@ -212,14 +212,15 @@ void main() {
   );
 
   testWidgets(
-    'Deal expiry uses the common pickers and keeps its IST date boundary',
+    'Deal expiry uses the common date picker and fixes expiry at 7 PM IST',
     (tester) async {
       await show(tester);
-      final controller = CreateDealPageCtrl();
+      final controller = CreateDealPageCtrl(
+        now: () => DateTime.utc(2026, 10, 12, 10),
+      );
       addTearDown(controller.onClose);
       controller.expiryDate(DateTime(2020));
-      final now = DateTime.now().toUtc().add(CreateDealPageCtrl.istOffset);
-      final today = DateTime(now.year, now.month, now.day);
+      final today = DateTime(2026, 10, 12);
       final dateRequest = controller.pickExpiryDate(
         tester.element(find.byType(Scaffold)),
       );
@@ -227,29 +228,15 @@ void main() {
       final dialog = tester.widget<DatePickerDialog>(
         find.byType(DatePickerDialog),
       );
-      expect(dialog.helpText, 'Expiry date · IST');
+      expect(dialog.helpText, 'Expiry date · 7:00 PM IST');
       expect(dialog.firstDate, today);
       expect(dialog.currentDate, today);
       await tap(tester, 'Apply');
       await dateRequest;
-      expect(controller.expiryDate(), today);
-
-      controller.expiryTime(const TimeOfDay(hour: 15, minute: 30));
-      final timeRequest = controller.pickExpiryTime(
-        tester.element(find.byType(Scaffold)),
-      );
-      await tester.pumpAndSettle();
-      expect(find.text('Expiry time · IST'), findsOneWidget);
-      expect(
-        MediaQuery.alwaysUse24HourFormatOf(
-          tester.element(find.byType(TimePickerDialog)),
-        ),
-        isTrue,
-      );
-      await tap(tester, 'Apply');
-      await timeRequest;
-      expect(controller.expiryTime(), const TimeOfDay(hour: 15, minute: 30));
-      expect(controller.expiryTimeLabel, '15:30 IST');
+      expect(controller.expiryDate(), DateTime.utc(2026, 10, 12));
+      expect(controller.expiryPreset(), DealExpiryPreset.custom);
+      expect(controller.formattedExpiry, '2026-10-12 19:00:00');
+      expect(find.byType(TimePickerDialog), findsNothing);
     },
   );
 

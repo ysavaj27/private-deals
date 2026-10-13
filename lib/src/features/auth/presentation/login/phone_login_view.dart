@@ -1,4 +1,3 @@
-import 'package:flutter/gestures.dart';
 import 'package:private_deals/src/shared/app_exports.dart';
 
 import 'package:private_deals/src/features/auth/presentation/login/login_page_ctrl.dart';
@@ -152,61 +151,6 @@ class PhoneLoginView extends StatelessWidget {
                               },
                             );
                           }),
-                          const SizedBox(height: 20),
-                          RichText(
-                            textAlign: TextAlign.center,
-                            text: TextSpan(
-                              style: TextStyle(
-                                fontSize: 12,
-                                color:
-                                    context.theme.colorScheme.onSurfaceVariant,
-                              ),
-                              children: [
-                                const TextSpan(
-                                  text:
-                                      "You don’t have a partner account yet? ",
-                                ),
-                                TextSpan(
-                                  text: 'Request a new account',
-                                  style: TextStyle(
-                                    color: AppColors.blue,
-                                    fontSize: 12,
-                                    decoration: TextDecoration.underline,
-                                    fontWeight: FontWeight.w500,
-                                  ),
-                                  recognizer: TapGestureRecognizer()
-                                    ..onTap = () {
-                                      Get.toNamed(Routes.inquiryPage);
-                                      // Get.to(() => InquiryPage());
-                                    },
-                                ),
-                                const TextSpan(text: '.'),
-                              ],
-                            ),
-                          ),
-
-                          // Center(
-                          //   child: TextButton(
-                          //     onPressed: () {
-                          //       Get.to(() => InquiryPage());
-                          //     },
-                          //     child: const Text(
-                          //       "Request for new account",
-                          //       style: TextStyle(
-                          //           color: AppColors.blue,
-                          //           fontSize: 12,
-                          //           decoration: TextDecoration.underline,
-                          //           fontWeight: FontWeight.w400),
-                          //     ),
-                          //   ),
-                          // ),
-                          // Text(
-                          //   "If you don't have an partner account please request for new account",
-                          //   style: TextStyle(
-                          //     fontSize: 12,
-                          //     color: context.theme.colorScheme.onSurfaceVariant,
-                          //   ),
-                          // ),
                         ],
                       ),
                     ),

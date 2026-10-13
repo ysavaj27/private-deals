@@ -40,20 +40,6 @@ class WPreIpoTransactionApi {
     }
   }
 
-  static Future<BaseModel<List<PreIpoSellTransactionModel>>>
-  sellTransactionList() async {
-    try {
-      var res = await dioConfig.get(AppUrl.wPreIpoSellTransaction, {});
-      return BaseModel.fromListJson(
-        res.data,
-        (p0) => p0.map((e) => PreIpoSellTransactionModel.fromJson(e)).toList(),
-      );
-    } catch (e, t) {
-      logger.e("Error on transaction List", error: e, stackTrace: t);
-      return BaseModel.fromError(e.toString());
-    }
-  }
-
   static Future<BaseModel> preIPOSellRequest({
     required int portfolioId,
     required int shares,

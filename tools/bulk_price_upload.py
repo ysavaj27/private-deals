@@ -1,5 +1,10 @@
 #!/usr/bin/env python3
-"""One-shot Institution bulk sell-price upload from the daily rate sheet.
+"""Legacy one-shot uploader (hardcoded prices).
+
+Prefer the exportable ops package instead:
+  tools/price_upload/README.md
+  python3 tools/price_upload/upload.py
+  python3 tools/price_upload/upload.py --confirm
 
 Default is dry-run. Pass --confirm to POST deals/bulk.
 Credentials via env or CLI — do not commit passwords.
@@ -33,32 +38,32 @@ HEADTOKEN = os.environ.get(
 TARGET_NOTIONAL = 35000.0
 SETTLEMENT_DAYS = 1
 
-# Selling Price from 09-Oct-26 WhatsApp rate sheet. CNC rows omitted.
+# Selling Price from 13-Oct-26 WhatsApp rate sheet. CNC rows omitted.
 BASE_PRICES: dict[str, float] = {
     "APOLLO GREEN": 61.95,
-    "BOOTES": 1002.75,
+    "BOOTES": 1008.0,
     "CARE INSURANCE": 150.15,
-    "COCHIN INT AIRPORT": 467.25,
-    "CSK": 253.05,
+    "COCHIN INT AIRPORT": 468.3,
+    "CSK": 254.1,
     "CREMICA FOOD": 183.75,
     "GOODLUCK DEFENCE": 464.1,
-    "HDFC SECURITIES": 8085.0,
+    "HDFC SECURITIES": 8142.75,
     "HINDUJA FINANCE": 244.65,
     "HVR SOLAR": 273.0,
     "INDOFIL": 1879.5,
-    "INCRED": 155.4,
-    "MSEI": 6.93,
-    "MOTILAL HOME FIN": 11.55,
-    "MOHAN MEAKIN": 2362.5,
-    "NCDEX": 321.3,
+    "INCRED": 156.45,
+    "MSEI": 6.9825,
+    "MOTILAL HOME FIN": 11.8125,
+    "MOHAN MEAKIN": 2352.0,
+    "NCDEX": 315.0,
     "MODERN BAZAAR": 54.6,
-    "OYO": 22.575,
+    "OYO": 22.995,
     "OYO ASSET": 8.4,
-    "ORBIS FINANCE": 346.5,
+    "ORBIS FINANCE": 357.0,
     "PARAG PARIKH": 19320.0,
     "PHARMEASY": 6.825,
-    "POLYMATECH": 45.675,
-    "ZEPTO": 29.4,
+    "POLYMATECH": 45.9375,
+    "ZEPTO": 29.925,
 }
 
 # Optional aliases → canonical sheet key above.

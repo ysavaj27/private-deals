@@ -10,9 +10,24 @@ import 'package:private_deals/src/features/institution/support/plugins/logger.da
 import 'package:private_deals/src/features/institution/deals/presentation/deal_list/deal_list_page_ctrl.dart';
 import 'package:private_deals/src/features/institution/support/plugins/toast.dart';
 
-// Add your API, model, and toast imports.
+enum DealExpiryPreset {
+  today('Today'),
+  thisWeek('This week'),
+  thisMonth('This month'),
+  custom('Custom');
+
+  const DealExpiryPreset(this.label);
+
+  final String label;
+}
 
 class CreateDealPageCtrl extends GetxController {
+  CreateDealPageCtrl({DateTime Function()? now}) : _now = now ?? DateTime.now {
+    expiryDate = _todayIST.obs;
+  }
+
+  final DateTime Function() _now;
+
   late final DealRouteContext dealRoute;
 
   CompanyType get companyType => dealRoute.type;
@@ -37,11 +52,20 @@ class CreateDealPageCtrl extends GetxController {
   final settlementDays = RxnInt();
   final settlementError = ''.obs;
 
-  final expiryDate = Rxn<DateTime>();
-  final expiryTime = Rxn<TimeOfDay>();
+  final expiryPreset = DealExpiryPreset.today.obs;
+  late final Rx<DateTime> expiryDate;
   final expiryError = ''.obs;
 
   static const istOffset = Duration(hours: 5, minutes: 30);
+
+  DateTime get _todayIST {
+    final nowIST = _now().toUtc().add(istOffset);
+    // Date-only UTC values keep calendar arithmetic independent of device zone.
+    return DateTime.utc(nowIST.year, nowIST.month, nowIST.day);
+  }
+
+  DateTime _expiryUTC(DateTime date) =>
+      DateTime.utc(date.year, date.month, date.day, 19).subtract(istOffset);
 
   bool get isBuyDeal => dealType.value == 'buy';
 
@@ -143,103 +167,75 @@ class CreateDealPageCtrl extends GetxController {
 
   String get expiryDateLabel {
     final date = expiryDate.value;
-    if (date == null) return 'Select date';
 
     return '${twoDigits(date.day)}/'
         '${twoDigits(date.month)}/${date.year}';
   }
 
-  String get expiryTimeLabel {
-    final time = expiryTime.value;
-    if (time == null) return 'Select time';
+  void selectExpiryPreset(DealExpiryPreset preset) {
+    if (preset == DealExpiryPreset.custom) return;
 
-    return '${twoDigits(time.hour)}:${twoDigits(time.minute)} IST';
+    final today = _todayIST;
+    expiryDate.value = switch (preset) {
+      DealExpiryPreset.today => today,
+      DealExpiryPreset.thisWeek => today.add(
+        Duration(days: DateTime.sunday - today.weekday),
+      ),
+      DealExpiryPreset.thisMonth => DateTime.utc(
+        today.year,
+        today.month + 1,
+        0,
+      ),
+      DealExpiryPreset.custom => throw StateError(
+        'Select a custom expiry date',
+      ),
+    };
+    expiryPreset.value = preset;
+    expiryError.value = '';
   }
 
   Future<void> pickExpiryDate(BuildContext context) async {
-    final nowIST = DateTime.now().toUtc().add(istOffset);
-    final today = DateTime(nowIST.year, nowIST.month, nowIST.day);
+    final today = _todayIST;
+    final firstDate = _expiryUTC(today).isAfter(_now().toUtc())
+        ? today
+        : today.add(const Duration(days: 1));
     final selected = expiryDate.value;
 
     final result = await AppDateTimePicker.date(
       context: context,
-      initialDate: selected != null && !selected.isBefore(today)
-          ? selected
-          : today,
-      firstDate: today,
+      initialDate: selected,
+      firstDate: firstDate,
       currentDate: today,
       lastDate: DateTime(2100, 12, 31),
-      title: 'Expiry date · IST',
+      title: 'Expiry date · 7:00 PM IST',
     );
 
     if (result == null || isClosed) return;
 
-    expiryDate.value = result;
-    expiryError.value = '';
-  }
-
-  Future<void> pickExpiryTime(BuildContext context) async {
-    final nowIST = DateTime.now().toUtc().add(istOffset);
-
-    final result = await AppDateTimePicker.time(
-      context: context,
-      initialTime:
-          expiryTime.value ??
-          TimeOfDay(hour: nowIST.hour, minute: nowIST.minute),
-      title: 'Expiry time · IST',
-      use24HourFormat: true,
-    );
-
-    if (result == null || isClosed) return;
-
-    expiryTime.value = result;
-    expiryError.value = '';
-  }
-
-  void clearExpiry() {
-    expiryDate.value = null;
-    expiryTime.value = null;
+    expiryDate.value = DateTime.utc(result.year, result.month, result.day);
+    expiryPreset.value = DealExpiryPreset.custom;
     expiryError.value = '';
   }
 
   bool validateExpiry() {
     final date = expiryDate.value;
-    final time = expiryTime.value;
 
     expiryError.value = '';
 
-    if (date == null && time == null) return true;
-
-    if (date == null || time == null) {
-      expiryError.value = 'Select both an expiry date and time.';
-      return false;
-    }
-
-    final expiryUTC = DateTime.utc(
-      date.year,
-      date.month,
-      date.day,
-      time.hour,
-      time.minute,
-    ).subtract(istOffset);
-
-    if (!expiryUTC.isAfter(DateTime.now().toUtc())) {
-      expiryError.value = 'Expiry must be in the future.';
+    if (!_expiryUTC(date).isAfter(_now().toUtc())) {
+      expiryError.value =
+          'The selected expiry has passed. Choose a later date (7:00 PM IST).';
       return false;
     }
 
     return true;
   }
 
-  String? get formattedExpiry {
+  String get formattedExpiry {
     final date = expiryDate.value;
-    final time = expiryTime.value;
-
-    if (date == null || time == null) return null;
 
     return '${date.year}-${twoDigits(date.month)}-'
-        '${twoDigits(date.day)} '
-        '${twoDigits(time.hour)}:${twoDigits(time.minute)}:00';
+        '${twoDigits(date.day)} 19:00:00';
   }
 
   bool validateSettlement() {
@@ -263,7 +259,7 @@ class CreateDealPageCtrl extends GetxController {
       'minimum_qty': int.parse(minimumQuantityCtrl.text.trim()),
       'is_hot_deal': isHotDeal ? 1 : 0,
       if (requiresSettlement) 'settlement_days': settlementDays.value,
-      if (formattedExpiry != null) 'expired_at': formattedExpiry,
+      'expired_at': formattedExpiry,
     };
   }
 

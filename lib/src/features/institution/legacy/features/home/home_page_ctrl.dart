@@ -92,7 +92,7 @@ class SellerHomePageCtrl extends GetxController {
   void setData() {
     final path = Uri.parse(Get.currentRoute).path;
     final tabFromUrl = WTabBarEnum.values.firstWhere(
-      (tab) => path == tab.sellerPath,
+      (tab) => path == tab.sellerPath || path.startsWith('${tab.sellerPath}/'),
       orElse: () => WTabBarEnum.dashboard,
     );
     final routeArg = Get.arguments;
@@ -160,6 +160,10 @@ class SellerHomePageCtrl extends GetxController {
         return 'Manage Company';
       case WTabBarEnum.primaryList:
         return 'Private Equity';
+      case WTabBarEnum.secondary:
+        return 'LP Secondary';
+      case WTabBarEnum.preIPO:
+        return 'Unlisted Shares';
       case WTabBarEnum.sellEnquiries:
         return 'Enquiry';
       case WTabBarEnum.companyDeals:

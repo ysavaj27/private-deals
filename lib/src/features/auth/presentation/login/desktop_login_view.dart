@@ -136,41 +136,25 @@ class DesktopLoginView extends StatelessWidget {
                     ),
                   ),
                   const SizedBox(height: 50),
-                  Row(
-                    children: [
-                      TextButton(
+                  Align(
+                    alignment: Alignment.centerRight,
+                    child: Obx(() {
+                      return CustomElevatedButton(
+                        radius: 22,
+                        width: 222.25,
+                        backgroundColor: context.theme.iconTheme.color,
+                        color: context.theme.scaffoldBackgroundColor,
+                        fontWeight: FontWeight.bold,
+                        size: const Size(222.25, 50),
+                        text: 'Log In',
+                        isLoading: c.isLoading.value,
                         onPressed: () {
-                          Get.toNamed(Routes.inquiryPage);
+                          if (c.desktopKey.currentState?.validate() ?? false) {
+                            c.onPress();
+                          }
                         },
-                        child: const Text(
-                          "Request for new account",
-                          style: TextStyle(
-                              color: AppColors.lightBlue,
-                              fontSize: 16,
-                              decoration: TextDecoration.underline,
-                              fontWeight: FontWeight.w400),
-                        ),
-                      ),
-                      const Spacer(),
-                      Obx(() {
-                        return CustomElevatedButton(
-                          radius: 22,
-                          width: 222.25,
-                          backgroundColor: context.theme.iconTheme.color,
-                          color: context.theme.scaffoldBackgroundColor,
-                          fontWeight: FontWeight.bold,
-                          size: const Size(222.25, 50),
-                          text: 'Log In',
-                          isLoading: c.isLoading.value,
-                          onPressed: () {
-                            if (c.desktopKey.currentState?.validate() ??
-                                false) {
-                              c.onPress();
-                            }
-                          },
-                        );
-                      }),
-                    ],
+                      );
+                    }),
                   ),
                 ],
               ),

@@ -104,7 +104,7 @@ class WorkspacePage extends StatelessWidget {
                       ? const Padding(
                           key: ValueKey('workspace-loading'),
                           padding: EdgeInsets.all(64),
-                          child: Center(child: CircularProgressIndicator()),
+                          child: Loader(),
                         )
                       : error.isNotEmpty || itemCount == 0
                       ? KeyedSubtree(

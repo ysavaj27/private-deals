@@ -98,9 +98,15 @@ void main() {
       await getCase(12, () => PendingTaskApi.pendingTasks());
       await getCase(13, () => WPrimaryTransactionApi.transactionList());
       await getCase(16, () => WSecondaryTransactionApi.secondaryTransactionList());
-      await getCase(17, () => WSecondaryTransactionApi.sellRequestList());
-      await getCase(18, () => WSecondaryTransactionApi.opportunitiesList());
-      await getCase(21, () => WPreIpoTransactionApi.sellTransactionList());
+      recordNa(_case(17), _case(17).skipReason ?? 'removed');
+      await getCase(
+        18,
+        () => WSecondaryTransactionApi.opportunitiesStatus(
+          itemId: 1,
+          status: 1,
+        ),
+      );
+      recordNa(_case(21), _case(21).skipReason ?? 'removed');
       await getCase(22, () => WPreIpoTransactionApi.transactionList());
       await getCase(24, () => MyEarningApi.wInvestorEarningList());
       await getCase(25, () => MisApi.wMisList());
@@ -112,8 +118,10 @@ void main() {
       await getCase(45, () => PreIpoLandingPageApi.wSecondaryHome());
       await getCase(46, () => PreIpoLandingPageApi.newsSectors());
 
+      recordNa(_case(20), _case(20).skipReason ?? 'removed');
+
       // Write POSTs stay gated.
-      for (final id in [1, 2, 4, 8, 10, 11, 14, 15, 19, 20, 23, 28, 30]) {
+      for (final id in [1, 2, 4, 8, 10, 11, 14, 15, 19, 23, 28, 30]) {
         recordNa(
           _case(id),
           SmokeConfig.allowWrites

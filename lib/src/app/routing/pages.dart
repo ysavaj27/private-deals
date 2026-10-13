@@ -1,7 +1,6 @@
 import 'package:private_deals/src/features/investors/presentation/legacy/add_investor/add_investor_page.dart';
 import 'package:private_deals/src/features/auth/presentation/change_password/change_password_page.dart';
 import 'package:private_deals/src/features/auth/presentation/forgot_password/forgot_password_page.dart';
-import 'package:private_deals/src/features/auth/presentation/inquiry/inquiry_page.dart';
 import 'package:private_deals/src/features/investors/presentation/legacy_kyc/kyc_page.dart';
 import 'package:private_deals/src/features/auth/presentation/login/login_page.dart';
 import 'package:private_deals/src/features/wealth_manager/presentation/home_page.dart';
@@ -13,6 +12,7 @@ import 'package:private_deals/src/features/catalog/presentation/pre_ipo/pre_ipo_
 import 'package:private_deals/src/features/catalog/presentation/pre_ipo/pre_ipo_investment/pre_ipo_investment_page.dart';
 import 'package:private_deals/src/features/catalog/presentation/pre_ipo/pre_ipo_list_page/pre_ipo_list_page.dart';
 import 'package:private_deals/src/features/catalog/presentation/primary/blog_detail/blog_detail_page.dart';
+import 'package:private_deals/src/features/catalog/presentation/primary/blog_list_page.dart';
 import 'package:private_deals/src/features/catalog/presentation/primary/primary_detail_page/primary_detail_page.dart';
 import 'package:private_deals/src/features/catalog/presentation/primary/primary_detail_page/primary_investment/primary_investment_page.dart';
 import 'package:private_deals/src/features/catalog/presentation/primary/primary_list_page/primary_list_page.dart';
@@ -25,6 +25,8 @@ import 'package:private_deals/src/shared/app_exports.dart';
 import 'package:private_deals/src/core/permissions/access_policy.dart';
 import 'package:private_deals/src/app/routing/session_pages.dart';
 import 'package:private_deals/src/features/institution/institution_dashboard.dart';
+import 'package:private_deals/src/features/institution/institution_routes.dart'
+    show InstitutionRoutes;
 import 'package:private_deals/src/features/institution/companies/presentation/company_list/company_list_page.dart';
 import 'package:private_deals/src/features/institution/companies/presentation/create_company/create_company_page.dart';
 import 'package:private_deals/src/features/institution/companies/presentation/manage_promoters/manage_promoters_page.dart';
@@ -72,12 +74,6 @@ class Pages {
     GetPage(
       name: Routes.forgotPasswordPage,
       page: () => ForgotPasswordPage(),
-      transition: Transition.fadeIn,
-      transitionDuration: AppMotion.normal,
-    ),
-    GetPage(
-      name: Routes.inquiryPage,
-      page: () => InquiryPage(),
       transition: Transition.fadeIn,
       transitionDuration: AppMotion.normal,
     ),
@@ -141,6 +137,7 @@ class Pages {
       scope: AccessScope.account,
     ),
     privatePushPage(Routes.blogDetailPage, () => BlogDetailPage()),
+    privatePushPage(Routes.blogListPage, () => const BlogListPage()),
     privatePushPage(Routes.blogListDetailPage, () => BlogDetailPage()),
     privatePushPage(
       Routes.newsListPage,
@@ -167,6 +164,70 @@ class Pages {
       () => const InstitutionDashboard(),
       scope: AccessScope.institution,
     ),
+    // Seller catalog routes reuse the catalog UI and APIs, with a separate
+    // middleware boundary for future seller-specific validation.
+    for (final path in [
+      InstitutionRoutes.privateEquity,
+      InstitutionRoutes.lpSecondary,
+      InstitutionRoutes.unlistedShares,
+    ]) ...[
+      privatePage(
+        path,
+        () => const InstitutionDashboard(),
+        scope: AccessScope.institution,
+      ),
+      privatePushPage(
+        '$path/detail/:slug',
+        path == InstitutionRoutes.privateEquity
+            ? () => PrimaryDetailPage()
+            : path == InstitutionRoutes.lpSecondary
+            ? () => SecondaryDetailPage()
+            : () => PreIPODetailPage(),
+        scope: AccessScope.institution,
+      ),
+      privatePushPage(
+        path == InstitutionRoutes.privateEquity
+            ? '$path/detail/:slug/investment/:id'
+            : '$path/detail/:slug/investment',
+        path == InstitutionRoutes.privateEquity
+            ? () => PrimaryInvestmentPage()
+            : () => const PreIPOInvestmentPage(),
+        scope: AccessScope.institution,
+      ),
+      if (path == InstitutionRoutes.privateEquity) ...[
+        privatePushPage(
+          '$path/blog-list',
+          () => const BlogListPage(),
+          scope: AccessScope.institution,
+        ),
+        privatePage(
+          '$path/startup-list/:slug',
+          () => PrimaryListPage(),
+          scope: AccessScope.institution,
+        ),
+        privatePushPage(
+          '$path/blog-detail/:slug',
+          () => BlogDetailPage(),
+          scope: AccessScope.institution,
+        ),
+        privatePushPage(
+          '$path/blog-list/blog-detail/:slug',
+          () => BlogDetailPage(),
+          scope: AccessScope.institution,
+        ),
+      ] else ...[
+        privatePage(
+          '$path/company-list/:type',
+          () => PreIPOListPage(),
+          scope: AccessScope.institution,
+        ),
+        privatePushPage(
+          '$path/news-list',
+          () => NewsListPage(),
+          scope: AccessScope.institution,
+        ),
+      ],
+    ],
     for (final tab in [
       'sell-enquiries',
       'unlisted-transactions',

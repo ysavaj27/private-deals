@@ -58,70 +58,107 @@ void main() {
   );
 
   test(
-    'Pending category requests keep their filters and ignore stale results',
+    'Pending category switches stay local without extra API calls',
     () async {
-      final documentResponse = Completer<ResponseBody>();
-      final documentStarted = Completer<void>();
-      final adapter = FakeAdapter((options) async {
-        if (options.queryParameters['pending_doc_sign'] == true) {
-          documentStarted.complete();
-          return documentResponse.future;
-        }
+      var calls = 0;
+      dioConfig.dio.httpClientAdapter = FakeAdapter((_) async {
+        calls++;
         return response({
           'status': 1,
-          'data': [
-            {'id': 2, 'current_status': 'Payment pending'},
-          ],
+          'data': {
+            'pending_kyc': {
+              'count': 1,
+              'investors': [
+                {'id': 2, 'name': 'Fresh investor'},
+              ],
+            },
+            'pending_documents': {
+              'count': 1,
+              'documents': [
+                {
+                  'id': 5,
+                  'type': 'BuyMandate',
+                  'company': {'brand_name': 'Northstar'},
+                  'investor': {'name': 'Priya Mehta'},
+                },
+              ],
+            },
+            'pending_fund_transfer': {
+              'count': 1,
+              'transactions': [
+                {
+                  'id': 9,
+                  'payable_amount': 150000,
+                  'company': {'brand_name': 'Northstar'},
+                  'investor': {'name': 'Fresh investor'},
+                },
+              ],
+            },
+          },
         });
       });
-      dioConfig.dio.httpClientAdapter = adapter;
       final controller = KycPendingInvestorPageCtrl();
-      final oldLoad = controller.selectType(PendingTaskEnum.document);
-      await documentStarted.future;
+      await controller.refreshData();
+      final afterLoad = calls;
+      await controller.selectType(PendingTaskEnum.document);
       await controller.selectType(PendingTaskEnum.fundTransfer);
-      documentResponse.complete(
-        response({
-          'status': 1,
-          'data': [
-            {'id': 1, 'current_status': 'Signature pending'},
-          ],
-        }),
-      );
-      await oldLoad;
-      expect(controller.transactions.single.id, 2);
+      expect(calls, afterLoad);
       expect(controller.type(), PendingTaskEnum.fundTransfer);
-      expect(adapter.requests.last.queryParameters['pending_payment'], true);
-      expect(
-        adapter.requests.last.queryParameters.containsKey('pending_doc_sign'),
-        false,
-      );
+      expect(controller.documents.single.id, 5);
+      expect(controller.fundTransfers.single.id, 9);
       expect(controller.isLoading(), false);
     },
   );
 
-  test('Pending refresh reloads both summary and KYC list', () async {
+  test('Pending refresh loads KYC, documents and fund transfers from v2',
+      () async {
     final adapter = FakeAdapter(
       (options) async => response({
         'status': 1,
-        'data': options.path == AppUrl.wPendingTasks
-            ? {'pending_kyc': 4, 'document_sign': 2, 'pending_payment': 1}
-            : [
-                {'name': 'Updated investor'},
-              ],
+        'data': {
+          'pending_kyc': {
+            'count': 4,
+            'investors': [
+              {'id': 1, 'name': 'Updated investor'},
+            ],
+          },
+          'pending_documents': {
+            'count': 2,
+            'documents': [
+              {
+                'id': 11,
+                'type': 'BuyMandate',
+                'name': 'Buy Mandate',
+                'company': {'brand_name': 'Northstar Technologies'},
+                'investor': {'name': 'Priya Mehta'},
+              },
+            ],
+          },
+          'pending_fund_transfer': {
+            'count': 1,
+            'transactions': [
+              {
+                'id': 21,
+                'payable_amount': 250000,
+                'company': {'brand_name': 'Summit Brands'},
+                'investor': {'name': 'Aarav Shah'},
+              },
+            ],
+          },
+        },
       }),
     );
     dioConfig.dio.httpClientAdapter = adapter;
     final controller = KycPendingInvestorPageCtrl();
     await controller.refreshData();
-    expect(controller.pendingTask().pendingKyc, 4);
-    expect(controller.investorList.single.name, 'Updated investor');
-    expect(
-      adapter.requests
-          .singleWhere((r) => r.path == AppUrl.wInvestorList)
-          .queryParameters['is_kyc'],
-      'All',
-    );
-    expect(controller.countsLoading(), false);
+    expect(controller.pendingTask().pendingKyc.count, 4);
+    expect(controller.pendingTask().pendingDocuments.count, 2);
+    expect(controller.pendingTask().pendingFundTransfer.count, 1);
+    expect(controller.investors.single.name, 'Updated investor');
+    expect(controller.documents.single.company.brandName, 'Northstar Technologies');
+    expect(controller.fundTransfers.single.payableAmount, 250000);
+    expect(adapter.requests.single.path, AppUrl.wPendingTasks);
+    expect(AppUrl.wPendingTasks, contains('v2/'));
     expect(controller.isLoading(), false);
   });
 

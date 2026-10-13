@@ -1,20 +1,6 @@
 import 'package:private_deals/src/shared/app_exports.dart';
 
 class PortfolioApi {
-  static Future<BaseModel<List<PortfolioModel>>> portfolioAPi(
-      String sellType) async {
-    try {
-      Map<String, dynamic> body = {"type": sellType};
-      var res = await dioConfig.get(AppUrl.iPortfolio, body);
-      BaseModel<List<PortfolioModel>> baseModel = BaseModel.fromListJson(
-          res.data, (p0) => p0.map((e) => PortfolioModel.fromJson(e)).toList());
-      return baseModel;
-    } catch (e, t) {
-      logger.e("Error on Config", error: e, stackTrace: t);
-      return BaseModel.fromError(e.toString());
-    }
-  }
-
   static Future<BaseModel<List<StartupPortfolioListModel>>> wPortfolioAPi(
       String type, List<int> investors, List<int> startups) async {
     try {
@@ -29,20 +15,6 @@ class PortfolioApi {
               (p0) => p0
                   .map((e) => StartupPortfolioListModel.fromJson(e))
                   .toList());
-      return baseModel;
-    } catch (e, t) {
-      logger.e("Error on Config", error: e, stackTrace: t);
-      return BaseModel.fromError(e.toString());
-    }
-  }
-
-  static Future<BaseModel<List<PreIPOPortfolioModel>>>
-      preIpoPortfolioAPi() async {
-    try {
-      var res = await dioConfig.get(AppUrl.iPreIpoPortfolio, {});
-      BaseModel<List<PreIPOPortfolioModel>> baseModel = BaseModel.fromListJson(
-          res.data,
-          (p0) => p0.map((e) => PreIPOPortfolioModel.fromJson(e)).toList());
       return baseModel;
     } catch (e, t) {
       logger.e("Error on Config", error: e, stackTrace: t);
@@ -81,35 +53,6 @@ class PortfolioApi {
       return baseModel;
     } catch (e, t) {
       logger.e("Error on Company StartUp", error: e, stackTrace: t);
-      return BaseModel.fromError(e.toString());
-    }
-  }
-
-  static Future<BaseModel<CompanyStartupModel>> iAddPortfolioApi({
-    required DashboardTypeEnum type,
-    required int companyId,
-    required String otherName,
-    required int shares,
-    required double sharePrice,
-    required String date,
-  }) async {
-    try {
-      Map<String, dynamic> body = {
-        "investor_id": app.iUser.id,
-        "other_name": otherName,
-        "shares": shares,
-        "share_price": sharePrice,
-        "date": date,
-      };
-      body.addAll(
-          {"type": type == DashboardTypeEnum.primary ? "startup" : "company"});
-      body.addIf(companyId.isNotEmpty, "company_id", companyId);
-      var res = await dioConfig.post(AppUrl.iAddPortfolio, body);
-      BaseModel<CompanyStartupModel> baseModel =
-          BaseModel.fromMessage(res.data);
-      return baseModel;
-    } catch (e, t) {
-      logger.e("Error on Add portfolio", error: e, stackTrace: t);
       return BaseModel.fromError(e.toString());
     }
   }

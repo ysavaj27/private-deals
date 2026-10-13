@@ -18,17 +18,11 @@ export 'package:carousel_slider/carousel_slider.dart';
 export 'package:circular_menu/circular_menu.dart';
 
 /// BACKEND
-export 'package:private_deals/src/features/auth/data/i_auth_api.dart';
 export 'package:private_deals/src/features/auth/data/w_auth_api.dart';
-export 'package:private_deals/src/features/wealth_manager/data/api/bank_accounts/mandate_api.dart';
 export 'package:private_deals/src/features/wealth_manager/data/api/channel_partner/channel_partner_api.dart';
 export 'package:private_deals/src/core/config/config_api.dart';
 export 'package:private_deals/src/features/wealth_manager/data/api/dashboard/dashboard_api.dart';
-export 'package:private_deals/src/features/wealth_manager/data/api/demat_account/demat_account_api.dart';
 export 'package:private_deals/src/features/wealth_manager/data/api/document/document_api.dart';
-export 'package:private_deals/src/features/wealth_manager/data/api/favorite/favorite_api.dart';
-export 'package:private_deals/src/features/wealth_manager/data/api/inquiry/inquiry_api.dart';
-export 'package:private_deals/src/features/wealth_manager/data/api/kyc/i_kyc_api.dart';
 export 'package:private_deals/src/features/wealth_manager/data/api/kyc/w_kyc_api.dart';
 export 'package:private_deals/src/features/wealth_manager/data/api/landing_page/landing_page_api.dart';
 export 'package:private_deals/src/features/wealth_manager/data/api/landing_page/unlisted_landing_page_api.dart';
@@ -36,11 +30,9 @@ export 'package:private_deals/src/features/wealth_manager/data/api/live_pitch/li
 export 'package:private_deals/src/core/config/master_api.dart';
 export 'package:private_deals/src/features/wealth_manager/data/api/mis/mis_api.dart';
 export 'package:private_deals/src/features/wealth_manager/data/api/my_earning/my_earning_api.dart';
-export 'package:private_deals/src/features/wealth_manager/data/api/my_family/my_family_api.dart';
 export 'package:private_deals/src/features/wealth_manager/data/api/notification/notification_api.dart';
 export 'package:private_deals/src/features/wealth_manager/data/api/pending_task/pending_task_api.dart';
 export 'package:private_deals/src/features/wealth_manager/data/api/portfolio/portfolio_api.dart';
-export 'package:private_deals/src/features/wealth_manager/data/api/transaction/i_pre_ipo_transaction_api.dart';
 export 'package:private_deals/src/features/wealth_manager/data/api/transaction/i_primary_transaction_api.dart';
 export 'package:private_deals/src/features/wealth_manager/data/api/transaction/i_secondary_transaction_api.dart';
 export 'package:private_deals/src/features/wealth_manager/data/api/transaction/w_pre_ipo_transaction_api.dart';
@@ -71,7 +63,6 @@ export 'package:private_deals/src/features/wealth_manager/data/models/document/d
 export 'package:private_deals/src/features/wealth_manager/data/models/e_kyc/e_kyc_model.dart';
 export 'package:private_deals/src/features/wealth_manager/data/models/earning/investor_earning_model.dart';
 export 'package:private_deals/src/features/wealth_manager/data/models/earning/partner_earning_model.dart';
-export 'package:private_deals/src/features/wealth_manager/data/models/favorite/favorite_model.dart';
 export 'package:private_deals/src/features/wealth_manager/data/models/landing/blog_model.dart';
 export 'package:private_deals/src/features/wealth_manager/data/models/landing/landing_page_model.dart';
 export 'package:private_deals/src/features/wealth_manager/data/models/live_pitch/live_pitch_model.dart';
@@ -136,7 +127,6 @@ export 'package:private_deals/src/shared/plugins/svg_image.dart';
 export 'package:private_deals/src/shared/plugins/toast.dart';
 export 'package:private_deals/src/shared/plugins/video_player.dart';
 export 'package:private_deals/src/shared/widgets/buttons/custom_elevated_button.dart';
-export 'package:private_deals/src/shared/widgets/buttons/custom_like_button.dart';
 export 'package:private_deals/src/shared/widgets/buttons/custom_outlined_button.dart';
 export 'package:private_deals/src/shared/widgets/buttons/custom_text_button.dart';
 export 'package:private_deals/src/shared/widgets/buttons/download_button.dart';

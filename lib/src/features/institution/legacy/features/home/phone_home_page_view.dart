@@ -1,3 +1,5 @@
+// import 'package:private_deals/src/shared/widgets/custom_appbar.dart'
+//     show WAppbarOptionSegmented;
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:get/get.dart';
@@ -55,28 +57,41 @@ class PhoneHomePageView extends StatelessWidget {
                 );
               }),
             ],
-            bottom: showUnlistedSubTabs || showLpSecondarySubTabs
-                ? PreferredSize(
-                    preferredSize: const Size.fromHeight(48),
-                    child: showUnlistedSubTabs
-                        ? _PhoneSubTabBar(
-                            options: const [
-                              (WTabBarEnum.preIPOList, 'Manage Company'),
-                              (WTabBarEnum.priceUpdate, 'Share Price'),
-                            ],
-                            selected: c.currentTab.value,
-                            onSelected: c.onTap,
-                          )
-                        : _PhoneSubTabBar(
-                            options: const [
-                              (WTabBarEnum.secondaryList, 'Manage Company'),
-                              (WTabBarEnum.manageDeals, 'Manage Deals'),
-                            ],
-                            selected: c.currentTab.value,
-                            onSelected: c.onTap,
-                          ),
-                  )
-                : null,
+            bottom: PreferredSize(
+              preferredSize: Size.fromHeight(
+                // Restore the extra 64 pixels when showing the catalog tabs.
+                // 64 +
+                (showUnlistedSubTabs || showLpSecondarySubTabs ? 48 : 0),
+              ),
+              child: Column(
+                children: [
+                  // Seller catalog tabs are temporarily hidden.
+                  // const SingleChildScrollView(
+                  //   scrollDirection: Axis.horizontal,
+                  //   padding: EdgeInsets.symmetric(horizontal: 12, vertical: 4),
+                  //   child: WAppbarOptionSegmented(institution: true),
+                  // ),
+                  if (showUnlistedSubTabs)
+                    _PhoneSubTabBar(
+                      options: const [
+                        (WTabBarEnum.preIPOList, 'Manage Company'),
+                        (WTabBarEnum.priceUpdate, 'Share Price'),
+                      ],
+                      selected: c.currentTab.value,
+                      onSelected: c.onTap,
+                    ),
+                  if (showLpSecondarySubTabs)
+                    _PhoneSubTabBar(
+                      options: const [
+                        (WTabBarEnum.secondaryList, 'Manage Company'),
+                        (WTabBarEnum.manageDeals, 'Manage Deals'),
+                      ],
+                      selected: c.currentTab.value,
+                      onSelected: c.onTap,
+                    ),
+                ],
+              ),
+            ),
           ),
           drawer: const Drawer(child: SafeArea(child: PSideBarWidget())),
           body: SafeArea(top: false, child: child ?? MainWidgets()),

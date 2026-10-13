@@ -137,8 +137,8 @@ class DashboardPriorities extends StatelessWidget {
     final theme = Theme.of(context);
     final clear =
         model.pendingKyc == 0 &&
-        model.pendingDocumentSign == 0 &&
-        model.pendingPayment == 0;
+        model.pendingDocuments == 0 &&
+        model.pendingFundTransfer == 0;
     final items = [
       (
         'KYC pending',
@@ -148,16 +148,14 @@ class DashboardPriorities extends StatelessWidget {
       ),
       (
         'Documents to sign',
-        '${model.pendingDocumentSign}',
-        model.pendingDocumentSign > 0,
+        '${model.pendingDocuments}',
+        model.pendingDocuments > 0,
         PendingTaskEnum.document,
       ),
-      // The dashboard payment field has no confirmed count/amount contract.
-      // Keep its actionable state without adding it to task totals.
       (
         'Fund transfers',
-        model.pendingPayment > 0 ? 'Review' : 'Clear',
-        model.pendingPayment > 0,
+        '${model.pendingFundTransfer}',
+        model.pendingFundTransfer > 0,
         PendingTaskEnum.fundTransfer,
       ),
     ];

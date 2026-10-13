@@ -309,7 +309,7 @@ class _EnquiriesPageState extends State<EnquiriesPage> {
           if (_loading)
             const Padding(
               padding: EdgeInsets.symmetric(vertical: 72),
-              child: Center(child: CircularProgressIndicator()),
+              child: Loader(),
             )
           else if (_error.isNotEmpty)
             _EmptyPanel(

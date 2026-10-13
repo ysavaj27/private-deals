@@ -176,10 +176,8 @@ class _PdfViewerDialogViewState extends State<PdfViewerDialogView> {
                   controller: _pdfControllerPinch!,
                   builders: PdfViewPinchBuilders<DefaultBuilderOptions>(
                     options: const DefaultBuilderOptions(),
-                    documentLoaderBuilder: (_) =>
-                        const Center(child: CircularProgressIndicator()),
-                    pageLoaderBuilder: (_) =>
-                        const Center(child: CircularProgressIndicator()),
+                    documentLoaderBuilder: (_) => const Loader(),
+                    pageLoaderBuilder: (_) => const Loader(),
                     errorBuilder: (_, error) =>
                         Center(child: Text(error.toString())),
                   ),
@@ -314,10 +312,8 @@ class _PdfViewerPageState extends State<PdfViewerPage> {
                   controller: _pdfControllerPinch!,
                   builders: PdfViewPinchBuilders<DefaultBuilderOptions>(
                     options: const DefaultBuilderOptions(),
-                    documentLoaderBuilder: (_) =>
-                        const Center(child: CircularProgressIndicator()),
-                    pageLoaderBuilder: (_) =>
-                        const Center(child: CircularProgressIndicator()),
+                    documentLoaderBuilder: (_) => const Loader(),
+                    pageLoaderBuilder: (_) => const Loader(),
                     errorBuilder: (_, error) =>
                         Center(child: Text(error.toString())),
                   ),

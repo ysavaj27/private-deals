@@ -1,0 +1,31 @@
+{
+  "base_url": "https://www.privatedeals.in/",
+  "notional": 35000,
+  "settlement_days": 1,
+  "institutes": [
+    {
+      "label": "1-base",
+      "mobile": "9316314236",
+      "password": "REPLACE_ME",
+      "markup_percent": 0
+    },
+    {
+      "label": "2-+0.5%",
+      "mobile": "7984718397",
+      "password": "REPLACE_ME",
+      "markup_percent": 0.5
+    },
+    {
+      "label": "3-+1.5%",
+      "mobile": "8980740163",
+      "password": "REPLACE_ME",
+      "markup_percent": 1.5
+    },
+    {
+      "label": "4-+1.0%",
+      "mobile": "9867052562",
+      "password": "REPLACE_ME",
+      "markup_percent": 1.0
+    }
+  ]
+}

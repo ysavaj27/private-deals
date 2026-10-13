@@ -516,7 +516,7 @@ class DealDeleteButton extends StatelessWidget {
                           Navigator.of(dialogContext).pop(true);
                         },
                   child: deleting
-                      ? const Loader(size: 18)
+                      ? const Loader(size: 18, centered: false)
                       : const Text('Delete'),
                 ),
               ],

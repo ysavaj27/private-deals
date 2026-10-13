@@ -89,6 +89,7 @@ class CustomElevatedButton extends StatelessWidget {
                   key: const ValueKey('loading'),
                   color: textColor ?? color ?? Colors.white,
                   size: 25,
+                  centered: false,
                 )
               : KeyedSubtree(
                   key: const ValueKey('label'),

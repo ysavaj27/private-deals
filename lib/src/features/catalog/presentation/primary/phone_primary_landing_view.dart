@@ -68,7 +68,7 @@ class PhonePrimaryLandingView extends StatelessWidget {
                         child: InkWell(
                           onTap: () {
                             Get.toNamed(Routes.primaryDetailPath(
-                              '/wealth-manager/${WTabBarEnum.primary.slug}',
+                              Routes.catalogPath(WTabBarEnum.primary.slug),
                               model.startup.urlSlug,
                             ));
                           },
@@ -539,7 +539,7 @@ class PhonePrimaryLandingView extends StatelessWidget {
                         onTap: () {
                           Get.toNamed(
                             Routes.primaryListPath(
-                                '/wealth-manager/${WTabBarEnum.primary.slug}',
+                                Routes.catalogPath(WTabBarEnum.primary.slug),
                                 model.slug),
                           );
                         },
@@ -644,7 +644,7 @@ class PhonePrimaryLandingView extends StatelessWidget {
                                   padding: EdgeInsets.zero,
                                   onPressed: () {
                                     var route = Routes.blogDetailPath(
-                                        '/wealth-manager/${WTabBarEnum.primary.slug}',
+                                        Routes.catalogPath(WTabBarEnum.primary.slug),
                                         model.urlSlug);
                                     Get.toNamed(route);
                                   },
@@ -663,19 +663,20 @@ class PhonePrimaryLandingView extends StatelessWidget {
                   ),
                 ),
                 const SizedBox(height: 10),
-                Center(
-                  child: SmoothPageIndicator(
-                    controller: c.controller,
-                    count: c.blogs.length,
-                    effect: const WormEffect(
-                      dotHeight: 8,
-                      dotWidth: 8,
-                      spacing: 5,
-                      dotColor: Colors.white54,
-                      activeDotColor: Colors.white,
+                if (c.blogs.isNotEmpty)
+                  Center(
+                    child: SmoothPageIndicator(
+                      controller: c.controller,
+                      count: c.blogs.length,
+                      effect: const WormEffect(
+                        dotHeight: 8,
+                        dotWidth: 8,
+                        spacing: 5,
+                        dotColor: Colors.white54,
+                        activeDotColor: Colors.white,
+                      ),
                     ),
                   ),
-                ),
                 const SizedBox(height: 38),
               ],
             ),
@@ -883,7 +884,7 @@ class SwipeablePage extends StatelessWidget {
     return GestureDetector(
       onTap: () {
         Get.toNamed(Routes.primaryDetailPath(
-          '/wealth-manager/${WTabBarEnum.primary.slug}',
+          Routes.catalogPath(WTabBarEnum.primary.slug),
           model.urlSlug,
         ));
         // Get.toNamed(Routes.primaryDetailPage, arguments: model.id);

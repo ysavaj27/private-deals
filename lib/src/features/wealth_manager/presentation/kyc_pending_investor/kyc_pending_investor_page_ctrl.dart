@@ -1,56 +1,38 @@
+import 'package:private_deals/src/features/wealth_manager/presentation/investor_transaction/pre_ipo/pre_ipo_buy_transaction/pre_ipo_buy_transaction_page_ctrl.dart';
+import 'package:private_deals/src/features/wealth_manager/presentation/investor_transaction/pre_ipo/pre_ipo_buy_transaction/pre_ipo_order_detail_dialog.dart';
 import 'package:private_deals/src/shared/app_exports.dart';
 
 class KycPendingInvestorPageCtrl extends GetxController {
   final isLoading = false.obs;
-  final countsLoading = false.obs;
   final error = ''.obs;
-  final countsError = ''.obs;
-  final investorList = <InvestorModel>[].obs;
-  final pendingTask = PendingTaskModel.fromJson({}).obs;
+  final pendingTask = PendingTaskModel().obs;
   final type = PendingTaskEnum.kyc.obs;
-  final transactions = <PrimaryTransactionModel>[].obs;
   int _request = 0;
+
+  List<InvestorModel> get investors => pendingTask().pendingKyc.investors;
+
+  List<PendingDocumentItem> get documents =>
+      pendingTask().pendingDocuments.documents;
+
+  List<PendingFundTransferItem> get fundTransfers =>
+      pendingTask().pendingFundTransfer.transactions;
 
   Future<void> selectType(PendingTaskEnum selected) async {
     if (type() == selected) return;
     type(selected);
-    await _loadTasks();
   }
 
-  Future<void> _loadTasks() async {
+  Future<void> getData() async {
     final request = ++_request;
-    final selected = type();
     isLoading(true);
     error('');
     try {
-      if (selected == PendingTaskEnum.kyc || selected == PendingTaskEnum.aif) {
-        final isKyc = selected == PendingTaskEnum.kyc;
-        final res = await WInvestorsApi.investorsList(
-          isKyc: FilterTypeEnum.All.name,
-          isActive: FilterTypeEnum.All.name,
-          isAif: isKyc ? FilterTypeEnum.All.name : FilterTypeEnum.No.name,
-        );
-        if (request != _request || isClosed) return;
-        if (res.isSuccess) {
-          investorList.assignAll(
-            (res.r ?? []).where(
-              (investor) => !isKyc || !investor.isPreIpoKycComplete,
-            ),
-          );
-        } else {
-          error('Unable to load pending investors. Please try again.');
-        }
+      final res = await PendingTaskApi.pendingTasks();
+      if (request != _request || isClosed) return;
+      if (res.isSuccess && res.r != null) {
+        pendingTask(res.r);
       } else {
-        final res = await WPrimaryTransactionApi.transactionList(
-          pendingDocSign: selected == PendingTaskEnum.document,
-          pendingPayment: selected == PendingTaskEnum.fundTransfer,
-        );
-        if (request != _request || isClosed) return;
-        if (res.isSuccess) {
-          transactions.assignAll(res.r ?? []);
-        } else {
-          error('Unable to load pending transactions. Please try again.');
-        }
+        error('Unable to load pending tasks. Please try again.');
       }
     } catch (_) {
       if (request == _request && !isClosed) {
@@ -61,30 +43,114 @@ class KycPendingInvestorPageCtrl extends GetxController {
     }
   }
 
-  Future<void> getData() async {
-    if (countsLoading()) return;
-    countsLoading(true);
-    countsError('');
-    try {
-      final res = await PendingTaskApi.pendingTasks();
-      if (isClosed) return;
-      if (res.isSuccess && res.r != null) {
-        pendingTask(res.r);
-      } else {
-        countsError('Unable to load task totals.');
-      }
-    } catch (_) {
-      if (!isClosed) countsError('Unable to load task totals.');
-    } finally {
-      if (!isClosed) countsLoading(false);
+  Future<void> refreshData() => getData();
+
+  Future<void> openDocumentDetail(PendingDocumentItem document) {
+    final id = document.transactionId;
+    if (id <= 0) {
+      toast('Transaction details are not available', MessageEnum.alert);
+      return Future.value();
     }
+    return openTransactionDetail(
+      transactionId: id,
+      seed: _documentSeed(document),
+    );
   }
 
-  Future<void> refreshData() => Future.wait([getData(), _loadTasks()]);
+  /// Same source as the dialog "Sign mandate" action: order `sign_link`.
+  Future<void> openDocumentSignLink(PendingDocumentItem document) async {
+    final id = document.transactionId;
+    if (id <= 0) {
+      toast('Sign link is not available', MessageEnum.alert);
+      return;
+    }
+    final actions = _PendingPreIpoOrderActions();
+    final detail = await actions.loadDetail(id);
+    final link = detail?.signLink?.trim() ?? '';
+    if (link.isEmpty) {
+      toast('Sign link is not available', MessageEnum.alert);
+      return;
+    }
+    await Launcher.openNewTab(link);
+    if (!isClosed) await refreshData();
+  }
+
+  PreIpoOrderModel _documentSeed(PendingDocumentItem document) =>
+      PreIpoOrderModel(
+        id: document.transactionId,
+        transactionInvoiceNo: document.transactionInvoiceNo,
+        orderStep: '',
+        investor: PreIpoOrderInvestor(
+          id: document.investor.id,
+          name: document.investor.name,
+        ),
+        company: PreIpoOrderCompany(
+          id: document.company.id,
+          brandName: document.company.brandName,
+          logo: document.company.logoUrl,
+        ),
+      );
+
+  Future<void> openFundTransferDetail(PendingFundTransferItem transfer) {
+    final id = transfer.id;
+    if (id <= 0) {
+      toast('Transaction details are not available', MessageEnum.alert);
+      return Future.value();
+    }
+    return openTransactionDetail(
+      transactionId: id,
+      seed: PreIpoOrderModel(
+        id: id,
+        transactionInvoiceNo: transfer.transactionInvoiceNo,
+        orderStep: transfer.orderStep,
+        shares: transfer.shares.round(),
+        sharePrice: transfer.sharePrice,
+        payableAmount: transfer.payableAmount,
+        investmentAmount: transfer.investmentAmount,
+        instrument: transfer.instrument,
+        settlementDate: transfer.settlementDate,
+        investor: PreIpoOrderInvestor(
+          id: transfer.investor.id,
+          name: transfer.investor.name,
+        ),
+        company: PreIpoOrderCompany(
+          id: transfer.company.id,
+          brandName: transfer.company.brandName,
+          logo: transfer.company.logoUrl,
+        ),
+      ),
+    );
+  }
+
+  Future<void> openTransactionDetail({
+    required int transactionId,
+    required PreIpoOrderModel seed,
+  }) async {
+    var current = seed;
+    final actions = _PendingPreIpoOrderActions();
+    await showPreIpoOrderDetailDialog(
+      order: seed,
+      loadDetail: () async {
+        final detail = await actions.loadDetail(transactionId);
+        if (detail != null) current = detail;
+        return detail;
+      },
+      onAction: (action) => actions.handleAction(current, action),
+    );
+    if (!isClosed) await refreshData();
+  }
 
   @override
   void onInit() {
     super.onInit();
     refreshData();
+  }
+}
+
+/// Reuses unlisted transaction actions without fetching the full order list.
+class _PendingPreIpoOrderActions extends PreIPOBuyTransactionPageCtrl {
+  @override
+  Future<void> getData() async {
+    // Skip list load — this helper only powers the detail dialog.
   }
 }

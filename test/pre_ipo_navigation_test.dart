@@ -61,6 +61,10 @@ Future<void> mountFlow(
           page: () => const Scaffold(body: Text('My enquiries')),
         ),
         GetPage(
+          name: '/institution/sell-enquiries',
+          page: () => const Scaffold(body: Text('Seller enquiries')),
+        ),
+        GetPage(
           name: '/institution/unlisted-transactions',
           page: () => const Scaffold(body: Text('Seller transactions')),
         ),
@@ -86,117 +90,146 @@ void main() {
     Get.reset();
   });
 
-  for (final mobile in [false, true]) {
-    for (final success in [false, true]) {
-      testWidgets(
-        '${mobile ? 'mobile' : 'desktop'} purchase ${success ? 'opens Unlisted' : 'failure retains draft'}',
-        (tester) async {
-          final adapter = FakeAdapter(
-            (request) async => response(
-              request.method == 'GET'
-                  ? {
-                      'status': 1,
-                      'data': [
-                        {'id': 1, 'preipo_kyc_status': 1},
-                      ],
-                    }
-                  : {'status': success ? 1 : 0, 'data': []},
-            ),
-          );
-          dioConfig.dio.httpClientAdapter = adapter;
-          final desktop = _DetailCtrl();
-          final phone = _InvestmentCtrl();
-          await mountFlow(tester, () {
-            if (mobile) {
-              Get.put<PreIPOInvestmentPageCtrl>(phone);
-              phone.selectedOffer.value = offer();
-              phone.investorList.add(investor());
-            } else {
-              Get.put<PreIPODetailPageCtrl>(desktop);
-              desktop.selectedOffer.value = offer();
-              desktop.investorList.add(investor());
-            }
-            return const Scaffold(body: Text('Purchase form'));
-          });
-          await tester.runAsync(
-            () => mobile ? phone.onPress() : desktop.onPress(),
-          );
-          await tester.pumpAndSettle();
-          expect(
-            adapter.requests.where((r) => r.method == 'POST'),
-            hasLength(1),
-          );
-          expect(tester.takeException(), isNull);
-          if (success) {
-            expect(Get.currentRoute, Routes.unlistedTransactionsPath());
-            expect(Get.parameters['asset'], 'unlisted');
-            expect(find.text('Partner transactions'), findsOneWidget);
-            expect(Get.key.currentState!.canPop(), isFalse);
-          } else {
-            expect(Get.currentRoute, '/detail');
-            expect(
-              mobile ? phone.investorList.length : desktop.investorList.length,
-              1,
+  for (final institution in [false, true]) {
+    for (final mobile in [false, true]) {
+      for (final success in [false, true]) {
+        testWidgets(
+          '${institution ? 'seller' : 'partner'} ${mobile ? 'mobile' : 'desktop'} purchase ${success ? 'opens Unlisted' : 'failure retains draft'}',
+          (tester) async {
+            await app.setUser(
+              prefUser: identity(
+                institution ? 'Institution' : 'Wealth Manager',
+              ),
             );
-          }
-        },
-      );
+            final adapter = FakeAdapter(
+              (request) async => response(
+                request.method == 'GET'
+                    ? {
+                        'status': 1,
+                        'data': [
+                          {'id': 1, 'preipo_kyc_status': 1},
+                        ],
+                      }
+                    : {'status': success ? 1 : 0, 'data': []},
+              ),
+            );
+            dioConfig.dio.httpClientAdapter = adapter;
+            final desktop = _DetailCtrl();
+            final phone = _InvestmentCtrl();
+            await mountFlow(tester, () {
+              if (mobile) {
+                Get.put<PreIPOInvestmentPageCtrl>(phone);
+                phone.selectedOffer.value = offer();
+                phone.investorList.add(investor());
+              } else {
+                Get.put<PreIPODetailPageCtrl>(desktop);
+                desktop.selectedOffer.value = offer();
+                desktop.investorList.add(investor());
+              }
+              return const Scaffold(body: Text('Purchase form'));
+            });
+            await tester.runAsync(
+              () => mobile ? phone.onPress() : desktop.onPress(),
+            );
+            await tester.pumpAndSettle();
+            expect(
+              adapter.requests.where((r) => r.method == 'POST'),
+              hasLength(1),
+            );
+            expect(tester.takeException(), isNull);
+            if (success) {
+              expect(Get.currentRoute, Routes.unlistedTransactionsPath());
+              expect(
+                Get.parameters['asset'],
+                institution ? isNull : 'unlisted',
+              );
+              expect(
+                find.text(
+                  institution ? 'Seller transactions' : 'Partner transactions',
+                ),
+                findsOneWidget,
+              );
+              expect(Get.key.currentState!.canPop(), isFalse);
+            } else {
+              expect(Get.currentRoute, '/detail');
+              expect(
+                mobile
+                    ? phone.investorList.length
+                    : desktop.investorList.length,
+                1,
+              );
+            }
+          },
+        );
+      }
     }
   }
 
-  for (final width in [390.0, 800.0]) {
-    for (final outcome in ['success', 'failure', 'cancel']) {
-      testWidgets(
-        'Pre-IPO enquiry $outcome at $width navigates only after creation',
-        (tester) async {
-          tester.view.physicalSize = Size(width, width < 600 ? 850 : 600);
-          tester.view.devicePixelRatio = 1;
-          addTearDown(tester.view.resetPhysicalSize);
-          addTearDown(tester.view.resetDevicePixelRatio);
-          final adapter = FakeAdapter(
-            (_) async => response({'status': outcome == 'success' ? 1 : 0}),
-          );
-          dioConfig.dio.httpClientAdapter = adapter;
-          await mountFlow(tester, () {
-            final c = Get.put<PreIPODetailPageCtrl>(_DetailCtrl());
-            c.model.value = CompanyModel.fromJson({'slug': 'test-company'});
-            return Scaffold(
-              body: SingleChildScrollView(child: SellerSlotsWidget()),
-            );
-          });
-          await tester.tap(find.text('Enquire'));
-          await tester.pumpAndSettle();
-          if (outcome == 'cancel') {
-            await tester.ensureVisible(find.text('Close'));
-            await tester.tap(find.text('Close'));
-          } else {
-            await tester.enterText(find.byType(TextFormField).at(0), '10');
-            await tester.enterText(find.byType(TextFormField).at(1), '100');
-            await tester.ensureVisible(find.text('Submit'));
-            final submit = tester.widget<CustomElevatedButton>(
-              find.ancestor(
-                of: find.text('Submit'),
-                matching: find.byType(CustomElevatedButton),
+  for (final institution in [false, true]) {
+    for (final width in [390.0, 800.0]) {
+      for (final outcome in ['success', 'failure', 'cancel']) {
+        testWidgets(
+          '${institution ? 'seller' : 'partner'} Pre-IPO enquiry $outcome at $width navigates only after creation',
+          (tester) async {
+            tester.view.physicalSize = Size(width, width < 600 ? 850 : 600);
+            tester.view.devicePixelRatio = 1;
+            addTearDown(tester.view.resetPhysicalSize);
+            addTearDown(tester.view.resetDevicePixelRatio);
+            await app.setUser(
+              prefUser: identity(
+                institution ? 'Institution' : 'Wealth Manager',
               ),
             );
-            await tester.runAsync(submit.onPressed as Future<void> Function());
-          }
-          await tester.pumpAndSettle();
-          expect(tester.takeException(), isNull);
-          expect(
-            Get.currentRoute,
-            outcome == 'success' ? Routes.enquiriesPath() : '/detail',
-          );
-          if (outcome == 'success') {
-            expect(find.text('My enquiries'), findsOneWidget);
-            expect(Get.key.currentState!.canPop(), isFalse);
-          } else if (outcome == 'failure') {
-            expect(find.text('Submit'), findsOneWidget);
-          } else {
-            expect(adapter.requests, isEmpty);
-          }
-        },
-      );
+            final adapter = FakeAdapter(
+              (_) async => response({'status': outcome == 'success' ? 1 : 0}),
+            );
+            dioConfig.dio.httpClientAdapter = adapter;
+            await mountFlow(tester, () {
+              final c = Get.put<PreIPODetailPageCtrl>(_DetailCtrl());
+              c.model.value = CompanyModel.fromJson({'slug': 'test-company'});
+              return Scaffold(
+                body: SingleChildScrollView(child: SellerSlotsWidget()),
+              );
+            });
+            await tester.tap(find.text('Enquire'));
+            await tester.pumpAndSettle();
+            if (outcome == 'cancel') {
+              await tester.ensureVisible(find.text('Close'));
+              await tester.tap(find.text('Close'));
+            } else {
+              await tester.enterText(find.byType(TextFormField).at(0), '10');
+              await tester.enterText(find.byType(TextFormField).at(1), '100');
+              await tester.ensureVisible(find.text('Submit'));
+              final submit = tester.widget<CustomElevatedButton>(
+                find.ancestor(
+                  of: find.text('Submit'),
+                  matching: find.byType(CustomElevatedButton),
+                ),
+              );
+              await tester.runAsync(
+                submit.onPressed as Future<void> Function(),
+              );
+            }
+            await tester.pumpAndSettle();
+            expect(tester.takeException(), isNull);
+            expect(
+              Get.currentRoute,
+              outcome == 'success' ? Routes.enquiriesPath() : '/detail',
+            );
+            if (outcome == 'success') {
+              expect(
+                find.text(institution ? 'Seller enquiries' : 'My enquiries'),
+                findsOneWidget,
+              );
+              expect(Get.key.currentState!.canPop(), isFalse);
+            } else if (outcome == 'failure') {
+              expect(find.text('Submit'), findsOneWidget);
+            } else {
+              expect(adapter.requests, isEmpty);
+            }
+          },
+        );
+      }
     }
   }
 

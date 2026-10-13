@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-10-08T07:01:03.212675Z",
+  "generated_at": "2026-10-12T10:21:18.901062Z",
   "config": "baseUrl=https://www.privatedeals.in/ live=false allowWrites=false roles=none stagingHint=no",
   "mode": "contract_path_alignment+interceptor_findings",
   "roles_env": {
@@ -27,10 +27,6 @@
     {
       "id": 15,
       "note": "WM uses investor upload-payment-receipt; Dio interceptor rejects /investor/ for partners"
-    },
-    {
-      "id": 20,
-      "note": "No WM UI caller found; API exists but may be dead"
     },
     {
       "id": 26,
@@ -76,8 +72,8 @@
       "feature": "Channel Partner → List",
       "api": "ChannelPartnerApi.channelPartnerList",
       "method": "GET",
-      "expected_path": "v1/business/channel-partner",
-      "actual_path": "v1/business/channel-partner",
+      "expected_path": "v2/business/channel-partner",
+      "actual_path": "v2/business/channel-partner",
       "priority": "p1",
       "status": "PASS",
       "detail": "path constant aligned"
@@ -87,8 +83,8 @@
       "feature": "Channel Partner → Add",
       "api": "ChannelPartnerApi.addChannelPartner",
       "method": "POST",
-      "expected_path": "v1/business/channel-partner",
-      "actual_path": "v1/business/channel-partner",
+      "expected_path": "v2/business/channel-partner",
+      "actual_path": "v2/business/channel-partner",
       "priority": "p1",
       "status": "PASS",
       "detail": "Body maps is_*_access from password field; verify server accepts",
@@ -177,8 +173,8 @@
       "feature": "Pending tasks",
       "api": "PendingTaskApi.pendingTasks",
       "method": "GET",
-      "expected_path": "v1/business/pending-tasks",
-      "actual_path": "v1/business/pending-tasks",
+      "expected_path": "v2/business/pending-tasks",
+      "actual_path": "v2/business/pending-tasks",
       "priority": "p2",
       "status": "PASS",
       "detail": "path constant aligned"
@@ -230,22 +226,23 @@
     },
     {
       "id": 17,
-      "feature": "Secondary sell-request list",
-      "api": "WSecondaryTransactionApi.sellRequestList",
+      "feature": "Secondary sell-request list (removed)",
+      "api": "(removed)",
       "method": "GET",
-      "expected_path": "v1/business/secondary-invest/sell-request",
-      "actual_path": "v1/business/secondary-invest/sell-request",
-      "priority": "p2",
-      "status": "PASS",
-      "detail": "path constant aligned"
+      "expected_path": "(none)",
+      "actual_path": "",
+      "priority": "skip",
+      "status": "SKIP",
+      "detail": "Dead API removed — WSecondaryTransactionApi.sellRequestList",
+      "skip_reason": "Dead API removed — WSecondaryTransactionApi.sellRequestList"
     },
     {
       "id": 18,
-      "feature": "Secondary opportunities + ROFR",
-      "api": "WSecondaryTransactionApi.opportunitiesList",
-      "method": "GET",
-      "expected_path": "v1/business/secondary-invest/related-oppotunities",
-      "actual_path": "v1/business/secondary-invest/related-oppotunities",
+      "feature": "Secondary ROFR status",
+      "api": "WSecondaryTransactionApi.opportunitiesStatus",
+      "method": "POST",
+      "expected_path": "v1/business/secondary-invest/transactions/rofr-status",
+      "actual_path": "v1/business/secondary-invest/transactions/rofr-status",
       "priority": "p2",
       "status": "PASS",
       "detail": "path constant aligned"
@@ -263,26 +260,27 @@
     },
     {
       "id": 20,
-      "feature": "Secondary buy (if wired)",
-      "api": "WSecondaryTransactionApi.buyRequest",
+      "feature": "Secondary buy (removed)",
+      "api": "(removed)",
       "method": "POST",
-      "expected_path": "v1/business/secondary-invest/buy-now",
-      "actual_path": "v1/business/secondary-invest/buy-now",
-      "priority": "p2",
-      "status": "PASS",
-      "detail": "No WM UI caller found; API exists but may be dead",
-      "mismatch_note": "No WM UI caller found; API exists but may be dead"
+      "expected_path": "(none)",
+      "actual_path": "",
+      "priority": "skip",
+      "status": "SKIP",
+      "detail": "Dead API removed — WSecondaryTransactionApi.buyRequest",
+      "skip_reason": "Dead API removed — WSecondaryTransactionApi.buyRequest"
     },
     {
       "id": 21,
-      "feature": "Pre-IPO sell TX list",
-      "api": "WPreIpoTransactionApi.sellTransactionList",
+      "feature": "Pre-IPO sell TX list (removed)",
+      "api": "(removed)",
       "method": "GET",
-      "expected_path": "v1/business/pre-ipo/sell-transaction",
-      "actual_path": "v1/business/pre-ipo/sell-transaction",
-      "priority": "p2",
-      "status": "PASS",
-      "detail": "path constant aligned"
+      "expected_path": "(none)",
+      "actual_path": "",
+      "priority": "skip",
+      "status": "SKIP",
+      "detail": "Dead API removed — WPreIpoTransactionApi.sellTransactionList",
+      "skip_reason": "Dead API removed — WPreIpoTransactionApi.sellTransactionList"
     },
     {
       "id": 22,
@@ -397,14 +395,15 @@
     },
     {
       "id": 32,
-      "feature": "Inquiry (public lead)",
-      "api": "IAuthApi.verifyMobileNumber",
+      "feature": "Inquiry (public lead) (removed)",
+      "api": "(removed)",
       "method": "POST",
-      "expected_path": "verify-mobile-number",
-      "actual_path": "verify-mobile-number",
-      "priority": "p2",
-      "status": "PASS",
-      "detail": "path constant aligned"
+      "expected_path": "(none)",
+      "actual_path": "",
+      "priority": "skip",
+      "status": "SKIP",
+      "detail": "Dead API removed — register inquiry / verify-mobile-number",
+      "skip_reason": "Dead API removed — register inquiry / verify-mobile-number"
     },
     {
       "id": 33,

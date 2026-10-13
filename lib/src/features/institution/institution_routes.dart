@@ -2,6 +2,9 @@ import 'data/models/common/enums.dart';
 
 class InstitutionRoutes {
   static const dashboard = '/institution/dashboard';
+  static const privateEquity = '/institution/private-equity';
+  static const lpSecondary = '/institution/lp-secondary';
+  static const unlistedShares = '/institution/unlisted-shares';
   static const companies = '/institution/companies/:type';
   static const deals = '/institution/deals/:section/:type';
   static const promotersPage = '/institution/companies/:type/:slug/promoters';

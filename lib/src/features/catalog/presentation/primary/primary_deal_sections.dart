@@ -102,8 +102,6 @@ class LiveDealWidget extends StatelessWidget {
                       scrollDirection: Axis.horizontal,
                       itemBuilder: (context, index) {
                         var model = c.model().raisingNow[index];
-                        model.startup.isLike.value = model.startup.isFavorite;
-                        model.startup.isLike.refresh();
                         return StartupCardWidget(
                           model: model,
                           onTap: () {
@@ -250,8 +248,6 @@ class CompletedWidget extends StatelessWidget {
                       scrollDirection: Axis.horizontal,
                       itemBuilder: (context, index) {
                         var model = c.model().completed[index];
-                        model.startup.isLike.value = model.startup.isFavorite;
-                        model.startup.isLike.refresh();
                         return StartupCardWidget(
                           model: model,
                           onTap: () {

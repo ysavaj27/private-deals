@@ -287,15 +287,25 @@ class DropdownMenuWidget extends StatelessWidget {
 }
 
 class WAppbarOptionSegmented extends StatelessWidget {
-  const WAppbarOptionSegmented({super.key});
+  const WAppbarOptionSegmented({super.key, this.institution = false});
+
+  final bool institution;
 
   @override
   Widget build(BuildContext context) {
     return FutureBuilder<dynamic>(
       future: prefs.getValue(key: 'title').then((v) => v is String ? v : null),
       builder: (context, snapshot) {
-        final currentTitle = snapshot.data;
-        final visible = wLandingOptions.where((o) => o.isVisible()).toList();
+        final segments = Uri.parse(Get.currentRoute).pathSegments;
+        final currentSlug = segments.length > 1 ? segments[1] : null;
+        final currentTitle =
+            wLandingOptions
+                .firstWhereOrNull((o) => o.slug == currentSlug)
+                ?.title ??
+            (institution ? null : snapshot.data);
+        final visible = wLandingOptions
+            .where((o) => institution || o.isVisible())
+            .toList();
         if (visible.isEmpty) return const SizedBox.shrink();
 
         final c = _SwitcherColors.of(context);
@@ -313,7 +323,10 @@ class WAppbarOptionSegmented extends StatelessWidget {
                 _SegmentButton(
                   option: visible[i],
                   selected: visible[i].title == currentTitle,
-                  onTap: () => _selectLandingOption(visible[i]),
+                  onTap: () => _selectLandingOption(
+                    visible[i],
+                    institution: institution,
+                  ),
                 ),
                 if (i != visible.length - 1) const SizedBox(width: 4),
               ],
@@ -426,10 +439,15 @@ class _SwitcherColors {
   }
 }
 
-Future<void> _selectLandingOption(WLandingOption option) async {
-  await prefs.setValue(key: 'title', value: option.title);
+Future<void> _selectLandingOption(
+  WLandingOption option, {
+  bool institution = false,
+}) async {
+  if (!institution) await prefs.setValue(key: 'title', value: option.title);
   await AppTheme.setTheme(index: option.themeIndex);
-  Get.offAllNamed('/wealth-manager/${option.slug}');
+  Get.offAllNamed(
+    '${institution ? '/institution' : '/wealth-manager'}/${option.slug}',
+  );
 }
 
 class WAppbarOptionSwitcher extends StatefulWidget {

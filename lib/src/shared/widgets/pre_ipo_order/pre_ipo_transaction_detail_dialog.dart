@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:private_deals/src/shared/models/pre_ipo_order_model.dart';
 import 'package:private_deals/src/shared/plugins/cache_image.dart';
+import 'package:private_deals/src/shared/plugins/loader.dart';
 import 'pre_ipo_order_detail_panels.dart';
 import 'pre_ipo_order_widgets.dart';
 
@@ -135,10 +136,7 @@ class _PreIpoTransactionDetailDialogState
             Divider(height: 1, color: colors.outlineVariant),
             Flexible(
               child: loading
-                  ? const SizedBox(
-                      height: 180,
-                      child: Center(child: CircularProgressIndicator()),
-                    )
+                  ? const SizedBox(height: 180, child: Loader())
                   : SingleChildScrollView(
                       padding: EdgeInsets.all(compact ? 20 : 28),
                       child: LayoutBuilder(

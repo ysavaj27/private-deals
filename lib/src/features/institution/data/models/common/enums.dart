@@ -88,6 +88,8 @@ enum WTabBarEnum {
   transactions,
   sendDocuments,
   primaryList,
+  secondary,
+  preIPO,
   secondaryList,
   companyDeals,
   secondaryDeals,

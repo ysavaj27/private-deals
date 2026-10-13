@@ -1,4 +1,3 @@
-import 'package:private_deals/src/features/catalog/presentation/pre_ipo/pre_ipo_detail_page/pre_ipo_detail_page.dart';
 import 'package:private_deals/src/features/catalog/presentation/secondary/desktop_secondary_landing_view.dart';
 import 'package:private_deals/src/shared/app_exports.dart';
 import 'package:private_deals/src/shared/functions/on_back_logic.dart';
@@ -61,9 +60,15 @@ class PhonePreIPOListView extends StatelessWidget {
                           child: InkWell(
                             borderRadius: BorderRadius.circular(6),
                             onTap: () {
-                              Get.to(
-                                () => PreIPODetailPage(),
-                                arguments: model.id,
+                              Get.toNamed(
+                                Routes.preIPODetailPath(
+                                  Routes.catalogPath(
+                                    c.isSecondary
+                                        ? WTabBarEnum.secondary.slug
+                                        : WTabBarEnum.preIPO.slug,
+                                  ),
+                                  model.slug,
+                                ),
                               );
                             },
                             child: CustomCardWidget(

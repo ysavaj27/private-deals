@@ -186,7 +186,7 @@ class _InvestorPickerState extends State<InvestorPicker> {
         if (_loading)
           const Padding(
             padding: EdgeInsets.symmetric(vertical: 48),
-            child: Center(child: CircularProgressIndicator()),
+            child: Loader(),
           )
         else if (_error.isNotEmpty)
           _PickerEmpty(

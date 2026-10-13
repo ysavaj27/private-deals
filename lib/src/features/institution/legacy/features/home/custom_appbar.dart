@@ -1,3 +1,5 @@
+// import 'package:private_deals/src/shared/widgets/custom_appbar.dart'
+//     show WAppbarOptionSegmented;
 import 'package:private_deals/src/shared/widgets/header_action.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
@@ -45,6 +47,7 @@ class CustomAppBar extends StatelessWidget {
 
     return Container(
       width: double.infinity,
+      height: 66,
       decoration: BoxDecoration(
         color: background,
         border: Border(bottom: BorderSide(color: border)),
@@ -62,6 +65,13 @@ class CustomAppBar extends StatelessWidget {
               ),
               child: Row(
                 children: [
+                  // Seller catalog tabs are temporarily hidden.
+                  // const Expanded(
+                  //   child: SingleChildScrollView(
+                  //     scrollDirection: Axis.horizontal,
+                  //     child: WAppbarOptionSegmented(institution: true),
+                  //   ),
+                  // ),
                   Container(
                     width: 250,
                     padding: const EdgeInsets.symmetric(horizontal: 8),

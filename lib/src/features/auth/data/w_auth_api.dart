@@ -241,34 +241,4 @@ class WAuthApi {
     }
   }
 
-  static Future<BaseModel<AifModel>> aifGet(int investorId) async {
-    try {
-      var response = await dioConfig.get(AppUrl.wAifGet, {
-        "investor_id": investorId,
-      });
-      BaseModel<AifModel> baseModel = BaseModel.fromJson(
-        response.data,
-        (data) => AifModel.fromJson(data),
-      );
-      return baseModel;
-    } catch (e, t) {
-      logger.e(e, stackTrace: t);
-      return BaseModel.fromError(e.toString());
-    }
-  }
-
-  static Future<BaseModel> aifOnboarding({required int investorId}) async {
-    try {
-      Map<String, dynamic> body = {"investor_id": investorId};
-      var response = await dioConfig.post(AppUrl.wAifSubmit, body);
-      BaseModel baseModel = BaseModel.fromMessage(response.data);
-      if (baseModel.isSuccess) {
-        await profileGet();
-      }
-      return baseModel;
-    } catch (e) {
-      logger.e(e);
-      return BaseModel.fromError(e.toString());
-    }
-  }
 }

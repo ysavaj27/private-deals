@@ -81,6 +81,7 @@ The exact `data.type` values are `Wealth Manager`, `Distributor`, `Retailer`, `R
 - Primary, secondary and unlisted catalog routes also require the matching product access flag. Flags never grant Institution access. Relation Managers cannot open channel-partner management.
 - Checkout URLs preserve their product section. Refreshing a quote-based checkout asks the user to reselect an available offer rather than reconstructing a price from the URL.
 - Company/deal routes enumerate `unlisted` and `secondary`; invalid types do not silently select another dashboard.
+- Company-detail offer dialogs show a full-width investment summary, including price × minimum quantity, above the seller profile. Long profile sections expand on demand; the close control and purchase/enquiry footer stay visible while the content scrolls. Buyer offers use “Minimum offer amount” for the same calculation.
 
 `AuthMiddleware` runs before protected page builders/controllers. Menus and named route navigation use the same access policy. The API interceptor also rejects wrong-workspace calls. **The backend must independently enforce the role and ownership on every request.** Client-side guards cannot secure an API against a modified browser.
 

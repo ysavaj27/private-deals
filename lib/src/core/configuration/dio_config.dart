@@ -2,6 +2,8 @@ import 'package:dio/dio.dart';
 import 'package:flutter/foundation.dart';
 import 'package:logger/logger.dart';
 import 'package:private_deals/src/core/permissions/access_policy.dart';
+import 'package:private_deals/src/core/permissions/catalog_api_access.dart';
+import 'package:private_deals/src/core/permissions/partner_role.dart';
 import 'package:private_deals/src/shared/app_exports.dart';
 
 final DioConfig dioConfig = DioConfig();
@@ -231,9 +233,7 @@ class ApiInterceptor extends Interceptor {
     }
     options.extra['sessionRevision'] = app.revision;
     final path = options.uri.path;
-    if (path.contains('/investor/') &&
-        !path.contains('/business/investor/') &&
-        !path.endsWith('/investor/register-inquiry')) {
+    if (path.contains('/investor/') && !path.contains('/business/investor/')) {
       handler.reject(
         DioApiError(options, 'Use the Partner workflow for this action.'),
       );
@@ -279,9 +279,15 @@ class ApiInterceptor extends Interceptor {
       final isInvestor = path.contains('/v2/business/investor');
       final isProfilePhoto =
           path.endsWith('/business/profile') && options.method == 'POST';
+      final isInstitutionCatalog =
+          app.role == PartnerRole.institution &&
+          CatalogApiAccess.supportsInstitution(
+            options.method,
+            path.substring(Uri.parse(AppUrl.baseApiURL).path.length),
+          );
       final scope = isProfilePhoto || isPassword
           ? AccessScope.account
-          : path.contains('/business/institution/')
+          : path.contains('/business/institution/') || isInstitutionCatalog
           ? AccessScope.institution
           : path.contains('/business/enquiries/')
           ? AccessScope.enquiries

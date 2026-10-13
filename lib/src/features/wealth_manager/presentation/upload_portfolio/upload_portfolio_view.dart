@@ -69,10 +69,7 @@ class _UploadPortfolioViewState extends State<UploadPortfolioView> {
       body: SafeArea(
         child: Obx(() {
           if (c.isLoading()) {
-            return const Center(
-              key: ValueKey('upload-loading'),
-              child: CircularProgressIndicator(),
-            );
+            return const Loader(key: ValueKey('upload-loading'));
           }
           if (!_hasAccess) {
             return AppFadeIn(

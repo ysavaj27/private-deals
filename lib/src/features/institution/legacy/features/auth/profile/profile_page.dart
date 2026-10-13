@@ -3,6 +3,7 @@ import 'package:flutter/services.dart';
 import 'package:get/get.dart';
 import 'package:private_deals/src/features/institution/legacy/backend/model/user/user_model.dart';
 import 'package:private_deals/src/features/wealth_manager/data/models/pre_ipo/company_model.dart';
+import 'package:private_deals/src/shared/plugins/loader.dart';
 
 import 'package:private_deals/src/features/institution/legacy/features/auth/profile/phone_profile_view.dart';
 import 'package:private_deals/src/features/institution/legacy/features/auth/profile/profile_page_ctrl.dart';
@@ -399,7 +400,7 @@ class _PublicSellerProfileSection extends StatelessWidget {
                   ] else if (loading && data.isEmpty) ...[
                     const Padding(
                       padding: EdgeInsets.symmetric(vertical: 12),
-                      child: Center(child: CircularProgressIndicator()),
+                      child: Loader(),
                     ),
                   ] else if (data.isEmpty) ...[
                     Text(

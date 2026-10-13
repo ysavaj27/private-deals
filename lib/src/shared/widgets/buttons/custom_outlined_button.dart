@@ -69,6 +69,7 @@ class CustomOutlinedButton extends StatelessWidget {
                 key: const ValueKey('loading'),
                 color: scheme.primary,
                 size: 25,
+                centered: false,
               )
             : KeyedSubtree(
                 key: const ValueKey('label'),

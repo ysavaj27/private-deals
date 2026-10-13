@@ -3,7 +3,6 @@ import 'dart:typed_data';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:private_deals/src/core/configuration/dio_config.dart';
 import 'package:private_deals/src/core/session/auth_session.dart';
-import 'package:private_deals/src/features/auth/data/i_auth_api.dart';
 import 'package:private_deals/src/features/auth/data/w_auth_api.dart';
 import 'package:private_deals/src/features/enquiries/data/enquiry_api.dart';
 import 'package:private_deals/src/features/institution/data/api/company_api.dart';
@@ -326,24 +325,27 @@ void main() {
       );
     });
 
-    test('#17 secondary sell-request list', () async {
-      await expectContractPath(
-        smokeCase: _case(17),
-        adapter: adapter,
-        expectList: true,
-        action: () async {
-          await WSecondaryTransactionApi.sellRequestList();
-        },
+    test('#17 secondary sell-request list (removed)', () {
+      final c = _case(17);
+      expect(c.priority, SmokePriority.skip);
+      smokeLedger.record(
+        SmokeResult(
+          caseId: 17,
+          status: SmokeResultStatus.skip,
+          detail: c.skipReason ?? 'removed',
+        ),
       );
     });
 
-    test('#18 secondary opportunities', () async {
+    test('#18 secondary ROFR status', () async {
       await expectContractPath(
         smokeCase: _case(18),
         adapter: adapter,
-        expectList: true,
         action: () async {
-          await WSecondaryTransactionApi.opportunitiesList();
+          await WSecondaryTransactionApi.opportunitiesStatus(
+            itemId: 1,
+            status: 1,
+          );
         },
       );
     });
@@ -361,28 +363,27 @@ void main() {
       );
     });
 
-    test('#20 secondary buyRequest path (unwired UI)', () async {
-      await expectContractPath(
-        smokeCase: _case(20),
-        adapter: adapter,
-        action: () async {
-          await WSecondaryTransactionApi.buyRequest(
-            sellRequestId: '1',
-            shares: 1,
-            investorId: 1,
-          );
-        },
+    test('#20 secondary buyRequest (removed)', () {
+      final c = _case(20);
+      expect(c.priority, SmokePriority.skip);
+      smokeLedger.record(
+        SmokeResult(
+          caseId: 20,
+          status: SmokeResultStatus.skip,
+          detail: c.skipReason ?? 'removed',
+        ),
       );
     });
 
-    test('#21 pre-IPO sell TX list', () async {
-      await expectContractPath(
-        smokeCase: _case(21),
-        adapter: adapter,
-        expectList: true,
-        action: () async {
-          await WPreIpoTransactionApi.sellTransactionList();
-        },
+    test('#21 pre-IPO sell TX list (removed)', () {
+      final c = _case(21);
+      expect(c.priority, SmokePriority.skip);
+      smokeLedger.record(
+        SmokeResult(
+          caseId: 21,
+          status: SmokeResultStatus.skip,
+          detail: c.skipReason ?? 'removed',
+        ),
       );
     });
 
@@ -511,13 +512,15 @@ void main() {
       );
     });
 
-    test('#32 public verify-mobile', () async {
-      await expectContractPath(
-        smokeCase: _case(32),
-        adapter: adapter,
-        action: () async {
-          await IAuthApi.verifyMobileNumber('9000000000');
-        },
+    test('#32 public verify-mobile (removed)', () {
+      final c = _case(32);
+      expect(c.priority, SmokePriority.skip);
+      smokeLedger.record(
+        SmokeResult(
+          caseId: 32,
+          status: SmokeResultStatus.skip,
+          detail: c.skipReason ?? 'removed',
+        ),
       );
     });
   });

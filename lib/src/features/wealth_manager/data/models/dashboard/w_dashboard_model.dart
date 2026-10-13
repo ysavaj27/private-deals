@@ -8,6 +8,8 @@ class WDashboardModel {
   double pendingPayment;
   int pendingDocumentSign;
   int pendingKyc;
+  int pendingDocuments;
+  int pendingFundTransfer;
   double averageTicketSize;
   List<WInvestorModel> investors;
   List<WInvestorModel> topInvestors;
@@ -24,6 +26,8 @@ class WDashboardModel {
     this.pendingPayment = 0,
     this.pendingDocumentSign = 0,
     this.pendingKyc = 0,
+    this.pendingDocuments = 0,
+    this.pendingFundTransfer = 0,
     required this.investors,
     required this.topInvestors,
     required this.sectors,
@@ -38,6 +42,8 @@ class WDashboardModel {
         totalInvestors: Parse.toInt(json["total_investors"]),
         pendingDocumentSign: Parse.toInt(json["pending_document_sign"]),
         pendingKyc: Parse.toInt(json["pending_kyc"]),
+        pendingDocuments: Parse.toInt(json["pending_documents"]),
+        pendingFundTransfer: Parse.toInt(json["pending_fund_transfer"]),
         totalAmountInvested: Parse.toDouble(json["total_amount_invested"]),
         averageTicketSize: Parse.toDouble(json["average_ticket_size"]),
         pendingPayment: Parse.toDouble(json["pending_payment"]),
@@ -70,6 +76,8 @@ class WDashboardModel {
     "pending_payment": pendingPayment,
     "pending_document_sign": pendingDocumentSign,
     "pending_kyc": pendingKyc,
+    "pending_documents": pendingDocuments,
+    "pending_fund_transfer": pendingFundTransfer,
     "investors": List<dynamic>.from(investors.map((x) => x.toJson())),
     "top_investors": List<dynamic>.from(topInvestors.map((x) => x.toJson())),
     "sectors": List<dynamic>.from(sectors.map((x) => x.toJson())),

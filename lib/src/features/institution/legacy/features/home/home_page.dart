@@ -15,6 +15,9 @@ import 'package:private_deals/src/features/institution/legacy/features/home/desk
 import 'package:private_deals/src/features/institution/legacy/features/home/home_page_ctrl.dart';
 import 'package:private_deals/src/features/institution/legacy/features/home/phone_home_page_view.dart';
 import 'package:private_deals/src/shared/theme/app_motion.dart';
+import 'package:private_deals/src/features/catalog/presentation/primary/primary_landing_page.dart';
+import 'package:private_deals/src/features/catalog/presentation/secondary/secondary_landing_page.dart';
+import 'package:private_deals/src/features/catalog/presentation/pre_ipo/pre_ipo_landing_page/pre_ipo_landing_page.dart';
 
 class HomePage extends StatelessWidget {
   final Widget? child;
@@ -58,7 +61,9 @@ class MainWidgets extends StatelessWidget {
         WTabBarEnum.sendDocuments => const SizedBox.shrink(),
         WTabBarEnum.profile => ProfilePageView(),
         WTabBarEnum.changePassword => ChangePasswordPage(),
-        WTabBarEnum.primaryList => const SizedBox.shrink(),
+        WTabBarEnum.primaryList => PrimaryLandingPage(),
+        WTabBarEnum.secondary => SecondaryLandingPage(),
+        WTabBarEnum.preIPO => PreIPOLandingPage(),
         WTabBarEnum.sellEnquiries => const SellEnquiriesPage(),
         WTabBarEnum.companyDeals =>
           DealListView(key: ValueKey(Get.currentRoute)),

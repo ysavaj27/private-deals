@@ -45,6 +45,10 @@ app.*.map.json
 /android/app/profile
 /android/app/release
 
+# Ops price-upload local secrets / daily sheet (keep samples in repo)
+tools/price_upload/institutes.local.json
+tools/price_upload/prices.csv
+
 # Generated dependencies and platform build output
 node_modules/
 **/build/

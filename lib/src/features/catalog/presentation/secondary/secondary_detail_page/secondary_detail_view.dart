@@ -46,7 +46,7 @@ class SecondaryDetailView extends StatelessWidget {
                 children: [
                   IconButton(
                     tooltip: 'Back',
-                    onPressed: phone ? () => Get.back() : onBackPressed,
+                    onPressed: onBackPressed,
                     icon: const Icon(Icons.arrow_back_rounded, size: 20),
                   ),
                   const SizedBox(width: 8),

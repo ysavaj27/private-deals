@@ -162,7 +162,10 @@ class _PreIPOTransactionPageState extends State<PreIPOTransactionPage> {
                                   width: 280,
                                   child: Obx(() {
                                     if (c.actionLoadingId.value == row.id) {
-                                      return const Loader(size: 22);
+                                      return const Loader(
+                                        size: 22,
+                                        centered: false,
+                                      );
                                     }
                                     return PreIpoOrderActionBar(
                                       order: row,
@@ -213,7 +216,7 @@ class _PreIPOTransactionPageState extends State<PreIPOTransactionPage> {
               const SizedBox(height: 12),
               Obx(() {
                 if (c.actionLoadingId.value == row.id) {
-                  return const Loader(size: 22);
+                  return const Loader(size: 22, centered: false);
                 }
                 return PreIpoOrderActionBar(
                   order: row,

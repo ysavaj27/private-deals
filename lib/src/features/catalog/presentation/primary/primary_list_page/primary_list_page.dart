@@ -45,7 +45,7 @@ class PrimaryListPage extends StatelessWidget {
                                         );
                                       } else {
                                         var route = Routes.primaryDetailPath(
-                                          "/wealth-manager/${WTabBarEnum.primary.slug}",
+                                          Routes.catalogPath(WTabBarEnum.primary.slug),
                                           model.startup.urlSlug,
                                         );
                                         Get.toNamed(route);
@@ -127,13 +127,10 @@ class PrimaryListPage extends StatelessWidget {
                           itemCount: c.list.length,
                           itemBuilder: (context, index) {
                             var model = c.list[index];
-                            // logger.d('Fav :${model.startup.isFavorite}');
-                            model.startup.isLike.value =
-                                model.startup.isFavorite;
                             return InkWell(
                               onTap: () {
                                 var route = Routes.primaryDetailPath(
-                                  "/wealth-manager/${WTabBarEnum.primary.slug}",
+                                  Routes.catalogPath(WTabBarEnum.primary.slug),
                                   model.startup.urlSlug,
                                 );
                                 Get.toNamed(route);
@@ -165,27 +162,17 @@ class PrimaryListPage extends StatelessWidget {
                                           mainAxisAlignment:
                                               MainAxisAlignment.start,
                                           children: [
-                                            Row(
-                                              mainAxisAlignment:
-                                                  MainAxisAlignment
-                                                      .spaceBetween,
-                                              children: [
-                                                Text(
-                                                  model.startup.brandName,
-                                                  style: TextStyle(
-                                                    fontWeight: FontWeight.w600,
-                                                    fontSize: context.isPhone
-                                                        ? 14
-                                                        : 16,
-                                                  ),
+                                            Align(
+                                              alignment: Alignment.centerLeft,
+                                              child: Text(
+                                                model.startup.brandName,
+                                                style: TextStyle(
+                                                  fontWeight: FontWeight.w600,
+                                                  fontSize: context.isPhone
+                                                      ? 14
+                                                      : 16,
                                                 ),
-                                                CustomLikeButton(
-                                                  isLike: model.startup.isLike,
-                                                  // isLike: true.obs,
-                                                  id: model.id,
-                                                  onSuccess: c.getData,
-                                                ),
-                                              ],
+                                              ),
                                             ),
                                             const SizedBox(height: 10),
                                           ],

@@ -11,25 +11,6 @@ const types = {
 };
 
 class PreIpoLandingPageApi {
-  static Future<BaseModel<List<CompanyModel>>> iCompanyList({
-    required int count,
-    String search = '',
-  }) async {
-    try {
-      Map<String, dynamic> body = {'skip': count, 'take': 15};
-      body.addIf(search.isNotEmpty, 'search', search);
-      var res = await dioConfig.get(AppUrl.iCompanyList, body);
-      BaseModel<List<CompanyModel>> baseModel = BaseModel.fromListJson(
-        res.data,
-        (p0) => p0.map((e) => CompanyModel.fromJson(e)).toList(),
-      );
-      return baseModel;
-    } catch (e, t) {
-      logger.e("Error on homePage", error: e, stackTrace: t);
-      return BaseModel.fromError(e.toString());
-    }
-  }
-
   static Future<BaseModel<List<CompanyModel>>> wCompanyList({
     required int count,
     String search = '',
@@ -102,22 +83,6 @@ class PreIpoLandingPageApi {
       );
     } catch (e, t) {
       logger.e("Error on homePage", error: e, stackTrace: t);
-      return BaseModel.fromError(e.toString());
-    }
-  }
-
-  static Future<BaseModel<CompanyModel>> iCompanyDetail(int companyId) async {
-    try {
-      var res = await dioConfig.get(AppUrl.iCompanyDetail, {
-        "company_id": companyId,
-      });
-      BaseModel<CompanyModel> baseModel = BaseModel.fromJson(
-        res.data,
-        (p0) => CompanyModel.fromJson(p0),
-      );
-      return baseModel;
-    } catch (e, t) {
-      logger.e("Error on UpComingPitch List", error: e, stackTrace: t);
       return BaseModel.fromError(e.toString());
     }
   }

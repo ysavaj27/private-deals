@@ -46,15 +46,13 @@ String? _declaredPathFor(int id) {
     case 16:
       return AppUrl.wSecondaryTransaction;
     case 17:
-      return AppUrl.wSellRequestList;
+    case 20:
+    case 21:
+      return null;
     case 18:
-      return AppUrl.wOpportunitiesList;
+      return AppUrl.wOpportunitiesStatus;
     case 19:
       return AppUrl.wShareReceiptApprove;
-    case 20:
-      return AppUrl.wBuyNow;
-    case 21:
-      return AppUrl.wPreIpoSellTransaction;
     case 22:
       return AppUrl.wNewPreIpoTransaction;
     case 23:
@@ -75,7 +73,7 @@ String? _declaredPathFor(int id) {
     case 31:
       return AppUrl.wLogin;
     case 32:
-      return AppUrl.verifyMobileNumber;
+      return null;
     case 33:
       return InstitutionEndpoints.dashboard;
     case 34:
@@ -118,7 +116,7 @@ void main() {
   test('known endpoint mismatches are flagged on the matrix', () {
     final flagged = mismatchFlags().map((c) => c.id).toSet();
     expect(
-      flagged.containsAll({1, 4, 5, 15, 20, 26}),
+      flagged.containsAll({1, 4, 5, 15, 26}),
       isTrue,
       reason: 'Plan-called mismatches must stay documented',
     );
@@ -126,10 +124,10 @@ void main() {
 
   test('checklist paths align with AppUrl / InstitutionEndpoints', () {
     for (final c in smokeChecklist()) {
-      if (c.id == 42) {
+      if (c.skipReason != null || c.priority == SmokePriority.skip) {
         smokeLedger.record(
           SmokeResult(
-            caseId: 42,
+            caseId: c.id,
             status: SmokeResultStatus.skip,
             detail: c.skipReason ?? 'no API',
           ),
@@ -157,7 +155,7 @@ void main() {
     // Ensure ledger is complete even if previous test order differs.
     for (final c in smokeChecklist()) {
       if (smokeLedger[c.id] != null) continue;
-      if (c.id == 42) {
+      if (c.skipReason != null || c.priority == SmokePriority.skip) {
         recordNa(c, c.skipReason ?? 'skip');
         continue;
       }

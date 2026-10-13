@@ -127,6 +127,8 @@ WDashboardModel createDashboardDebugData({required bool isPrimary}) {
     pendingKyc: statuses.where((i) => i.kycStatus == 0).length,
     pendingDocumentSign: 4,
     pendingPayment: 3,
+    pendingDocuments: 4,
+    pendingFundTransfer: 3,
     investors: investors,
     topInvestors: investors.take(8).toList(),
     sectors: List.generate(sectorNames.length, (sector) {

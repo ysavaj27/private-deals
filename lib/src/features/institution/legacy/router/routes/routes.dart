@@ -6,7 +6,6 @@ class Routes {
   static const signIn = '/sign-in';
   static const password = '/sign-in/password';
   static const signUp = '/sign-in/sign-up';
-  static const inquiryPage = '/sign-in/inquiry';
   static const forgotPasswordPage = '/sign-in/forgot-password';
 
   // static const home = '/home';
@@ -98,8 +97,10 @@ extension WTabBarRouteX on WTabBarEnum {
       case WTabBarEnum.primaryList:
         return 'private-equity';
       case WTabBarEnum.secondaryList:
+      case WTabBarEnum.secondary:
         return 'lp-secondary';
       case WTabBarEnum.preIPOList:
+      case WTabBarEnum.preIPO:
         return 'unlisted-shares';
       case WTabBarEnum.changePassword:
         return 'change-password';
@@ -183,7 +184,7 @@ class RouteHierarchy {
     //   return Routes.option;
     // }
 
-    // /sign-in/password, /sign-in/sign-up, /sign-in/inquiry, /sign-in/forgot-password -> /sign-in
+    // /sign-in/password, /sign-in/sign-up, /sign-in/forgot-password -> /sign-in
     if (segments.length == 2 && segments[0] == 'sign-in') {
       return Routes.signIn;
     }

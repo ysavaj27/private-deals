@@ -28,6 +28,8 @@ Map<String, dynamic> dashboardFixture({int size = 3}) => {
   'pending_kyc': 2,
   'pending_document_sign': 1,
   'pending_payment': 500000,
+  'pending_documents': 3,
+  'pending_fund_transfer': 2,
   'sectors': [
     for (var i = 0; i < size; i++)
       {
@@ -381,7 +383,7 @@ void main() {
           );
           expect(find.text('Current value unavailable'), findsOneWidget);
           expect(find.text('−₹1.5L'), findsOneWidget);
-          expect(find.text('Review'), findsOneWidget);
+          expect(find.text('2'), findsWidgets);
           expect(find.text('500003'), findsNothing);
           expect(tester.takeException(), isNull);
         },

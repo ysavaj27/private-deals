@@ -1,5 +1,12 @@
 # Changelog
 
+## 2026-10-12 — Company-detail offer dialog
+
+- Replaced the uneven seller/investment columns with a full-width investment summary and seller profile, responsive stat cards, and expandable profile sections.
+- Added minimum investment amount (share price × minimum quantity) with the calculation shown; buyer offers use “Minimum offer amount”. Legacy seller enquiries display the same investment summary.
+- Kept the close control and action footer visible while the dialog body scrolls, preserving the existing purchase and enquiry flows.
+- Validation: all 36 offer and company-detail UI tests passed; analysis of the changed widgets and UI tests found no issues. Visually checked desktop/mobile previews in light and dark themes. No backend changes required.
+
 ## 2026-10-01 — New merged Private Deals web project
 
 - Created a separate `private_deals` project from Partner and the supported Seller company/deal features. Original application codebases remain separate.

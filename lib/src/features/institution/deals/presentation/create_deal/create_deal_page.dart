@@ -122,8 +122,8 @@ class _CreateDealForm extends GetView<CreateDealPageCtrl> {
                           ),
                           options: options,
                           value: controller.settlementDays.value,
-                          enabled: !controller.saving.value &&
-                              options.isNotEmpty,
+                          enabled:
+                              !controller.saving.value && options.isNotEmpty,
                           labelText: 'Settlement cycle *',
                           errorText: controller.settlementError.value.isEmpty
                               ? null
@@ -230,13 +230,10 @@ class _CreateDealForm extends GetView<CreateDealPageCtrl> {
                   children: [
                     Text('Deal options', style: context.textTheme.titleLarge),
                     const SizedBox(height: 12),
-                    Text(
-                      'Expiry · optional',
-                      style: context.textTheme.titleSmall,
-                    ),
+                    Text('Expiry date *', style: context.textTheme.titleSmall),
                     const SizedBox(height: 6),
                     Text(
-                      'Select date and time in IST, or leave both empty.',
+                      'All deals expire at 7:00 PM IST on the selected date.',
                       style: context.textTheme.bodySmall?.copyWith(
                         color: colors.onSurfaceVariant,
                       ),
@@ -247,26 +244,26 @@ class _CreateDealForm extends GetView<CreateDealPageCtrl> {
                         spacing: 12,
                         runSpacing: 12,
                         children: [
-                          AppButton(
-                            label: controller.expiryDateLabel,
-                            icon: Icons.calendar_today_outlined,
-                            variant: AppButtonVariant.outline,
-                            onPressed: () => controller.pickExpiryDate(context),
-                          ),
-                          AppButton(
-                            label: controller.expiryTimeLabel,
-                            icon: Icons.schedule_outlined,
-                            variant: AppButtonVariant.outline,
-                            onPressed: () => controller.pickExpiryTime(context),
-                          ),
-                          if (controller.expiryDate.value != null ||
-                              controller.expiryTime.value != null)
-                            AppButton(
-                              label: 'Clear expiry',
-                              variant: AppButtonVariant.text,
-                              onPressed: controller.clearExpiry,
+                          for (final preset in DealExpiryPreset.values)
+                            ChoiceChip(
+                              label: Text(preset.label),
+                              selected: controller.expiryPreset.value == preset,
+                              onSelected: (_) {
+                                if (preset == DealExpiryPreset.custom) {
+                                  controller.pickExpiryDate(context);
+                                } else {
+                                  controller.selectExpiryPreset(preset);
+                                }
+                              },
                             ),
                         ],
+                      ),
+                    ),
+                    const SizedBox(height: 12),
+                    Obx(
+                      () => Text(
+                        'Expires on ${controller.expiryDateLabel} at 7:00 PM IST',
+                        style: context.textTheme.bodyMedium,
                       ),
                     ),
                     Obx(() {

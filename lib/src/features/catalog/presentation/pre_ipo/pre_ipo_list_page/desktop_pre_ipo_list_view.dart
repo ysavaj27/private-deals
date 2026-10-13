@@ -67,13 +67,13 @@ class DesktopPreIPOListView extends StatelessWidget {
                             onTap: () {
                               if (c.isSecondary) {
                                 var route = Routes.preIPODetailPath(
-                                    "/wealth-manager/${WTabBarEnum.secondary.slug}",
+                                    Routes.catalogPath(WTabBarEnum.secondary.slug),
                                     model.slug);
                                 logger.d(route);
                                 Get.toNamed(route);
                               } else {
                                 var route = Routes.preIPODetailPath(
-                                    "/wealth-manager/${WTabBarEnum.preIPO.slug}",
+                                    Routes.catalogPath(WTabBarEnum.preIPO.slug),
                                     model.slug);
                                 logger.d(route);
                                 Get.toNamed(route);

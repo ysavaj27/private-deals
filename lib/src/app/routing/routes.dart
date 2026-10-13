@@ -1,12 +1,18 @@
 import 'package:private_deals/src/shared/app_exports.dart';
+import 'package:private_deals/src/core/permissions/partner_role.dart';
 
 class Routes {
-  static String unlistedTransactionsPath({bool institution = false}) =>
-      institution
+  /// Shared catalog links retain the authenticated user's workspace.
+  static String catalogPath(String slug) =>
+      '${app.role == PartnerRole.institution ? '/institution' : '/wealth-manager'}/$slug';
+
+  static String unlistedTransactionsPath({bool? institution}) =>
+      (institution ?? app.role == PartnerRole.institution)
       ? '/institution/unlisted-transactions'
       : '/wealth-manager/investor-transactions?asset=unlisted';
 
-  static String enquiriesPath({bool institution = false}) => institution
+  static String enquiriesPath({bool? institution}) =>
+      (institution ?? app.role == PartnerRole.institution)
       ? '/institution/sell-enquiries'
       : '/wealth-manager/my-inquiries';
 
@@ -14,7 +20,6 @@ class Routes {
   static const signIn = '/sign-in';
   static const password = '/sign-in/password';
   static const signUp = '/sign-in/sign-up';
-  static const inquiryPage = '/sign-in/inquiry';
   static const forgotPasswordPage = '/sign-in/forgot-password';
 
   // static const home = '/wealth-manager';
@@ -154,6 +159,27 @@ class RouteHierarchy {
   static String resolveParent(String currentPath) {
     final segments = Uri.parse(currentPath).pathSegments;
 
+    // Catalog pages have the same hierarchy in both workspaces, including
+    // checkout URLs opened directly without a navigation stack.
+    if (segments.length >= 2 &&
+        (segments[0] == 'institution' || segments[0] == 'wealth-manager') &&
+        [
+          'private-equity',
+          'lp-secondary',
+          'unlisted-shares',
+        ].contains(segments[1])) {
+      final root = '/${segments[0]}/${segments[1]}';
+      if (segments.length >= 5 &&
+          segments[2] == 'detail' &&
+          segments[4] == 'investment') {
+        return '$root/detail/${segments[3]}';
+      }
+      if (segments.length > 2) return root;
+      return segments[0] == 'institution'
+          ? '/institution/dashboard'
+          : Routes.option;
+    }
+
     // /home/:tab/detail/:slug/investment/:id -> /home/:tab/detail/:slug
     if (segments.length == 6 &&
         segments[0] == 'wealth-manager' &&
@@ -211,7 +237,7 @@ class RouteHierarchy {
       return Routes.option;
     }
 
-    // /sign-in/password, /sign-in/sign-up, /sign-in/inquiry, /sign-in/forgot-password -> /sign-in
+    // /sign-in/password, /sign-in/sign-up, /sign-in/forgot-password -> /sign-in
     if (segments.length == 2 && segments[0] == 'sign-in') {
       return Routes.signIn;
     }

@@ -75,7 +75,6 @@ class StartupModel {
   SectorModel sector;
   RaisingRoundModel raisingRound;
   List<UpdateModel> updates;
-  RxBool isLike = true.obs;
 
   String get changePercentage {
     if (sharePricesArray.isEmpty) {

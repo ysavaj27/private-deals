@@ -128,7 +128,7 @@ class DesktopPreIPOLandingView extends StatelessWidget {
                       // badgeText: company.headingText,
                       onTap: () {
                         var route = Routes.preIPODetailPath(
-                          "/wealth-manager/${WTabBarEnum.preIPO.slug}",
+                          Routes.catalogPath(WTabBarEnum.preIPO.slug),
                           company.slug,
                         );
                         logger.d(route);

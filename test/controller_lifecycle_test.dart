@@ -6,7 +6,6 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:get/get.dart';
 import 'package:private_deals/src/core/configuration/dio_config.dart';
 import 'package:private_deals/src/core/session/auth_session.dart';
-import 'package:private_deals/src/features/auth/presentation/inquiry/inquiry_page_ctrl.dart';
 import 'package:private_deals/src/features/catalog/presentation/pre_ipo/pre_ipo_detail_page/pre_ipo_detail_page_ctrl.dart';
 import 'package:private_deals/src/features/catalog/presentation/pre_ipo/pre_ipo_list_page/pre_ipo_list_page_ctrl.dart';
 import 'package:private_deals/src/features/catalog/presentation/primary/primary_landing_page_ctrl.dart';
@@ -54,20 +53,14 @@ void main() {
   });
 
   test('closing forms releases their owned text controllers', () {
-    final inquiry = InquiryPageCtrl();
     final upload = UploadPortfolioCtrl();
     final fields = [
-      inquiry.nameCTRL,
-      inquiry.emailCTRL,
-      inquiry.mobileNoCTRL,
-      inquiry.otpCTRL,
       upload.investorCTRL,
       upload.companyCTRL,
       upload.sharePriceCTRL,
       upload.qtyCTRL,
       upload.purchaseDateCTRL,
     ];
-    inquiry.onDelete();
     upload.onDelete();
     for (final field in fields) {
       expectDisposed(field);

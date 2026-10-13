@@ -167,6 +167,47 @@ CompanyModel _company() {
   return model;
 }
 
+CompanyModel _companyWithLongSellerProfile() {
+  final company = _company();
+  company.deals = [
+    company.deals.first.copyWith(
+      sharePrice: 23.57,
+      minimumQty: 1522,
+      availableQuantity: 0,
+      settlementLabel: 'T+1',
+      isHotDeal: false,
+      seller: const SharePriceSellerModel(
+        id: 1,
+        companyName: 'ANANDRATHI',
+        profile: PartnerPublicProfile(
+          yearsOfExperience: '30+',
+          totalTradesExecuted: '3 lakh+',
+          totalInvestorBase: '10 Lakh+',
+          verifiedStatus: '5000+',
+          companiesPreviouslyListed:
+              '• Tech Mahindra\n• LTIMindtree\n'
+              '• Netweb Technologies\n• Zensar Technologies\n• Coforge\n'
+              '• TBO Tek\n• Devyani International\n• Dabur\n'
+              '• Reliance Industries\n• HDFC Bank\n• ICICI Bank',
+          geographicPresence:
+              '• Mumbai (Corporate Head Office & Central Hub)\n'
+              '• Delhi NCR (Main Northern Hub)\n• Bengaluru (Main Karnataka Hub)\n'
+              '• Kolkata (Main Eastern Hub)\n• Chennai (Main Tamil Nadu Hub)\n'
+              '• Hyderabad (Main Telangana Hub)\n• Ahmedabad (Main Gujarat Hub)',
+          approach:
+              'Focus on growing your wealth through consistent, disciplined investing.\n'
+              'Our comprehensive stock research and full-service broker network are built '
+              'to protect and expand your capital. By matching proven market expertise '
+              'with your specific financial goals, we simplify complex trading decisions.\n\n'
+              'Let us handle the market complexities so you can confidently secure your financial future.',
+        ),
+      ),
+    ),
+  ];
+  company.sellerSharePrices = [];
+  return company;
+}
+
 Future<_DetailController> _pump(
   WidgetTester tester,
   double width, {
@@ -305,6 +346,86 @@ void main() {
       await tester.pumpAndSettle();
       expect(tester.takeException(), isNull);
     });
+  }
+
+  for (final width in [390.0, 1280.0]) {
+    for (final dark in [false, true]) {
+      testWidgets(
+        'Long seller profile, minimum investment and fixed action at $width dark=$dark',
+        (tester) async {
+          final capture = GlobalKey();
+          final c = await _pump(
+            tester,
+            width,
+            company: _companyWithLongSellerProfile(),
+            dark: dark,
+            height: width < 600 ? 844 : 1000,
+            captureKey: capture,
+          );
+          await tester.ensureVisible(find.text('ANANDRATHI'));
+          await tester.tap(find.text('ANANDRATHI'));
+          await tester.pumpAndSettle();
+          expect(find.text('Minimum investment amount'), findsOneWidget);
+          expect(find.text('₹ 35,873.54'), findsOneWidget);
+          expect(find.text('₹ 23.57 × 1,522 shares'), findsOneWidget);
+          expect(find.text('Available quantity'), findsNothing);
+          expect(find.text('Buy Now').hitTestable(), findsOneWidget);
+          final footer = find.byKey(const ValueKey('offer-details-footer'));
+          final closePosition = tester.getTopLeft(find.byTooltip('Close'));
+          final footerPosition = tester.getTopLeft(footer);
+          await _capture(
+            tester,
+            capture,
+            'offer-${width.toInt()}-${dark ? 'dark' : 'light'}',
+          );
+
+          final companies = find.byKey(const ValueKey('profile-companies'));
+          final showMore = find.descendant(
+            of: companies,
+            matching: find.text('Show more'),
+          );
+          await tester.ensureVisible(showMore);
+          await tester.tap(showMore);
+          await tester.pumpAndSettle();
+          final profileText = find.text(
+            c.model().deals.first.seller.profile.companiesPreviouslyListed,
+          );
+          expect(tester.widget<Text>(profileText).maxLines, isNull);
+          final scroll = tester
+              .widget<SingleChildScrollView>(
+                find.byKey(const ValueKey('offer-details-scroll')),
+              )
+              .controller!;
+          scroll.jumpTo(scroll.position.maxScrollExtent);
+          await tester.pumpAndSettle();
+          expect(tester.getTopLeft(footer), footerPosition);
+          expect(tester.getTopLeft(find.byTooltip('Close')), closePosition);
+          expect(find.text('Buy Now').hitTestable(), findsOneWidget);
+          expect(tester.takeException(), isNull);
+
+          final showLess = find.descendant(
+            of: companies,
+            matching: find.text('Show less'),
+          );
+          await tester.ensureVisible(showLess);
+          await tester.tap(showLess);
+          await tester.pumpAndSettle();
+          expect(tester.widget<Text>(profileText).maxLines, 4);
+          await tester.tap(find.text('Buy Now'));
+          await tester.pumpAndSettle();
+          expect(c.selectedOffer.value?.price, 23.57);
+          expect(c.selectedOffer.value?.minimumQty, 1522);
+          expect(find.text('Offer details'), findsNothing);
+          expect(
+            width < 600
+                ? find.text('Investment page')
+                : find.byType(PreIPOInvestmentDialog),
+            findsOneWidget,
+          );
+          expect(tester.takeException(), isNull);
+        },
+      );
+    }
   }
 
   testWidgets(
@@ -448,7 +569,7 @@ void main() {
       await tester.pumpAndSettle();
       expect(find.text('Buyer details'), findsOneWidget);
       expect(find.text('Buy Now'), findsNothing);
-      await tester.tap(find.widgetWithText(CustomOutlinedButton, 'Sell'));
+      await tester.tap(find.widgetWithText(OutlinedButton, 'Sell'));
       await tester.pumpAndSettle();
       expect(c.selectedOffer.value, isNull);
       expect(c.investorSelections, 0);
@@ -882,10 +1003,17 @@ void main() {
     tester,
   ) async {
     final capture = GlobalKey();
-    await _pump(tester, 390, dark: false, captureKey: capture, textScale: 1.4);
+    await _pump(
+      tester,
+      390,
+      dark: false,
+      captureKey: capture,
+      textScale: 1.4,
+      company: _companyWithLongSellerProfile(),
+    );
     await _capture(tester, capture, '390-light-large-text');
-    await tester.ensureVisible(find.text('Meridian Capital'));
-    await tester.tap(find.text('Meridian Capital'));
+    await tester.ensureVisible(find.text('ANANDRATHI'));
+    await tester.tap(find.text('ANANDRATHI'));
     await tester.pumpAndSettle();
     expect(tester.takeException(), isNull);
   });
@@ -910,6 +1038,8 @@ void main() {
     await tester.pumpAndSettle();
     expect(find.text('Seller details'), findsOneWidget);
     expect(find.text('500 shares'), findsOneWidget);
+    expect(find.text('Minimum investment amount'), findsOneWidget);
+    expect(find.text((1260 * 500).toCurrency), findsOneWidget);
     expect(find.text('Buy Now'), findsNothing);
     expect(
       find.descendant(

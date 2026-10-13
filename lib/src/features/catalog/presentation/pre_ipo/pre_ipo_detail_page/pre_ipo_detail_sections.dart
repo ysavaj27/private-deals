@@ -835,7 +835,7 @@ class _Management extends StatelessWidget {
   }
 }
 
-class _SharePriceChart extends StatelessWidget {
+class _SharePriceChart extends StatefulWidget {
   const _SharePriceChart({
     required this.prices,
     required this.brandName,
@@ -847,79 +847,148 @@ class _SharePriceChart extends StatelessWidget {
   final bool phone;
 
   @override
+  State<_SharePriceChart> createState() => _SharePriceChartState();
+}
+
+enum _PriceRange {
+  month('1M', 1),
+  sixMonths('6M', 6),
+  year('1Y', 12),
+  threeYears('3Y', 36),
+  max('Max', null);
+
+  const _PriceRange(this.label, this.months);
+
+  final String label;
+  final int? months;
+}
+
+class _SharePriceChartState extends State<_SharePriceChart> {
+  _PriceRange _range = _PriceRange.max;
+
+  @override
   Widget build(BuildContext context) {
-    if (prices.length < 3) {
-      return const _EmptyState(
-        'Share price history is not available yet.',
+    final prices = [...widget.prices]..sort((a, b) => a.date.compareTo(b.date));
+    final months = _range.months;
+    DateTime? start;
+    if (prices.isNotEmpty && months != null) {
+      final end = prices.last.date;
+      final targetMonth = DateTime(end.year, end.month - months);
+      final lastDay = DateTime(targetMonth.year, targetMonth.month + 1, 0).day;
+      start = DateTime(
+        targetMonth.year,
+        targetMonth.month,
+        end.day > lastDay ? lastDay : end.day,
       );
     }
+    final visiblePrices = start == null
+        ? prices
+        : prices.where((point) => !point.date.isBefore(start!)).toList();
 
     final colors = Theme.of(context).colorScheme;
     final axisStyle = TextStyle(color: colors.onSurfaceVariant, fontSize: 11);
-    return SizedBox(
-      height: phone ? 220 : 360,
-      child: SfCartesianChart(
-        plotAreaBorderWidth: 0,
-        primaryXAxis: DateTimeAxis(
-          edgeLabelPlacement: EdgeLabelPlacement.shift,
-          intervalType: DateTimeIntervalType.auto,
-          dateFormat: DateFormat.yMMM(),
-          labelStyle: axisStyle,
-          majorGridLines: const MajorGridLines(width: 0),
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.stretch,
+      children: [
+        Wrap(
+          spacing: 6,
+          runSpacing: 4,
+          children: [
+            for (final range in _PriceRange.values)
+              ChoiceChip(
+                label: Text(range.label),
+                selected: _range == range,
+                showCheckmark: false,
+                onSelected: (_) => setState(() => _range = range),
+              ),
+          ],
         ),
-        primaryYAxis: NumericAxis(
-          axisLine: const AxisLine(width: 0),
-          labelStyle: axisStyle,
-          majorTickLines: const MajorTickLines(color: Colors.transparent),
-          minimum: prices.map((e) => e.price).reduce((a, b) => a < b ? a : b),
-        ),
-        series: <LineSeries<SharePriceModel, DateTime>>[
-          LineSeries<SharePriceModel, DateTime>(
-            dataSource: prices,
-            name: brandName,
-            color: colors.primary,
-            width: 2,
-            xValueMapper: (SharePriceModel point, _) => point.date,
-            yValueMapper: (SharePriceModel point, _) => point.price,
-            enableTooltip: true,
+        const SizedBox(height: 12),
+        if (visiblePrices.isEmpty)
+          const _EmptyState('Share price history is not available yet.')
+        else
+          SizedBox(
+            height: widget.phone ? 220 : 360,
+            child: SfCartesianChart(
+              plotAreaBorderWidth: 0,
+              primaryXAxis: DateTimeAxis(
+                edgeLabelPlacement: EdgeLabelPlacement.shift,
+                intervalType: DateTimeIntervalType.auto,
+                dateFormat: _range == _PriceRange.month
+                    ? DateFormat.MMMd()
+                    : DateFormat.yMMM(),
+                labelStyle: axisStyle,
+                majorGridLines: const MajorGridLines(width: 0),
+              ),
+              primaryYAxis: NumericAxis(
+                axisLine: const AxisLine(width: 0),
+                labelStyle: axisStyle,
+                majorTickLines: const MajorTickLines(color: Colors.transparent),
+                minimum: visiblePrices
+                    .map((e) => e.price)
+                    .reduce((a, b) => a < b ? a : b),
+              ),
+              series: <LineSeries<SharePriceModel, DateTime>>[
+                LineSeries<SharePriceModel, DateTime>(
+                  dataSource: visiblePrices,
+                  name: widget.brandName,
+                  markerSettings: MarkerSettings(
+                    isVisible: visiblePrices.length == 1,
+                  ),
+                  color: colors.primary,
+                  width: 2,
+                  xValueMapper: (SharePriceModel point, _) => point.date,
+                  yValueMapper: (SharePriceModel point, _) => point.price,
+                  enableTooltip: true,
+                ),
+              ],
+              tooltipBehavior: TooltipBehavior(
+                enable: true,
+                builder:
+                    (
+                      dynamic data,
+                      dynamic point,
+                      dynamic series,
+                      int pointIndex,
+                      int seriesIndex,
+                    ) {
+                      final model = data as SharePriceModel;
+                      return Container(
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 10,
+                          vertical: 6,
+                        ),
+                        decoration: BoxDecoration(
+                          color: colors.surfaceContainerHigh,
+                          borderRadius: BorderRadius.circular(6),
+                        ),
+                        child: Column(
+                          mainAxisSize: MainAxisSize.min,
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(
+                              DateFormat.yMMMd().format(model.date),
+                              style: TextStyle(
+                                fontSize: 11,
+                                color: colors.onSurfaceVariant,
+                              ),
+                            ),
+                            Text(
+                              model.price.toCurrency,
+                              style: TextStyle(
+                                color: colors.onSurface,
+                                fontSize: 13,
+                                fontWeight: FontWeight.w600,
+                              ),
+                            ),
+                          ],
+                        ),
+                      );
+                    },
+              ),
+            ),
           ),
-        ],
-        tooltipBehavior: TooltipBehavior(
-          enable: true,
-          builder: (dynamic data, dynamic point, dynamic series, int pointIndex,
-              int seriesIndex) {
-            final model = data as SharePriceModel;
-            return Container(
-              padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
-              decoration: BoxDecoration(
-                color: colors.surfaceContainerHigh,
-                borderRadius: BorderRadius.circular(6),
-              ),
-              child: Column(
-                mainAxisSize: MainAxisSize.min,
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    DateFormat.yMMMd().format(model.date),
-                    style: TextStyle(
-                      fontSize: 11,
-                      color: colors.onSurfaceVariant,
-                    ),
-                  ),
-                  Text(
-                    model.price.toCurrency,
-                    style: TextStyle(
-                      color: colors.onSurface,
-                      fontSize: 13,
-                      fontWeight: FontWeight.w600,
-                    ),
-                  ),
-                ],
-              ),
-            );
-          },
-        ),
-      ),
+      ],
     );
   }
 }

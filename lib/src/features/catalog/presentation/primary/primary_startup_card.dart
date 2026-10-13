@@ -36,16 +36,6 @@ class StartupCardWidget extends StatelessWidget {
                       fit: BoxFit.cover,
                     ),
                   ),
-                  // Positioned(
-                  //   bottom: 10,
-                  //   right: 10,
-                  //   child: Visibility(
-                  //     visible: app.isIUserLogin,
-                  //     child: CustomLikeButton(
-                  //         isLike: model.startup.isLike,
-                  //         id: model.startupId),
-                  //   ),
-                  // ),
                 ],
               ),
               Expanded(

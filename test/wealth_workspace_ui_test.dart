@@ -49,32 +49,51 @@ void main() {
     Get.put<MyEarningPageCtrl>(earnings);
     Get.put<MISPageCtrl>(mis);
     pending.pendingTask(
-      PendingTaskModel(pendingKyc: 2, documentSign: 1, pendingPayment: 1),
+      PendingTaskModel(
+        pendingKyc: PendingKycSection(
+          count: 2,
+          investors: [
+            InvestorModel(
+              name: 'Aarav Shah',
+              email: 'aarav@example.com',
+              mobileNumber: 9876543210,
+              investorType: 'Individual',
+            ),
+            InvestorModel(
+              name: 'Priya Mehta',
+              email: 'priya.mehta@example.com',
+              mobileNumber: 9876543211,
+              investorType: 'Individual',
+            ),
+          ],
+        ),
+        pendingDocuments: PendingDocumentsSection(
+          count: 1,
+          documents: [
+            PendingDocumentItem(
+              id: 11,
+              type: 'BuyMandate',
+              name: 'Buy Mandate',
+              company: PendingTaskCompany(brandName: 'Northstar Technologies'),
+              investor: PendingTaskParty(name: 'Priya Mehta'),
+              transactionInvoiceNo: 'INV-100',
+            ),
+          ],
+        ),
+        pendingFundTransfer: PendingFundTransferSection(
+          count: 1,
+          transactions: [
+            PendingFundTransferItem(
+              id: 21,
+              payableAmount: 1250000,
+              company: PendingTaskCompany(brandName: 'Summit Brands'),
+              investor: PendingTaskParty(name: 'Aarav Shah'),
+              transactionInvoiceNo: 'INV-200',
+            ),
+          ],
+        ),
+      ),
     );
-    pending.investorList.assignAll([
-      InvestorModel(
-        name: 'Aarav Shah',
-        email: 'aarav@example.com',
-        mobileNumber: 9876543210,
-        investorType: 'Individual',
-      ),
-      InvestorModel(
-        name: 'Priya Mehta',
-        email: 'priya.mehta@example.com',
-        mobileNumber: 9876543211,
-        investorType: 'Individual',
-      ),
-    ]);
-    pending.transactions.assignAll([
-      PrimaryTransactionModel.fromJson({
-        'startup': {'brand_name': 'Northstar Technologies'},
-        'investor': {'name': 'Priya Mehta'},
-        'investment_amount': 1250000,
-        'current_status': 'Awaiting investor signature',
-        'next_step': 'Sign the subscription agreement',
-        'percentage': 45,
-      }),
-    ]);
     earnings.investor(
       InvestorEarningModel.fromJson({
         'total_investors': 2,
@@ -225,17 +244,23 @@ void main() {
   }
 
   testWidgets(
-    'Pending categories show real investor and progress; counts update',
+    'Pending categories show KYC, documents and fund transfers; counts update',
     (tester) async {
       await show(tester, const PendingTasksView());
-      expect(find.text('Aarav Shah'), findsOneWidget);
+      expect(find.text('Aarav Shah'), findsWidgets);
       await tester.tap(find.text('Document signing'));
       await tester.pumpAndSettle();
+      expect(find.text('Northstar Technologies'), findsOneWidget);
       expect(find.text('Priya Mehta'), findsOneWidget);
+      expect(find.text('Buy Mandate'), findsOneWidget);
       expect(find.text('Kedar Dave'), findsNothing);
-      expect(find.text('45% completed'), findsOneWidget);
-      expect(find.text('Sign the subscription agreement'), findsOneWidget);
-      pending.pendingTask(PendingTaskModel(pendingKyc: 18));
+      await tester.tap(find.text('Fund transfer'));
+      await tester.pumpAndSettle();
+      expect(find.text('Summit Brands'), findsOneWidget);
+      expect(find.text('Transfer amount'), findsOneWidget);
+      pending.pendingTask(
+        PendingTaskModel(pendingKyc: PendingKycSection(count: 18)),
+      );
       await tester.pump();
       expect(find.text('18'), findsOneWidget);
       await tester.enterText(find.byType(TextField), 'missing company');
@@ -310,6 +335,7 @@ void main() {
     expect(find.text('No reports yet'), findsOneWidget);
     mis.isLoading(true);
     await tester.pump();
+    await tester.pump(const Duration(milliseconds: 300));
     expect(find.byType(CircularProgressIndicator), findsOneWidget);
     expect(find.text('No reports yet'), findsNothing);
     mis.isLoading(false);
