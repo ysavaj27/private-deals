@@ -11,7 +11,7 @@ class PrimaryInvestmentPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    if (context.isPhone) {
+    if (AppWindow.compact(context)) {
       return PhonePrimaryInvestmentView();
     } else {
       return DesktopPrimaryInvestmentView();

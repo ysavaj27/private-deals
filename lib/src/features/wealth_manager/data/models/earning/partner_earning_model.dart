@@ -18,8 +18,11 @@ class PartnerEarningModel {
         totalPartners: Parse.toInt(json["total_partners"]),
         totalInvestment: Parse.toDouble(json["total_investment"]),
         totalCommissionEarned: Parse.toDouble(json["total_commission_earned"]),
-        list: List<PartnerModel>.from(
-            json["list"]?.map((x) => PartnerModel.fromJson(x)) ?? []),
+        list: json["list"] is List
+            ? (json["list"] as List)
+                .map((x) => PartnerModel.fromJson(x))
+                .toList()
+            : [],
       );
 
   Map<String, dynamic> toJson() => {
@@ -34,16 +37,12 @@ class PartnerModel {
   int partnerId;
   String name;
   double partnerTotalInvestment;
-  double partnerCommissionPercentage;
-  double partnerCommissionEarned;
   double commissionEarnedFromThisPartner;
 
   PartnerModel({
     this.partnerId = 0,
     this.name = '',
     this.partnerTotalInvestment = 0.0,
-    this.partnerCommissionPercentage = 0.0,
-    this.partnerCommissionEarned = 0.0,
     this.commissionEarnedFromThisPartner = 0.0,
   });
 
@@ -52,10 +51,6 @@ class PartnerModel {
         name: Parse.toStrings(json["name"]),
         partnerTotalInvestment:
             Parse.toDouble(json["partner_total_investment"]),
-        partnerCommissionPercentage:
-            Parse.toDouble(json["partner_commission_percentage"]),
-        partnerCommissionEarned:
-            Parse.toDouble(json["partner_commission_earned"]),
         commissionEarnedFromThisPartner:
             Parse.toDouble(json["commission_earned_from_this_partner"]),
       );
@@ -64,8 +59,6 @@ class PartnerModel {
         "partner_id": partnerId,
         "name": name,
         "partner_total_investment": partnerTotalInvestment,
-        "partner_commission_percentage": partnerCommissionPercentage,
-        "partner_commission_earned": partnerCommissionEarned,
         "commission_earned_from_this_partner": commissionEarnedFromThisPartner,
       };
 }

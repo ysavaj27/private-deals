@@ -186,7 +186,6 @@ class PendingDocumentItem {
   PendingTaskParty investor;
   int transactionId;
   String transactionInvoiceNo;
-  String transactionType;
   PendingTaskCompany company;
 
   PendingDocumentItem({
@@ -199,7 +198,6 @@ class PendingDocumentItem {
     PendingTaskParty? investor,
     this.transactionId = 0,
     this.transactionInvoiceNo = '',
-    this.transactionType = '',
     PendingTaskCompany? company,
   })  : createdAt = createdAt ?? DateTime.fromMillisecondsSinceEpoch(0),
         investor = investor ?? PendingTaskParty(),
@@ -226,7 +224,6 @@ class PendingDocumentItem {
         investor: PendingTaskParty.fromJson(_asMap(json['investor'])),
         transactionId: Parse.toInt(json['transaction_id']),
         transactionInvoiceNo: Parse.toStrings(json['transaction_invoice_no']),
-        transactionType: Parse.toStrings(json['transaction_type']),
         company: PendingTaskCompany.fromJson(_asMap(json['company'])),
       );
 
@@ -240,7 +237,6 @@ class PendingDocumentItem {
         'investor': investor.toJson(),
         'transaction_id': transactionId,
         'transaction_invoice_no': transactionInvoiceNo,
-        'transaction_type': transactionType,
         'company': company.toJson(),
       };
 }
@@ -248,7 +244,6 @@ class PendingDocumentItem {
 class PendingFundTransferItem {
   int id;
   String transactionInvoiceNo;
-  String transactionType;
   PendingTaskParty investor;
   PendingTaskCompany company;
   double shares;
@@ -263,7 +258,6 @@ class PendingFundTransferItem {
   PendingFundTransferItem({
     this.id = 0,
     this.transactionInvoiceNo = '',
-    this.transactionType = '',
     PendingTaskParty? investor,
     PendingTaskCompany? company,
     this.shares = 0,
@@ -281,7 +275,6 @@ class PendingFundTransferItem {
       PendingFundTransferItem(
         id: Parse.toInt(json['id']),
         transactionInvoiceNo: Parse.toStrings(json['transaction_invoice_no']),
-        transactionType: Parse.toStrings(json['transaction_type']),
         investor: PendingTaskParty.fromJson(_asMap(json['investor'])),
         company: PendingTaskCompany.fromJson(_asMap(json['company'])),
         shares: Parse.toDouble(json['shares']),
@@ -300,7 +293,6 @@ class PendingFundTransferItem {
   Map<String, dynamic> toJson() => {
         'id': id,
         'transaction_invoice_no': transactionInvoiceNo,
-        'transaction_type': transactionType,
         'investor': investor.toJson(),
         'company': company.toJson(),
         'shares': shares,

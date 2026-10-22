@@ -88,7 +88,7 @@ class _AddInvestorPageState extends State<AddInvestorPage> {
 
   @override
   Widget build(BuildContext context) {
-    if (context.isPhone) {
+    if (AppWindow.compact(context)) {
       return _PhoneAddInvestorView(
         formKey: _phoneFormKey,
         nameCTRL: _nameCTRL,

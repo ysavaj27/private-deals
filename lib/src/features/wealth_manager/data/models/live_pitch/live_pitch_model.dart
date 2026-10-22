@@ -1,4 +1,3 @@
-import 'package:private_deals/src/features/wealth_manager/data/models/startup/pitch_model.dart';
 import 'package:private_deals/src/features/wealth_manager/data/models/startup/startup_model.dart';
 import 'package:private_deals/src/shared/functions/parse.dart';
 
@@ -10,7 +9,6 @@ class LivePitchModel {
   String status;
   DateTime createdAt;
   DateTime updatedAt;
-  PitchModel startupPitch;
   StartupModel startup;
 
   LivePitchModel({
@@ -21,7 +19,6 @@ class LivePitchModel {
     this.status = "",
     required this.createdAt,
     required this.updatedAt,
-    required this.startupPitch,
     required this.startup,
   });
 
@@ -33,7 +30,6 @@ class LivePitchModel {
         status: Parse.toStrings(json["status"]),
         createdAt: Parse.toDateTime(json["created_at"]),
         updatedAt: Parse.toDateTime(json["updatedAt"]),
-        startupPitch: PitchModel.fromJson(json["startup_pitch"] ?? {}),
         startup: StartupModel.fromJson(json["startup"] ?? {}),
       );
 
@@ -45,7 +41,6 @@ class LivePitchModel {
         "status": status,
         "created_at": createdAt.toIso8601String(),
         "updated_at": updatedAt.toIso8601String(),
-        "startup_pitch": startupPitch.toJson(),
         "startup": startup.toJson(),
       };
 }

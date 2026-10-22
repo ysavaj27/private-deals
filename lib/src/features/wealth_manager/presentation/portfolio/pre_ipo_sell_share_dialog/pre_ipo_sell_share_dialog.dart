@@ -13,7 +13,7 @@ class PreIPOSellShareDialog extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    if (context.isPhone) {
+    if (AppWindow.compact(context)) {
       return PhonePreIPOSellShareDialogView();
     } else {
       return DesktopPreIPOSellShareDialogView();

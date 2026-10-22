@@ -1,6 +1,7 @@
 import 'package:private_deals/src/core/session/auth_session.dart';
 import 'package:private_deals/src/features/wealth_manager/data/models/startup/startup_model.dart';
 import 'package:private_deals/src/features/investors/data/investor_model.dart';
+import 'package:private_deals/src/shared/extensions/num_extensions.dart';
 import 'package:private_deals/src/shared/functions/parse.dart';
 import 'package:flutter/material.dart';
 
@@ -24,7 +25,8 @@ class StartupPortfolioListModel {
       totalInvestmentAmount: Parse.toDouble(json['total_investment_amount']),
       holdings: json["holdings"] != null
           ? List<PortfolioModel>.from(
-              json["holdings"].map((x) => PortfolioModel.fromJson(x)))
+              json["holdings"].map((x) => PortfolioModel.fromJson(x)),
+            )
           : [],
     );
   }
@@ -47,9 +49,14 @@ class PortfolioModel {
   double purchasePrice;
   double investmentAmount;
   double currentSharePrice;
+  double? reportedCurrentValue;
+  double? reportedReturnAmount;
+  double? reportedReturnPercentage;
   double lastTradedPrice;
+
+  bool get usesReportedReturn => reportedReturnAmount != null;
+
   String instrument;
-  int isShareTransferred;
   int createdBy;
   int updatedBy;
   double minimumShares;
@@ -62,34 +69,45 @@ class PortfolioModel {
   StartupModel startup;
   InvestorModel investor;
 
-  bool get canSell => availableShares != 0 &&
+  bool get canSell =>
+      availableShares != 0 &&
           availableSharesPrices >= app.config.preIpoMinSellAmount
       ? true
       : false;
 
   bool get isAvailableShare => availableShares != 0 ? true : false;
 
-  String get name => "From: "
-          "${isPrimaryTransaction ? "Primary" : ""}"
-          "${isSecondaryTransaction ? " Secondary" : ""}"
-      .trim();
+  String get name =>
+      "From: "
+              "${isPrimaryTransaction ? "Primary" : ""}"
+              "${isSecondaryTransaction ? " Secondary" : ""}"
+          .trim();
 
   double get availableSharesPrices => availableShares * currentSharePrice;
 
   double get availableShares =>
       (shares - onSellShares) < 0 ? 0 : shares - onSellShares;
 
-  // Getter for total current price
-  double get totalCurrentPrice => shares * currentSharePrice;
+  // Current value from the holding, otherwise shares × current share price.
+  double get totalCurrentPrice =>
+      reportedCurrentValue ?? shares * currentSharePrice;
 
-  // Getter for total purchase price
+  // Cost of the shares still held, using the average buy price.
   double get totalPurchasePrice => shares * purchasePrice;
 
-  // Getter for profit amount
-  double get profitAmount => totalCurrentPrice - totalPurchasePrice;
+  // Unrealised return from the holding, otherwise current value minus cost.
+  double get profitAmount =>
+      reportedReturnAmount ?? totalCurrentPrice - totalPurchasePrice;
 
-  // Getter for profit percentage
+  String get profitAmountText => profitAmount < 0
+      ? '-${profitAmount.abs().toCurrency}'
+      : profitAmount.toCurrency;
+
+  // Unrealised return percent from the holding, otherwise return ÷ cost.
   String get profitPercentage {
+    if (reportedReturnPercentage != null) {
+      return "${reportedReturnPercentage!.toStringAsFixed(2)}%";
+    }
     if (totalPurchasePrice == 0) {
       return "0%"; // To avoid division by zero
     }
@@ -115,9 +133,11 @@ class PortfolioModel {
     this.purchasePrice = 0.0,
     this.investmentAmount = 0.0,
     this.currentSharePrice = 0.0,
+    this.reportedCurrentValue,
+    this.reportedReturnAmount,
+    this.reportedReturnPercentage,
     this.lastTradedPrice = 0.0,
     this.instrument = '',
-    this.isShareTransferred = 0,
     this.createdBy = 0,
     this.updatedBy = 0,
     this.minimumShares = 0,
@@ -132,52 +152,64 @@ class PortfolioModel {
   });
 
   factory PortfolioModel.fromJson(Map<String, dynamic> json) => PortfolioModel(
-        id: Parse.toInt(json["id"]),
-        investorId: Parse.toInt(json["investor_id"]),
-        startupId: Parse.toInt(json["startup_id"]),
-        shares: Parse.toDouble(json["shares"]),
-        purchasePrice: Parse.toDouble(json["purchase_price"]),
-        investmentAmount: Parse.toDouble(json["investment_amount"]),
-        currentSharePrice: Parse.toDouble(json["current_share_price"]),
-        lastTradedPrice: Parse.toDouble(json["last_traded_price"]),
-        instrument: Parse.toStrings(json["instrument"]),
-        isShareTransferred: Parse.toInt(json["is_share_transfered"]),
-        createdBy: Parse.toInt(json["created_by"]),
-        updatedBy: Parse.toInt(json["updated_by"]),
-        minimumShares: Parse.toDouble(json["minimum_shares"]),
-        sharesSold: Parse.toDouble(json["shares_sold"]),
-        onSellShares: Parse.toDouble(json["on_sell_shares"]),
-        isPrimaryTransaction: json["is_primary_transaction"] ?? false,
-        isSecondaryTransaction: json["is_secondary_transaction"] ?? false,
-        createdAt: Parse.toDateTime(json["created_at"]),
-        updatedAt: Parse.toDateTime(json["updated_at"]),
-        startup: StartupModel.fromJson(json["startup"] ?? {}),
-        investor: InvestorModel.fromJson(json["investor"] ?? {}),
-      );
+    id: Parse.toInt(json["id"]),
+    investorId: Parse.toInt(json["investor_id"]),
+    startupId: Parse.toInt(json["startup_id"]),
+    shares: Parse.toDouble(json["shares"]),
+    purchasePrice: Parse.toDouble(json["purchase_price"]),
+    investmentAmount: Parse.toDouble(json["investment_amount"]),
+    currentSharePrice: Parse.toDouble(json["current_share_price"]),
+    reportedCurrentValue: _reportedDouble(json, "current_value"),
+    reportedReturnAmount: _reportedDouble(json, "return_amount"),
+    reportedReturnPercentage: _reportedDouble(json, "return_percentage"),
+    lastTradedPrice: Parse.toDouble(json["last_traded_price"]),
+    instrument: Parse.toStrings(json["instrument"]),
+    createdBy: Parse.toInt(json["created_by"]),
+    updatedBy: Parse.toInt(json["updated_by"]),
+    minimumShares: Parse.toDouble(json["minimum_shares"]),
+    sharesSold: Parse.toDouble(json["shares_sold"]),
+    onSellShares: Parse.toDouble(json["on_sell_shares"]),
+    isPrimaryTransaction: Parse.toBool(json["is_primary_transaction"]),
+    isSecondaryTransaction: Parse.toBool(json["is_secondary_transaction"]),
+    createdAt: Parse.toDateTime(json["created_at"]),
+    updatedAt: Parse.toDateTime(json["updated_at"]),
+    startup: StartupModel.fromJson(json["startup"] ?? {}),
+    investor: InvestorModel.fromJson(json["investor"] ?? {}),
+  );
 
   Map<String, dynamic> toJson() => {
-        "id": id,
-        "investor_id": investorId,
-        "startup_id": startupId,
-        "shares": shares,
-        "purchase_price": purchasePrice,
-        "last_traded_price": lastTradedPrice,
-        "investment_amount": investmentAmount,
-        "instrument": instrument,
-        "is_share_transfered": isShareTransferred,
-        "created_by": createdBy,
-        "current_share_price": currentSharePrice,
-        "updated_by": updatedBy,
-        "minimum_shares": minimumShares,
-        "shares_sold": sharesSold,
-        "on_sell_shares": onSellShares,
-        "is_primary_transaction": isPrimaryTransaction,
-        "is_secondary_transaction": isSecondaryTransaction,
-        "created_at": createdAt.toIso8601String(),
-        "updated_at": updatedAt.toIso8601String(),
-        "startup": startup.toJson(),
-        "investor": investor.toJson(),
-      };
+    "id": id,
+    "investor_id": investorId,
+    "startup_id": startupId,
+    "shares": shares,
+    "purchase_price": purchasePrice,
+    "last_traded_price": lastTradedPrice,
+    "investment_amount": investmentAmount,
+    "instrument": instrument,
+    "created_by": createdBy,
+    "current_share_price": currentSharePrice,
+    "updated_by": updatedBy,
+    "minimum_shares": minimumShares,
+    "shares_sold": sharesSold,
+    "on_sell_shares": onSellShares,
+    "is_primary_transaction": isPrimaryTransaction,
+    "is_secondary_transaction": isSecondaryTransaction,
+    "created_at": createdAt.toIso8601String(),
+    "updated_at": updatedAt.toIso8601String(),
+    "startup": startup.toJson(),
+    "investor": investor.toJson(),
+    if (reportedCurrentValue != null) "current_value": reportedCurrentValue,
+    if (reportedReturnAmount != null) "return_amount": reportedReturnAmount,
+    if (reportedReturnPercentage != null)
+      "return_percentage": reportedReturnPercentage,
+  };
+}
+
+double? _reportedDouble(Map<String, dynamic> json, String key) {
+  if (!json.containsKey(key) || json[key] == null) return null;
+  final value = double.tryParse(json[key].toString());
+  if (value == null || !value.isFinite) return null;
+  return value;
 }
 
 class PortfolioInvestor {
@@ -198,9 +230,7 @@ class PortfolioInvestor {
       id: Parse.toInt(json['id']),
       uuid: Parse.toStrings(json['uuid']),
       name: Parse.toStrings(json['name']),
-      profilePhoto: Parse.parseUrl(
-        Parse.toStrings(json['profile_photo']),
-      ),
+      profilePhoto: Parse.parseUrl(Parse.toStrings(json['profile_photo'])),
     );
   }
 

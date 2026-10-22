@@ -1,10 +1,12 @@
+import 'package:private_deals/src/shared/functions/parse.dart';
+
 /// The dashboard accepts the endpoint's payload or the standard API envelope.
 class DashboardModel {
   final Map<String, dynamic> data;
   DashboardModel._(this.data);
 
   factory DashboardModel.fromJson(Map<String, dynamic> json) {
-    if (json.containsKey('status') && json['status'] != 1) {
+    if (json.containsKey('status') && Parse.toInt(json['status']) != 1) {
       throw const FormatException('Dashboard request was unsuccessful.');
     }
     final payload = map(json['data'] ?? json);
@@ -20,7 +22,7 @@ class DashboardModel {
       ? value.whereType<Map>().map((e) => Map<String, dynamic>.from(e)).toList()
       : [];
   static num number(dynamic value) {
-    final n = value is num ? value : num.tryParse('$value') ?? 0;
+    final n = Parse.toDouble(value);
     return n.isFinite && n >= 0 ? n : 0;
   }
 

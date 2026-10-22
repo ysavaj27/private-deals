@@ -164,7 +164,9 @@ class DesktopPortfolioView extends StatelessWidget {
                     );
                   }
                 } else {
-                  child = const Loader(key: ValueKey('desktop-portfolio-loading'));
+                  child = const Loader(
+                    key: ValueKey('desktop-portfolio-loading'),
+                  );
                 }
                 return AnimatedSwitcher(
                   duration: AppMotion.duration(context, AppMotion.normal),
@@ -437,9 +439,13 @@ class StartUpPortfolioCard extends StatelessWidget {
                   width: 75,
                   radius: 4,
                   onTap: () {
+                    final slug = model.startup.urlSlug;
+                    if (slug.isEmpty) return;
                     Get.toNamed(
-                      Routes.primaryDetailPage,
-                      arguments: model.startupId,
+                      Routes.primaryDetailPath(
+                        Routes.catalogPath(WTabBarEnum.primary.slug),
+                        slug,
+                      ),
                     );
                   },
                 ),
@@ -547,8 +553,8 @@ class StartUpPortfolioCard extends StatelessWidget {
                     ),
                     const SizedBox(height: 6),
                     Visibility(
-                      visible: model.canSell &&
-                          !model.investor.isPreIpoKycComplete,
+                      visible:
+                          model.canSell && !model.investor.isPreIpoKycComplete,
                       child: CompleteInvestorKycButton(
                         investor: model.investor,
                         onSaved: () async {
@@ -699,7 +705,7 @@ class StartUpPortfolioCard extends StatelessWidget {
                           ),
                         ),
                         Text(
-                          model.profitAmount.toCurrency,
+                          model.profitAmountText,
                           style: TextStyle(
                             fontSize: 18,
                             color: model.profitColor,

@@ -343,17 +343,29 @@ class CustomCompanyCard extends StatelessWidget {
     //     .withValues(alpha:isDark ? 0.12 : 0.14);
     // final sign = _isPositive ? '+' : '';
 
+    final isPhone = context.isPhone;
+    final width =
+        isPhone ? MediaQuery.sizeOf(context).width - 24 : cardWidth;
+    final phoneContentHeight =
+        isPhone ? _phoneContentHeight(context, width) : 0.0;
+    // Keep the 80 slot unless the badge or price row is taller than it.
+    final double? height =
+        isPhone ? (phoneContentHeight > 80 ? null : 80) : 120;
+
     return Clickable(
       onTap: onTap,
       borderRadius: BorderRadius.circular(16),
       child: SizedBox(
-        width: cardWidth,
-        height: context.isPhone ? 80 : 120,
+        width: width,
+        height: height,
         child: Stack(
-          fit: StackFit.expand,
+          fit: height == null ? StackFit.loose : StackFit.expand,
           children: [
             Container(
-              width: cardWidth,
+              width: width,
+              constraints: height == null
+                  ? BoxConstraints(minHeight: phoneContentHeight)
+                  : null,
               padding: EdgeInsets.all(context.isPhone ? 10 : 16),
               decoration: BoxDecoration(
                 color: cardBg,
@@ -477,6 +489,73 @@ class CustomCompanyCard extends StatelessWidget {
       ),
     );
   }
+
+  /// Height of the phone card's padding, logo/text row, and ribbon badge.
+  double _phoneContentHeight(BuildContext context, double width) {
+    final scaler = MediaQuery.textScalerOf(context);
+    final base = DefaultTextStyle.of(context).style;
+    final direction = Directionality.of(context);
+    final textWidth = width - 90;
+
+    final nameHeight = _textHeight(
+      company.brandName,
+      base.copyWith(fontSize: 16, fontWeight: FontWeight.w900),
+      textWidth,
+      scaler,
+      direction,
+      maxLines: 1,
+    );
+    final priceHeight = _textHeight(
+      company.sharePrice.toCurrency,
+      base.copyWith(fontSize: 14, fontWeight: FontWeight.w800),
+      textWidth,
+      scaler,
+      direction,
+      maxLines: 1,
+    );
+    final sectorHeight = _textHeight(
+      company.sector,
+      base.copyWith(fontSize: 14),
+      textWidth,
+      scaler,
+      direction,
+      maxLines: 1,
+    );
+    final rowHeight = priceHeight > sectorHeight ? priceHeight : sectorHeight;
+    final textColumn = nameHeight + 5 + rowHeight;
+    final body = 20 + (textColumn > 56 ? textColumn : 56.0);
+
+    if (company.headingText.isEmpty) return body;
+
+    final badgeHeight = _textHeight(
+          company.headingText,
+          base.copyWith(fontSize: 13, fontWeight: FontWeight.w600),
+          width - 28,
+          scaler,
+          direction,
+        ) +
+        16;
+    return body > badgeHeight ? body : badgeHeight;
+  }
+
+  double _textHeight(
+    String text,
+    TextStyle style,
+    double maxWidth,
+    TextScaler scaler,
+    TextDirection direction, {
+    int? maxLines,
+  }) {
+    final painter = TextPainter(
+      text: TextSpan(text: text, style: style),
+      textDirection: direction,
+      maxLines: maxLines,
+      textScaler: scaler,
+    )..layout(maxWidth: maxWidth > 0 ? maxWidth : 0);
+    final height = painter.height;
+    painter.dispose();
+    return height;
+  }
 }
 
 class FeaturedWidget extends StatelessWidget {
@@ -521,7 +600,11 @@ class FeaturedWidget extends StatelessWidget {
               logger.d(routes);
               Get.toNamed(routes);
             },
-            onLogoTap: (model, company) {},
+            onLogoTap: (model, company) {
+              var routes = Routes.preIPOListPath(Get.currentRoute, model.slug);
+              logger.d(routes);
+              Get.toNamed(routes);
+            },
           );
         }),
       ],

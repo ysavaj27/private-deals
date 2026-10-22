@@ -93,7 +93,7 @@ class _DealTypeToggle extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final colors = context.theme.colorScheme;
-    final phone = context.isPhone;
+    final phone = AppWindow.compact(context);
 
     return Obx(() {
       final saving = controller.saving.value;
@@ -211,7 +211,7 @@ class SharePriceFixedHeader extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final colors = context.theme.colorScheme;
-    final phone = context.isPhone;
+    final phone = AppWindow.compact(context);
 
     if (phone) {
       return Container(
@@ -495,7 +495,8 @@ class SharePriceTable extends StatelessWidget {
           borderRadius: BorderRadius.circular(12),
           child: LayoutBuilder(
             builder: (context, constraints) {
-              final useCards = constraints.maxWidth < 700 || context.isPhone;
+              final useCards =
+                  constraints.maxWidth < AppWindow.desktopMinWidth;
 
               if (useCards) {
                 return ListView.separated(

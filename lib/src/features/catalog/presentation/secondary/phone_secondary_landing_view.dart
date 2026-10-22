@@ -115,7 +115,9 @@ class PhoneSecondaryLandingView extends StatelessWidget {
                       visible: c.model().news.isNotEmpty,
                       child: PhoneNewsWidget(
                         list: c.model().news,
-                        onPress: () {},
+                        onPress: () {
+                          Get.toNamed(Routes.newsListPath(Get.currentRoute));
+                        },
                       ),
                     );
                   }),

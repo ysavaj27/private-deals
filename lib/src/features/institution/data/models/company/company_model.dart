@@ -18,10 +18,7 @@ class CompanyModel {
   double myBasePrice;
   bool priceUpdatedToday;
   double lastYearSharePrice;
-  bool isTrending;
-  bool isGrabOpportunityEnabled;
   String minInvestmentType;
-  double minInvestmentAmount;
   bool isFavorite;
   bool isEditable;
   SectorModel sector;
@@ -47,10 +44,7 @@ class CompanyModel {
     this.myBasePrice = 0.0,
     this.priceUpdatedToday = false,
     this.lastYearSharePrice = 0.0,
-    this.isTrending = false,
-    this.isGrabOpportunityEnabled = false,
     this.minInvestmentType = "",
-    this.minInvestmentAmount = 0.0,
     this.isFavorite = false,
     this.isEditable = false,
     this.promoters = const [],
@@ -79,12 +73,7 @@ class CompanyModel {
       myBasePrice: Parse.toDouble(json['my_base_price']),
       priceUpdatedToday: Parse.toBool(json['price_updated_today']),
       lastYearSharePrice: Parse.toDouble(json['last_year_share_price']),
-      isTrending: Parse.toBool(json['is_trending']),
-      isGrabOpportunityEnabled: Parse.toBool(
-        json['is_grab_opportunity_enabled'],
-      ),
       minInvestmentType: Parse.toStrings(json['min_investment_type']),
-      minInvestmentAmount: Parse.toDouble(json['min_investment_amount']),
       isFavorite: Parse.toBool(json['is_favorite']),
       isEditable: Parse.toBool(json['is_editable']),
       shareHolders: (json['share_holders'] as List? ?? [])
@@ -119,10 +108,7 @@ class CompanyModel {
       "my_base_price": myBasePrice,
       "price_updated_today": priceUpdatedToday,
       "last_year_share_price": lastYearSharePrice,
-      "is_trending": isTrending,
-      "is_grab_opportunity_enabled": isGrabOpportunityEnabled,
       "min_investment_type": minInvestmentType,
-      "min_investment_amount": minInvestmentAmount,
       "is_favorite": isFavorite,
       "is_editable": isEditable,
       "share_holders": shareHolders.map((e) => e.toJson()).toList(),

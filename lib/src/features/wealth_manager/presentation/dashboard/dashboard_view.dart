@@ -5,6 +5,7 @@ import 'package:private_deals/src/shared/app_exports.dart';
 import 'dashboard_page_ctrl.dart';
 import 'dashboard_sections.dart';
 import 'dashboard_charts.dart';
+import 'dashboard_components.dart';
 
 class WealthDashboardView extends StatelessWidget {
   const WealthDashboardView({super.key});
@@ -253,14 +254,7 @@ class _DashboardPair extends StatelessWidget {
           MediaQuery.textScalerOf(context).scale(1) > 1.3) {
         return Column(children: [first, const SizedBox(height: 20), second]);
       }
-      return Row(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Expanded(flex: 7, child: first),
-          const SizedBox(width: 20),
-          Expanded(flex: 5, child: second),
-        ],
-      );
+      return DashboardEqualHeightRow(children: [first, second]);
     },
   );
 }

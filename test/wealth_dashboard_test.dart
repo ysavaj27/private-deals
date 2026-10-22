@@ -391,31 +391,143 @@ void main() {
     }
   }
 
-  testWidgets('Many sectors and companies expand without hiding totals', (
-    tester,
-  ) async {
-    final model = WDashboardModel.fromJson(dashboardFixture(size: 8));
+  testWidgets(
+    'Sectors and companies open in dialogs without expanding the dashboard',
+    (tester) async {
+      final model = WDashboardModel.fromJson(dashboardFixture(size: 8));
+      await show(
+        tester,
+        SingleChildScrollView(
+          child: Column(
+            children: [
+              DashboardSectorChart(model: model),
+              DashboardPerformanceChart(model: model),
+            ],
+          ),
+        ),
+        width: 1280,
+      );
+      expect(find.text('View all 8 sectors'), findsOneWidget);
+      await tester.tap(find.text('View all 8 sectors'));
+      await tester.pumpAndSettle();
+      expect(find.byType(Dialog), findsOneWidget);
+      expect(
+        find.text('All 8 sectors · Share of reported sector investment'),
+        findsOneWidget,
+      );
+      expect(find.text('Show fewer sectors'), findsNothing);
+      await tester.tap(find.byTooltip('Close details'));
+      await tester.pumpAndSettle();
+      await tester.ensureVisible(find.text('View all 8 companies'));
+      await tester.tap(find.text('View all 8 companies'));
+      await tester.pumpAndSettle();
+      expect(find.byType(Dialog), findsOneWidget);
+      expect(
+        find.text('All 8 companies · Largest investments'),
+        findsOneWidget,
+      );
+      expect(find.text('Show fewer companies'), findsNothing);
+      await tester.tap(find.byTooltip('Close company performance'));
+      await tester.pumpAndSettle();
+      expect(find.text('View all 8 companies'), findsOneWidget);
+      expect(tester.takeException(), isNull);
+    },
+  );
+
+  for (final width in [360.0, 1280.0]) {
+    for (final count in [4, 8]) {
+      testWidgets(
+        'Company preview stays at three; dialog scrolls through $count companies at $width',
+        (tester) async {
+          final model = WDashboardModel.fromJson(dashboardFixture(size: count));
+          for (var i = 0; i < count; i++) {
+            model.investmentGrowth[i].startupName =
+                'Performance company ${i + 1}';
+          }
+          await show(
+            tester,
+            SingleChildScrollView(
+              child: DashboardPerformanceChart(model: model),
+            ),
+            width: width,
+            scale: width == 360 ? 1.5 : 1,
+          );
+          expect(find.text('Performance company 3'), findsOneWidget);
+          expect(find.text('Performance company 4'), findsNothing);
+          await tester.ensureVisible(find.text('View all $count companies'));
+          await tester.tap(find.text('View all $count companies'));
+          await tester.pumpAndSettle();
+          final list = find.byKey(
+            const ValueKey('all-company-performance-list'),
+          );
+          expect(tester.widget<ListView>(list).semanticChildCount, count);
+          await tester.scrollUntilVisible(
+            find.text('Performance company $count'),
+            200,
+            scrollable: find.descendant(
+              of: list,
+              matching: find.byType(Scrollable),
+            ),
+          );
+          expect(find.text('Performance company $count'), findsOneWidget);
+          expect(tester.takeException(), isNull);
+          await tester.tap(find.byTooltip('Close company performance'));
+          await tester.pumpAndSettle();
+          expect(find.byType(Dialog), findsNothing);
+          expect(find.text('Performance company 4'), findsNothing);
+          expect(find.text('View all $count companies'), findsOneWidget);
+          expect(tester.takeException(), isNull);
+        },
+      );
+    }
+  }
+
+  testWidgets('Company dialog preserves the selected sorting', (tester) async {
+    final model = WDashboardModel.fromJson(dashboardFixture(size: 4));
+    for (var i = 0; i < 4; i++) {
+      model.investmentGrowth[i].startupName = 'Performance company ${i + 1}';
+    }
     await show(
       tester,
-      SingleChildScrollView(
-        child: Column(
-          children: [
-            DashboardSectorChart(model: model),
-            DashboardPerformanceChart(model: model),
-          ],
-        ),
-      ),
-      width: 1280,
+      SingleChildScrollView(child: DashboardPerformanceChart(model: model)),
     );
-    expect(find.text('View all 8 sectors'), findsOneWidget);
-    await tester.tap(find.text('View all 8 sectors'));
+    await tester.tap(find.byType(DropdownButton<String>));
     await tester.pumpAndSettle();
-    expect(find.text('Show fewer sectors'), findsOneWidget);
-    await tester.ensureVisible(find.text('View all 8 companies'));
-    await tester.tap(find.text('View all 8 companies'));
+    await tester.tap(find.text('Largest value declines').last);
     await tester.pumpAndSettle();
-    expect(find.text('Show fewer companies'), findsOneWidget);
+    await tester.ensureVisible(find.text('View all 4 companies'));
+    await tester.tap(find.text('View all 4 companies'));
+    await tester.pumpAndSettle();
+    expect(
+      find.text('All 4 companies · Largest value declines'),
+      findsOneWidget,
+    );
+    final names = tester
+        .widgetList<Text>(
+          find.descendant(
+            of: find.byKey(const ValueKey('all-company-performance-list')),
+            matching: find.byType(Text),
+          ),
+        )
+        .map((text) => text.data ?? '')
+        .where((text) => text.startsWith('Performance company'));
+    expect(names.first, 'Performance company 2');
     expect(tester.takeException(), isNull);
+  });
+
+  testWidgets('Small company lists do not offer a redundant view-all dialog', (
+    tester,
+  ) async {
+    for (final count in [0, 1, 2, 3]) {
+      final model = WDashboardModel.fromJson(dashboardFixture(size: count));
+      await show(
+        tester,
+        SingleChildScrollView(child: DashboardPerformanceChart(model: model)),
+        width: 360,
+      );
+      expect(find.textContaining('View all'), findsNothing);
+      expect(tester.takeException(), isNull);
+    }
   });
 
   testWidgets('Loading and error are distinct from an empty success', (
@@ -624,6 +736,38 @@ void main() {
     },
   );
 
+  for (final count in [1, 3, 8]) {
+    testWidgets('Desktop card pairs stay aligned with $count records', (
+      tester,
+    ) async {
+      final c = Get.put<DashboardPageCtrl>(_DashboardController());
+      c.isData(true);
+      c.model(WDashboardModel.fromJson(dashboardFixture(size: count)));
+      await show(tester, const WealthDashboardView(), height: 2200);
+
+      void expectAligned(Type first, Type second) {
+        final left = tester.getRect(find.byType(first));
+        final right = tester.getRect(find.byType(second));
+        expect(left.top, right.top);
+        expect(left.bottom, closeTo(right.bottom, .01));
+        expect(left.width, closeTo(right.width, .01));
+        expect(right.left - left.right, closeTo(20, .01));
+      }
+
+      expectAligned(DashboardActivityChart, DashboardSectorChart);
+      expectAligned(DashboardPerformanceChart, DashboardInvestorChart);
+      final before = tester.getRect(find.byType(DashboardActivityChart));
+      await tester.tap(find.text('View all period details ($count)'));
+      await tester.pumpAndSettle();
+      expect(find.byType(Dialog), findsOneWidget);
+      await tester.tap(find.byTooltip('Close details'));
+      await tester.pumpAndSettle();
+      expect(tester.getRect(find.byType(DashboardActivityChart)), before);
+      expectAligned(DashboardActivityChart, DashboardSectorChart);
+      expect(tester.takeException(), isNull);
+    });
+  }
+
   testWidgets('Capture dashboard previews', (tester) async {
     if (!const bool.fromEnvironment('CAPTURE_DASHBOARD')) return;
     await tester.runAsync(() async {
@@ -645,12 +789,18 @@ void main() {
     final c = Get.put<DashboardPageCtrl>(_DashboardController());
     c.isData(true);
     c.lastUpdated(DateTime(2026, 10, 8, 15, 30));
-    for (final state in ['populated', 'empty', 'single']) {
+    for (final state in ['populated', 'empty', 'single', 'many']) {
       c.model(
         WDashboardModel.fromJson(
           state == 'empty'
               ? {}
-              : dashboardFixture(size: state == 'single' ? 1 : 3),
+              : dashboardFixture(
+                  size: state == 'single'
+                      ? 1
+                      : state == 'many'
+                      ? 8
+                      : 3,
+                ),
         ),
       );
       for (final width in [360.0, 1280.0]) {

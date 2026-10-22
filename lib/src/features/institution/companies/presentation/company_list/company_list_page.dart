@@ -4,6 +4,7 @@ import 'package:get/get.dart';
 import 'package:private_deals/src/features/institution/companies/presentation/company_list/company_list_page_ctrl.dart';
 import 'package:private_deals/src/features/institution/companies/presentation/company_list/desktop_company_list_view.dart';
 import 'package:private_deals/src/features/institution/companies/presentation/company_list/phone_company_list_view.dart';
+import 'package:private_deals/src/shared/theme/app_tokens.dart';
 
 class CompanyListPage extends StatefulWidget {
   const CompanyListPage({super.key});
@@ -29,7 +30,7 @@ class _CompanyListPageState extends State<CompanyListPage> {
 
   @override
   Widget build(BuildContext context) {
-    return context.isPhone
+    return AppWindow.compact(context)
         ? PhoneCompanyListView(c: c)
         : DesktopCompanyListView(c: c);
   }

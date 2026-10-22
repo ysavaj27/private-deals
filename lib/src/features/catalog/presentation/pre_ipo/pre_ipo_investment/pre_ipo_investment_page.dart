@@ -38,7 +38,7 @@ class PreIPOInvestmentPage extends StatelessWidget {
       );
     }
     Get.put(PreIPOInvestmentPageCtrl());
-    return context.isPhone
+    return AppWindow.compact(context)
         ? PhonePreIPOInvestmentView()
         : DesktopPreIPOInvestmentView();
   }

@@ -11,7 +11,7 @@ class MyEarningPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    if (context.isPhone) {
+    if (AppWindow.compact(context)) {
       return PhoneMyEarningView();
     } else {
       return DesktopMyEarningView();

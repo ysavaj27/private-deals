@@ -2,6 +2,39 @@ import 'package:private_deals/src/shared/app_exports.dart';
 
 import 'dashboard_insights.dart';
 
+/// Sizes each row from its tallest card, without imposing a fixed height.
+class DashboardEqualHeightRow extends StatelessWidget {
+  const DashboardEqualHeightRow({
+    super.key,
+    required this.children,
+    this.spacing = 20,
+  });
+
+  final List<Widget> children;
+  final double spacing;
+
+  @override
+  Widget build(BuildContext context) => Table(
+    // This alignment measures children using layout, so chart LayoutBuilders
+    // remain supported while shorter cards stretch to match the tallest card.
+    defaultVerticalAlignment: TableCellVerticalAlignment.intrinsicHeight,
+    columnWidths: {
+      for (var i = 1; i < children.length * 2 - 1; i += 2)
+        i: FixedColumnWidth(spacing),
+    },
+    children: [
+      TableRow(
+        children: [
+          for (var i = 0; i < children.length; i++) ...[
+            if (i > 0) const SizedBox.shrink(),
+            children[i],
+          ],
+        ],
+      ),
+    ],
+  );
+}
+
 class DashboardPanel extends StatelessWidget {
   const DashboardPanel({
     super.key,

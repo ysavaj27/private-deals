@@ -261,7 +261,7 @@ class CardView extends StatelessWidget {
                   InkWell(
                     onTap: () => c.removeInvestor(model),
                     child: Container(
-                      padding: const EdgeInsets.all(4),
+                      padding: const EdgeInsets.all(13),
                       decoration: BoxDecoration(
                         borderRadius: BorderRadius.circular(4),
                         border: Border.all(

@@ -186,7 +186,6 @@ class MainWidget extends StatelessWidget {
           return FadeIn(
             child: CustomCardWidget(
               radius: 10,
-              width: context.width,
               margin: const EdgeInsets.all(15),
               padding: const EdgeInsets.symmetric(vertical: 59, horizontal: 25),
               child: const Column(

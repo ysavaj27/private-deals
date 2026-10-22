@@ -15,7 +15,7 @@ class PrimaryDetailPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    if (context.isPhone) {
+    if (AppWindow.compact(context)) {
       return PhonePrimaryDetailView();
     } else {
       return DesktopPrimaryDetailView();
@@ -201,7 +201,7 @@ class DocumentWidget extends StatelessWidget {
         ),
         const SizedBox(height: 15),
         Column(
-          children: context.isPhone
+          children: AppWindow.compact(context)
               ? [
                   const SizedBox(height: 15),
                   DocumentTile(
@@ -826,7 +826,7 @@ class CustomTabBarButton extends StatelessWidget {
         child: InkWell(
           onTap: () {
             c.currentTab(tab);
-            if (context.isPhone) {
+            if (AppWindow.compact(context)) {
               c.scrollToSelectedIndex(tab.index);
             }
           },

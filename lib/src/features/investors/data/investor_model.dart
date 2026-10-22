@@ -212,7 +212,7 @@ class SelectInvestorModel {
       quantity: Parse.toInt(json["quantity"]),
       price: Parse.toDouble(json["price"]),
       totalPrice: Parse.toDouble(json["total_price"]),
-      isMarket: json["isMarket"] ?? false,
+      isMarket: Parse.toBool(json["isMarket"]),
     );
   }
 

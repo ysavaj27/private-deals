@@ -27,7 +27,18 @@ class PhoneForgotPasswordView extends StatelessWidget {
                   padding: const EdgeInsets.only(left: 24, top: 10),
                   child: Image.asset(AppAssets.newLogo, height: 45),
                 ),
-                Center(child: MainWidget()),
+                LayoutBuilder(
+                  builder: (context, constraints) {
+                    return SingleChildScrollView(
+                      child: ConstrainedBox(
+                        constraints: BoxConstraints(
+                          minHeight: constraints.maxHeight,
+                        ),
+                        child: Center(child: MainWidget()),
+                      ),
+                    );
+                  },
+                ),
               ],
             ),
           ),
@@ -118,7 +129,7 @@ class MobileWidget extends StatelessWidget {
                   size: 20,
                 ),
                 onFieldSubmitted: (p0) {
-                  if (c.dMobileKey.currentState?.validate() ?? false) {
+                  if (c.mMobileKey.currentState?.validate() ?? false) {
                     c.forgotPassword();
                   }
                 },
@@ -126,7 +137,7 @@ class MobileWidget extends StatelessWidget {
               const SizedBox(height: 60),
               Obx(() {
                 return CustomElevatedButton(
-                  size: Size(context.width, 38),
+                  height: 48,
                   backgroundColor: context.theme.iconTheme.color,
                   color: context.theme.scaffoldBackgroundColor,
                   fontWeight: FontWeight.w600,
@@ -256,7 +267,7 @@ class OTPWidget extends StatelessWidget {
               const SizedBox(height: 30),
               Obx(() {
                 return CustomElevatedButton(
-                  size: Size(context.width, 38),
+                  height: 48,
                   backgroundColor: context.theme.iconTheme.color,
                   color: context.theme.scaffoldBackgroundColor,
                   fontWeight: FontWeight.w600,
@@ -412,7 +423,7 @@ class PasswordWidget extends StatelessWidget {
               const SizedBox(height: 50),
               Obx(() {
                 return CustomElevatedButton(
-                  size: Size(context.width, 38),
+                  height: 48,
                   backgroundColor: context.theme.iconTheme.color,
                   color: context.theme.scaffoldBackgroundColor,
                   fontWeight: FontWeight.w600,

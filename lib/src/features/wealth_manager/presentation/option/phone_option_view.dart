@@ -30,81 +30,83 @@ class PhoneOptionView extends StatelessWidget {
 
     return Scaffold(
       appBar: AppBar(backgroundColor: Colors.transparent),
-      body: Column(
-        crossAxisAlignment: CrossAxisAlignment.center,
-        children: [
-          Image.asset(
-            AppAssets.newLogo,
-            height: 40,
+      body: SafeArea(
+        child: SingleChildScrollView(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.center,
+            children: [
+              Image.asset(AppAssets.newLogo, height: 40),
+              const SizedBox(height: 10),
+              Text("Select your Journey", style: context.textTheme.titleMedium),
+              const SizedBox(height: 37),
+              Obx(() {
+                final accents = context.sectionAccents;
+                return Visibility(
+                  visible: app.wUser.isPrimaryAccess,
+                  child: CardWidget(
+                    color: accents.privateEquity,
+                    title: 'Private Equity',
+                    subTitle: 'Invest directly in high potential early-stage start-ups',
+                    onPressed: () async {
+                      await prefs.setValue(
+                        key: 'title',
+                        value: 'Private Equity',
+                      );
+                      await AppTheme.setTheme(index: 0);
+                      Get.offAllNamed(
+                        '/wealth-manager/${WTabBarEnum.primary.slug}',
+                      );
+                    },
+                  ),
+                );
+              }),
+              Obx(() {
+                final accents = context.sectionAccents;
+                return Visibility(
+                  visible: app.wUser.isSecondaryAccess,
+                  child: CardWidget(
+                    color: accents.lpSecondary,
+                    title: 'LP Secondary',
+                    subTitle: 'Buy/Sell to your interests to enhance liquidity in your portfolios or to take advantage of emerging opportunities',
+                    onPressed: () async {
+                      await AppTheme.setTheme(index: 1);
+                      await prefs.setValue(key: 'title', value: 'LP Secondary');
+                      Get.offAllNamed(
+                        '/wealth-manager/${WTabBarEnum.secondary.slug}',
+                      );
+                    },
+                  ),
+                );
+              }),
+              Obx(() {
+                final accents = context.sectionAccents;
+                return Visibility(
+                  visible: app.wUser.isPreIpoAccess,
+                  child: CardWidget(
+                    color: accents.unlistedShares,
+                    title: 'Unlisted Shares',
+                    subTitle: 'Grab unique opportunity to invest in private companies before they transition to the public market',
+                    onPressed: () async {
+                      await prefs.setValue(
+                        key: 'title',
+                        value: 'Unlisted Shares',
+                      );
+                      await AppTheme.setTheme(index: 2);
+                      Get.offAllNamed(
+                        '/wealth-manager/${WTabBarEnum.preIPO.slug}',
+                      );
+                    },
+                  ),
+                );
+              }),
+            ],
           ),
-          const SizedBox(height: 10),
-          Text(
-            "Select your Journey",
-            style: context.textTheme.titleMedium,
-          ),
-          const SizedBox(height: 37),
-          Obx(() {
-            final accents = context.sectionAccents;
-            return Visibility(
-              visible: app.wUser.isPrimaryAccess,
-              child: CardWidget(
-                color: accents.privateEquity,
-                title: 'Private Equity',
-                subTitle:
-                    'Invest directly in high potential early-stage start-ups',
-                onPressed: () async {
-                  await prefs.setValue(key: 'title', value: 'Private Equity');
-                  await AppTheme.setTheme(index: 0);
-                  Get.offAllNamed(
-                    '/wealth-manager/${WTabBarEnum.primary.slug}',
-                  );
-                },
-              ),
-            );
-          }),
-          Obx(() {
-            final accents = context.sectionAccents;
-            return Visibility(
-              visible: app.wUser.isSecondaryAccess,
-              child: CardWidget(
-                color: accents.lpSecondary,
-                title: 'LP Secondary',
-                subTitle:
-                    'Buy/Sell to your interests to enhance liquidity in your portfolios or to take advantage of emerging opportunities',
-                onPressed: () async {
-                  await AppTheme.setTheme(index: 1);
-                  await prefs.setValue(key: 'title', value: 'LP Secondary');
-                  Get.offAllNamed(
-                    '/wealth-manager/${WTabBarEnum.secondary.slug}',
-                  );
-                },
-              ),
-            );
-          }),
-          Obx(() {
-            final accents = context.sectionAccents;
-            return Visibility(
-              visible: app.wUser.isPreIpoAccess,
-              child: CardWidget(
-                color: accents.unlistedShares,
-                title: 'Unlisted Shares',
-                subTitle:
-                    'Grab unique opportunity to invest in private companies before they transition to the public market',
-                onPressed: () async {
-                  await prefs.setValue(key: 'title', value: 'Unlisted Shares');
-                  await AppTheme.setTheme(index: 2);
-                  Get.offAllNamed(
-                    '/wealth-manager/${WTabBarEnum.preIPO.slug}',
-                  );
-                },
-              ),
-            );
-          }),
-        ],
+        ),
       ),
     );
   }
 }
+
 class CardWidget extends StatelessWidget {
   final String title;
   final String subTitle;
@@ -124,7 +126,8 @@ class CardWidget extends StatelessWidget {
     return AppFadeIn(
       child: Padding(
         padding: const EdgeInsets.all(16),
-        child: Stack(
+        child: LayoutBuilder(
+          builder: (context, constraints) => Stack(
           alignment: Alignment.topCenter,
           children: [
             Padding(
@@ -134,7 +137,7 @@ class CardWidget extends StatelessWidget {
                 borderRadius: BorderRadius.circular(20),
                 child: CustomCardWidget(
                   radius: 20,
-                  width: context.width,
+                  width: constraints.maxWidth,
                   child: Container(
                     decoration: BoxDecoration(
                       borderRadius: BorderRadius.circular(20),
@@ -142,24 +145,15 @@ class CardWidget extends StatelessWidget {
                         center: const Alignment(0.0, -2.0),
                         radius: 1.8,
                         colors: context.isDarkMode
-                            ? [
-                                color,
-                                Colors.transparent,
-                              ]
-                            : [
-                                color,
-                                Colors.white10,
-                              ],
+                            ? [color, Colors.transparent]
+                            : [color, Colors.white10],
                         stops: const [0.1, 0.8],
                       ),
                     ),
                     child: Column(
                       children: [
                         const SizedBox(height: 26),
-                        Text(
-                          title,
-                          style: context.textTheme.titleLarge,
-                        ),
+                        Text(title, style: context.textTheme.titleLarge),
                         const SizedBox(height: 8),
                         Text(
                           subTitle,
@@ -173,7 +167,8 @@ class CardWidget extends StatelessWidget {
                           child: TextButton.icon(
                             iconAlignment: IconAlignment.end,
                             style: TextButton.styleFrom(
-                                foregroundColor: context.iconColor),
+                              foregroundColor: context.iconColor,
+                            ),
                             onPressed: onPressed,
                             label: Text(
                               "Enter",
@@ -199,6 +194,7 @@ class CardWidget extends StatelessWidget {
               ),
             ),
           ],
+          ),
         ),
       ),
     );

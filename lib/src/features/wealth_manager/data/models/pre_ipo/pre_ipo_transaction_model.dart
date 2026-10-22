@@ -16,14 +16,10 @@ class PreIPOTransactionModel {
   DateTime createdAt;
   DateTime updatedAt;
   DateTime settlementDate;
-  DateTime transactionCancelTimer;
   String currentStatus;
   String nextStep;
   String transactionInvoiceNo;
-  String timerDesc;
   Company company;
-  DocumentModel dealSlip;
-  PaymentModel payment;
   InvestorModel investor;
   List<TransactionStatusModel> statusList;
 
@@ -61,12 +57,6 @@ class PreIPOTransactionModel {
   //   }
   // }
 
-  bool get isTimerExpired {
-    return DateTime.now().isAfter(transactionCancelTimer);
-  }
-
-  bool get isTimerActive => !isTimerExpired;
-
   PreIPOTransactionModel({
     this.id = 0,
     this.investorId = 0,
@@ -80,17 +70,12 @@ class PreIPOTransactionModel {
     required this.updatedAt,
     required this.currentStatus,
     this.nextStep = 'N/A',
-    this.timerDesc = '',
     this.transactionInvoiceNo = '',
     required this.company,
-    required this.dealSlip,
-    required this.payment,
     required this.investor,
     DateTime? settlementDate,
-    DateTime? transactionCancelTimer,
     this.statusList = const [],
-  }) : settlementDate = settlementDate ?? DateTime(0),
-       transactionCancelTimer = transactionCancelTimer ?? DateTime(0);
+  }) : settlementDate = settlementDate ?? DateTime(0);
 
   factory PreIPOTransactionModel.fromJson(Map<String, dynamic> json) {
     return PreIPOTransactionModel(
@@ -105,17 +90,11 @@ class PreIPOTransactionModel {
       createdAt: Parse.toDateTime(json["created_at"]),
       updatedAt: Parse.toDateTime(json["updated_at"]),
       settlementDate: Parse.toDateTime(json['settlement_date']),
-      transactionCancelTimer: Parse.toDateTime(
-        json['transaction_cancel_timer'],
-      ),
       currentStatus: Parse.toStrings(json['current_status']),
       nextStep: Parse.toStrings(json["next_step"], 'N/A'),
-      timerDesc: Parse.toStrings(json["timer_desc"]),
       transactionInvoiceNo: Parse.toStrings(json["transaction_invoice_no"]),
       company: Company.fromJson(json["company"] ?? {}),
-      dealSlip: DocumentModel.fromJson(json["deal_slip"] ?? {}),
       investor: InvestorModel.fromJson(json["investor"] ?? {}),
-      payment: PaymentModel.fromJson(json["payment"] ?? {}),
       statusList: json["status_list"] != null
           ? List<TransactionStatusModel>.from(
               json["status_list"].map(
@@ -140,13 +119,9 @@ class PreIPOTransactionModel {
       "created_at": createdAt.toIso8601String(),
       "updated_at": updatedAt.toIso8601String(),
       "settlement_date": settlementDate.toIso8601String(),
-      "transactionCancelTimer": transactionCancelTimer.toIso8601String(),
       "current_status": currentStatus,
       "next_step": nextStep,
-      "timer_desc": timerDesc,
       "company": company.toJson(),
-      "deal_slip": dealSlip.toJson(),
-      "payment": payment.toJson(),
       "investor": investor.toJson(),
       "status_list": List<dynamic>.from(statusList.map((x) => x.toJson())),
     };
@@ -232,13 +207,11 @@ class BankDetailModel {
 
 class ActionData {
   String type;
-  String btnName;
   String url;
   BankDetailModel details;
 
   ActionData({
     this.type = "",
-    this.btnName = "",
     this.url = "",
     required this.details,
   });
@@ -246,7 +219,6 @@ class ActionData {
   factory ActionData.fromJson(Map<String, dynamic> json) {
     return ActionData(
       type: Parse.toStrings(json['type']),
-      btnName: Parse.toStrings(json['btn_name']),
       url: Parse.toStrings(json['url']),
       details: BankDetailModel.fromJson(json["details"] ?? {}),
     );
@@ -255,27 +227,9 @@ class ActionData {
   Map<String, dynamic> toJson() {
     return {
       "type": type,
-      "btn_name": btnName,
       "url": url,
       "details": details.toJson(),
     };
-  }
-}
-
-class PaymentModel {
-  DocumentModel document;
-
-  PaymentModel({DocumentModel? document})
-    : document = document ?? DocumentModel.fromJson({});
-
-  factory PaymentModel.fromJson(Map<String, dynamic> json) {
-    return PaymentModel(
-      document: DocumentModel.fromJson(json['document'] ?? {}),
-    );
-  }
-
-  Map<String, dynamic> toJson() {
-    return {"document": document.toJson()};
   }
 }
 

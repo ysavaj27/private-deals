@@ -16,6 +16,7 @@ import 'package:private_deals/src/features/institution/legacy/features/home/desk
 import 'package:private_deals/src/features/institution/legacy/features/home/home_page_ctrl.dart';
 import 'package:private_deals/src/features/institution/legacy/features/home/phone_home_page_view.dart';
 import 'package:private_deals/src/shared/theme/app_motion.dart';
+import 'package:private_deals/src/shared/theme/app_tokens.dart';
 import 'package:private_deals/src/features/catalog/presentation/primary/primary_landing_page.dart';
 import 'package:private_deals/src/features/catalog/presentation/secondary/secondary_landing_page.dart';
 import 'package:private_deals/src/features/catalog/presentation/pre_ipo/pre_ipo_landing_page/pre_ipo_landing_page.dart';
@@ -34,7 +35,7 @@ class HomePage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    if (context.isPhone) {
+    if (AppWindow.compact(context)) {
       return PhoneHomePageView(child: child);
     } else {
       return DesktopHomePageView(child: child);

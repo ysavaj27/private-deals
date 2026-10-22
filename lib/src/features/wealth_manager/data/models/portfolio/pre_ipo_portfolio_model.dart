@@ -26,7 +26,8 @@ class PreIPOPortfolioListModel {
       totalInvestmentAmount: Parse.toDouble(json['total_investment_amount']),
       holdings: json["holdings"] != null
           ? List<PreIPOPortfolioModel>.from(
-              json["holdings"].map((x) => PreIPOPortfolioModel.fromJson(x)))
+              json["holdings"].map((x) => PreIPOPortfolioModel.fromJson(x)),
+            )
           : [],
     );
   }
@@ -52,6 +53,11 @@ class PreIPOPortfolioModel {
   double lastTradedPrice;
   double sharesSold;
   double onSellShares;
+  double? reportedCurrentValue;
+  double? reportedReturnAmount;
+  double? reportedReturnPercentage;
+
+  bool get usesReportedReturn => reportedReturnAmount != null;
 
   bool get isAvailableShare => availableShares != 0 ? true : false;
 
@@ -62,17 +68,22 @@ class PreIPOPortfolioModel {
   double get availableShares =>
       (shares - onSellShares) < 0 ? 0 : shares - onSellShares;
 
-  // Getter for total current price
-  double get totalCurrentPrice => shares * currentSharePrice;
+  // Current value from the holding, otherwise shares × current share price.
+  double get totalCurrentPrice =>
+      reportedCurrentValue ?? shares * currentSharePrice;
 
-  // Getter for total purchase price
+  // Cost of the shares still held, using the average buy price.
   double get totalPurchasePrice => shares * purchasePrice;
 
-  // Getter for profit amount
-  double get profitAmount => totalCurrentPrice - totalPurchasePrice;
+  // Unrealised return from the holding, otherwise current value minus cost.
+  double get profitAmount =>
+      reportedReturnAmount ?? totalCurrentPrice - totalPurchasePrice;
 
-  // Getter for profit percentage
+  // Unrealised return percent from the holding, otherwise return ÷ cost.
   String get profitPercentage {
+    if (reportedReturnPercentage != null) {
+      return "${reportedReturnPercentage!.toStringAsFixed(2)}%";
+    }
     if (totalPurchasePrice == 0) {
       return "0%"; // To avoid division by zero
     }
@@ -101,6 +112,9 @@ class PreIPOPortfolioModel {
     this.lastTradedPrice = 0.0,
     this.sharesSold = 0,
     this.onSellShares = 0,
+    this.reportedCurrentValue,
+    this.reportedReturnAmount,
+    this.reportedReturnPercentage,
   });
 
   factory PreIPOPortfolioModel.fromJson(Map<String, dynamic> json) =>
@@ -113,22 +127,36 @@ class PreIPOPortfolioModel {
         lastTradedPrice: Parse.toDouble(json["last_traded_price"]),
         sharesSold: Parse.toDouble(json["shares_sold"]),
         onSellShares: Parse.toDouble(json["on_sell_shares"]),
+        reportedCurrentValue: _reportedDouble(json, "current_value"),
+        reportedReturnAmount: _reportedDouble(json, "return_amount"),
+        reportedReturnPercentage: _reportedDouble(json, "return_percentage"),
         company: CompanyData.fromJson(json["company"] ?? {}),
         investor: InvestorModel.fromJson(json["investor"] ?? {}),
       );
 
   Map<String, dynamic> toJson() => {
-        "id": id,
-        "shares": shares,
-        "purchase_price": purchasePrice,
-        "investment_amount": investmentAmount,
-        "last_traded_price": lastTradedPrice,
-        "shares_sold": sharesSold,
-        "on_sell_shares": onSellShares,
-        "current_share_price": currentSharePrice,
-        "company": company.toJson(),
-        "investor": investor.toJson(),
-      };
+    "id": id,
+    "shares": shares,
+    "purchase_price": purchasePrice,
+    "investment_amount": investmentAmount,
+    "last_traded_price": lastTradedPrice,
+    "shares_sold": sharesSold,
+    "on_sell_shares": onSellShares,
+    "current_share_price": currentSharePrice,
+    "company": company.toJson(),
+    "investor": investor.toJson(),
+    if (reportedCurrentValue != null) "current_value": reportedCurrentValue,
+    if (reportedReturnAmount != null) "return_amount": reportedReturnAmount,
+    if (reportedReturnPercentage != null)
+      "return_percentage": reportedReturnPercentage,
+  };
+}
+
+double? _reportedDouble(Map<String, dynamic> json, String key) {
+  if (!json.containsKey(key) || json[key] == null) return null;
+  final value = double.tryParse(json[key].toString());
+  if (value == null || !value.isFinite) return null;
+  return value;
 }
 
 class CompanyData {
@@ -136,21 +164,17 @@ class CompanyData {
   String brandName;
   String logo;
 
-  CompanyData({
-    this.id = 0,
-    this.brandName = '',
-    this.logo = '',
-  });
+  CompanyData({this.id = 0, this.brandName = '', this.logo = ''});
 
   factory CompanyData.fromJson(Map<String, dynamic> json) => CompanyData(
-        id: Parse.toInt(json["id"]),
-        brandName: Parse.toStrings(json["brand_name"]),
-        logo: Parse.parseUrl(json["logo"]),
-      );
+    id: Parse.toInt(json["id"]),
+    brandName: Parse.toStrings(json["brand_name"]),
+    logo: Parse.parseUrl(json["logo"]),
+  );
 
   Map<String, dynamic> toJson() => {
-        "id": id,
-        "brand_name": brandName,
-        "logo": logo,
-      };
+    "id": id,
+    "brand_name": brandName,
+    "logo": logo,
+  };
 }

@@ -29,8 +29,6 @@ class DealModel {
 
   String get priceLabel => isBuyDeal ? 'Offer price' : 'Share price';
 
-  bool get isUnlisted => company.type.toLowerCase() == 'unlisted';
-
   DealModel({
     this.uuid = "",
     this.dealType = "",

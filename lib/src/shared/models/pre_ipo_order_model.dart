@@ -12,7 +12,6 @@ class PreIpoOrderModel {
   final List<String>? action;
   final String? signLink;
   final int shares;
-  final double basePrice;
   final double distributerPrice;
   final double sharePrice;
   final double payableAmount;
@@ -54,7 +53,6 @@ class PreIpoOrderModel {
     this.action,
     this.signLink,
     this.shares = 0,
-    this.basePrice = 0,
     this.distributerPrice = 0,
     this.sharePrice = 0,
     this.payableAmount = 0,
@@ -90,8 +88,6 @@ class PreIpoOrderModel {
   bool get hasAction => action != null && action!.isNotEmpty;
 
   bool get hasDocuments => documents.isNotEmpty;
-
-  bool get isSelfInvestor => investor.isSelf;
 
   bool get isCancelled => orderStep == 'cancelled';
 
@@ -180,7 +176,7 @@ class PreIpoOrderModel {
     List<String>? actions;
     final rawAction = json['action'];
     if (rawAction is List) {
-      actions = rawAction.map((e) => e.toString()).toList();
+      actions = rawAction.map(Parse.toStrings).toList();
     }
 
     return PreIpoOrderModel(
@@ -196,7 +192,6 @@ class PreIpoOrderModel {
       action: actions,
       signLink: _nullableString(json['sign_link']),
       shares: Parse.toInt(json['shares']),
-      basePrice: Parse.toDouble(json['base_price']),
       distributerPrice: Parse.toDouble(json['distributer_price']),
       sharePrice: Parse.toDouble(json['share_price']),
       payableAmount: Parse.toDouble(

@@ -2,12 +2,10 @@ import 'package:private_deals/src/shared/app_exports.dart';
 import 'package:private_deals/src/shared/functions/parse.dart';
 
 class SocialMediaModel {
-  int masterSocialmediaLinkId;
   String link;
   SocialMediaTypeModel socialMediaType;
 
   SocialMediaModel({
-    this.masterSocialmediaLinkId = 0,
     this.link = '',
     required this.socialMediaType,
   });
@@ -32,15 +30,12 @@ class SocialMediaModel {
 
   factory SocialMediaModel.fromJson(Map<String, dynamic> json) =>
       SocialMediaModel(
-        masterSocialmediaLinkId:
-            Parse.toInt(json["master_socialmedia_link_id"]),
         link: Parse.toStrings(json["link"]),
         socialMediaType:
             SocialMediaTypeModel.fromJson(json["social_media_type"] ?? {}),
       );
 
   Map<String, dynamic> toJson() => {
-        "master_socialmedia_link_id": masterSocialmediaLinkId,
         "link": link,
         "social_media_type": socialMediaType.toJson(),
       };

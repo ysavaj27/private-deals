@@ -251,6 +251,11 @@ String _signed(double value) =>
         : value < 0
         ? '−'
         : ''}${_money(value)}';
+String _returnPercentage(PreIPOPortfolioModel holding) {
+  if (holding.usesReportedReturn) return holding.profitPercentage;
+  return holding.totalPurchasePrice > 0 ? holding.profitPercentage : '—';
+}
+
 Color _returnColor(BuildContext context, double value) => value == 0
     ? Theme.of(context).colorScheme.onSurfaceVariant
     : value < 0
@@ -352,7 +357,14 @@ class _HoldingCard extends StatelessWidget {
                         ? _money(holding.currentSharePrice)
                         : 'Unavailable',
                   ),
-                  ('Invested value', _money(holding.totalPurchasePrice)),
+                  (
+                    'Invested value',
+                    _money(
+                      holding.usesReportedReturn
+                          ? holding.investmentAmount
+                          : holding.totalPurchasePrice,
+                    ),
+                  ),
                   (
                     'Current value',
                     priced ? _money(holding.totalCurrentPrice) : '—',
@@ -360,7 +372,7 @@ class _HoldingCard extends StatelessWidget {
                   (
                     'Unrealised return',
                     priced
-                        ? '${_signed(holding.profitAmount)} (${holding.totalPurchasePrice > 0 ? holding.profitPercentage : '—'})'
+                        ? '${_signed(holding.profitAmount)} (${_returnPercentage(holding)})'
                         : '—',
                   ),
                 ];

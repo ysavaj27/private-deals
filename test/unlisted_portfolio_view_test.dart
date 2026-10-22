@@ -1,5 +1,6 @@
 import 'dart:io';
 import 'dart:ui' as ui;
+
 import 'package:flutter/rendering.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:private_deals/src/shared/app_exports.dart';
@@ -9,8 +10,9 @@ PreIPOPortfolioListModel group(
   String name,
   String company,
   int id,
-  double price,
-) => PreIPOPortfolioListModel.fromJson({
+  double price, {
+  Map<String, dynamic> extra = const {},
+}) => PreIPOPortfolioListModel.fromJson({
   'investor': {'id': id, 'name': name},
   'holdings': [
     {
@@ -20,6 +22,7 @@ PreIPOPortfolioListModel group(
       'current_share_price': price,
       'on_sell_shares': 100,
       'company': {'id': id, 'brand_name': company},
+      ...extra,
     },
   ],
 });
@@ -187,6 +190,31 @@ void main() {
       );
     },
   );
+  testWidgets('unrealised return uses the holding return fields', (
+    tester,
+  ) async {
+    await show(
+      tester,
+      list: [
+        group(
+          'Aarav Shah',
+          'National Stock Exchange',
+          1,
+          1250,
+          extra: {
+            'investment_amount': 110000,
+            'current_value': 125000,
+            'return_amount': 15000,
+            'return_percentage': 13.64,
+          },
+        ),
+      ],
+    );
+    expect(find.text('+₹ 15,000 (13.64%)'), findsOneWidget);
+    expect(find.text('+₹ 25,000 (25.00%)'), findsNothing);
+    expect(find.text('₹ 1,10,000'), findsOneWidget);
+    expect(find.text('₹ 1,25,000'), findsOneWidget);
+  });
   testWidgets('missing prices and empty holdings have explicit states', (
     tester,
   ) async {

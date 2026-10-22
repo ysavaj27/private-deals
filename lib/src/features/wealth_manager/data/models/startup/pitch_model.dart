@@ -6,8 +6,6 @@ class PitchModel {
   String title;
   String description;
   DateTime scheduledDate;
-  String hostUrl;
-  String userUrl;
 
   PitchModel({
     this.id = 0,
@@ -15,8 +13,6 @@ class PitchModel {
     this.title = "",
     this.description = "",
     required this.scheduledDate,
-    this.hostUrl = "",
-    this.userUrl = "",
   });
 
   factory PitchModel.fromJson(Map<String, dynamic> json) => PitchModel(
@@ -25,8 +21,6 @@ class PitchModel {
         title: Parse.toStrings(json["title"]),
         description: Parse.toStrings(json["description"]),
         scheduledDate: Parse.toDateTime(json["scheduled_date"]),
-        hostUrl: Parse.toStrings(json["host_url"]),
-        userUrl: Parse.toStrings(json["user_url"]),
       );
 
   Map<String, dynamic> toJson() => {
@@ -35,7 +29,5 @@ class PitchModel {
         "title": title,
         "description": description,
         "scheduled_date": scheduledDate.toIso8601String(),
-        "host_url": hostUrl,
-        "user_url": userUrl,
       };
 }

@@ -92,8 +92,8 @@ class NewsDetailBottomSheet extends StatelessWidget {
                     const SizedBox(height: 8),
                     // Image
                     SizedBox(
-                      width: 800,
-                      height: 400,
+                      width: double.infinity,
+                      height: MediaQuery.sizeOf(context).width < 600 ? 200 : 400,
                       child: CacheImage(
                         url: news.image,
                         fit: BoxFit.cover,

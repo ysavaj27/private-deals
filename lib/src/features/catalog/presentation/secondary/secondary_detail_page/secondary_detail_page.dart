@@ -11,7 +11,7 @@ class SecondaryDetailPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    if (context.isPhone) {
+    if (AppWindow.compact(context)) {
       return const PhoneSecondaryDetailView();
     } else {
       return const DesktopSecondaryDetailViews();

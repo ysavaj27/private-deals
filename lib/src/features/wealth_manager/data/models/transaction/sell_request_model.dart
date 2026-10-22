@@ -12,7 +12,6 @@ class SellRequestModel {
   double shares;
   double availableShares;
   double minimumShares;
-  double soldShares;
   double price;
   double purchasePrice;
   double currentPrice;
@@ -35,7 +34,6 @@ class SellRequestModel {
     this.shares = 0,
     this.availableShares = 0,
     this.minimumShares = 0,
-    this.soldShares = 0,
     this.price = 0.0,
     this.lastTradedPrice = 0.0,
     this.purchasePrice = 0.0,
@@ -60,7 +58,6 @@ class SellRequestModel {
       shares: Parse.toDouble(json["shares"]),
       availableShares: Parse.toDouble(json["available_shares"]),
       minimumShares: Parse.toDouble(json["minimum_shares"]),
-      soldShares: Parse.toDouble(json["sold_shares"]),
       price: Parse.toDouble(json["price"]),
       purchasePrice: Parse.toDouble(json["purchase_price"]),
       currentPrice: Parse.toDouble(json["current_price"]),
@@ -89,7 +86,6 @@ class SellRequestModel {
         "price": price,
         "available_shares": availableShares,
         "minimum_shares": minimumShares,
-        "sold_shares": soldShares,
         "purchase_price": purchasePrice,
         "current_price": currentPrice,
         "last_traded_price": lastTradedPrice,

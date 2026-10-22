@@ -186,7 +186,7 @@ class PhoneNewsWidget extends StatelessWidget {
                       children: [
                         SizedBox(
                           height: 90,
-                          width: context.width,
+                          width: double.infinity,
                           child: ClipRRect(
                             borderRadius: BorderRadius.circular(12),
                             child: CacheImage(

@@ -11,7 +11,7 @@ class ChangePasswordPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    if (context.isPhone) {
+    if (AppWindow.compact(context)) {
       return PhoneChangePasswordView();
     } else {
       return DesktopChangePasswordView();

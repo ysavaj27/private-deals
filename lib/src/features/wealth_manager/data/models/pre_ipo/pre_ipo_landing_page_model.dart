@@ -162,16 +162,16 @@ class ExclusiveDeal {
 
   factory ExclusiveDeal.fromJson(Map<String, dynamic> json) {
     return ExclusiveDeal(
-      id: json["id"] ?? 0,
-      brandName: json["brand_name"] ?? "",
-      logo: json["logo"] ?? "",
-      category: json["category"] ?? "",
+      id: Parse.toInt(json["id"]),
+      brandName: Parse.toStrings(json["brand_name"]),
+      logo: Parse.toStrings(json["logo"]),
+      category: Parse.toStrings(json["category"]),
       bgColorCode: json["bg_color_code"],
-      sharePrice: json["share_price"] ?? 0.0,
-      distributerPrice: json["distributer_price"] ?? 0.0,
-      basePrice: json["base_price"] ?? 0.0,
-      priceUpdatedToday: json["price_updated_today"] ?? 0,
-      lastYearSharePrice: json["last_year_share_price"] ?? 0.0,
+      sharePrice: Parse.toDouble(json["share_price"]),
+      distributerPrice: Parse.toDouble(json["distributer_price"]),
+      basePrice: Parse.toDouble(json["base_price"]),
+      priceUpdatedToday: Parse.toInt(json["price_updated_today"]),
+      lastYearSharePrice: Parse.toDouble(json["last_year_share_price"]),
       sharePrices: json["share_prices"] == null
           ? []
           : List<SharePrice>.from(
@@ -229,9 +229,9 @@ class Fundamentals {
 
   factory Fundamentals.fromJson(Map<String, dynamic> json) {
     return Fundamentals(
-      lotSize: json["lot_size"] ?? 0,
-      fiftyTwoWeekHigh: json["fifty_two_week_high"] ?? 0.0,
-      fiftyTwoWeekLow: json["fifty_two_week_low"] ?? 0.0,
+      lotSize: Parse.toInt(json["lot_size"]),
+      fiftyTwoWeekHigh: Parse.toDouble(json["fifty_two_week_high"]),
+      fiftyTwoWeekLow: Parse.toDouble(json["fifty_two_week_low"]),
     );
   }
 
@@ -259,8 +259,10 @@ class SharePrice {
 
   factory SharePrice.fromJson(Map<String, dynamic> json) {
     return SharePrice(
-      price: json["price"] ?? 0.0,
-      date: DateTime.tryParse(json["date"] ?? ""),
+      price: Parse.toDouble(json["price"]),
+      date: Parse.toStrings(json["date"]).isEmpty
+          ? null
+          : DateTime.tryParse(Parse.toStrings(json["date"])),
     );
   }
 
@@ -300,9 +302,11 @@ class RecentlyViewedStock {
 
   factory RecentlyViewedStock.fromJson(Map<String, dynamic> json) {
     return RecentlyViewedStock(
-      companyId: json["company_id"] ?? 0,
-      logo: json["logo"] ?? "",
-      viewedAt: DateTime.tryParse(json["viewed_at"] ?? ""),
+      companyId: Parse.toInt(json["company_id"]),
+      logo: Parse.toStrings(json["logo"]),
+      viewedAt: Parse.toStrings(json["viewed_at"]).isEmpty
+          ? null
+          : DateTime.tryParse(Parse.toStrings(json["viewed_at"])),
     );
   }
 
@@ -342,8 +346,8 @@ class Top {
 
   factory Top.fromJson(Map<String, dynamic> json) {
     return Top(
-      id: json["id"] ?? 0,
-      name: json["name"] ?? "",
+      id: Parse.toInt(json["id"]),
+      name: Parse.toStrings(json["name"]),
       percentage: Parse.toStrings(json["percentage"]),
       logo: Parse.parseUrl(json["logo"]),
     );

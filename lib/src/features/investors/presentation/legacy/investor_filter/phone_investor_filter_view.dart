@@ -1,3 +1,5 @@
+import 'dart:math' as math;
+
 import 'package:private_deals/src/shared/app_exports.dart';
 
 import 'package:private_deals/src/features/investors/presentation/legacy/investors_page_ctrl.dart';
@@ -9,7 +11,7 @@ class PhoneInvestorFilterView extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      width: 600,
+      width: math.min(MediaQuery.sizeOf(context).width - 32, 600),
       decoration: BoxDecoration(
         color: context.theme.scaffoldBackgroundColor,
         borderRadius: BorderRadius.circular(10),

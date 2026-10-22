@@ -98,6 +98,19 @@ abstract final class AppRadii {
   static BorderRadius get pill => BorderRadius.circular(full);
 }
 
+/// Window-size layout. iPhone Duo's outer display is a phone. Its inner
+/// display is about 669 pt wide in portrait and about 951 pt in landscape,
+/// and the size changes when the device folds. The desktop shell needs a
+/// full window, so those Duo sizes stay on the compact layout.
+abstract final class AppWindow {
+  static const double desktopMinWidth = 1024;
+
+  static bool compactWidth(double width) => width < desktopMinWidth;
+
+  static bool compact(BuildContext context) =>
+      compactWidth(MediaQuery.sizeOf(context).width);
+}
+
 /// Elevation tokens — theme prefers flat surfaces; keep a small set.
 abstract final class AppElevation {
   static const double none = 0;

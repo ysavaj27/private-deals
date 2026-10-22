@@ -404,11 +404,15 @@ class PhonePrimaryLandingView extends StatelessWidget {
                                             const Icon(Icons.smart_display,
                                                 size: 17),
                                             const SizedBox(width: 5),
-                                            Text(
-                                              model.startup.sector.name,
-                                              style: const TextStyle(
-                                                fontSize: 12,
-                                                fontWeight: FontWeight.w600,
+                                            Expanded(
+                                              child: Text(
+                                                model.startup.sector.name,
+                                                maxLines: 1,
+                                                overflow: TextOverflow.ellipsis,
+                                                style: const TextStyle(
+                                                  fontSize: 12,
+                                                  fontWeight: FontWeight.w600,
+                                                ),
                                               ),
                                             ),
                                           ],
@@ -423,11 +427,15 @@ class PhonePrimaryLandingView extends StatelessWidget {
                                               width: 17,
                                             ),
                                             const SizedBox(width: 5),
-                                            Text(
-                                              model.startup.city.name,
-                                              style: const TextStyle(
-                                                fontSize: 12,
-                                                fontWeight: FontWeight.w600,
+                                            Expanded(
+                                              child: Text(
+                                                model.startup.city.name,
+                                                maxLines: 1,
+                                                overflow: TextOverflow.ellipsis,
+                                                style: const TextStyle(
+                                                  fontSize: 12,
+                                                  fontWeight: FontWeight.w600,
+                                                ),
                                               ),
                                             ),
                                           ],
@@ -613,7 +621,7 @@ class PhonePrimaryLandingView extends StatelessWidget {
                                 child: CacheImage(
                                   url: model.banner,
                                   height: 191,
-                                  width: context.width,
+                                  width: double.infinity,
                                   fit: BoxFit.cover,
                                 ),
                               ),

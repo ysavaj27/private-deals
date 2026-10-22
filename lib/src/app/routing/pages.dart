@@ -98,11 +98,8 @@ class Pages {
       () => PrimaryListPage(),
       scope: AccessScope.primary,
     ),
-    privatePage(
-      Routes.preIPOList,
-      () => PreIPOListPage(),
-      scope: AccessScope.unlisted,
-    ),
+    // Scope comes from the path: lp-secondary stays secondary, unlisted stays unlisted.
+    privatePage(Routes.preIPOList, () => PreIPOListPage()),
     privatePushPage(Routes.addInvestorPage, () => AddInvestorPage()),
     privatePushPage(Routes.kycPage, () => KYCPage()),
     privatePushPage(Routes.notificationPage, () => NotificationPage()),
@@ -139,11 +136,7 @@ class Pages {
     privatePushPage(Routes.blogDetailPage, () => BlogDetailPage()),
     privatePushPage(Routes.blogListPage, () => const BlogListPage()),
     privatePushPage(Routes.blogListDetailPage, () => BlogDetailPage()),
-    privatePushPage(
-      Routes.newsListPage,
-      () => NewsListPage(),
-      scope: AccessScope.unlisted,
-    ),
+    privatePushPage(Routes.newsListPage, () => NewsListPage()),
     privatePage(
       Routes.secondary,
       () => SecondaryLandingPage(),

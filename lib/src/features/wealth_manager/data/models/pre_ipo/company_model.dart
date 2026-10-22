@@ -52,8 +52,6 @@ class CompanyModel {
   bool get canBuy =>
       category != app.config.enumValues.preIpoCategory.listed && id.isNotEmpty;
 
-  bool get transactionEnable => transaction.id == 0 ? true : false;
-
   double get initialPrice => sharePrices.isNotEmpty && sharePrices.length >= 2
       ? sharePrices.last.price
       : 0;

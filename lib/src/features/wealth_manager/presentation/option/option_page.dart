@@ -11,7 +11,7 @@ class OptionPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    if (context.isPhone) {
+    if (AppWindow.compact(context)) {
       return PhoneOptionView();
     } else {
       return DesktopOptionView();

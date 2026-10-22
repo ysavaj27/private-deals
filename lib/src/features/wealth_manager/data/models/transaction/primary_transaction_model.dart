@@ -13,7 +13,6 @@ class PrimaryTransactionModel {
   double investmentAmount;
   int paymentStatus;
   String paymentMode;
-  int isShareTransfered;
   int status;
   DateTime createdAt;
   DateTime updatedAt;
@@ -21,11 +20,7 @@ class PrimaryTransactionModel {
   String nextStep;
   double percentage;
   DocumentModel ssaDocument;
-  DocumentModel mgtChallanDocument;
-  DocumentModel mgtZipDocument;
   DocumentModel offerDocument;
-  DocumentModel counterSlip;
-  DocumentModel rtgsReceipt;
   DocumentModel shaDocument;
   InvestorModel investor;
   StartupModel startup;
@@ -64,7 +59,6 @@ class PrimaryTransactionModel {
     this.investmentAmount = 0.0,
     this.paymentStatus = 0,
     this.paymentMode = "",
-    this.isShareTransfered = 0,
     this.status = 0,
     required this.createdAt,
     required this.updatedAt,
@@ -72,11 +66,7 @@ class PrimaryTransactionModel {
     this.nextStep = '',
     this.percentage = 0,
     required this.ssaDocument,
-    required this.mgtChallanDocument,
-    required this.mgtZipDocument,
     required this.offerDocument,
-    required this.counterSlip,
-    required this.rtgsReceipt,
     required this.shaDocument,
     required this.startup,
     required this.investor,
@@ -95,7 +85,6 @@ class PrimaryTransactionModel {
         investmentAmount: Parse.toDouble(json["investment_amount"]),
         paymentStatus: Parse.toInt(json["payment_status"]),
         paymentMode: Parse.toStrings(json["payment_mode"]),
-        isShareTransfered: Parse.toInt(json["is_share_transfered"]),
         status: Parse.toInt(json["status"]),
         createdAt: Parse.toDateTime(json["created_at"]),
         updatedAt: Parse.toDateTime(json["updated_at"]),
@@ -103,13 +92,7 @@ class PrimaryTransactionModel {
         nextStep: Parse.toStrings(json["next_step"]),
         percentage: Parse.toDouble(json["percentage"]),
         ssaDocument: DocumentModel.fromJson(json["ssa_document"] ?? {}),
-        mgtChallanDocument: DocumentModel.fromJson(
-          json["mgt_challan_document"] ?? {},
-        ),
-        mgtZipDocument: DocumentModel.fromJson(json["mgt_zip_document"] ?? {}),
         offerDocument: DocumentModel.fromJson(json["offer_document"] ?? {}),
-        counterSlip: DocumentModel.fromJson(json["counter_slip"] ?? {}),
-        rtgsReceipt: DocumentModel.fromJson(json["rtgs_receipt"] ?? {}),
         shaDocument: DocumentModel.fromJson(json["sha_document"] ?? {}),
         startup: StartupModel.fromJson(json["startup"] ?? {}),
         investor: InvestorModel.fromJson(json["investor"] ?? {}),
@@ -127,7 +110,6 @@ class PrimaryTransactionModel {
     "investment_amount": investmentAmount,
     "payment_status": paymentStatus,
     "payment_mode": paymentMode,
-    "is_share_transfered": isShareTransfered,
     "status": status,
     "created_at": createdAt.toIso8601String(),
     "updated_at": updatedAt.toIso8601String(),
@@ -135,11 +117,7 @@ class PrimaryTransactionModel {
     "next_step": nextStep,
     "percentage": percentage,
     "ssa_document": ssaDocument.toJson(),
-    "mgt_challan_document": mgtChallanDocument.toJson(),
-    "mgt_zip_document": mgtZipDocument.toJson(),
     "offer_document": offerDocument.toJson(),
-    "counter_slip": counterSlip.toJson(),
-    "rtgs_receipt": rtgsReceipt.toJson(),
     "sha_document": shaDocument.toJson(),
     "startup": startup.toJson(),
     "investor": investor.toJson(),

@@ -91,44 +91,14 @@ class PhoneHomePageView extends StatelessWidget {
             ),
           ),
           drawer: const Drawer(child: SafeArea(child: PSideBarWidget())),
-          body: SafeArea(top: false, child: child ?? MainWidgets()),
-          bottomNavigationBar: NavigationBar(
+          body: SafeArea(
+            top: false,
+            bottom: false,
+            child: child ?? MainWidgets(),
+          ),
+          bottomNavigationBar: _SellerPhoneNavBar(
             selectedIndex: c.phoneNavIndex.clamp(0, 5),
-            onDestinationSelected: c.onPhoneNavTap,
-            height: 68,
-            labelBehavior: NavigationDestinationLabelBehavior.alwaysShow,
-            destinations: const [
-              NavigationDestination(
-                icon: Icon(Icons.dashboard_outlined),
-                selectedIcon: Icon(Icons.dashboard),
-                label: 'Dashboard',
-              ),
-              NavigationDestination(
-                icon: Icon(Icons.receipt_long_outlined),
-                selectedIcon: Icon(Icons.receipt_long),
-                label: 'Transactions',
-              ),
-              NavigationDestination(
-                icon: Icon(Icons.business_outlined),
-                selectedIcon: Icon(Icons.business),
-                label: 'Company',
-              ),
-              NavigationDestination(
-                icon: Icon(Icons.sell_outlined),
-                selectedIcon: Icon(Icons.sell),
-                label: 'Enquiries',
-              ),
-              NavigationDestination(
-                icon: Icon(Icons.account_balance_wallet_outlined),
-                selectedIcon: Icon(Icons.account_balance_wallet),
-                label: 'Portfolio',
-              ),
-              NavigationDestination(
-                icon: Icon(Icons.person_outline),
-                selectedIcon: Icon(Icons.person),
-                label: 'Profile',
-              ),
-            ],
+            onSelected: c.onPhoneNavTap,
           ),
         );
       }),
@@ -144,6 +114,108 @@ class PhoneHomePageView extends StatelessWidget {
       case ThemeMode.dark:
         return Icons.light_mode;
     }
+  }
+}
+
+class _SellerPhoneNavBar extends StatelessWidget {
+  const _SellerPhoneNavBar({
+    required this.selectedIndex,
+    required this.onSelected,
+  });
+
+  final int selectedIndex;
+  final ValueChanged<int> onSelected;
+
+  static const _destinations = <(IconData, IconData, String)>[
+    (Icons.dashboard_outlined, Icons.dashboard, 'Dashboard'),
+    (Icons.receipt_long_outlined, Icons.receipt_long, 'Transactions'),
+    (Icons.business_outlined, Icons.business, 'Company'),
+    (Icons.sell_outlined, Icons.sell, 'Enquiries'),
+    (
+      Icons.account_balance_wallet_outlined,
+      Icons.account_balance_wallet,
+      'Portfolio',
+    ),
+    (Icons.person_outline, Icons.person, 'Profile'),
+  ];
+
+  @override
+  Widget build(BuildContext context) {
+    final scheme = Theme.of(context).colorScheme;
+    final labelStyle = Theme.of(context).textTheme.labelMedium;
+
+    return Material(
+      color: scheme.surfaceContainer,
+      elevation: 3,
+      shadowColor: Colors.transparent,
+      surfaceTintColor: Colors.transparent,
+      child: SafeArea(
+        top: false,
+        child: SizedBox(
+          height: 68,
+          child: ListView.builder(
+            scrollDirection: Axis.horizontal,
+            padding: const EdgeInsets.symmetric(horizontal: 4),
+            itemCount: _destinations.length,
+            itemBuilder: (context, index) {
+              final destination = _destinations[index];
+              final selected = index == selectedIndex;
+              return Semantics(
+                button: true,
+                selected: selected,
+                child: InkWell(
+                  onTap: () => onSelected(index),
+                  child: ConstrainedBox(
+                    constraints: const BoxConstraints(
+                      minWidth: 84,
+                      minHeight: 48,
+                    ),
+                    child: Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 8),
+                      child: Column(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          DecoratedBox(
+                            decoration: BoxDecoration(
+                              color: selected
+                                  ? scheme.secondaryContainer
+                                  : Colors.transparent,
+                              borderRadius: BorderRadius.circular(16),
+                            ),
+                            child: SizedBox(
+                              width: 64,
+                              height: 32,
+                              child: Icon(
+                                selected ? destination.$2 : destination.$1,
+                                size: 24,
+                                color: selected
+                                    ? scheme.onSecondaryContainer
+                                    : scheme.onSurfaceVariant,
+                              ),
+                            ),
+                          ),
+                          const SizedBox(height: 4),
+                          Text(
+                            destination.$3,
+                            maxLines: 1,
+                            softWrap: false,
+                            style: labelStyle?.copyWith(
+                              color: selected
+                                  ? scheme.onSurface
+                                  : scheme.onSurfaceVariant,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ),
+                ),
+              );
+            },
+          ),
+        ),
+      ),
+    );
   }
 }
 

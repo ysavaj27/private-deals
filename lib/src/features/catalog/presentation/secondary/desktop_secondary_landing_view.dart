@@ -172,7 +172,11 @@ class FeaturedWidget extends StatelessWidget {
               logger.d(routes);
               Get.toNamed(routes);
             },
-            onLogoTap: (model, company) {},
+            onLogoTap: (model, company) {
+              var routes = Routes.preIPOListPath(Get.currentRoute, model.slug);
+              logger.d(routes);
+              Get.toNamed(routes);
+            },
           );
         }),
       ],

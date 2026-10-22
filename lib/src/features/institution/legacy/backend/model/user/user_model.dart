@@ -24,7 +24,6 @@ class UserModel {
 
   bool isPrimaryAccess;
   bool isSecondaryAccess;
-  bool isPreipoAccess;
 
   DateTime createdAt;
   DateTime updatedAt;
@@ -61,7 +60,6 @@ class UserModel {
     this.isDeleted = false,
     this.isPrimaryAccess = false,
     this.isSecondaryAccess = false,
-    this.isPreipoAccess = false,
     DateTime? createdAt,
     DateTime? updatedAt,
     this.createdBy = 0.0,
@@ -94,7 +92,6 @@ class UserModel {
       isDeleted: Parse.toBool(json['is_deleted']),
       isPrimaryAccess: Parse.toBool(json['is_primary_access']),
       isSecondaryAccess: Parse.toBool(json['is_secondary_access']),
-      isPreipoAccess: Parse.toBool(json['is_preipo_access']),
       createdAt: Parse.toDateTime(json['created_at']),
       updatedAt: Parse.toDateTime(json['updated_at']),
       createdBy: Parse.toDouble(json['created_by']),
@@ -136,7 +133,6 @@ class UserModel {
       "is_deleted": isDeleted,
       "is_primary_access": isPrimaryAccess,
       "is_secondary_access": isSecondaryAccess,
-      "is_preipo_access": isPreipoAccess,
       "created_at": createdAt.toIso8601String(),
       "updated_at": updatedAt.toIso8601String(),
       "created_by": createdBy,

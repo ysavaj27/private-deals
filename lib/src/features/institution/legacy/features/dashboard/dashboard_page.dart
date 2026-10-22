@@ -42,7 +42,7 @@ class _DashboardPageState extends State<DashboardPage> {
   void initState() {
     super.initState();
     WidgetsBinding.instance.addPostFrameCallback((_) {
-      if (!mounted || context.isPhone) return;
+      if (!mounted || AppWindow.compact(context)) return;
       _load();
     });
   }
@@ -142,7 +142,7 @@ class _DashboardPageState extends State<DashboardPage> {
 
   @override
   Widget build(BuildContext context) {
-    if (context.isPhone) {
+    if (AppWindow.compact(context)) {
       return PhoneDashboardView(loader: widget.loader);
     }
 

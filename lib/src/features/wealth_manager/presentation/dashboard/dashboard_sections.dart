@@ -52,58 +52,60 @@ class DashboardOverview extends StatelessWidget {
                   MediaQuery.textScalerOf(context).scale(300)
             ? 2
             : 1;
-        final width = (constraints.maxWidth - (columns - 1) * 12) / columns;
-        return Wrap(
-          spacing: 12,
-          runSpacing: 12,
-          children: [
-            for (var i = 0; i < items.length; i++)
-              SizedBox(
-                width: width,
-                child: CustomCardWidget(
-                  padding: const EdgeInsets.all(20),
-                  color: i == 0 ? theme.colorScheme.primaryContainer : null,
-                  borderColor: i == 0
-                      ? theme.colorScheme.primary.withValues(alpha: .35)
-                      : null,
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Icon(
-                        items[i].$3,
-                        size: 21,
-                        color: theme.colorScheme.primary,
+        final cards = <Widget>[
+          for (var i = 0; i < items.length; i++)
+            CustomCardWidget(
+              padding: const EdgeInsets.all(20),
+              color: i == 0 ? theme.colorScheme.primaryContainer : null,
+              borderColor: i == 0
+                  ? theme.colorScheme.primary.withValues(alpha: .35)
+                  : null,
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Icon(items[i].$3, size: 21, color: theme.colorScheme.primary),
+                  const SizedBox(height: 20),
+                  Tooltip(
+                    message: i < 2
+                        ? dashboardMoney(
+                            i == 0
+                                ? model.totalAmountInvested
+                                : model.averageTicketSize,
+                            full: true,
+                          )
+                        : items[i].$2,
+                    child: Text(
+                      items[i].$2,
+                      style: theme.textTheme.headlineSmall?.copyWith(
+                        fontWeight: FontWeight.w700,
                       ),
-                      const SizedBox(height: 20),
-                      Tooltip(
-                        message: i < 2
-                            ? dashboardMoney(
-                                i == 0
-                                    ? model.totalAmountInvested
-                                    : model.averageTicketSize,
-                                full: true,
-                              )
-                            : items[i].$2,
-                        child: Text(
-                          items[i].$2,
-                          style: theme.textTheme.headlineSmall?.copyWith(
-                            fontWeight: FontWeight.w700,
-                          ),
-                        ),
-                      ),
-                      const SizedBox(height: 5),
-                      Text(items[i].$1, style: theme.textTheme.titleSmall),
-                      const SizedBox(height: 4),
-                      Text(
-                        items[i].$4,
-                        style: theme.textTheme.bodySmall?.copyWith(
-                          color: theme.colorScheme.onSurfaceVariant,
-                        ),
-                      ),
-                    ],
+                    ),
                   ),
+                  const SizedBox(height: 5),
+                  Text(items[i].$1, style: theme.textTheme.titleSmall),
+                  const SizedBox(height: 4),
+                  Text(
+                    items[i].$4,
+                    style: theme.textTheme.bodySmall?.copyWith(
+                      color: theme.colorScheme.onSurfaceVariant,
+                    ),
+                  ),
+                ],
+              ),
+            ),
+        ];
+        return Column(
+          children: [
+            for (var i = 0; i < cards.length; i += columns) ...[
+              if (i > 0) const SizedBox(height: 12),
+              DashboardEqualHeightRow(
+                spacing: 12,
+                children: cards.sublist(
+                  i,
+                  (i + columns).clamp(0, cards.length),
                 ),
               ),
+            ],
           ],
         );
       },

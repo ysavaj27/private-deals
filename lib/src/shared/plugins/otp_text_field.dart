@@ -19,45 +19,54 @@ class OtpTextField extends StatelessWidget {
     final scheme = Theme.of(context).colorScheme;
     final textTheme = Theme.of(context).textTheme;
 
-    final defaultPinTheme = PinTheme(
-      width: 45,
-      height: 45,
-      textStyle: textTheme.titleMedium?.copyWith(
-        fontWeight: FontWeight.w600,
-      ),
-      decoration: BoxDecoration(
-        border: Border.all(color: scheme.outlineVariant),
-        borderRadius: BorderRadius.circular(8),
-        color: scheme.surface,
-      ),
-    );
+    return LayoutBuilder(
+      builder: (context, constraints) {
+        final pinWidth = constraints.maxWidth.isFinite
+            ? ((constraints.maxWidth - 40) / 6).clamp(32, 45).toDouble()
+            : 45.0;
+        final pinHeight = pinWidth < 40 ? 40.0 : pinWidth;
 
-    final focusedPinTheme = defaultPinTheme.copyDecorationWith(
-      border: Border.all(color: scheme.primary, width: 2),
-      borderRadius: BorderRadius.circular(12),
-    );
+        final defaultPinTheme = PinTheme(
+          width: pinWidth,
+          height: pinHeight,
+          textStyle: textTheme.titleMedium?.copyWith(
+            fontWeight: FontWeight.w600,
+          ),
+          decoration: BoxDecoration(
+            border: Border.all(color: scheme.outlineVariant),
+            borderRadius: BorderRadius.circular(8),
+            color: scheme.surface,
+          ),
+        );
 
-    final submittedPinTheme = defaultPinTheme.copyWith(
-      decoration: defaultPinTheme.decoration?.copyWith(
-        border: Border.all(color: scheme.primary),
-      ),
-    );
+        final focusedPinTheme = defaultPinTheme.copyDecorationWith(
+          border: Border.all(color: scheme.primary, width: 2),
+          borderRadius: BorderRadius.circular(12),
+        );
 
-    return Pinput(
-      length: 6,
-      controller: controller,
-      defaultPinTheme: defaultPinTheme,
-      focusedPinTheme: focusedPinTheme,
-      submittedPinTheme: submittedPinTheme,
-      validator: validator,
-      keyboardType: TextInputType.number,
-      mouseCursor: SystemMouseCursors.text,
-      inputFormatters: [
-        FilteringTextInputFormatter.allow(RegExp(r'[0-9]')),
-      ],
-      pinputAutovalidateMode: PinputAutovalidateMode.onSubmit,
-      showCursor: true,
-      onCompleted: onCompleted,
+        final submittedPinTheme = defaultPinTheme.copyWith(
+          decoration: defaultPinTheme.decoration?.copyWith(
+            border: Border.all(color: scheme.primary),
+          ),
+        );
+
+        return Pinput(
+          length: 6,
+          controller: controller,
+          defaultPinTheme: defaultPinTheme,
+          focusedPinTheme: focusedPinTheme,
+          submittedPinTheme: submittedPinTheme,
+          validator: validator,
+          keyboardType: TextInputType.number,
+          mouseCursor: SystemMouseCursors.text,
+          inputFormatters: [
+            FilteringTextInputFormatter.allow(RegExp(r'[0-9]')),
+          ],
+          pinputAutovalidateMode: PinputAutovalidateMode.onSubmit,
+          showCursor: true,
+          onCompleted: onCompleted,
+        );
+      },
     );
   }
 }

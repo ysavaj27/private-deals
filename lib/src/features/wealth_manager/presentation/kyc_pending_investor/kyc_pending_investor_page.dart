@@ -11,7 +11,7 @@ class KycPendingInvestorPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    if (context.isPhone) {
+    if (AppWindow.compact(context)) {
       return PhoneKycPendingInvestorView();
     } else {
       return DesktopKycPendingInvestorView();

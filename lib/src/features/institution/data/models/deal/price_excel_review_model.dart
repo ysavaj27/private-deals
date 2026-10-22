@@ -3,7 +3,6 @@ import 'package:private_deals/src/features/institution/support/functions/parse.d
 
 class PriceExcelReview {
   final bool saved;
-  final double feePercent;
   final int createCount;
   final int skipCount;
   final int unchangedCount;
@@ -14,7 +13,6 @@ class PriceExcelReview {
 
   const PriceExcelReview({
     this.saved = false,
-    this.feePercent = 0,
     this.createCount = 0,
     this.skipCount = 0,
     this.unchangedCount = 0,
@@ -37,7 +35,6 @@ class PriceExcelReview {
 
     return PriceExcelReview(
       saved: Parse.toBool(json['saved']),
-      feePercent: Parse.toDouble(json['fee_percent']),
       createCount: Parse.toInt(json['create_count']),
       skipCount: Parse.toInt(json['skip_count']),
       unchangedCount: Parse.toInt(json['unchanged_count']),

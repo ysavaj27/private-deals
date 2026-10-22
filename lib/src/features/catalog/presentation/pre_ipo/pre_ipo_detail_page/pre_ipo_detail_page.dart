@@ -14,9 +14,9 @@ class PreIPODetailPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     if (app.role == PartnerRole.institution) {
-      return SellerPreIPODetailView(phone: context.isPhone);
+      return SellerPreIPODetailView(phone: AppWindow.compact(context));
     }
-    if (context.isPhone) {
+    if (AppWindow.compact(context)) {
       return PhonePreIPODetailView();
     } else {
       return DesktopPreIPODetailView();

@@ -34,7 +34,7 @@ class HomePage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    if (context.isPhone) {
+    if (AppWindow.compact(context)) {
       return PhoneHomePageView(child: child);
     } else {
       return DesktopHomePageView(child: child);

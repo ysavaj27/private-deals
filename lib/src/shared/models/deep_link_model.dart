@@ -1,3 +1,5 @@
+import 'package:private_deals/src/shared/functions/parse.dart';
+
 class DeepLinkResult {
   final bool isAuth;
 
@@ -42,8 +44,8 @@ class DeepLinkParser {
     if (segments.length > 2) {
       detailRoute = segments[2];
 
-      detailId = int.tryParse(uri.queryParameters['id'] ?? "") ?? 0;
-      tab = uri.queryParameters['tab']?.toString() ?? "";
+      detailId = Parse.toInt(uri.queryParameters['id']);
+      tab = Parse.toStrings(uri.queryParameters['tab']);
     }
 
     return DeepLinkResult(

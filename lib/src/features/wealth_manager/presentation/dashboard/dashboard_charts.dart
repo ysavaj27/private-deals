@@ -225,40 +225,40 @@ class _DashboardActivityChartState extends State<DashboardActivityChart> {
                   ),
                 ],
                 const SizedBox(height: 8),
-                ExpansionTile(
-                  tilePadding: EdgeInsets.zero,
-                  childrenPadding: EdgeInsets.zero,
-                  title: Text(
-                    'View all period details (${all.length})',
-                    style: theme.textTheme.labelLarge,
-                  ),
-                  children: [
-                    for (final p in all)
-                      Padding(
-                        padding: const EdgeInsets.symmetric(vertical: 10),
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Wrap(
-                              spacing: 20,
-                              runSpacing: 6,
-                              children: [
-                                Text(
-                                  p.displayLabel,
-                                  style: theme.textTheme.titleSmall,
-                                ),
-                                Text(
-                                  dashboardMoney(p.amount, full: true),
-                                  style: theme.textTheme.bodyMedium,
-                                ),
-                              ],
-                            ),
-                            if (p.range.isNotEmpty)
-                              Text(p.range, style: theme.textTheme.bodySmall),
-                          ],
+                TextButton(
+                  onPressed: () => showDashboardDetails(
+                    context,
+                    'Investment history',
+                    '${monthly ? 'Monthly' : 'Quarterly'} · ${all.length} reported periods',
+                    [
+                      for (final p in all)
+                        Padding(
+                          padding: const EdgeInsets.symmetric(vertical: 10),
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Wrap(
+                                spacing: 20,
+                                runSpacing: 6,
+                                children: [
+                                  Text(
+                                    p.displayLabel,
+                                    style: theme.textTheme.titleSmall,
+                                  ),
+                                  Text(
+                                    dashboardMoney(p.amount, full: true),
+                                    style: theme.textTheme.bodyMedium,
+                                  ),
+                                ],
+                              ),
+                              if (p.range.isNotEmpty)
+                                Text(p.range, style: theme.textTheme.bodySmall),
+                            ],
+                          ),
                         ),
-                      ),
-                  ],
+                    ],
+                  ),
+                  child: Text('View all period details (${all.length})'),
                 ),
               ],
             ),
@@ -266,22 +266,16 @@ class _DashboardActivityChartState extends State<DashboardActivityChart> {
   }
 }
 
-class DashboardSectorChart extends StatefulWidget {
+class DashboardSectorChart extends StatelessWidget {
   const DashboardSectorChart({super.key, required this.model});
   final WDashboardModel model;
   @override
-  State<DashboardSectorChart> createState() => _DashboardSectorChartState();
-}
-
-class _DashboardSectorChartState extends State<DashboardSectorChart> {
-  bool _showAll = false;
-  @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
-    final insights = DashboardInsights(widget.model);
+    final insights = DashboardInsights(model);
     final sectors = insights.sectors;
     final total = insights.sectorTotal;
-    final shown = _showAll ? sectors : sectors.take(5);
+    final shown = sectors.take(3);
     return DashboardPanel(
       title: 'Sector exposure',
       subtitle:
@@ -322,89 +316,96 @@ class _DashboardSectorChartState extends State<DashboardSectorChart> {
                 for (final sector in shown)
                   Padding(
                     padding: const EdgeInsets.only(bottom: 8),
-                    child: Material(
-                      color: Colors.transparent,
-                      borderRadius: BorderRadius.circular(10),
-                      child: InkWell(
-                        onTap: () =>
-                            showDashboardSector(context, sector.sector),
-                        borderRadius: BorderRadius.circular(10),
-                        child: Padding(
-                          padding: const EdgeInsets.symmetric(
-                            vertical: 10,
-                            horizontal: 4,
-                          ),
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Row(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                                  Expanded(
-                                    child: Text(
-                                      sector.sector.name.isEmpty
-                                          ? 'Unspecified sector'
-                                          : sector.sector.name,
-                                      style: theme.textTheme.titleSmall,
-                                    ),
-                                  ),
-                                  const SizedBox(width: 12),
-                                  Text(
-                                    total > 0
-                                        ? dashboardPercent(
-                                            sector.amount / total * 100,
-                                          )
-                                        : '—',
-                                    style: theme.textTheme.titleSmall,
-                                  ),
-                                  const SizedBox(width: 5),
-                                  const Icon(
-                                    Icons.chevron_right_rounded,
-                                    size: 18,
-                                  ),
-                                ],
-                              ),
-                              const SizedBox(height: 10),
-                              DashboardBar(
-                                fraction: total > 0 ? sector.amount / total : 0,
-                                color: theme.colorScheme.primary,
-                                label:
-                                    '${sector.sector.name}: ${dashboardMoney(sector.amount, full: true)}',
-                              ),
-                              const SizedBox(height: 8),
-                              Wrap(
-                                spacing: 12,
-                                runSpacing: 4,
-                                children: [
-                                  DashboardAmount(
-                                    sector.amount,
-                                    style: theme.textTheme.bodySmall,
-                                  ),
-                                  Text(
-                                    '${sector.companies} ${sector.companies == 1 ? 'company' : 'companies'}',
-                                    style: theme.textTheme.bodySmall?.copyWith(
-                                      color: theme.colorScheme.onSurfaceVariant,
-                                    ),
-                                  ),
-                                ],
-                              ),
-                            ],
-                          ),
-                        ),
-                      ),
-                    ),
+                    child: _SectorExposureRow(sector: sector, total: total),
                   ),
-                if (sectors.length > 5)
+                if (sectors.length > 3)
                   TextButton(
-                    onPressed: () => setState(() => _showAll = !_showAll),
-                    child: Text(
-                      _showAll
-                          ? 'Show fewer sectors'
-                          : 'View all ${sectors.length} sectors',
+                    onPressed: () => showDashboardDetails(
+                      context,
+                      'Sector exposure',
+                      'All ${sectors.length} sectors · Share of reported sector investment',
+                      [
+                        for (final sector in sectors)
+                          _SectorExposureRow(sector: sector, total: total),
+                      ],
                     ),
+                    child: Text('View all ${sectors.length} sectors'),
                   ),
               ],
             ),
+    );
+  }
+}
+
+class _SectorExposureRow extends StatelessWidget {
+  const _SectorExposureRow({required this.sector, required this.total});
+  final SectorExposure sector;
+  final double total;
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    return Material(
+      color: Colors.transparent,
+      borderRadius: BorderRadius.circular(10),
+      child: InkWell(
+        onTap: () => showDashboardSector(context, sector.sector),
+        borderRadius: BorderRadius.circular(10),
+        child: Padding(
+          padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 4),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Row(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Expanded(
+                    child: Text(
+                      sector.sector.name.isEmpty
+                          ? 'Unspecified sector'
+                          : sector.sector.name,
+                      style: theme.textTheme.titleSmall,
+                    ),
+                  ),
+                  const SizedBox(width: 12),
+                  Text(
+                    total > 0
+                        ? dashboardPercent(sector.amount / total * 100)
+                        : '—',
+                    style: theme.textTheme.titleSmall,
+                  ),
+                  const SizedBox(width: 5),
+                  const Icon(Icons.chevron_right_rounded, size: 18),
+                ],
+              ),
+              const SizedBox(height: 10),
+              DashboardBar(
+                fraction: total > 0 ? sector.amount / total : 0,
+                color: theme.colorScheme.primary,
+                label:
+                    '${sector.sector.name}: ${dashboardMoney(sector.amount, full: true)}',
+              ),
+              const SizedBox(height: 8),
+              Wrap(
+                spacing: 12,
+                runSpacing: 4,
+                children: [
+                  DashboardAmount(
+                    sector.amount,
+                    style: theme.textTheme.bodySmall,
+                  ),
+                  Text(
+                    '${sector.companies} ${sector.companies == 1 ? 'company' : 'companies'}',
+                    style: theme.textTheme.bodySmall?.copyWith(
+                      color: theme.colorScheme.onSurfaceVariant,
+                    ),
+                  ),
+                ],
+              ),
+            ],
+          ),
+        ),
+      ),
     );
   }
 }
@@ -418,7 +419,6 @@ class DashboardPerformanceChart extends StatefulWidget {
 }
 
 class _DashboardPerformanceChartState extends State<DashboardPerformanceChart> {
-  bool _showAll = false;
   String _sort = 'invested';
   @override
   Widget build(BuildContext context) {
@@ -434,7 +434,7 @@ class _DashboardPerformanceChartState extends State<DashboardPerformanceChart> {
             : a.change!.compareTo(b.change!);
       });
     }
-    final shown = (_showAll ? rows : rows.take(5)).toList();
+    final shown = rows.take(3).toList();
     final maxValue = rows.fold<double>(
       0,
       (value, row) => math.max(
@@ -489,74 +489,7 @@ class _DashboardPerformanceChartState extends State<DashboardPerformanceChart> {
                 const SizedBox(height: 8),
                 for (final row in shown) ...[
                   const SizedBox(height: 20),
-                  Text(
-                    row.company.startupName.isEmpty
-                        ? 'Unnamed company'
-                        : row.company.startupName,
-                    style: theme.textTheme.titleSmall,
-                  ),
-                  const SizedBox(height: 8),
-                  Wrap(
-                    spacing: 8,
-                    runSpacing: 4,
-                    crossAxisAlignment: WrapCrossAlignment.center,
-                    children: [
-                      if (row.change != null) ...[
-                        Icon(
-                          row.change! > 0
-                              ? Icons.trending_up
-                              : row.change! < 0
-                              ? Icons.trending_down
-                              : Icons.trending_flat,
-                          size: 17,
-                          color: row.change! < 0
-                              ? colors.error
-                              : colors.primary,
-                        ),
-                        DashboardAmount(
-                          row.change!,
-                          signed: true,
-                          style: theme.textTheme.labelLarge?.copyWith(
-                            color: row.change! < 0
-                                ? colors.error
-                                : colors.primary,
-                          ),
-                        ),
-                        Text(
-                          row.changePercent == null
-                              ? 'Change % unavailable'
-                              : '(${row.changePercent! > 0 ? '+' : ''}${dashboardPercent(row.changePercent!)})',
-                          style: theme.textTheme.bodySmall?.copyWith(
-                            color: row.change! < 0
-                                ? colors.error
-                                : colors.onSurfaceVariant,
-                          ),
-                        ),
-                      ] else
-                        Text(
-                          'Current value unavailable',
-                          style: theme.textTheme.bodySmall?.copyWith(
-                            color: colors.onSurfaceVariant,
-                          ),
-                        ),
-                    ],
-                  ),
-                  const SizedBox(height: 12),
-                  _CompanyBar(
-                    label: 'Invested',
-                    amount: row.invested,
-                    maxValue: maxValue,
-                    color: colors.primary,
-                  ),
-                  const SizedBox(height: 8),
-                  if (row.hasValuation)
-                    _CompanyBar(
-                      label: 'Current',
-                      amount: row.company.currentValue,
-                      maxValue: maxValue,
-                      color: colors.secondary,
-                    ),
-                  const SizedBox(height: 16),
+                  _CompanyPerformanceRow(row: row, maxValue: maxValue),
                   if (row != shown.last)
                     Divider(
                       height: 1,
@@ -564,22 +497,192 @@ class _DashboardPerformanceChartState extends State<DashboardPerformanceChart> {
                     ),
                 ],
                 Text(
-                  '${rows.length} ${rows.length == 1 ? 'company' : 'companies'} reported · Bars share the same scale',
+                  '${rows.length > 3 ? 'Showing 3 of ${rows.length} companies' : '${rows.length} ${rows.length == 1 ? 'company' : 'companies'} reported'} · Bars share the same scale',
                   style: theme.textTheme.bodySmall?.copyWith(
                     color: colors.onSurfaceVariant,
                   ),
                 ),
-                if (rows.length > 5)
+                if (rows.length > 3)
                   TextButton(
-                    onPressed: () => setState(() => _showAll = !_showAll),
-                    child: Text(
-                      _showAll
-                          ? 'Show fewer companies'
-                          : 'View all ${rows.length} companies',
+                    onPressed: () => _showAllCompanyPerformance(
+                      context,
+                      rows,
+                      maxValue,
+                      _sort,
                     ),
+                    child: Text('View all ${rows.length} companies'),
                   ),
               ],
             ),
+    );
+  }
+}
+
+Future<void> _showAllCompanyPerformance(
+  BuildContext context,
+  List<CompanyPerformance> rows,
+  double maxValue,
+  String sort,
+) => showDialog<void>(
+  context: context,
+  builder: (context) {
+    final theme = Theme.of(context);
+    final order = switch (sort) {
+      'gains' => 'Largest value gains',
+      'declines' => 'Largest value declines',
+      _ => 'Largest investments',
+    };
+    return Dialog(
+      insetPadding: const EdgeInsets.all(16),
+      child: ConstrainedBox(
+        constraints: BoxConstraints(
+          maxWidth: 760,
+          maxHeight: MediaQuery.sizeOf(context).height * .85,
+        ),
+        child: Padding(
+          padding: const EdgeInsets.all(20),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Row(
+                children: [
+                  Expanded(
+                    child: Text(
+                      'Company performance',
+                      style: theme.textTheme.titleLarge,
+                    ),
+                  ),
+                  IconButton(
+                    tooltip: 'Close company performance',
+                    onPressed: () => Navigator.of(context).pop(),
+                    icon: const Icon(Icons.close),
+                  ),
+                ],
+              ),
+              const SizedBox(height: 4),
+              Text(
+                'All ${rows.length} companies · $order',
+                style: theme.textTheme.bodySmall,
+              ),
+              const SizedBox(height: 12),
+              Wrap(
+                spacing: 18,
+                runSpacing: 8,
+                children: [
+                  DashboardLegend(
+                    label: 'Invested',
+                    color: theme.colorScheme.primary,
+                  ),
+                  DashboardLegend(
+                    label: 'Current value',
+                    color: theme.colorScheme.secondary,
+                  ),
+                ],
+              ),
+              const SizedBox(height: 8),
+              Text(
+                'Bars share the same scale. Change is not annualised.',
+                style: theme.textTheme.bodySmall,
+              ),
+              const Divider(height: 24),
+              Flexible(
+                child: ListView.separated(
+                  key: const ValueKey('all-company-performance-list'),
+                  shrinkWrap: true,
+                  itemCount: rows.length,
+                  itemBuilder: (context, index) => _CompanyPerformanceRow(
+                    row: rows[index],
+                    maxValue: maxValue,
+                  ),
+                  separatorBuilder: (_, _) => const Divider(height: 24),
+                ),
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  },
+);
+
+class _CompanyPerformanceRow extends StatelessWidget {
+  const _CompanyPerformanceRow({required this.row, required this.maxValue});
+  final CompanyPerformance row;
+  final double maxValue;
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    final colors = theme.colorScheme;
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text(
+          row.company.startupName.isEmpty
+              ? 'Unnamed company'
+              : row.company.startupName,
+          style: theme.textTheme.titleSmall,
+        ),
+        const SizedBox(height: 8),
+        Wrap(
+          spacing: 8,
+          runSpacing: 4,
+          crossAxisAlignment: WrapCrossAlignment.center,
+          children: [
+            if (row.change != null) ...[
+              Icon(
+                row.change! > 0
+                    ? Icons.trending_up
+                    : row.change! < 0
+                    ? Icons.trending_down
+                    : Icons.trending_flat,
+                size: 17,
+                color: row.change! < 0 ? colors.error : colors.primary,
+              ),
+              DashboardAmount(
+                row.change!,
+                signed: true,
+                style: theme.textTheme.labelLarge?.copyWith(
+                  color: row.change! < 0 ? colors.error : colors.primary,
+                ),
+              ),
+              Text(
+                row.changePercent == null
+                    ? 'Change % unavailable'
+                    : '(${row.changePercent! > 0 ? '+' : ''}${dashboardPercent(row.changePercent!)})',
+                style: theme.textTheme.bodySmall?.copyWith(
+                  color: row.change! < 0
+                      ? colors.error
+                      : colors.onSurfaceVariant,
+                ),
+              ),
+            ] else
+              Text(
+                'Current value unavailable',
+                style: theme.textTheme.bodySmall?.copyWith(
+                  color: colors.onSurfaceVariant,
+                ),
+              ),
+          ],
+        ),
+        const SizedBox(height: 12),
+        _CompanyBar(
+          label: 'Invested',
+          amount: row.invested,
+          maxValue: maxValue,
+          color: colors.primary,
+        ),
+        const SizedBox(height: 8),
+        if (row.hasValuation)
+          _CompanyBar(
+            label: 'Current',
+            amount: row.company.currentValue,
+            maxValue: maxValue,
+            color: colors.secondary,
+          ),
+        const SizedBox(height: 16),
+      ],
     );
   }
 }

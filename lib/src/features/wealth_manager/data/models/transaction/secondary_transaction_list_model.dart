@@ -15,8 +15,6 @@ class SecondaryTransactionListModel {
     required this.createdAt,
   });
 
-  bool get isSelling => type == 'sell';
-
   bool get isBuying => type == 'buy';
 
   factory SecondaryTransactionListModel.fromJson(Map<String, dynamic> json) {

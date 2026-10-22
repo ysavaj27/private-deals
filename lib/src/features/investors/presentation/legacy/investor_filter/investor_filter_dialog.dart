@@ -8,7 +8,7 @@ class InvestorFilterDialog extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    if (context.isPhone) {
+    if (AppWindow.compact(context)) {
       return PhoneInvestorFilterView();
     } else {
       return DesktopInvestorFilterView();

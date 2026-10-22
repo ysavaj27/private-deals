@@ -29,7 +29,7 @@ class CreateDealPage extends StatelessWidget {
         title: Text(c.pageTitle, style: context.textTheme.headlineSmall),
       ),
       body: SafeArea(
-        child: context.isPhone
+        child: AppWindow.compact(context)
             ? const PhoneCreateDealView()
             : const DesktopCreateDealView(),
       ),

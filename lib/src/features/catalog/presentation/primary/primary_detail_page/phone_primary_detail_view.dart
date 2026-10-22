@@ -36,19 +36,25 @@ class PhonePrimaryDetailView extends StatelessWidget {
                         left: 20,
                         child: InkWell(
                           onTap: onBackPressed,
-                          borderRadius: BorderRadius.circular(63),
-                          child: Container(
-                            height: 35,
-                            width: 35,
-                            decoration: BoxDecoration(
-                              shape: BoxShape.circle,
-                              color:
-                                  context.theme.dividerColor.withValues(alpha: 0.5),
-                            ),
-                            child: Icon(
-                              Icons.arrow_back,
-                              color: context.theme.scaffoldBackgroundColor,
-                              size: 20,
+                          borderRadius: BorderRadius.circular(22),
+                          child: SizedBox(
+                            height: 44,
+                            width: 44,
+                            child: Center(
+                              child: Container(
+                                height: 35,
+                                width: 35,
+                                decoration: BoxDecoration(
+                                  shape: BoxShape.circle,
+                                  color: context.theme.dividerColor
+                                      .withValues(alpha: 0.5),
+                                ),
+                                child: Icon(
+                                  Icons.arrow_back,
+                                  color: context.theme.scaffoldBackgroundColor,
+                                  size: 20,
+                                ),
+                              ),
                             ),
                           ),
                         ),
@@ -95,7 +101,6 @@ class PhonePrimaryDetailView extends StatelessWidget {
                           ],
                         ),
                         Container(
-                          width: context.width,
                           margin: const EdgeInsets.symmetric(vertical: 15),
                           padding: const EdgeInsets.all(10),
                           decoration: BoxDecoration(

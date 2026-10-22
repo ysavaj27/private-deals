@@ -11,11 +11,10 @@ class EnquiryQuote {
       settlementDays = _readSettlementDays(json['settlement_days']),
       settlementLabel = _readSettlementLabel(json['settlement_label']),
       status = Parse.toStrings(json['status']).trim().toLowerCase(),
-      institutionId = Parse.toInt((json['institution'] as Map?)?['id']),
       institutionName = Parse.toStrings((json['institution'] as Map?)?['name']);
 
   final String uuid, status, institutionName;
-  final int quantity, institutionId;
+  final int quantity;
   final int? settlementDays;
   final String? settlementLabel;
   final double basePrice, sharePrice;

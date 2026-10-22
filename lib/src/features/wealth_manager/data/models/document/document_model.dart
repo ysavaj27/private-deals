@@ -2,7 +2,6 @@ import 'package:private_deals/src/shared/functions/parse.dart';
 
 class DocumentModel {
   int id;
-  String apiId;
   String path;
   String signedPath;
   int status;
@@ -14,7 +13,6 @@ class DocumentModel {
 
   DocumentModel({
     this.id = 0,
-    this.apiId = '',
     this.path = '',
     this.signedPath = '',
     this.status = 0,
@@ -27,7 +25,6 @@ class DocumentModel {
 
   factory DocumentModel.fromJson(Map<String, dynamic> json) => DocumentModel(
         id: Parse.toInt(json["id"]),
-        apiId: Parse.toStrings(json["apiId"]),
         path: Parse.parseUrl(json["path"]),
         signedPath: Parse.parseUrl(json["signed_path"]),
         status: Parse.toInt(json["status"]),
@@ -53,32 +50,28 @@ class DocumentModel {
 
 class MetaModel {
   String name;
-  String sname;
   List<int> startup;
   List<int> investor;
-  List<int> primaryTransactions;
 
   MetaModel({
     this.name = "",
-    this.sname = "",
     this.startup = const [],
     this.investor = const [],
-    this.primaryTransactions = const [],
   });
 
   factory MetaModel.fromJson(Map<String, dynamic> json) => MetaModel(
         name: Parse.toStrings(json["name"]),
-        sname: Parse.toStrings(json["sname"]),
-        startup: List<int>.from(json["startup"] ?? []),
-        investor: List<int>.from(json["investor"] ?? []),
-        primaryTransactions: List<int>.from(json["primary_transactions"] ?? []),
+        startup: json["startup"] is List
+            ? (json["startup"] as List).map(Parse.toInt).toList()
+            : const [],
+        investor: json["investor"] is List
+            ? (json["investor"] as List).map(Parse.toInt).toList()
+            : const [],
       );
 
   Map<String, dynamic> toJson() => {
         "name": name,
-        "sname": sname,
         "startup": startup,
         "investor": investor,
-        "primary_transactions": primaryTransactions,
       };
 }

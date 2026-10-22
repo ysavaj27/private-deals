@@ -12,7 +12,6 @@ class RaisingRoundModel {
   double cap;
   double equityOffered;
   double minimumInvestment;
-  double minimumInvestmentAif;
   double totalFundRequirement;
   double fundRequirement;
 
@@ -28,7 +27,6 @@ class RaisingRoundModel {
     this.cap = 0.0,
     this.equityOffered = 0.0,
     this.minimumInvestment = 0,
-    this.minimumInvestmentAif = 0,
     this.totalFundRequirement = 0,
     this.fundRequirement = 0,
   });
@@ -46,7 +44,6 @@ class RaisingRoundModel {
         cap: Parse.toDouble(json["cap"]),
         equityOffered: Parse.toDouble(json["equity_offered"]),
         minimumInvestment: Parse.toDouble(json["minimum_investment"]),
-        minimumInvestmentAif: Parse.toDouble(json["minimum_investment_aif"]),
         totalFundRequirement: Parse.toDouble(json["total_fund_requirement"]),
         fundRequirement: Parse.toDouble(json["fund_requirement"]),
       );
@@ -63,7 +60,6 @@ class RaisingRoundModel {
         "cap": cap,
         "equity_offered": equityOffered,
         "minimum_investment": minimumInvestment,
-        "minimum_investment_aif": minimumInvestmentAif,
         "total_fund_requirement": totalFundRequirement,
         "fund_requirement": fundRequirement,
       };

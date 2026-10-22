@@ -11,7 +11,7 @@ class PreIPOListPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    if (context.isPhone) {
+    if (AppWindow.compact(context)) {
       return PhonePreIPOListView();
     } else {
       return DesktopPreIPOListView();

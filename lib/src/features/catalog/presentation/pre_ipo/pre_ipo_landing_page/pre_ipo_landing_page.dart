@@ -11,7 +11,7 @@ class PreIPOLandingPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    if (context.isPhone) {
+    if (AppWindow.compact(context)) {
       return  PhonePreIPOLandingView();
     } else {
       return  DesktopPreIPOLandingView();

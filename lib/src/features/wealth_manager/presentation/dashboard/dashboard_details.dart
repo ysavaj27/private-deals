@@ -5,7 +5,7 @@ import 'dashboard_components.dart';
 import 'dashboard_page_ctrl.dart';
 import 'dashboard_insights.dart';
 
-Future<void> _showDetails(
+Future<void> showDashboardDetails(
   BuildContext context,
   String title,
   String subtitle,
@@ -58,7 +58,7 @@ Future<void> _showDetails(
 );
 
 void showDashboardSector(BuildContext context, WSector sector) {
-  _showDetails(
+  showDashboardDetails(
     context,
     sector.name.isEmpty ? 'Sector details' : sector.name,
     'Invested capital ${dashboardMoney(sector.totalInvestment, full: true)} · ${sector.startups.length} investment records',
@@ -111,7 +111,7 @@ void showDashboardInvestors(
   bool pendingKyc = false,
   bool readOnly = false,
 }) {
-  _showDetails(
+  showDashboardDetails(
     context,
     title,
     '${readOnly ? 'Sample data · ' : ''}${investors.length} investors',
@@ -158,7 +158,7 @@ void showDashboardInvestorDirectory(
 ) {
   final sorted = [...investors]
     ..sort((a, b) => b.amountInvested.compareTo(a.amountInvested));
-  _showDetails(
+  showDashboardDetails(
     context,
     'Investor directory',
     'Ranked by invested capital · ${sorted.length} investors',

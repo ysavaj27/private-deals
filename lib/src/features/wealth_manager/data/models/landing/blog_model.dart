@@ -8,7 +8,6 @@ class BlogModel {
   String urlSlug;
   String shortDescription;
   String longDescription;
-  int displayOrder;
   DateTime createdAt;
   DateTime updatedAt;
 
@@ -20,7 +19,6 @@ class BlogModel {
     this.urlSlug = '',
     this.shortDescription = '',
     this.longDescription = '',
-    this.displayOrder = 0,
     required this.createdAt,
     required this.updatedAt,
   });
@@ -33,7 +31,6 @@ class BlogModel {
         urlSlug: Parse.toStrings(json["url_slug"]),
         shortDescription: Parse.toStrings(json["short_description"]),
         longDescription: Parse.toStrings(json["long_description"]),
-        displayOrder: Parse.toInt(json["display_order"]),
         createdAt: Parse.toDateTime(json["created_at"]),
         updatedAt: Parse.toDateTime(json["updated_at"]),
       );
@@ -46,7 +43,6 @@ class BlogModel {
         "url_slug": urlSlug,
         "short_description": shortDescription,
         "long_description": longDescription,
-        "display_order": displayOrder,
         "created_at": createdAt.toIso8601String(),
         "updated_at": updatedAt.toIso8601String(),
       };

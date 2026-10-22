@@ -44,34 +44,25 @@ class IDashboardModel {
 }
 
 class Statistics {
-  int totalStartupInvested;
   double totalInvestmentAmount;
-  double profitBooked;
-  double currentPortfolioValue;
   List<InvestmentList> list;
 
   Statistics({
-    this.totalStartupInvested = 0,
     this.totalInvestmentAmount = 0.0,
-    this.profitBooked = 0.0,
-    this.currentPortfolioValue = 0.0,
     required this.list,
   });
 
   factory Statistics.fromJson(Map<String, dynamic> json) => Statistics(
-        totalStartupInvested: Parse.toInt(json["total_startup_invested"]),
         totalInvestmentAmount: Parse.toDouble(json["total_investment_amount"]),
-        profitBooked: Parse.toDouble(json["profit_booked"]),
-        currentPortfolioValue: Parse.toDouble(json["current_portfolio_value"]),
-        list: List<InvestmentList>.from(
-            json["list"]?.map((x) => InvestmentList.fromJson(x)) ?? []),
+        list: json["list"] is List
+            ? (json["list"] as List)
+                .map((x) => InvestmentList.fromJson(x))
+                .toList()
+            : [],
       );
 
   Map<String, dynamic> toJson() => {
-        "total_startup_invested": totalStartupInvested,
         "total_investment_amount": totalInvestmentAmount,
-        "profit_booked": profitBooked,
-        "current_portfolio_value": currentPortfolioValue,
         "list": List<dynamic>.from(list.map((x) => x.toJson())),
       };
 }
@@ -121,32 +112,20 @@ class InvestmentList {
 }
 
 class PendingTasks {
-  int ssaSign;
-  int offerSign;
-  int shaSign;
   int fundTransfer;
   int shareTransfer;
 
   PendingTasks({
-    this.ssaSign = 0,
-    this.offerSign = 0,
-    this.shaSign = 0,
     this.fundTransfer = 0,
     this.shareTransfer = 0,
   });
 
   factory PendingTasks.fromJson(Map<String, dynamic> json) => PendingTasks(
-        ssaSign: Parse.toInt(json["ssa_sign"]),
-        offerSign: Parse.toInt(json["offer_sign"]),
-        shaSign: Parse.toInt(json["sha_sign"]),
         fundTransfer: Parse.toInt(json["fund_transfer"]),
         shareTransfer: Parse.toInt(json["share_transfer"]),
       );
 
   Map<String, dynamic> toJson() => {
-        "ssa_sign": ssaSign,
-        "offer_sign": offerSign,
-        "sha_sign": shaSign,
         "fund_transfer": fundTransfer,
         "share_transfer": shareTransfer,
       };

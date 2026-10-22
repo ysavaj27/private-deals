@@ -101,7 +101,11 @@ class PhoneHomePageView extends StatelessWidget {
                 ],
               ),
               drawer: Drawer(child: SafeArea(child: PSideBarWidget())),
-              body: child ?? MainWidgets(),
+              body: SafeArea(
+                top: false,
+                bottom: false,
+                child: child ?? MainWidgets(),
+              ),
               floatingActionButtonLocation:
                   FloatingActionButtonLocation.centerDocked,
               floatingActionButton: Semantics(
@@ -254,28 +258,33 @@ class CustomNavigationIcon extends StatelessWidget {
                 if (type != null) c.onTap(type!);
               },
           borderRadius: AppRadii.mdAll,
-          child: Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                SVGImage(
-                  icon,
-                  height: size,
-                  width: size,
-                  colorFilter: ColorFilter.mode(color, BlendMode.srcIn),
-                ),
-                const SizedBox(height: 2),
-                Text(
-                  label,
-                  style: context.textTheme.labelSmall?.copyWith(
-                    color: color,
-                    fontWeight: isSelected ? FontWeight.w600 : FontWeight.w500,
-                    fontSize: 10,
+          child: ConstrainedBox(
+            constraints: const BoxConstraints(minHeight: 48),
+            child: Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  SVGImage(
+                    icon,
+                    height: size,
+                    width: size,
+                    colorFilter: ColorFilter.mode(color, BlendMode.srcIn),
                   ),
-                ),
-              ],
+                  const SizedBox(height: 2),
+                  Text(
+                    label,
+                    style: context.textTheme.labelSmall?.copyWith(
+                      color: color,
+                      fontWeight: isSelected
+                          ? FontWeight.w600
+                          : FontWeight.w500,
+                      fontSize: 11,
+                    ),
+                  ),
+                ],
+              ),
             ),
           ),
         ),

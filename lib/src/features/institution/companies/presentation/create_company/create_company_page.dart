@@ -36,7 +36,7 @@ class CreateCompanyForm extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final phone = context.isPhone;
+    final phone = AppWindow.compact(context);
     return SafeArea(
       child: Obx(() {
         final saving = c.saving.value;

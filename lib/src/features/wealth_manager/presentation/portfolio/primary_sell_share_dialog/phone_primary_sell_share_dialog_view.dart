@@ -1,3 +1,5 @@
+import 'dart:math' as math;
+
 import 'package:private_deals/src/shared/app_exports.dart';
 
 import 'package:private_deals/src/features/wealth_manager/presentation/portfolio/primary_sell_share_dialog/primary_sell_share_dialog_ctrl.dart';
@@ -10,15 +12,16 @@ class PhonePrimarySellShareDialogView extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return CustomCardWidget(
-      width: context.width,
+      width: math.min(MediaQuery.sizeOf(context).width - 32, 480),
       color: context.theme.scaffoldBackgroundColor,
       padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 19),
       child: Form(
         key: c.phoneKey,
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
+        child: SingleChildScrollView(
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
             const Text(
               "Sell Now",
               style: TextStyle(
@@ -144,7 +147,8 @@ class PhonePrimarySellShareDialogView extends StatelessWidget {
                 );
               }),
             ),
-          ],
+            ],
+          ),
         ),
       ),
     );

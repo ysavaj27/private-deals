@@ -1,3 +1,5 @@
+import 'dart:math' as math;
+
 import 'package:private_deals/src/features/investors/presentation/complete_investor_kyc_button.dart';
 
 import 'unlisted_portfolio_view.dart';
@@ -92,13 +94,14 @@ class _PhonePortfolioFilter extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return CustomCardWidget(
-      width: context.width,
+      width: math.min(MediaQuery.sizeOf(context).width - 32, 420),
       padding: EdgeInsets.symmetric(horizontal: 20, vertical: 20),
       color: context.theme.scaffoldBackgroundColor,
-      child: Column(
-        mainAxisSize: MainAxisSize.min,
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
+      child: SingleChildScrollView(
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
@@ -165,7 +168,8 @@ class _PhonePortfolioFilter extends StatelessWidget {
             ],
           ),
           SizedBox(height: 10),
-        ],
+          ],
+        ),
       ),
     );
   }
@@ -317,9 +321,13 @@ class StartUpPortfolioWidget extends StatelessWidget {
                                   color: context.theme.disabledColor,
                                 ),
                               ),
-                              Text(
-                                "${model.totalCompanyCount}",
-                                style: TextStyle(fontSize: 13),
+                              Flexible(
+                                child: Text(
+                                  "${model.totalCompanyCount}",
+                                  style: TextStyle(fontSize: 13),
+                                  maxLines: 1,
+                                  overflow: TextOverflow.ellipsis,
+                                ),
                               ),
                             ],
                           ),
@@ -333,9 +341,13 @@ class StartUpPortfolioWidget extends StatelessWidget {
                                   color: context.theme.disabledColor,
                                 ),
                               ),
-                              Text(
-                                model.totalInvestmentAmount.toFormattedPrice,
-                                style: TextStyle(fontSize: 13),
+                              Flexible(
+                                child: Text(
+                                  model.totalInvestmentAmount.toFormattedPrice,
+                                  style: TextStyle(fontSize: 13),
+                                  maxLines: 1,
+                                  overflow: TextOverflow.ellipsis,
+                                ),
                               ),
                             ],
                           ),
@@ -391,9 +403,13 @@ class StartupPortfolioCard extends StatelessWidget {
                   height: 75,
                   width: 75,
                   onTap: () {
+                    final slug = model.startup.urlSlug;
+                    if (slug.isEmpty) return;
                     Get.toNamed(
-                      Routes.primaryDetailPage,
-                      arguments: model.startupId,
+                      Routes.primaryDetailPath(
+                        Routes.catalogPath(WTabBarEnum.primary.slug),
+                        slug,
+                      ),
                     );
                   },
                 ),
@@ -508,8 +524,8 @@ class StartupPortfolioCard extends StatelessWidget {
                     ),
                   ),
                   Visibility(
-                    visible: model.canSell &&
-                        !model.investor.isPreIpoKycComplete,
+                    visible:
+                        model.canSell && !model.investor.isPreIpoKycComplete,
                     child: CompleteInvestorKycButton(
                       investor: model.investor,
                       onSaved: () async {
@@ -629,7 +645,7 @@ class StartupPortfolioCard extends StatelessWidget {
                     style: context.textTheme.bodySmall,
                   ),
                   Text(
-                    model.profitAmount.toCurrency,
+                    model.profitAmountText,
                     style: TextStyle(
                       color: model.profitColor,
                       fontSize: 12,
