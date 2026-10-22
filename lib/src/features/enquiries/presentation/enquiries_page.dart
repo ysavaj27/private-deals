@@ -1,14 +1,19 @@
 import 'package:intl/intl.dart';
+import 'package:private_deals/src/core/permissions/partner_role.dart';
 import 'package:private_deals/src/shared/app_exports.dart';
 import 'package:private_deals/src/features/enquiries/data/enquiry_api.dart';
 import 'package:private_deals/src/features/enquiries/data/enquiry_model.dart';
 import 'package:private_deals/src/features/enquiries/presentation/enquiry_decision_dialog.dart';
 import 'package:private_deals/src/features/enquiries/presentation/enquiry_quote_dialog.dart';
+import 'package:private_deals/src/features/institution/legacy/features/transaction/pre_ipo_transaction/pre_ipo_transaction_page_ctrl.dart';
 import 'package:private_deals/src/features/wealth_manager/presentation/investor_transaction/pre_ipo/pre_ipo_buy_transaction/pre_ipo_buy_transaction_page_ctrl.dart';
 import 'package:private_deals/src/features/wealth_manager/presentation/investor_transaction/pre_ipo/pre_ipo_buy_transaction/pre_ipo_order_detail_dialog.dart';
 
 class EnquiriesPage extends StatefulWidget {
   const EnquiriesPage({super.key, this.institution = false});
+
+  /// Selects the incoming Institution inbox API. Seller My Enquiries uses the
+  /// shared partner API, so this is independent of the authenticated role.
   final bool institution;
 
   @override
@@ -114,7 +119,10 @@ class _EnquiriesPageState extends State<EnquiriesPage> {
     }
   }
 
-  Future<void> _sendOrReplaceQuote(EnquiryModel item, {required bool replace}) async {
+  Future<void> _sendOrReplaceQuote(
+    EnquiryModel item, {
+    required bool replace,
+  }) async {
     if (_acting || _loading) return;
     setState(() => _acting = true);
     try {
@@ -186,7 +194,7 @@ class _EnquiriesPageState extends State<EnquiriesPage> {
   }
 
   Future<void> _acceptQuote(EnquiryModel item, EnquiryQuote quote) async {
-    if (_acting || _loading) return;
+    if (_acting || _loading || !item.canAcceptQuote(app.wUser, quote)) return;
     setState(() => _acting = true);
     try {
       final decision = await showDialog<EnquiryDecision>(
@@ -221,8 +229,10 @@ class _EnquiriesPageState extends State<EnquiriesPage> {
     BaseModel response, {
     PreIpoOrderModel? order,
   }) async {
-    ScaffoldMessenger.of(context)
-        .showSnackBar(SnackBar(content: Text(response.m)));
+    toast(
+      response.m,
+      response.isSuccess ? MessageEnum.success : MessageEnum.error,
+    );
     // A competing Institution may have locked the inquiry. Always refresh,
     // including business failures, so stale actions cannot remain available.
     await _load();
@@ -256,9 +266,23 @@ class _EnquiriesPageState extends State<EnquiriesPage> {
   }
 
   Future<void> _openOrder(PreIpoOrderModel order) async {
+    // The enquiry API mode does not determine the transaction workspace.
+    // Keep temporary detail controllers local so opening a dialog does not
+    // register a page controller or fetch an unrelated transaction list.
+    if (app.role == PartnerRole.institution) {
+      final controller = Get.isRegistered<PreIPOTransactionPageCtrl>()
+          ? Get.find<PreIPOTransactionPageCtrl>()
+          : PreIPOTransactionPageCtrl();
+      await showPreIpoOrderDetailDialog(
+        order: order,
+        onAction: controller.handleAction,
+        loadDetail: () => controller.loadDetail(order.id),
+      );
+      return;
+    }
     final controller = Get.isRegistered<PreIPOBuyTransactionPageCtrl>()
         ? Get.find<PreIPOBuyTransactionPageCtrl>()
-        : Get.put(PreIPOBuyTransactionPageCtrl());
+        : PreIPOBuyTransactionPageCtrl();
     await showPreIpoOrderDetailDialog(
       order: order,
       onAction: controller.handleAction,
@@ -316,8 +340,6 @@ class _EnquiriesPageState extends State<EnquiriesPage> {
   @override
   Widget build(BuildContext context) {
     final colors = Theme.of(context).colorScheme;
-    final text = Theme.of(context).textTheme;
-    final phone = MediaQuery.sizeOf(context).width < 600;
     final items = _filtered;
 
     return RefreshIndicator(
@@ -326,44 +348,18 @@ class _EnquiriesPageState extends State<EnquiriesPage> {
       },
       child: ListView(
         physics: const AlwaysScrollableScrollPhysics(),
-        padding: EdgeInsets.fromLTRB(
-          phone ? AppSpace.lg : AppSpace.xxl,
-          phone ? AppSpace.lg : AppSpace.xl,
-          phone ? AppSpace.lg : AppSpace.xxl,
-          AppSpace.xxl,
-        ),
+        padding: AppPagePadding.of(context),
         children: [
-          Row(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Expanded(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      widget.institution ? 'Incoming Enquiries' : 'Enquiries',
-                      style: text.headlineSmall?.copyWith(
-                        fontWeight: FontWeight.w700,
-                      ),
-                    ),
-                    const SizedBox(height: AppSpace.xs),
-                    Text(
-                      widget.institution
-                          ? 'Review buy and sell requests from wealth managers.'
-                          : 'Track your enquiries and accept open ones from other partners.',
-                      style: text.bodyMedium?.copyWith(
-                        color: colors.onSurfaceVariant,
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-              AppRefreshButton(
-                tooltip: 'Refresh enquiries',
-                loading: _loading || _submitting,
-                onPressed: _acting || _loading ? null : _load,
-              ),
-            ],
+          AppPageHeader(
+            title: widget.institution ? 'Incoming Enquiries' : 'Enquiries',
+            subtitle: widget.institution
+                ? 'Review buy and sell requests from wealth managers.'
+                : 'Track your enquiries and accept open ones from other partners.',
+            trailing: AppRefreshButton(
+              tooltip: 'Refresh enquiries',
+              loading: _loading || _submitting,
+              onPressed: _acting || _loading ? null : _load,
+            ),
           ),
           const SizedBox(height: AppSpace.xl),
           Wrap(
@@ -455,14 +451,12 @@ class _EnquiriesPageState extends State<EnquiriesPage> {
                   onReject: () => _act(item, 'reject'),
                   onWithdraw: () => _act(item, 'withdraw'),
                   onSendQuote: () => _sendOrReplaceQuote(item, replace: false),
-                  onReplaceQuote: () => _sendOrReplaceQuote(item, replace: true),
+                  onReplaceQuote: () =>
+                      _sendOrReplaceQuote(item, replace: true),
                   onWithdrawQuote: () => _withdrawQuote(item),
                   onAcceptQuote: (quote) => _acceptQuote(item, quote),
-                  onViewTransactions: () => Get.offNamed(
-                    Routes.unlistedTransactionsPath(
-                      institution: widget.institution,
-                    ),
-                  ),
+                  onViewTransactions: () =>
+                      Get.offNamed(Routes.unlistedTransactionsPath()),
                 ),
               ),
             ),
@@ -504,9 +498,8 @@ class _EnquiryCard extends StatelessWidget {
   static final _qty = NumberFormat.decimalPattern('en_IN');
   static final _money = NumberFormat.currency(locale: 'en_IN', symbol: '₹');
 
-  bool get _canRespond => institution
-      ? item.canAcceptOriginal || item.hasPendingQuote
-      : item.canPartnerRespond(app.wUser);
+  bool get _canRespond =>
+      institution ? item.canSellerRespond : item.canPartnerRespond(app.wUser);
 
   bool get _canAcceptCounterparty =>
       !institution && item.canAcceptCounterparty(app.wUser);
@@ -747,9 +740,7 @@ class _EnquiryCard extends StatelessWidget {
                           : quote.institutionName,
                       quote: quote,
                       acting: acting,
-                      onAccept: item.actionableQuotes.any(
-                        (entry) => entry.uuid == quote.uuid,
-                      )
+                      onAccept: item.canAcceptQuote(app.wUser, quote)
                           ? () => onAcceptQuote(quote)
                           : null,
                     ),
@@ -779,7 +770,7 @@ class _EnquiryCard extends StatelessWidget {
                   _InfoBanner(
                     icon: Icons.check_circle_outline_rounded,
                     label: 'Next step',
-                    body: 'The transaction appears in Transactions after the investor signs the mandate.',
+                    body: 'Open Transactions to track the mandate and settlement.',
                     tone: _InfoTone.success,
                   ),
                 ],

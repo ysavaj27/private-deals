@@ -8,11 +8,16 @@ class CustomOutlinedButton extends StatelessWidget {
   final double? height;
   final Size? size;
   final Widget? child;
+
   /// Label / foreground color. Also used for the border when [borderColor] is null.
   final Color? color;
+
   /// Optional border override. Prefer this when the border should differ from the label.
   final Color? borderColor;
   final bool isLoading;
+
+  /// Stable analytics name. Display text may contain personal data.
+  final String? analyticsName;
 
   const CustomOutlinedButton({
     super.key,
@@ -26,7 +31,17 @@ class CustomOutlinedButton extends StatelessWidget {
     this.borderColor,
     this.child,
     this.isLoading = false,
+    this.analyticsName,
   });
+
+  VoidCallback? get _trackedOnPressed {
+    if (onPressed == null || isLoading) return null;
+    return () {
+      final name = analyticsName ?? 'button_press';
+      if (name.trim().isNotEmpty) Analytics.tap(name);
+      onPressed!();
+    };
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -42,7 +57,7 @@ class CustomOutlinedButton extends StatelessWidget {
         : color ?? scheme.onSurface;
 
     return OutlinedButton(
-      onPressed: isLoading ? null : onPressed,
+      onPressed: _trackedOnPressed,
       style: OutlinedButton.styleFrom(
         minimumSize: size ?? Size(width ?? double.infinity, height ?? 48),
         foregroundColor: resolvedForeground,
@@ -73,7 +88,8 @@ class CustomOutlinedButton extends StatelessWidget {
               )
             : KeyedSubtree(
                 key: const ValueKey('label'),
-                child: child ??
+                child:
+                    child ??
                     Text(
                       text,
                       style: TextStyle(

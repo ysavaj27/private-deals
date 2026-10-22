@@ -1,15 +1,12 @@
-// enquiry_dialog_ctrl.dart
 import 'package:private_deals/src/shared/app_exports.dart';
 
 class EnquiryDialogCtrl extends GetxController {
-  late final String slug;
+  final String slug;
+  final VoidCallback onCreated;
+  final int _sessionRevision = app.revision;
+  bool _submitted = false;
 
-  // Optional: seed with an existing share/model if this dialog is opened
-  // from a holdings/watchlist row, similar to SecondaryTransactionDialogCtrl.
-  // final YourShareModel model;
-  EnquiryDialogCtrl({required this.slug});
-
-  final formKey = GlobalKey<FormState>();
+  EnquiryDialogCtrl({required this.slug, required this.onCreated});
 
   final Rx<InvestmentTypeEnum> enquiryType = InvestmentTypeEnum.buy.obs;
   final settlementDays = RxnInt();
@@ -21,6 +18,7 @@ class EnquiryDialogCtrl extends GetxController {
   final RxString quantityError = "".obs;
   final RxString offerPriceError = "".obs;
   final RxString settlementError = "".obs;
+  final RxString notesError = "".obs;
 
   final RxBool isLoading = false.obs;
 
@@ -37,6 +35,7 @@ class EnquiryDialogCtrl extends GetxController {
   }
 
   void selectEnquiryType(InvestmentTypeEnum type) {
+    if (isClosed || isLoading.value || _submitted) return;
     enquiryType(type);
     settlementError('');
   }
@@ -74,28 +73,41 @@ class EnquiryDialogCtrl extends GetxController {
       settlementError('');
     }
 
-    if (notesCtrl.text.length > _notesMaxLength) {
-      isValid = false; // guarded by maxLength on the field too
+    if (notesCtrl.text.trim().characters.length > _notesMaxLength) {
+      notesError('Notes must be $_notesMaxLength characters or fewer');
+      isValid = false;
+    } else {
+      notesError('');
     }
 
     return isValid;
   }
 
   Future<void> onPress() async {
-    if (isLoading.value || !_validate()) return;
+    if (isClosed ||
+        _submitted ||
+        isLoading.value ||
+        _sessionRevision != app.revision ||
+        !_validate()) {
+      return;
+    }
     isLoading(true);
     var res = await WPreIpoTransactionApi.inquiry(
       type: enquiryType.value,
       companySlug: slug,
       quantity: int.parse(quantityCtrl.text.trim()),
       offerPrice: double.parse(offerPriceCtrl.text.trim()),
-      notes: notesCtrl.text,
+      notes: notesCtrl.text.trim(),
       settlementDays: settlementDays.value,
     );
     if (isClosed) return;
     isLoading(false);
+    if (_sessionRevision != app.revision) return;
     if (res.isSuccess) {
-      Get.back(result: true);
+      // The state owns the route. A completed request must never pop whichever
+      // unrelated screen or dialog happens to be at the top of the navigator.
+      _submitted = true;
+      onCreated();
       toast(res.m, MessageEnum.success);
     } else {
       toast(res.m, MessageEnum.error);

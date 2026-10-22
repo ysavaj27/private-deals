@@ -7,6 +7,10 @@ import 'package:private_deals/src/shared/plugins/loader.dart';
 
 import 'package:private_deals/src/features/institution/legacy/features/auth/profile/phone_profile_view.dart';
 import 'package:private_deals/src/features/institution/legacy/features/auth/profile/profile_page_ctrl.dart';
+import 'package:private_deals/src/features/investors/presentation/complete_investor_kyc_button.dart';
+import 'package:private_deals/src/shared/theme/app_tokens.dart';
+import 'package:private_deals/src/shared/widgets/app_page_header.dart';
+import 'package:private_deals/src/shared/widgets/app_toast.dart';
 
 List<Widget> _optionalProfileFields(PartnerPublicProfile data) {
   final fields = <({String label, String value})>[
@@ -79,30 +83,21 @@ class ProfileDetailView extends StatelessWidget {
           },
           child: SingleChildScrollView(
             physics: const AlwaysScrollableScrollPhysics(),
-            padding: EdgeInsets.all(isPhone ? 16 : 28),
-            child: Center(
-              child: ConstrainedBox(
-                constraints: const BoxConstraints(maxWidth: 1280),
-                child: Column(
+            padding: AppPagePadding.of(context),
+            child: Column(
                   crossAxisAlignment: CrossAxisAlignment.stretch,
                   children: [
                     if (showPageTitle) ...[
-                      Text(
-                        'My profile',
-                        style: context.textTheme.headlineSmall,
+                      const AppPageHeader(
+                        title: 'My profile',
+                        subtitle:
+                            'Your company, contact and account information.',
                       ),
-                      const SizedBox(height: 6),
-                      Text(
-                        'Your company, contact and account information.',
-                        style: context.textTheme.bodyMedium?.copyWith(
-                          color: context.theme.colorScheme.onSurface.withValues(
-                            alpha: 0.8,
-                          ),
-                        ),
-                      ),
-                      const SizedBox(height: 24),
+                      const SizedBox(height: AppSpace.xl),
                     ],
                     _ProfileHeader(profile: profile, controller: controller),
+                    const SizedBox(height: 20),
+                    SellerKycCard(controller: controller),
                     if (controller.error.value.isNotEmpty) ...[
                       const SizedBox(height: 12),
                       Text(
@@ -230,8 +225,6 @@ class ProfileDetailView extends StatelessWidget {
                     ),
                     if (isPhone) const SizedBox(height: 24),
                   ],
-                ),
-              ),
             ),
           ),
         );
@@ -453,6 +446,65 @@ class _PublicProfileField extends StatelessWidget {
         ),
       ),
     );
+  }
+}
+
+/// Seller self-investor KYC. Complete uses the shared CML dialog. A finished
+/// record stays closed; edit is not offered here.
+class SellerKycCard extends StatelessWidget {
+  const SellerKycCard({super.key, required this.controller});
+
+  final SellerProfilePageCtrl controller;
+
+  @override
+  Widget build(BuildContext context) {
+    final colors = context.theme.colorScheme;
+    return Obx(() {
+      final investor = controller.selfInvestor.value;
+      final loading = controller.kycLoading.value;
+      final missing = controller.kycMissing.value;
+      final error = controller.kycError.value;
+      final complete = investor?.isPreIpoKycComplete ?? false;
+
+      return Card(
+        margin: EdgeInsets.zero,
+        child: Padding(
+          padding: const EdgeInsets.all(16),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(
+                'KYC',
+                style: context.textTheme.titleMedium?.copyWith(
+                  fontWeight: FontWeight.w600,
+                ),
+              ),
+              const SizedBox(height: 12),
+              if (loading)
+                const Text('Loading KYC…')
+              else if (missing)
+                Text(SellerProfilePageCtrl.selfInvestorMissingMessage)
+              else if (error.isNotEmpty) ...[
+                Text(error, style: TextStyle(color: colors.error)),
+                TextButton(
+                  onPressed: controller.refreshSelfKyc,
+                  child: const Text('Retry'),
+                ),
+              ] else if (investor != null) ...[
+                Text(complete ? 'KYC complete' : 'KYC pending'),
+                if (!complete) ...[
+                  const SizedBox(height: 8),
+                  CompleteInvestorKycButton(
+                    investor: investor,
+                    onSaved: controller.refreshSelfKyc,
+                  ),
+                ],
+              ],
+            ],
+          ),
+        ),
+      );
+    });
   }
 }
 
@@ -758,12 +810,7 @@ class _ProfileField extends StatelessWidget {
                 onPressed: () async {
                   await Clipboard.setData(ClipboardData(text: trimmed));
                   if (context.mounted) {
-                    ScaffoldMessenger.of(context).showSnackBar(
-                      SnackBar(
-                        content: Text('$label copied'),
-                        duration: const Duration(seconds: 1),
-                      ),
-                    );
+                    showAppToast('$label copied', type: AppToastType.success);
                   }
                 },
                 icon: Icon(

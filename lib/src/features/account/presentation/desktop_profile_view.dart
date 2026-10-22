@@ -13,22 +13,17 @@ class DesktopProfileView extends StatelessWidget {
     final scheme = context.theme.colorScheme;
     return Container(
       alignment: Alignment.topCenter,
-      padding: const EdgeInsets.symmetric(horizontal: 40, vertical: 20),
+      padding: AppPagePadding.of(context),
       child: SingleChildScrollView(
         child: Column(
           mainAxisAlignment: MainAxisAlignment.start,
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            const SizedBox(height: 20),
-            Text('My Profile', style: context.textTheme.headlineSmall),
-            const SizedBox(height: 12),
-            Text(
-              'Account details and preferences',
-              style: context.textTheme.bodyMedium?.copyWith(
-                color: scheme.onSurfaceVariant,
-              ),
+            const AppPageHeader(
+              title: 'My Profile',
+              subtitle: 'Account details and preferences',
             ),
-            const SizedBox(height: 36),
+            const SizedBox(height: AppSpace.xl),
             CustomCardWidget(
               radius: AppRadii.lg,
               padding: const EdgeInsets.symmetric(vertical: 40, horizontal: 48),

@@ -4,7 +4,6 @@ class LogoutDialog extends StatelessWidget {
   final String? title;
   final String? subTitle;
   final String? primaryText;
-
   final String? secondaryText;
   final void Function()? onPressed;
 
@@ -19,57 +18,86 @@ class LogoutDialog extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final colors = context.theme.colorScheme;
+    final text = context.textTheme;
+    final compact = context.isPhone;
+
     return CustomCardWidget(
-      color: context.theme.scaffoldBackgroundColor,
-      radius: 16,
-      padding: EdgeInsets.symmetric(vertical: 30, horizontal: 30),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          Text(
-            title ?? "Logout",
-            style: TextStyle(
-              fontSize: 22,
-              fontWeight: FontWeight.w600,
+      color: colors.surfaceContainerLow,
+      radius: AppRadii.lg,
+      borderColor: colors.outlineVariant,
+      padding: EdgeInsets.all(compact ? AppSpace.xl : AppSpace.xxl),
+      child: SizedBox(
+        width: compact ? double.infinity : 420,
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Row(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Container(
+                  width: 44,
+                  height: 44,
+                  decoration: BoxDecoration(
+                    color: colors.primaryContainer,
+                    borderRadius: AppRadii.mdAll,
+                  ),
+                  child: Icon(
+                    Icons.logout_rounded,
+                    color: colors.onPrimaryContainer,
+                  ),
+                ),
+                const SizedBox(width: AppSpace.md),
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        title ?? 'Sign out',
+                        style: text.titleLarge?.copyWith(
+                          fontWeight: FontWeight.w700,
+                        ),
+                      ),
+                      const SizedBox(height: AppSpace.xs),
+                      Text(
+                        subTitle ??
+                            'Are you sure you want to sign out of this account?',
+                        style: text.bodyMedium?.copyWith(
+                          color: colors.onSurfaceVariant,
+                          height: 1.45,
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ],
             ),
-          ),
-          Divider(
-            color: context.theme.dividerColor,
-            height: 30,
-            thickness: 0.8,
-          ),
-          SizedBox(height: 10),
-          Text(
-            subTitle ?? "Are you sure you want to logout ?",
-            style: TextStyle(
-              color: context.theme.colorScheme.onSurfaceVariant,
-              // fontWeight: FontWeight.w500,
-              fontSize: 16,
+            const SizedBox(height: AppSpace.xl),
+            Row(
+              children: [
+                Expanded(
+                  child: OutlinedButton(
+                    onPressed: Get.back,
+                    child: Text(secondaryText ?? 'Cancel'),
+                  ),
+                ),
+                const SizedBox(width: AppSpace.md),
+                Expanded(
+                  child: FilledButton(
+                    onPressed: onPressed == null
+                        ? null
+                        : () {
+                            Analytics.tap('logout_confirm');
+                            onPressed!();
+                          },
+                    child: Text(primaryText ?? 'Sign out'),
+                  ),
+                ),
+              ],
             ),
-          ),
-          SizedBox(height: 40),
-          Row(
-            mainAxisAlignment: MainAxisAlignment.end,
-            children: [
-              CustomElevatedButton(
-                padding: EdgeInsets.zero,
-                size: Size(80, 38),
-                radius: 15,
-                text: primaryText ?? 'Ok',
-                onPressed: onPressed,
-              ),
-              SizedBox(width: 20),
-              CustomOutlinedButton(
-                size: Size(80, 38),
-                borderRadius: 15,
-                borderColor: AppColors.borderColor(context),
-                onPressed: Get.back,
-                text: secondaryText ?? "Cancel",
-              ),
-            ],
-          )
-        ],
+          ],
+        ),
       ),
     );
   }

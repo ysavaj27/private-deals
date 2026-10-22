@@ -13,6 +13,7 @@ import 'package:private_deals/src/shared/institution_widgets/custom_card_widget.
 
 import 'package:private_deals/src/core/session/auth_session.dart';
 import 'package:private_deals/src/features/institution/deals/presentation/create_deal/create_deal_page_ctrl.dart';
+import 'package:private_deals/src/shared/theme/app_tokens.dart';
 import 'package:private_deals/src/shared/widgets/settlement_days_dropdown.dart';
 
 class CreateDealPage extends StatelessWidget {
@@ -71,16 +72,8 @@ class _CreateDealForm extends GetView<CreateDealPageCtrl> {
         child: Form(
           key: controller.formKey,
           child: ListView(
-            padding: EdgeInsets.all(phone ? 16 : 28),
+            padding: AppPagePadding.of(context),
             children: [
-              const SizedBox(height: 6),
-              // Text(
-              //   'Select a company and set the deal terms.',
-              //   style: context.textTheme.bodyMedium?.copyWith(
-              //     color: colors.onSurfaceVariant,
-              //   ),
-              // ),
-              // const SizedBox(height: 24),
               CustomCardWidget(
                 padding: EdgeInsets.all(phone ? 18 : 24),
                 child: Column(

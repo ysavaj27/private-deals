@@ -140,6 +140,7 @@ class PreIPOInvestmentPageCtrl extends GetxController
     }
     investing(true);
     var res = await WPreIpoTransactionApi.buy(
+      companyId: model().id,
       list: investorList,
       dealId: offer.dealId,
       dealUuid: offer.dealUuid,

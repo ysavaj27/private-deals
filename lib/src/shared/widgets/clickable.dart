@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:private_deals/src/core/analytics/analytics_service.dart';
 import 'package:private_deals/src/shared/theme/app_motion.dart';
 
 class Clickable extends StatefulWidget {
@@ -10,6 +11,9 @@ class Clickable extends StatefulWidget {
   /// When false, skips press scale (useful for dense controls).
   final bool enablePressScale;
 
+  /// Stable analytics name. When set, logs [Analytics.tap] on press.
+  final String? analyticsName;
+
   const Clickable({
     super.key,
     required this.child,
@@ -17,6 +21,7 @@ class Clickable extends StatefulWidget {
     this.borderRadius,
     this.onHover,
     this.enablePressScale = true,
+    this.analyticsName,
   });
 
   @override
@@ -43,7 +48,15 @@ class _ClickableState extends State<Clickable> {
       child: InkWell(
         mouseCursor: SystemMouseCursors.click,
         borderRadius: widget.borderRadius,
-        onTap: widget.onTap,
+        onTap: widget.onTap == null
+            ? null
+            : () {
+                final name = widget.analyticsName;
+                if (name != null && name.isNotEmpty) {
+                  Analytics.tap(name);
+                }
+                widget.onTap!();
+              },
         onHover: widget.onHover,
         onTapDown:
             widget.onTap == null ? null : (_) => _setPressed(true),

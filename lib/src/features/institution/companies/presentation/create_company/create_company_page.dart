@@ -9,6 +9,7 @@ import 'package:private_deals/src/shared/institution_widgets/app_title_dropdown.
 import 'package:private_deals/src/shared/institution_widgets/custom_card_widget.dart';
 
 import 'package:private_deals/src/features/institution/companies/presentation/create_company/create_company_page_ctrl.dart';
+import 'package:private_deals/src/shared/theme/app_tokens.dart';
 
 class CreateCompanyPage extends StatelessWidget {
   CreateCompanyPage({super.key});
@@ -35,7 +36,7 @@ class CreateCompanyForm extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    bool phone = context.isPhone;
+    final phone = context.isPhone;
     return SafeArea(
       child: Obx(() {
         final saving = c.saving.value;
@@ -44,7 +45,7 @@ class CreateCompanyForm extends StatelessWidget {
           child: Form(
             key: c.formKey,
             child: ListView(
-              padding: EdgeInsets.all(phone ? 16 : 28),
+              padding: AppPagePadding.of(context),
               children: [
                 // Text('Create company', style: context.textTheme.headlineSmall),
                 // const SizedBox(height: 6),

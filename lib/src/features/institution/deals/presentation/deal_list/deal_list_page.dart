@@ -9,6 +9,9 @@ import 'package:private_deals/src/shared/institution_widgets/app_button.dart';
 import 'package:private_deals/src/shared/institution_widgets/app_text_field.dart';
 
 import 'package:private_deals/src/features/institution/deals/presentation/deal_list/deal_list_page_ctrl.dart';
+import 'package:private_deals/src/shared/theme/app_tokens.dart';
+import 'package:private_deals/src/shared/widgets/app_page_header.dart';
+import 'package:private_deals/src/shared/widgets/app_toast.dart';
 
 class DealListView extends StatefulWidget {
   const DealListView({super.key});
@@ -41,19 +44,13 @@ class _DealListViewState extends State<DealListView> {
             MediaQuery.textScalerOf(context).scale(16) > 24;
 
         return ListView(
-          padding: EdgeInsets.all(mobile ? 16 : 28),
+          padding: AppPagePadding.of(context),
           children: [
-            Text(c.title, style: context.textTheme.headlineSmall),
-            const SizedBox(height: 6),
-            Text(
-              'Browse and manage your company deals.',
-              style: context.textTheme.bodyMedium?.copyWith(
-                color: context.theme.colorScheme.onSurface.withValues(
-                  alpha: 0.8,
-                ),
-              ),
+            AppPageHeader(
+              title: c.title,
+              subtitle: 'Browse and manage your company deals.',
             ),
-            const SizedBox(height: 24),
+            const SizedBox(height: AppSpace.xl),
             if (mobile)
               Column(
                 crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -528,9 +525,7 @@ class DealDeleteButton extends StatelessWidget {
 
     if (!context.mounted || deleted != true) return;
 
-    ScaffoldMessenger.of(
-      context,
-    ).showSnackBar(const SnackBar(content: Text('Deal deleted successfully.')));
+    showAppToast('Deal deleted successfully.', type: AppToastType.success);
   }
 }
 

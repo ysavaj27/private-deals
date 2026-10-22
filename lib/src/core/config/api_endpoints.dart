@@ -67,7 +67,7 @@ class AppUrl {
 
   /// Portfolio
   static String wCompanyStartupList = "${version}business/company-startup-list";
-  static String wAddPortfolio = "${version}business/add-portfolio";
+  static String wAddPortfolio = "${newVersion}business/portfolio/upload";
   static String wPortfolio = "v2/business/portfolio/startup";
   static String wPreIpoPortfolio = "v2/business/portfolio/pre-ipo";
 

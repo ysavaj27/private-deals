@@ -41,6 +41,7 @@ export 'package:private_deals/src/features/wealth_manager/data/api/transaction/w
 export 'package:private_deals/src/features/investors/data/w_investors_api.dart';
 
 /// Config
+export 'package:private_deals/src/core/analytics/analytics_service.dart';
 export 'package:private_deals/src/core/session/auth_session.dart';
 export 'package:private_deals/src/core/configuration/connectivity_config.dart';
 export 'package:private_deals/src/core/configuration/dio_config.dart';
@@ -126,6 +127,7 @@ export 'package:private_deals/src/shared/plugins/pdf_viewer.dart';
 export 'package:private_deals/src/shared/plugins/svg_image.dart';
 export 'package:private_deals/src/shared/plugins/toast.dart';
 export 'package:private_deals/src/shared/plugins/video_player.dart';
+export 'package:private_deals/src/shared/widgets/app_page_header.dart';
 export 'package:private_deals/src/shared/widgets/buttons/app_refresh_button.dart';
 export 'package:private_deals/src/shared/widgets/buttons/custom_elevated_button.dart';
 export 'package:private_deals/src/shared/widgets/buttons/custom_outlined_button.dart';

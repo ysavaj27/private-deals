@@ -22,6 +22,9 @@ class CustomElevatedButton extends StatelessWidget {
   final Size? maximumSize;
   final BorderRadius? borderRadius;
 
+  /// Stable analytics name. Display text may contain personal data.
+  final String? analyticsName;
+
   const CustomElevatedButton({
     super.key,
     this.text = "",
@@ -44,7 +47,17 @@ class CustomElevatedButton extends StatelessWidget {
     this.size,
     this.maximumSize,
     this.borderRadius,
+    this.analyticsName,
   });
+
+  VoidCallback? get _trackedOnPressed {
+    if (onPressed == null || isLoading) return null;
+    return () {
+      final name = analyticsName ?? 'button_press';
+      if (name.trim().isNotEmpty) Analytics.tap(name);
+      onPressed!();
+    };
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -52,9 +65,10 @@ class CustomElevatedButton extends StatelessWidget {
       absorbing: isLoading ? true : false,
       // isLoading ? null :
       child: ElevatedButton(
-        onPressed: onPressed,
+        onPressed: _trackedOnPressed,
         style: ElevatedButton.styleFrom(
-          padding: padding ??
+          padding:
+              padding ??
               const EdgeInsets.symmetric(vertical: 12.0, horizontal: 16.0),
           // maximumSize: Size(150, 50),
           enabledMouseCursor: SystemMouseCursors.click,
@@ -93,10 +107,12 @@ class CustomElevatedButton extends StatelessWidget {
                 )
               : KeyedSubtree(
                   key: const ValueKey('label'),
-                  child: child ??
+                  child:
+                      child ??
                       Text(
                         text,
-                        style: style ??
+                        style:
+                            style ??
                             TextStyle(
                               fontSize: fontSize ?? 14.0,
                               color: onPressed == null

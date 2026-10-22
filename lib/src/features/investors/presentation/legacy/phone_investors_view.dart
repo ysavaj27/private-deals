@@ -26,11 +26,9 @@ class PhoneInvestorsView extends StatelessWidget {
         Column(
           children: [
             Padding(
-              padding: const EdgeInsets.fromLTRB(
-                AppSpace.lg,
-                AppSpace.sm,
-                AppSpace.lg,
-                AppSpace.sm,
+              padding: AppPagePadding.horizontalOnly(context).copyWith(
+                top: AppSpace.sm,
+                bottom: AppSpace.sm,
               ),
               child: Row(
                 children: [

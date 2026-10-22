@@ -7,12 +7,14 @@ class TabButton<T> extends StatelessWidget {
     required this.type,
     required this.onTap,
     required this.currentIndex,
+    this.analyticsName,
   });
 
   final String title;
   final Rx<T> currentIndex;
   final T type;
   final void Function()? onTap;
+  final String? analyticsName;
 
   @override
   Widget build(BuildContext context) {
@@ -20,6 +22,7 @@ class TabButton<T> extends StatelessWidget {
       final isSelected = currentIndex() == type;
       final scheme = context.theme.colorScheme;
       return Clickable(
+        analyticsName: analyticsName ?? 'tab_select',
         onTap: onTap,
         borderRadius: BorderRadius.circular(14),
         child: AnimatedContainer(
@@ -38,9 +41,7 @@ class TabButton<T> extends StatelessWidget {
             style: TextStyle(
               fontWeight: isSelected ? FontWeight.w600 : FontWeight.w400,
               fontSize: 14,
-              color: isSelected
-                  ? scheme.onPrimaryContainer
-                  : scheme.onSurface,
+              color: isSelected ? scheme.onPrimaryContainer : scheme.onSurface,
             ),
           ),
         ),

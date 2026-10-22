@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:private_deals/src/core/analytics/analytics_service.dart';
 import 'package:private_deals/src/shared/theme/app_motion.dart';
 
 enum AppButtonVariant { primary, secondary, outline, text }
@@ -12,6 +13,7 @@ class AppButton extends StatelessWidget {
     this.icon,
     this.isLoading = false,
     this.expanded = false,
+    this.analyticsName,
   });
 
   final String label;
@@ -21,10 +23,19 @@ class AppButton extends StatelessWidget {
   final bool isLoading;
   final bool expanded;
 
+  /// Stable analytics name. Display text may contain personal data.
+  final String? analyticsName;
+
   @override
   Widget build(BuildContext context) {
     final colors = Theme.of(context).colorScheme;
-    final callback = isLoading ? null : onPressed;
+    final VoidCallback? callback = isLoading || onPressed == null
+        ? null
+        : () {
+            final name = analyticsName ?? 'button_press';
+            if (name.trim().isNotEmpty) Analytics.tap(name);
+            onPressed!();
+          };
     final duration = AppMotion.duration(context, AppMotion.fast);
 
     // Builder reads the foreground style provided by the button.

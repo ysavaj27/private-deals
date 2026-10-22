@@ -97,7 +97,7 @@ void main() {
       expect(find.text('Unlisted'), findsWidgets);
       expect(find.text('LP Secondary'), findsWidgets);
       expect(find.text('Deal of the day'), findsOneWidget);
-      expect(find.text('Enquiry'), findsOneWidget);
+      expect(find.text('My Enquiries'), findsOneWidget);
       await tester.tap(find.text('Unlisted').first);
       await tester.pumpAndSettle();
       expect(find.text('Manage Company'), findsWidgets);
@@ -105,12 +105,14 @@ void main() {
       await tester.tap(find.text('LP Secondary').first);
       await tester.pumpAndSettle();
       expect(find.text('Manage Deals'), findsOneWidget);
-      await tester.tap(find.text('Enquiry'));
+      await tester.ensureVisible(find.text('My Enquiries'));
+      await tester.pumpAndSettle();
+      await tester.tap(find.text('My Enquiries'));
       await tester.pumpAndSettle();
       expect(Get.currentRoute, '/institution/sell-enquiries');
       expect(
         adapter.requests.any(
-          (r) => r.path == 'v2/business/institution/enquiries',
+          (r) => r.path == 'v2/business/enquiries/deals',
         ),
         isTrue,
       );
@@ -151,6 +153,10 @@ void main() {
   testWidgets(
     'Bulk price table lists companies and preserves separate buy and sell drafts',
     (tester) async {
+      tester.view.physicalSize = const Size(1280, 1400);
+      tester.view.devicePixelRatio = 1;
+      addTearDown(tester.view.resetPhysicalSize);
+      addTearDown(tester.view.resetDevicePixelRatio);
       await app.setUser(prefUser: identity());
       final adapter = FakeAdapter(
         (r) async => response({

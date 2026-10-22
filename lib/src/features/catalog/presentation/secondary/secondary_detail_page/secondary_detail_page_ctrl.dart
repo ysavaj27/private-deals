@@ -42,9 +42,11 @@ class SecondaryDetailPageCtrl extends GetxController
       } else {
         isQty(true);
       }
-      // if (model().transaction.id.isNotEmpty) {
-      //   qtyCTRL.text = model().transaction.shares.toString();
-      // }
+      Analytics.secondaryDetailView(
+        companyId: model().id,
+        companySlug: model().slug,
+        brandName: model().brandName,
+      );
     } else {
       toast(res.m, MessageEnum.error);
     }

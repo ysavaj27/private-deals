@@ -18,7 +18,7 @@ class DesktopKycView extends StatelessWidget {
       child: Scaffold(
         appBar: AppBar(title: Text("KYC")),
         body: Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 40, vertical: 20),
+          padding: AppPagePadding.of(context),
           child: MainWidget(),
         ),
       ),

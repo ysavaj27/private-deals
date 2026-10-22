@@ -340,7 +340,13 @@ void main() {
     mis.isLoading(true);
     await tester.pump();
     await tester.pump(const Duration(milliseconds: 300));
-    expect(find.byType(CircularProgressIndicator), findsOneWidget);
+    expect(
+      find.descendant(
+        of: find.byKey(const ValueKey('workspace-loading')),
+        matching: find.byType(CircularProgressIndicator),
+      ),
+      findsOneWidget,
+    );
     expect(find.text('No reports yet'), findsNothing);
     mis.isLoading(false);
     await tester.pumpAndSettle();

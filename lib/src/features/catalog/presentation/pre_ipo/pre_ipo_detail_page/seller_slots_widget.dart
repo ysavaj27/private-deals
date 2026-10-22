@@ -330,7 +330,16 @@ class _SellerSlotsWidgetState extends State<SellerSlotsWidget> {
               ? FilledButton(
                   onPressed: c.investing.value
                       ? null
-                      : () => Navigator.of(dialogContext).pop(true),
+                      : () {
+                          Analytics.tap(
+                            !c.buysAsSelf &&
+                                    selected &&
+                                    c.investorList.isNotEmpty
+                                ? 'pre_ipo_add_investors'
+                                : 'pre_ipo_buy_now',
+                          );
+                          Navigator.of(dialogContext).pop(true);
+                        },
                   child: Text(
                     !c.buysAsSelf && selected && c.investorList.isNotEmpty
                         ? 'Add Investors'

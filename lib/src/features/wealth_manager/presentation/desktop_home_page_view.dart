@@ -23,13 +23,13 @@ class DesktopHomePageView extends StatelessWidget {
         children: [
           Column(
             children: [
-              const SizedBox(height: 66),
+              const SizedBox(height: AppShell.desktopAppBarHeight),
               Expanded(
                 child: Stack(
                   children: [
                     Row(
                       children: [
-                        const SizedBox(width: 260),
+                        const SizedBox(width: AppShell.sidebarWidth),
                         Expanded(child: child ?? MainWidgets()),
                       ],
                     ),
@@ -37,7 +37,7 @@ class DesktopHomePageView extends StatelessWidget {
                       left: 0,
                       top: 0,
                       bottom: 0,
-                      width: 260,
+                      width: AppShell.sidebarWidth,
                       child: DSideBarWidget(),
                     ),
                   ],

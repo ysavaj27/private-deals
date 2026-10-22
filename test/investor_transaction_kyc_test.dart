@@ -1,7 +1,11 @@
+import 'dart:typed_data';
+
+import 'package:dio/dio.dart';
+import 'package:file_picker/file_picker.dart';
 import 'package:private_deals/src/features/investors/presentation/investor_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:get/get.dart';
+import 'package:get/get.dart' hide FormData;
 import 'package:private_deals/src/core/configuration/dio_config.dart';
 import 'package:private_deals/src/core/session/auth_session.dart';
 import 'package:private_deals/src/features/catalog/presentation/pre_ipo/pre_ipo_investment/select_investor_dialog.dart';
@@ -23,14 +27,69 @@ const details = {
   'ifsc_code': 'HDFC0000001',
 };
 
+class _CmlPicker extends FilePickerPlatform {
+  @override
+  Future<PlatformFile?> pickFile({
+    String? dialogTitle,
+    String? initialDirectory,
+    FileType type = FileType.any,
+    List<String>? allowedExtensions,
+    Function(FilePickerStatus)? onFileLoading,
+    int compressionQuality = 0,
+    AndroidOptions androidOptions = const AndroidOptions(),
+    DarwinOptions darwinOptions = const DarwinOptions(),
+    WindowsOptions windowsOptions = const WindowsOptions(),
+    LinuxOptions linuxOptions = const LinuxOptions(),
+    WebOptions webOptions = const WebOptions(),
+  }) async {
+    expect(type, FileType.custom);
+    expect(allowedExtensions, ['pdf']);
+    return _CmlPdf();
+  }
+}
+
+final class _CmlPdf extends PlatformFile {
+  final _bytes = Uint8List.fromList('%PDF-1.7 test CML'.codeUnits);
+
+  @override
+  String get name => 'test-cml.pdf';
+  @override
+  Uri get uri => Uri.parse('blob:https://example.test/test-cml.pdf');
+  @override
+  get xFile => throw UnimplementedError();
+  @override
+  int? lengthSync() => _bytes.length;
+  @override
+  Future<int?> length() async => _bytes.length;
+  @override
+  Future<Uint8List> readAsBytes() async => _bytes;
+  @override
+  Stream<Uint8List> readAsByteStream() => Stream.value(_bytes);
+}
+
+Future<void> uploadCml(WidgetTester tester) async {
+  await tester.ensureVisible(find.text('Upload CML PDF'));
+  await tester.tap(find.text('Upload CML PDF'));
+  await tester.pumpAndSettle();
+  expect(find.text('test-cml.pdf'), findsOneWidget);
+}
+
 void main() {
+  TestWidgetsFlutterBinding.ensureInitialized();
+  late FilePickerPlatform originalPicker;
+  late HttpClientAdapter originalAdapter;
   setUp(() async {
+    originalPicker = FilePickerPlatform.instance;
+    originalAdapter = dioConfig.dio.httpClientAdapter;
+    FilePickerPlatform.instance = _CmlPicker();
     Get.testMode = true;
     app.persist = false;
     await app.clear();
     await app.setUser(prefUser: identity('Wealth Manager'));
   });
   tearDown(() async {
+    FilePickerPlatform.instance = originalPicker;
+    dioConfig.dio.httpClientAdapter = originalAdapter;
     await app.clear();
     Get.reset();
   });
@@ -131,7 +190,13 @@ void main() {
         addTearDown(tester.view.resetDevicePixelRatio);
         var complete = false;
         final adapter = FakeAdapter((request) async {
-          if (request.method == 'POST') {
+          if (request.path.endsWith('/read')) {
+            return response({
+              'status': 1,
+              'data': {...details, 'account_holder_name': details['name']},
+            });
+          }
+          if (request.path.endsWith('/save')) {
             complete = true;
             return response({'status': 1});
           }
@@ -176,6 +241,8 @@ void main() {
         await tester.tap(find.text('Complete KYC'));
         await tester.pumpAndSettle();
         expect(find.byType(InvestorKycDialog), findsOneWidget);
+        await uploadCml(tester);
+        expect(complete, isFalse);
         for (final field in details.entries) {
           await tester.enterText(
             find.byKey(ValueKey('kyc_${field.key}')),
@@ -185,6 +252,10 @@ void main() {
         await tester.tap(find.text('Save KYC'));
         await tester.pumpAndSettle();
         expect(find.byType(InvestorKycDialog), findsNothing);
+        final saved = adapter.requests.singleWhere(
+          (request) => request.path.endsWith('/save'),
+        );
+        expect((saved.data as FormData).files.single.key, 'cml_file');
         expect(find.text('Updated Investor'), findsOneWidget);
         rows = tester
             .widgetList<InvestorSelectionCard>(
@@ -203,9 +274,11 @@ void main() {
   testWidgets('save without server approval keeps investor disabled', (
     tester,
   ) async {
-    dioConfig.dio.httpClientAdapter = FakeAdapter(
+    final adapter = FakeAdapter(
       (request) async => response({
         'status': 1,
+        if (request.path.endsWith('/read'))
+          'data': {...details, 'account_holder_name': details['name']},
         if (request.method == 'GET')
           'data': [
             {
@@ -217,6 +290,7 @@ void main() {
           ],
       }),
     );
+    dioConfig.dio.httpClientAdapter = adapter;
     await tester.pumpWidget(
       const GetMaterialApp(
         home: Scaffold(body: Center(child: SelectInvestorDialog())),
@@ -226,6 +300,7 @@ void main() {
     await tester.ensureVisible(find.text('Complete KYC'));
     await tester.tap(find.text('Complete KYC'));
     await tester.pumpAndSettle();
+    await uploadCml(tester);
     for (final field in details.entries) {
       await tester.enterText(
         find.byKey(ValueKey('kyc_${field.key}')),
@@ -234,6 +309,15 @@ void main() {
     }
     await tester.tap(find.text('Save KYC'));
     await tester.pumpAndSettle();
+    expect(find.byType(InvestorKycDialog), findsNothing);
+    expect(
+      adapter.requests.where((request) => request.path.endsWith('/save')),
+      hasLength(1),
+    );
+    expect(
+      adapter.requests.where((request) => request.method == 'GET'),
+      hasLength(2),
+    );
     expect(
       tester
           .widget<InvestorSelectionCard>(find.byType(InvestorSelectionCard))

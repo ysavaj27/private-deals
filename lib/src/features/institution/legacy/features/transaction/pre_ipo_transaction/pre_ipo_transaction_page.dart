@@ -5,6 +5,8 @@ import 'package:private_deals/src/features/institution/legacy/features/transacti
 import 'package:private_deals/src/features/institution/support/plugins/loader.dart';
 import 'package:private_deals/src/shared/institution_widgets/app_text_field.dart';
 import 'package:private_deals/src/shared/models/pre_ipo_order_model.dart';
+import 'package:private_deals/src/shared/theme/app_tokens.dart';
+import 'package:private_deals/src/shared/widgets/app_page_header.dart';
 import 'package:private_deals/src/shared/widgets/no_data_view.dart';
 import 'package:private_deals/src/shared/widgets/pre_ipo_order/unlisted_transaction_card.dart';
 
@@ -37,19 +39,15 @@ class _PreIPOTransactionPageState extends State<PreIPOTransactionPage> {
     builder: (context, constraints) {
       final phone = constraints.maxWidth < 700;
       return ListView(
-        padding: EdgeInsets.all(phone ? 16 : 28),
+        padding: AppPagePadding.of(context),
         children: [
           if (!phone) ...[
-            Text(
-              'Unlisted transactions',
-              style: context.textTheme.headlineSmall,
+            const AppPageHeader(
+              title: 'Unlisted transactions',
+              subtitle:
+                  'Manage your buying and selling orders from mandate to settlement.',
             ),
-            const SizedBox(height: 6),
-            Text(
-              'Manage your buying and selling orders from mandate to settlement.',
-              style: context.textTheme.bodyMedium,
-            ),
-            const SizedBox(height: 20),
+            const SizedBox(height: AppSpace.xl),
           ],
           Align(
             alignment: Alignment.centerLeft,

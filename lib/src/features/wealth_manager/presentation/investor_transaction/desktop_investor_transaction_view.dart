@@ -14,20 +14,19 @@ class DesktopInvestorTransactionView extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       body: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 40, vertical: 20),
+        padding: AppPagePadding.of(context),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            const SizedBox(height: 20),
             Row(
               mainAxisAlignment: MainAxisAlignment.start,
               children: [
-                const TitleText("Investor Transaction"),
+                const TitleText('Investor Transaction'),
                 const Spacer(),
                 Visibility(
                   visible: app.wUser.isPreIpoAccess,
                   child: TabButton(
-                    title: "Unlisted",
+                    title: 'Unlisted',
                     type: TransactionTypeEnum.preIpoBuy,
                     onTap: () {
                       c.changeTab(TransactionTypeEnum.preIpoBuy);
@@ -42,7 +41,7 @@ class DesktopInvestorTransactionView extends StatelessWidget {
                 Visibility(
                   visible: app.wUser.isSecondaryAccess,
                   child: TabButton(
-                    title: "Secondary",
+                    title: 'Secondary',
                     type: TransactionTypeEnum.secondary,
                     onTap: () {
                       c.changeTab(TransactionTypeEnum.secondary);
@@ -57,7 +56,7 @@ class DesktopInvestorTransactionView extends StatelessWidget {
                 Visibility(
                   visible: app.wUser.isPrimaryAccess,
                   child: TabButton(
-                    title: "Private Equity",
+                    title: 'Private Equity',
                     type: TransactionTypeEnum.primary,
                     onTap: () {
                       c.changeTab(TransactionTypeEnum.primary);

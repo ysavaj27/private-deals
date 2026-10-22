@@ -5,6 +5,7 @@ import 'package:get/get.dart';
 import 'package:private_deals/src/features/wealth_manager/presentation/portfolio/portfolio_page_ctrl.dart';
 import 'package:private_deals/src/features/institution/data/models/common/enums.dart';
 import 'package:private_deals/src/features/institution/legacy/router/routes/routes.dart';
+import 'package:private_deals/src/core/analytics/analytics_service.dart';
 import 'package:private_deals/src/core/session/auth_session.dart';
 
 class SellerHomePageCtrl extends GetxController {
@@ -60,10 +61,11 @@ class SellerHomePageCtrl extends GetxController {
       case WTabBarEnum.secondaryTransactions:
         return 1;
       case WTabBarEnum.preIPOList:
+      case WTabBarEnum.priceUpdate:
       case WTabBarEnum.secondaryList:
       case WTabBarEnum.manageDeals:
         return 2;
-      case WTabBarEnum.priceUpdate:
+      case WTabBarEnum.sellEnquiries:
         return 3;
       case WTabBarEnum.portfolio:
         return 4;
@@ -84,7 +86,7 @@ class SellerHomePageCtrl extends GetxController {
       case 2:
         if (!isCompanyTab) onTap(preferredCompanyTab);
       case 3:
-        onTap(WTabBarEnum.priceUpdate);
+        onTap(WTabBarEnum.sellEnquiries);
       case 4:
         onTap(WTabBarEnum.portfolio);
       case 5:
@@ -125,6 +127,7 @@ class SellerHomePageCtrl extends GetxController {
     if (!canAccessTab(tab)) return;
     if (Uri.parse(Get.currentRoute).path == tab.sellerPath) return;
 
+    Analytics.tap('institution_tab_${tab.slug}');
     _syncExpandedMenus(tab);
 
     Get.offNamed(tab.sellerPath, preventDuplicates: true, arguments: null);
@@ -175,7 +178,7 @@ class SellerHomePageCtrl extends GetxController {
       case WTabBarEnum.preIPO:
         return 'Unlisted Shares';
       case WTabBarEnum.sellEnquiries:
-        return 'Enquiry';
+        return 'My Enquiries';
       case WTabBarEnum.companyDeals:
         return 'Deal of the Day';
       case WTabBarEnum.secondaryDeals:

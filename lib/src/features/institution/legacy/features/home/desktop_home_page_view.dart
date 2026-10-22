@@ -5,6 +5,7 @@ import 'package:private_deals/src/features/institution/legacy/features/home/cust
 import 'package:private_deals/src/features/institution/legacy/features/home/desktop_sidebar.dart';
 import 'package:private_deals/src/features/institution/legacy/features/home/home_page.dart';
 import 'package:private_deals/src/features/institution/legacy/features/home/home_page_ctrl.dart';
+import 'package:private_deals/src/shared/theme/app_tokens.dart';
 
 class DesktopHomePageView extends StatelessWidget {
   final Widget? child;
@@ -23,14 +24,14 @@ class DesktopHomePageView extends StatelessWidget {
         children: [
           Column(
             children: [
-              const SizedBox(height: 82),
+              const SizedBox(height: AppShell.desktopAppBarHeight),
               Expanded(
                 child: Stack(
                   alignment: Alignment.centerLeft,
                   children: [
                     Row(
                       children: [
-                        const SizedBox(width: 260),
+                        const SizedBox(width: AppShell.sidebarWidth),
                         Expanded(child: child ?? MainWidgets()),
                       ],
                     ),

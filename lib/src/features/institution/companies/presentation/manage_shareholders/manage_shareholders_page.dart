@@ -6,6 +6,8 @@ import 'package:private_deals/src/shared/institution_widgets/app_text_field.dart
 import 'package:private_deals/src/shared/institution_widgets/custom_card_widget.dart';
 
 import 'package:private_deals/src/features/institution/companies/presentation/manage_shareholders/manage_shareholders_page_ctrl.dart';
+import 'package:private_deals/src/shared/theme/app_tokens.dart';
+import 'package:private_deals/src/shared/widgets/app_page_header.dart';
 
 // Import your controller and common widgets:
 // AppTitleTextField, AppButton, AppButtonVariant, CustomCardWidget.
@@ -57,22 +59,14 @@ class CompanyShareholdersPage extends StatelessWidget {
             child: Form(
               key: controller.formKey,
               child: ListView(
-                padding: EdgeInsets.all(context.isPhone ? 16 : 28),
+                padding: AppPagePadding.of(context),
                 children: [
-                  Text(
-                    controller.companyName.value,
-                    style: context.textTheme.headlineSmall,
+                  AppPageHeader(
+                    title: controller.companyName.value,
+                    subtitle:
+                        'Manage shareholders and their ownership percentages by year.',
                   ),
-                  const SizedBox(height: 6),
-                  Text(
-                    'Manage shareholders and their ownership percentages by year.',
-                    style: context.textTheme.bodyMedium?.copyWith(
-                      color: context.theme.colorScheme.onSurface.withValues(
-                        alpha: 0.8,
-                      ),
-                    ),
-                  ),
-                  const SizedBox(height: 24),
+                  const SizedBox(height: AppSpace.xl),
                   Obx(() {
                     final rows = controller.years.toList();
 

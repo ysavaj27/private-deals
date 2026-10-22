@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:private_deals/src/features/institution/data/models/common/enums.dart';
+import 'package:private_deals/src/shared/theme/app_tokens.dart';
 
 import 'package:private_deals/src/features/institution/legacy/features/home/home_page_ctrl.dart';
 
@@ -13,7 +14,7 @@ class DSideBarWidget extends StatelessWidget {
     final muted = isDark ? const Color(0xFFB1BAC4) : const Color(0xFF5A6578);
 
     return Container(
-      width: 260,
+      width: AppShell.sidebarWidth,
       clipBehavior: Clip.antiAlias,
       decoration: BoxDecoration(
         color: isDark ? const Color(0xFF0D1117) : const Color(0xFFF7F9FC),
@@ -69,7 +70,7 @@ class DSideBarWidget extends StatelessWidget {
             const SizedBox(height: 8),
             DTabTileWidget(
               icon: Icons.sell_outlined,
-              title: 'Enquiry',
+              title: 'My Enquiries',
               tab: WTabBarEnum.sellEnquiries,
             ),
             Padding(

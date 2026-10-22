@@ -23,126 +23,99 @@ class WorkspacePage extends StatelessWidget {
   final Widget empty;
 
   @override
-  Widget build(BuildContext context) => LayoutBuilder(
-    builder: (context, constraints) {
-      final compact = constraints.maxWidth < 600;
-      final padding = compact ? AppSpace.lg : AppSpace.xxl;
-      final colors = Theme.of(context).colorScheme;
-      final text = Theme.of(context).textTheme;
-      return RefreshIndicator(
-        onRefresh: () async {
-          if (!loading) await onRefresh();
-        },
-        child: CustomScrollView(
-          physics: const AlwaysScrollableScrollPhysics(),
-          slivers: [
-            SliverPadding(
-              padding: EdgeInsets.fromLTRB(
-                padding,
-                AppSpace.xl,
-                padding,
-                AppSpace.lg,
-              ),
-              sliver: SliverToBoxAdapter(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Row(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Expanded(
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Text(
-                                title,
-                                style: text.headlineSmall?.copyWith(
-                                  fontWeight: FontWeight.w700,
-                                ),
-                              ),
-                              const SizedBox(height: AppSpace.xs),
-                              Text(
-                                subtitle,
-                                style: text.bodyMedium?.copyWith(
-                                  color: colors.onSurfaceVariant,
-                                ),
-                              ),
-                            ],
-                          ),
-                        ),
-                        const SizedBox(width: AppSpace.sm),
-                        AppRefreshButton(
-                          tooltip: 'Refresh $title',
-                          loading: loading,
-                          onPressed: onRefresh,
-                        ),
-                      ],
+  Widget build(BuildContext context) {
+    final padding = AppPagePadding.horizontalOf(context);
+    return RefreshIndicator(
+      onRefresh: () async {
+        if (!loading) await onRefresh();
+      },
+      child: CustomScrollView(
+        physics: const AlwaysScrollableScrollPhysics(),
+        slivers: [
+          SliverPadding(
+            padding: EdgeInsets.fromLTRB(
+              padding,
+              AppSpace.xl,
+              padding,
+              AppSpace.lg,
+            ),
+            sliver: SliverToBoxAdapter(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  AppPageHeader(
+                    title: title,
+                    subtitle: subtitle,
+                    trailing: AppRefreshButton(
+                      tooltip: 'Refresh $title',
+                      loading: loading,
+                      onPressed: onRefresh,
                     ),
-                    const SizedBox(height: AppSpace.xl),
-                    ...header,
-                  ],
-                ),
+                  ),
+                  const SizedBox(height: AppSpace.xl),
+                  ...header,
+                ],
               ),
             ),
-            SliverPadding(
-              padding: EdgeInsets.symmetric(horizontal: padding),
-              sliver: SliverToBoxAdapter(
-                child: AnimatedSwitcher(
-                  duration: AppMotion.duration(context, AppMotion.normal),
-                  switchInCurve: AppMotion.easeOut,
-                  switchOutCurve: AppMotion.easeInOut,
-                  layoutBuilder: (currentChild, previousChildren) {
-                    return Stack(
-                      alignment: Alignment.topCenter,
-                      children: <Widget>[
-                        ...previousChildren,
-                        if (currentChild != null) currentChild,
-                      ],
-                    );
-                  },
-                  child: loading
-                      ? const Padding(
-                          key: ValueKey('workspace-loading'),
-                          padding: EdgeInsets.all(64),
-                          child: Loader(),
-                        )
-                      : error.isNotEmpty || itemCount == 0
-                      ? KeyedSubtree(
-                          key: ValueKey(
-                            error.isNotEmpty
-                                ? 'workspace-error'
-                                : 'workspace-empty',
-                          ),
-                          child: error.isNotEmpty
-                              ? WorkspaceEmpty(
-                                  icon: Icons.cloud_off_outlined,
-                                  title: 'Unable to load data',
-                                  message: error,
-                                  onRetry: onRefresh,
-                                )
-                              : empty,
-                        )
-                      : Column(
-                          key: ValueKey('workspace-list-$itemCount'),
-                          children: [
-                            for (var index = 0; index < itemCount; index++)
-                              Padding(
-                                padding: const EdgeInsets.only(
-                                  bottom: AppSpace.md,
-                                ),
-                                child: itemBuilder(context, index),
-                              ),
-                          ],
+          ),
+          SliverPadding(
+            padding: EdgeInsets.symmetric(horizontal: padding),
+            sliver: SliverToBoxAdapter(
+              child: AnimatedSwitcher(
+                duration: AppMotion.duration(context, AppMotion.normal),
+                switchInCurve: AppMotion.easeOut,
+                switchOutCurve: AppMotion.easeInOut,
+                layoutBuilder: (currentChild, previousChildren) {
+                  return Stack(
+                    alignment: Alignment.topCenter,
+                    children: <Widget>[
+                      ...previousChildren,
+                      if (currentChild != null) currentChild,
+                    ],
+                  );
+                },
+                child: loading
+                    ? const Padding(
+                        key: ValueKey('workspace-loading'),
+                        padding: EdgeInsets.all(64),
+                        child: Loader(),
+                      )
+                    : error.isNotEmpty || itemCount == 0
+                    ? KeyedSubtree(
+                        key: ValueKey(
+                          error.isNotEmpty
+                              ? 'workspace-error'
+                              : 'workspace-empty',
                         ),
-                ),
+                        child: error.isNotEmpty
+                            ? WorkspaceEmpty(
+                                icon: Icons.cloud_off_outlined,
+                                title: 'Unable to load data',
+                                message: error,
+                                onRetry: onRefresh,
+                              )
+                            : empty,
+                      )
+                    : Column(
+                        key: ValueKey('workspace-list-$itemCount'),
+                        children: [
+                          for (var index = 0; index < itemCount; index++)
+                            Padding(
+                              padding: const EdgeInsets.only(
+                                bottom: AppSpace.md,
+                              ),
+                              child: itemBuilder(context, index),
+                            ),
+                        ],
+                      ),
               ),
             ),
-            const SliverToBoxAdapter(child: SizedBox(height: AppSpace.xxl)),
-          ],
-        ),
-      );
-    },
-  );
+          ),
+          const SliverToBoxAdapter(child: SizedBox(height: AppSpace.xxl)),
+        ],
+      ),
+    );
+  }
 }
 
 class WorkspaceMetrics extends StatelessWidget {

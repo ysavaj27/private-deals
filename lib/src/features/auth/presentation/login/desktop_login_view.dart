@@ -147,6 +147,7 @@ class DesktopLoginView extends StatelessWidget {
                         fontWeight: FontWeight.bold,
                         size: const Size(222.25, 50),
                         text: 'Log In',
+                        analyticsName: 'login_submit',
                         isLoading: c.isLoading.value,
                         onPressed: () {
                           if (c.desktopKey.currentState?.validate() ?? false) {

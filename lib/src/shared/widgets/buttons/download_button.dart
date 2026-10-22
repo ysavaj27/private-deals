@@ -4,12 +4,20 @@ class DownloadButton extends StatelessWidget {
   final void Function()? onTap;
   final double size;
   final Color? color;
+  final String? analyticsName;
 
-  const DownloadButton({super.key, this.onTap, this.size = 26, this.color});
+  const DownloadButton({
+    super.key,
+    this.onTap,
+    this.size = 26,
+    this.color,
+    this.analyticsName,
+  });
 
   @override
   Widget build(BuildContext context) {
     return Clickable(
+      analyticsName: analyticsName ?? 'download',
       onTap: onTap,
       borderRadius: BorderRadius.circular(8),
       child: Container(

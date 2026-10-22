@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:private_deals/src/shared/models/deep_link_model.dart';
 import 'package:private_deals/src/shared/app_exports.dart';
 import 'package:private_deals/src/core/permissions/partner_role.dart';
@@ -129,6 +131,7 @@ class AuthSession extends GetxService {
     validated(true);
     _storageReadFailed = false;
     sessionError('');
+    unawaited(Analytics.setUser(next.id, role: next.role.apiValue));
   }
 
   Future<void> clear() async {
@@ -140,6 +143,7 @@ class AuthSession extends GetxService {
     recoveryPartnerId = null;
     pendingRoute = null;
     currentMenu(MenuItemEnum.none);
+    unawaited(Analytics.clearUser());
     await _store(null);
   }
 

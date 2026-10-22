@@ -47,7 +47,7 @@ Auth: header `headtoken`; after login also `Authorization: Bearer <token>`.
 
 - GET /api/v1/business/company-startup-list
 - GET /api/v2/business/portfolio/startup
-- POST /api/v1/business/add-portfolio
+- POST /api/v2/business/portfolio/upload
 
 ## Channel partners
 

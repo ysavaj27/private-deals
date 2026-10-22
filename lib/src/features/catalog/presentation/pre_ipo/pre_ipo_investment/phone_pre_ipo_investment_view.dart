@@ -176,6 +176,7 @@ class PhonePreIPOInvestmentView extends StatelessWidget {
                             width: 200,
                             height: 45,
                             backgroundColor: AppColors.preIpoButton(context),
+                            analyticsName: 'pre_ipo_add_investor',
                             onPressed: c.addInvestor,
                             child: const Text("Add Investor"),
                           ),
@@ -198,6 +199,7 @@ class PhonePreIPOInvestmentView extends StatelessWidget {
             child: CustomElevatedButton(
               isLoading: c.investing.value,
               backgroundColor: AppColors.preIpoButton(context),
+              analyticsName: 'pre_ipo_invest',
               // borderRadius: const BorderRadius.vertical(top: Radius.circular(15)),
               onPressed: () {
                 if (c.phoneKey.currentState?.validate() ?? false) {

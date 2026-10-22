@@ -69,38 +69,41 @@ class WInvestorsApi {
     required String mobileNumber,
     String email = '',
     String gender = '',
-  }) async {
-    try {
-      final Map<String, dynamic> body = {
-        "investor_type": investorType,
-        "name": name,
-        "mobile_number": mobileNumber,
-      };
-      final trimmedEmail = email.trim();
-      if (trimmedEmail.isNotEmpty) {
-        body['email'] = trimmedEmail.toLowerCase();
+  }) => Analytics.trackRequest(
+    id == 0 ? 'investor_add' : 'investor_update',
+    request: () async {
+      try {
+        final Map<String, dynamic> body = {
+          "investor_type": investorType,
+          "name": name,
+          "mobile_number": mobileNumber,
+        };
+        final trimmedEmail = email.trim();
+        if (trimmedEmail.isNotEmpty) {
+          body['email'] = trimmedEmail.toLowerCase();
+        }
+        final trimmedGender = gender.trim();
+        if (trimmedGender.isNotEmpty) {
+          body['gender'] = trimmedGender;
+        }
+        if (id != 0) {
+          body['investor_id'] = id;
+        }
+        var response = await dioConfig.post(
+          id != 0 ? AppUrl.wUpdateInvestor : AppUrl.wAddInvestor,
+          body,
+        );
+        BaseModel<InvestorModel> baseModel = BaseModel.fromJson(
+          response.data,
+          (p0) => InvestorModel.fromJson(p0),
+        );
+        return baseModel;
+      } catch (e, t) {
+        logger.e(e, stackTrace: t);
+        return BaseModel.fromError(e.toString());
       }
-      final trimmedGender = gender.trim();
-      if (trimmedGender.isNotEmpty) {
-        body['gender'] = trimmedGender;
-      }
-      if (id != 0) {
-        body['investor_id'] = id;
-      }
-      var response = await dioConfig.post(
-        id != 0 ? AppUrl.wUpdateInvestor : AppUrl.wAddInvestor,
-        body,
-      );
-      BaseModel<InvestorModel> baseModel = BaseModel.fromJson(
-        response.data,
-        (p0) => InvestorModel.fromJson(p0),
-      );
-      return baseModel;
-    } catch (e, t) {
-      logger.e(e, stackTrace: t);
-      return BaseModel.fromError(e.toString());
-    }
-  }
+    },
+  );
 
   static Future<BaseModel<InvestorModel>> getInvestor({
     required String uuid,

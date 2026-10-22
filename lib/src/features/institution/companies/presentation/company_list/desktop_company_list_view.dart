@@ -11,6 +11,8 @@ import 'package:private_deals/src/shared/institution_widgets/app_text_field.dart
 
 import 'package:private_deals/src/features/institution/companies/presentation/company_list/company_list_page.dart';
 import 'package:private_deals/src/features/institution/companies/presentation/company_list/company_list_page_ctrl.dart';
+import 'package:private_deals/src/shared/theme/app_tokens.dart';
+import 'package:private_deals/src/shared/widgets/app_page_header.dart';
 
 // Add your Company model and LogoImage imports.
 
@@ -31,21 +33,17 @@ class DesktopCompanyListView extends StatelessWidget {
   Widget build(BuildContext context) {
     final showPriceUpdate = c.companyType == CompanyType.unlisted;
     return ListView(
-      padding: const EdgeInsets.all(28),
+      padding: AppPagePadding.of(context),
       children: [
-        Text(c.companyRoute.title, style: context.textTheme.headlineSmall),
-        const SizedBox(height: 6),
         Obx(
-          () => Text(
-            c.mySubmissions()
+          () => AppPageHeader(
+            title: c.companyRoute.title,
+            subtitle: c.mySubmissions()
                 ? 'Companies you created.'
                 : 'Browse and manage your companies.',
-            style: context.textTheme.bodyMedium?.copyWith(
-              color: context.theme.colorScheme.onSurface.withValues(alpha: 0.8),
-            ),
           ),
         ),
-        const SizedBox(height: 24),
+        const SizedBox(height: AppSpace.xl),
         LayoutBuilder(
           builder: (context, constraints) {
             final search = AppTextField(

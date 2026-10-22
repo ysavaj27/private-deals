@@ -24,11 +24,30 @@ fi
 # Keep the stamped version and Flutter's version.json consistent.
 for argument in "$@"; do
   case "$argument" in
+    --output|--output=*|-o|-o=*)
+      echo "Web hosting uses build/web; custom output directories are not supported by this wrapper." >&2
+      exit 1
+      ;;
     --build-name|--build-name=*|--build-number|--build-number=*)
       echo "Set the release version in pubspec.yaml instead of using $argument." >&2
       exit 1
       ;;
   esac
 done
-"$flutter_bin" build web --release "$@" --web-define="APP_VERSION=$app_version"
-echo "Web release $app_version is ready in build/web."
+# Every build needs its own identity, even when pubspec.yaml is unchanged.
+# Randomness also separates builds started in the same second/on different Macs.
+release_id="$app_version-$(date -u +%Y%m%d%H%M%S)-$(od -An -N8 -tx1 /dev/urandom | tr -d ' \n')"
+"$flutter_bin" build web --release "$@"
+node --input-type=module - "$release_id" <<'NODE'
+import { readFileSync, writeFileSync } from 'node:fs';
+const path = 'build/web/version.json';
+const metadata = JSON.parse(readFileSync(path, 'utf8'));
+metadata.release_id = process.argv[2];
+writeFileSync(path, JSON.stringify(metadata));
+const htmlPath = 'build/web/index.html';
+const html = readFileSync(htmlPath, 'utf8');
+writeFileSync(htmlPath, html.replace(/(<meta name="app-version" content=")[^"]*(")/,
+  `$1${metadata.release_id}$2`));
+NODE
+node tools/verify_web_build.mjs
+echo "Web release $release_id is ready in build/web."

@@ -101,6 +101,12 @@ class PrimaryDetailPageCtrl extends GetxController
     isLoading(false);
     if (res.isSuccess && res.r != null) {
       startupDetailModel(res.r);
+      final detail = res.r!;
+      Analytics.primaryDetailView(
+        companyId: detail.id,
+        companySlug: detail.urlSlug,
+        brandName: detail.brandName,
+      );
     } else {
       toast(res.m);
     }

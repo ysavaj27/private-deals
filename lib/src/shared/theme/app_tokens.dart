@@ -21,6 +21,66 @@ abstract final class AppSpace {
       EdgeInsets.symmetric(horizontal: md);
 }
 
+/// Shared desktop shell sizes for wealth manager and seller workspaces.
+abstract final class AppShell {
+  static const double sidebarWidth = 260;
+
+  /// Fits the LP Secondary / Unlisted product switcher + header actions.
+  static const double desktopAppBarHeight = 82;
+}
+
+/// Shared page content insets so headers and titles align across screens.
+///
+/// Always derive from [MediaQuery] window width (not content-area width) so
+/// wealth manager and seller pages keep the same gutters on desktop web.
+abstract final class AppPagePadding {
+  static const double compactBreakpoint = 600;
+
+  /// Desktop page gutter used by WM and seller (same on both sides).
+  static const double desktop = 40;
+
+  static bool isCompact(double width) => width < compactBreakpoint;
+
+  static bool compactOf(BuildContext context) =>
+      isCompact(MediaQuery.sizeOf(context).width);
+
+  static double horizontalOf(BuildContext context) =>
+      compactOf(context) ? AppSpace.lg : desktop;
+
+  /// Prefer [horizontalOf]; kept for call sites that already have a width.
+  /// Pass the window width, not the post-sidebar content width.
+  static double horizontalFor(double width) =>
+      isCompact(width) ? AppSpace.lg : desktop;
+
+  /// Standard page inset: 16/40 horizontal, 24 top, 32 bottom.
+  static EdgeInsets of(BuildContext context, {double? bottom}) {
+    final horizontal = horizontalOf(context);
+    return EdgeInsets.fromLTRB(
+      horizontal,
+      AppSpace.xl,
+      horizontal,
+      bottom ?? AppSpace.xxl,
+    );
+  }
+
+  /// Prefer [of]; same inset using an explicit window width.
+  static EdgeInsets forWidth(double width, {double? bottom}) {
+    final horizontal = horizontalFor(width);
+    return EdgeInsets.fromLTRB(
+      horizontal,
+      AppSpace.xl,
+      horizontal,
+      bottom ?? AppSpace.xxl,
+    );
+  }
+
+  /// Horizontal-only inset for pages that manage vertical spacing themselves.
+  static EdgeInsets horizontalOnly(BuildContext context) {
+    final horizontal = horizontalOf(context);
+    return EdgeInsets.symmetric(horizontal: horizontal);
+  }
+}
+
 /// Corner radius scale aligned with [partner_theme] (12 inputs, 16 cards).
 abstract final class AppRadii {
   static const double xs = 4;

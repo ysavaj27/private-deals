@@ -53,6 +53,7 @@ class HomePageCtrl extends GetxController {
       return;
     }
     final target = '/wealth-manager/${tab.slug}';
+    Analytics.tap('wm_tab_${tab.slug}');
     // Keep view state in sync even when the URL already matches (stale tab).
     if (Get.currentRoute == target) {
       if (currentTab() != tab) currentTab(tab);

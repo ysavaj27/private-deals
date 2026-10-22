@@ -105,6 +105,7 @@ Auth remains v1; investor KYC and Institution endpoints explicitly use v2. `get-
 - Investor listing uses `v2/business/investor` with active and AIF filters. The wealth manager KYC filter uses the returned `preipo_kyc_status` in the model. Self identification uses `is_self` or the profile's `self_investor_id`, never list position.
 - New clients send only investor type, name, mobile number and optional email/gender. Legacy investor-update contracts remain separate.
 - Investor KYC uses multipart `v2/business/investor/kyc/cml/read` and `/save` from the investor-list dialog. Read accepts a PDF up to 10 MB and maps `account_holder_name` into the editable name; it does not mark KYC complete. Save requires DP ID, client ID, PAN, name, account number and IFSC; bank name and DOB (`dd-mm-yyyy`) are optional. The KYC dialog requires a CML PDF before saving. Both client and self-investor saving are supported. After a successful save, the list reloads the server name and `preipo_kyc_status`. Business failures keep the dialog open with the returned message.
+- Partner portfolio upload uses `POST v2/business/portfolio/upload` and always sends `type` `company`. A listed company sends `company_id`. A company that is not on the platform omits `company_id` and sends `other_name`; that holding can take up to 48 hours to appear, while a listed company is available immediately. Shares must be at least 1 and the share price at least 0.01. The purchase date is optional (`dd-mm-yyyy`). Startup holdings and investor sessions do not use this endpoint. A failure shows the API message.
 
 The Institution dashboard contains supported workflow links. Pre-IPO transactions and enquiries use the v2 business/Institution endpoints. The Pending transaction filter includes mandates awaiting signature, and Institutions can open the server-provided mandate signing link. Legacy Seller dashboard metrics and standalone company price updates remain deferred. Institution seller profile editing uses `v2/business/institution/profile`. There is no role switcher and no active `/seller/` endpoint in the new app.
 
@@ -118,8 +119,10 @@ flutter analyze --no-pub --no-fatal-infos
 bash tools/build_web.sh --no-pub
 ```
 
-Use this wrapper for deployable web builds: it embeds the full `pubspec.yaml` version so
-open tabs can detect updates. See [web deployment](docs/web-deployment.md).
+The normal `flutter build web --release` command also supports automatic updates;
+increase the pubspec version/build number for each release. The wrapper above adds a
+unique release ID even without a version bump. Upload the entire `build/web` directory
+and configure the hosting cache headers. See [web deployment](docs/web-deployment.md).
 
 ### API smoke checklist
 

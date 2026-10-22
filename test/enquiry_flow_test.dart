@@ -709,6 +709,8 @@ void main() {
           'uuid': 'inquiry-1',
           'reason': null,
         });
+        await tester.tap(find.byTooltip('Dismiss notification'));
+        await tester.pumpAndSettle();
         expect(tester.takeException(), isNull);
       },
     );
@@ -778,6 +780,8 @@ void main() {
       expect(adapter.requests.where((r) => r.method == 'POST').single.data, {
         'uuid': 'inquiry-1',
       });
+      await tester.tap(find.byTooltip('Dismiss notification'));
+      await tester.pumpAndSettle();
     },
   );
 
@@ -951,6 +955,8 @@ void main() {
         findsWidgets,
       );
       expect(adapter.requests.where((r) => r.method == 'POST').length, 1);
+      Get.closeAllSnackbars();
+      await tester.pumpAndSettle();
       expect(tester.takeException(), isNull);
     },
   );
@@ -1018,6 +1024,8 @@ void main() {
       'uuid': 'inquiry-1',
       'investor_id': 23,
     });
+    Get.closeAllSnackbars();
+    await tester.pumpAndSettle();
     expect(tester.takeException(), isNull);
   });
 }

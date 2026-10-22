@@ -408,9 +408,7 @@ class PreIpoPaymentDetailsPanel extends StatelessWidget {
   ) async {
     await Clipboard.setData(ClipboardData(text: text));
     if (!context.mounted) return;
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(content: Text(message), duration: const Duration(seconds: 1)),
-    );
+    toast(message, MessageEnum.success);
   }
 }
 

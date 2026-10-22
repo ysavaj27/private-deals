@@ -80,6 +80,12 @@ class PSideBarWidget extends StatelessWidget {
                   ),
                   const SizedBox(height: 5),
                   PTabTileWidget(
+                    icon: AppAssets.portfolioIc,
+                    title: 'Upload Portfolio',
+                    tab: WTabBarEnum.uploadPortfolio,
+                  ),
+                  const SizedBox(height: 5),
+                  PTabTileWidget(
                     icon: AppAssets.myEarningIc,
                     title: 'My Earnings',
                     tab: WTabBarEnum.myEarnings,
@@ -313,85 +319,37 @@ class LogoutWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return SizedBox(
-      height: 50,
-      child: Row(
-        children: [
-          AnimatedContainer(
-            margin: const EdgeInsets.only(left: 3),
-            duration: const Duration(milliseconds: 200),
-            height: 0,
-            width: 0,
-            decoration: BoxDecoration(
-              borderRadius: BorderRadius.circular(15),
-              color: context.theme.primaryColor,
-            ),
-          ),
-          Expanded(
-            child: InkWell(
-              mouseCursor: SystemMouseCursors.click,
-              onTap: () {
+    final colors = context.theme.colorScheme;
+    return Padding(
+      padding: const EdgeInsets.fromLTRB(AppSpace.md, 0, AppSpace.md, AppSpace.sm),
+      child: OutlinedButton.icon(
+        onPressed: () {
+          Get.back();
+          showCustomDialog(
+            LogoutDialog(
+              onPressed: () async {
                 Get.back();
-                showCustomDialog(
-                  LogoutDialog(
-                    onPressed: () async {
-                      await SessionNavigation.logout();
-                    },
-                  ),
-                );
+                await SessionNavigation.logout();
               },
-              borderRadius: const BorderRadius.only(
-                topLeft: Radius.circular(6),
-                bottomLeft: Radius.circular(6),
-              ),
-              child: CustomCardWidget(
-                isBorder: false,
-                borderRadius: BorderRadius.circular(12),
-                // duration: const Duration(milliseconds: 200),
-                height: 40,
-                // margin: const EdgeInsets.only(left: 10),
-                // decoration: BoxDecoration(
-                //   borderRadius: const BorderRadius.only(
-                //     topLeft: Radius.circular(6),
-                //     bottomLeft: Radius.circular(6),
-                //   ),
-                //   color: isSelected
-                //       ? context.theme.primaryColor.withValues(alpha: 0.1)
-                //       : Colors.transparent,
-                // ),
-                child: Row(
-                  crossAxisAlignment: CrossAxisAlignment.center,
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    const SizedBox(width: 20),
-                    const Icon(
-                      Icons.logout_outlined,
-                      size: 24,
-                      color: Colors.grey,
-                    ),
-                    // Icon(
-                    //   icon,
-                    //   size: 24,
-                    //   color: isSelected ? context.theme.primaryColor : Colors.grey,
-                    // ),
-                    const SizedBox(width: 20),
-                    Expanded(
-                      child: Text(
-                        "Logout",
-                        maxLines: 1,
-                        style: TextStyle(
-                          fontWeight: FontWeight.w400,
-                          fontSize: 14,
-                          color: context.theme.colorScheme.onSurfaceVariant,
-                        ),
-                      ),
-                    ),
-                  ],
-                ),
-              ),
             ),
+          );
+        },
+        icon: Icon(Icons.logout_rounded, color: colors.onSurfaceVariant),
+        label: Text(
+          'Sign out',
+          style: context.textTheme.labelLarge?.copyWith(
+            color: colors.onSurface,
+            fontWeight: FontWeight.w600,
           ),
-        ],
+        ),
+        style: OutlinedButton.styleFrom(
+          foregroundColor: colors.onSurface,
+          minimumSize: const Size(double.infinity, 48),
+          padding: const EdgeInsets.symmetric(vertical: 14),
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(AppRadii.md),
+          ),
+        ),
       ),
     );
   }

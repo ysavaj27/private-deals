@@ -38,32 +38,33 @@ HEADTOKEN = os.environ.get(
 TARGET_NOTIONAL = 35000.0
 SETTLEMENT_DAYS = 1
 
-# Selling Price from 13-Oct-26 WhatsApp rate sheet. CNC rows omitted.
+# Selling Price from 22-Oct-26 WhatsApp rate sheet. CNC rows omitted.
 BASE_PRICES: dict[str, float] = {
-    "APOLLO GREEN": 61.95,
-    "BOOTES": 1008.0,
-    "CARE INSURANCE": 150.15,
-    "COCHIN INT AIRPORT": 468.3,
-    "CSK": 254.1,
+    "APOLLO GREEN": 57.75,
+    "BOOTES": 787.5,
+    "CARE INSURANCE": 148.05,
+    "COCHIN INT AIRPORT": 467.25,
+    "CSK": 252.0,
     "CREMICA FOOD": 183.75,
-    "GOODLUCK DEFENCE": 464.1,
-    "HDFC SECURITIES": 8142.75,
+    "GOODLUCK DEFENCE": 443.1,
+    "GARUDA AEROSPACE": 435.75,
+    "HDFC SECURITIES": 8137.5,
     "HINDUJA FINANCE": 244.65,
     "HVR SOLAR": 273.0,
     "INDOFIL": 1879.5,
     "INCRED": 156.45,
-    "MSEI": 6.9825,
-    "MOTILAL HOME FIN": 11.8125,
-    "MOHAN MEAKIN": 2352.0,
-    "NCDEX": 315.0,
+    "MSEI": 6.93,
+    "MOTILAL HOME FIN": 11.55,
+    "MOHAN MEAKIN": 2283.75,
+    "NCDEX": 291.9,
     "MODERN BAZAAR": 54.6,
     "OYO": 22.995,
     "OYO ASSET": 8.4,
     "ORBIS FINANCE": 357.0,
-    "PARAG PARIKH": 19320.0,
-    "PHARMEASY": 6.825,
-    "POLYMATECH": 45.9375,
-    "ZEPTO": 29.925,
+    "PARAG PARIKH": 19005.0,
+    "PHARMEASY": 7.0875,
+    "POLYMATECH": 45.675,
+    "ZEPTO": 29.295,
 }
 
 # Optional aliases → canonical sheet key above.
@@ -77,6 +78,9 @@ ALIASES: dict[str, str] = {
     "CARE HEALTH INSURANCE": "CARE INSURANCE",
     "GOODLUCK DEFENCE AND AEROSPACE": "GOODLUCK DEFENCE",
     "GOODLUCK": "GOODLUCK DEFENCE",
+    "GARUDA": "GARUDA AEROSPACE",
+    "GARUDA AEROSPACE LIMITED": "GARUDA AEROSPACE",
+    "GARUDA AEROSPACE PRIVATE": "GARUDA AEROSPACE",
     "HINDUJA LEYLAND FINANCE": "HINDUJA FINANCE",
     "HINDUJA": "HINDUJA FINANCE",
     "HDFC": "HDFC SECURITIES",
@@ -401,12 +405,12 @@ def main() -> int:
     )
     parser.add_argument(
         "--m1",
-        default=os.environ.get("PD_INST_1", "9316314236"),
+        default=os.environ.get("PD_INST_1", "9924297040"),
         help="Institute 1 mobile (base)",
     )
     parser.add_argument(
         "--m2",
-        default=os.environ.get("PD_INST_2", "7984718397"),
+        default=os.environ.get("PD_INST_2", "8754413889"),
         help="Institute 2 mobile (+0.5%)",
     )
     parser.add_argument(

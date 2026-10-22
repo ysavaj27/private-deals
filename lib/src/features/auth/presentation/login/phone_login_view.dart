@@ -137,6 +137,7 @@ class PhoneLoginView extends StatelessWidget {
                           Obx(() {
                             return CustomElevatedButton(
                               text: 'Login',
+                              analyticsName: 'login_submit',
                               height: 38,
                               backgroundColor: context.theme.iconTheme.color,
                               color: context.theme.scaffoldBackgroundColor,

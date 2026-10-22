@@ -4,13 +4,13 @@ import 'package:private_deals/src/shared/functions/parse.dart';
 /// A counter-offer from an Institution on an open partner enquiry.
 class EnquiryQuote {
   EnquiryQuote.fromJson(Map<String, dynamic> json)
-    : uuid = Parse.toStrings(json['uuid']),
+    : uuid = Parse.toStrings(json['uuid']).trim(),
       quantity = Parse.toInt(json['quantity']),
       basePrice = Parse.toDouble(json['base_price']),
       sharePrice = Parse.toDouble(json['share_price']),
       settlementDays = _readSettlementDays(json['settlement_days']),
       settlementLabel = _readSettlementLabel(json['settlement_label']),
-      status = Parse.toStrings(json['status']),
+      status = Parse.toStrings(json['status']).trim().toLowerCase(),
       institutionId = Parse.toInt((json['institution'] as Map?)?['id']),
       institutionName = Parse.toStrings((json['institution'] as Map?)?['name']);
 
@@ -49,9 +49,9 @@ class EnquiryQuote {
 /// Inquiry lifecycle is independent of the subsequent order's order_step.
 class EnquiryModel {
   EnquiryModel.fromJson(Map<String, dynamic> json)
-    : uuid = Parse.toStrings(json['uuid']),
-      dealType = Parse.toStrings(json['deal_type']),
-      status = Parse.toStrings(json['enquiry_status']),
+    : uuid = Parse.toStrings(json['uuid']).trim(),
+      dealType = Parse.toStrings(json['deal_type']).trim().toLowerCase(),
+      status = Parse.toStrings(json['enquiry_status']).trim().toLowerCase(),
       quantity = Parse.toInt(json['quantity']),
       basePrice = Parse.toDouble(json['base_price']),
       sharePrice = Parse.toDouble(json['share_price']),
@@ -99,7 +99,10 @@ class EnquiryModel {
   bool get isBuy => dealType == 'buy';
 
   bool get canSellerRespond =>
-      uuid.isNotEmpty && status == 'open' && !hasInstitution;
+      uuid.isNotEmpty &&
+      (isBuy || isSell) &&
+      status == 'open' &&
+      !hasInstitution;
 
   bool get hasPendingQuote => myQuote?.isPending == true;
 
@@ -111,24 +114,33 @@ class EnquiryModel {
 
   bool get canWithdrawQuote => canSellerRespond && hasPendingQuote;
 
-  List<EnquiryQuote> get actionableQuotes => status != 'open'
+  List<EnquiryQuote> get actionableQuotes => !canSellerRespond
       ? const []
-      : quotes.where((quote) => quote.isPending && quote.uuid.isNotEmpty).toList();
+      : quotes
+            .where((quote) => quote.isPending && quote.uuid.isNotEmpty)
+            .toList();
 
   /// Lists without a partner id only ever contained the caller's own enquiries.
-  bool isMine(PartnerUser me) => partnerId <= 0 || partnerId == me.id;
+  bool isMine(PartnerUser me) =>
+      me.id > 0 && (partnerId <= 0 || partnerId == me.id);
 
-  /// A Wealth Manager and their own Relation Manager count as one side.
+  /// A Wealth Manager and all of their Relation Managers count as one side.
   bool isSameDesk(PartnerUser me) =>
       (partnerParentId > 0 && partnerParentId == me.id) ||
-      (me.parentId > 0 && partnerId == me.parentId);
+      (me.parentId > 0 && partnerId == me.parentId) ||
+      (partnerParentId > 0 && partnerParentId == me.parentId);
 
   bool canWithdraw(PartnerUser me) => canSellerRespond && isMine(me);
   bool canPartnerRespond(PartnerUser me) =>
-      uuid.isNotEmpty && status == 'locked' && isMine(me);
+      uuid.isNotEmpty && (isBuy || isSell) && status == 'locked' && isMine(me);
+
+  bool canAcceptQuote(PartnerUser me, EnquiryQuote quote) =>
+      isMine(me) &&
+      quote.isPending &&
+      actionableQuotes.any((entry) => entry.uuid == quote.uuid);
 
   bool canAcceptCounterparty(PartnerUser me) {
-    if (!canSellerRespond || isMine(me)) return false;
+    if (me.id <= 0 || !canSellerRespond || isMine(me)) return false;
     return counterpartyFlag ?? !isSameDesk(me);
   }
 

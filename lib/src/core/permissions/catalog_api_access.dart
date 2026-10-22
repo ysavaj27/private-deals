@@ -21,6 +21,7 @@ class CatalogApiAccess {
         AppUrl.wTransaction,
         AppUrl.wPortfolio,
         AppUrl.wPreIpoPortfolio,
+        AppUrl.wEnquiry,
       },
       'POST' => {
         AppUrl.wAddInvestor,
@@ -29,6 +30,11 @@ class CatalogApiAccess {
         AppUrl.wPrimaryInvestment,
         AppUrl.wPreIpoBuy,
         AppUrl.wEnquiry,
+        '${AppUrl.wEnquiry}/withdraw',
+        '${AppUrl.wEnquiry}/reject',
+        '${AppUrl.wEnquiry}/accept',
+        '${AppUrl.wEnquiry}/accept-counterparty',
+        '${AppUrl.wEnquiry}/quotes/accept',
       },
       _ => <String>{},
     };

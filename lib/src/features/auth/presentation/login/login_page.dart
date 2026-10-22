@@ -111,6 +111,7 @@ class LoginPage extends StatelessWidget {
                         Obx(() {
                           return CustomElevatedButton(
                             text: 'Login',
+                            analyticsName: 'login_submit',
                             isLoading: c.isLoading.value,
                             onPressed: () {
                               if (_formKey.currentState?.validate() ?? false) {

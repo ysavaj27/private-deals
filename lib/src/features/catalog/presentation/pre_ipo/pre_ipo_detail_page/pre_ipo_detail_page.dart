@@ -1,8 +1,10 @@
+import 'package:private_deals/src/core/permissions/partner_role.dart';
 import 'package:private_deals/src/shared/app_exports.dart';
 
 import 'package:private_deals/src/features/catalog/presentation/pre_ipo/pre_ipo_detail_page/desktop_pre_ipo_detail_view.dart';
 import 'package:private_deals/src/features/catalog/presentation/pre_ipo/pre_ipo_detail_page/phone_pre_ipo_detail_view.dart';
 import 'package:private_deals/src/features/catalog/presentation/pre_ipo/pre_ipo_detail_page/pre_ipo_detail_page_ctrl.dart';
+import 'package:private_deals/src/features/catalog/presentation/pre_ipo/pre_ipo_detail_page/seller_pre_ipo_detail_view.dart';
 
 class PreIPODetailPage extends StatelessWidget {
   final PreIPODetailPageCtrl c = Get.put(PreIPODetailPageCtrl());
@@ -11,6 +13,9 @@ class PreIPODetailPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    if (app.role == PartnerRole.institution) {
+      return SellerPreIPODetailView(phone: context.isPhone);
+    }
     if (context.isPhone) {
       return PhonePreIPODetailView();
     } else {

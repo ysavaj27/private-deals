@@ -1,3 +1,4 @@
+import 'package:private_deals/src/core/permissions/partner_role.dart';
 import 'package:private_deals/src/features/catalog/presentation/investor_draft_lifecycle.dart';
 import 'package:private_deals/src/features/catalog/presentation/pre_ipo/pre_ipo_investment/pre_ipo_offer.dart';
 import 'package:private_deals/src/features/catalog/presentation/pre_ipo/pre_ipo_detail_page/pre_ipo_detail_sections.dart';
@@ -30,6 +31,11 @@ class PreIPODetailPageCtrl extends GetxController
       clearInvestors();
     }
     selectedOffer.value = offer;
+    Analytics.preIpoOfferSelect(
+      companyId: model().id,
+      dealId: offer.dealId,
+      price: offer.price,
+    );
     minTicketSize = offer.minimumQty.toDouble();
     isQty(true);
     if (phone) {
@@ -103,9 +109,12 @@ class PreIPODetailPageCtrl extends GetxController
       } else {
         isQty(true);
       }
-      // if (model().transaction.id.isNotEmpty) {
-      //   qtyCTRL.text = model().transaction.shares.toString();
-      // }
+      Analytics.preIpoDetailView(
+        companyId: model().id,
+        companySlug: model().slug,
+        brandName: model().brandName,
+        viewer: app.role == PartnerRole.institution ? 'institution' : 'wm',
+      );
     } else {
       toast(res.m, MessageEnum.error);
     }
@@ -162,9 +171,11 @@ class PreIPODetailPageCtrl extends GetxController
   Future<void> onPress() async {
     if (investing.value || !validateOffer()) return;
     investing(true);
+    final dealId = selectedOffer.value!.dealId;
     var res = await WPreIpoTransactionApi.buy(
+      companyId: model().id,
       list: investorList,
-      dealId: selectedOffer.value!.dealId,
+      dealId: dealId,
       dealUuid: selectedOffer.value!.dealUuid,
     );
     if (isClosed) return;

@@ -16,10 +16,7 @@ class _UploadPortfolioViewState extends State<UploadPortfolioView> {
   final c = Get.find<UploadPortfolioCtrl>();
   final _formKey = GlobalKey<FormState>();
 
-  bool get _hasAccess =>
-      app.wUser.isPrimaryAccess ||
-      app.wUser.isSecondaryAccess ||
-      app.wUser.isPreIpoAccess;
+  bool get _hasAccess => app.wUser.isPreIpoAccess;
 
   void _reset() {
     FocusScope.of(context).unfocus();
@@ -95,9 +92,7 @@ class _UploadPortfolioViewState extends State<UploadPortfolioView> {
             child: AbsorbPointer(
               absorbing: uploading,
               child: SingleChildScrollView(
-                padding: EdgeInsets.all(
-                  MediaQuery.sizeOf(context).width < 600 ? 16 : 32,
-                ),
+                padding: AppPagePadding.of(context),
                 child: Align(
                   alignment: Alignment.topCenter,
                   child: ConstrainedBox(
@@ -112,19 +107,13 @@ class _UploadPortfolioViewState extends State<UploadPortfolioView> {
                             letterSpacing: 1.8,
                           ),
                         ),
-                        const SizedBox(height: 10),
-                        Text(
-                          'Upload portfolio',
-                          style: theme.textTheme.headlineMedium,
+                        const SizedBox(height: AppSpace.sm),
+                        const AppPageHeader(
+                          title: 'Upload portfolio',
+                          subtitle:
+                              'Add an existing unlisted company holding to an investor’s portfolio.',
                         ),
-                        const SizedBox(height: 8),
-                        Text(
-                          'Add an existing investment to your investor’s portfolio.',
-                          style: theme.textTheme.bodyMedium?.copyWith(
-                            color: colors.onSurfaceVariant,
-                          ),
-                        ),
-                        const SizedBox(height: 28),
+                        const SizedBox(height: AppSpace.xl),
                         Form(
                           key: _formKey,
                           child: LayoutBuilder(
@@ -173,52 +162,8 @@ class _UploadPortfolioViewState extends State<UploadPortfolioView> {
       children: [
         _FormSection(
           number: '01',
-          title: 'Investment type',
-          description: 'Choose the asset class for this holding.',
-          child: LayoutBuilder(
-            builder: (context, constraints) {
-              final options = [
-                if (app.wUser.isPrimaryAccess || app.wUser.isSecondaryAccess)
-                  _typeOption(
-                    DashboardTypeEnum.primary,
-                    'Private Equity',
-                    'Investments in private businesses',
-                    Icons.business_center_outlined,
-                  ),
-                if (app.wUser.isPreIpoAccess)
-                  _typeOption(
-                    DashboardTypeEnum.preIpo,
-                    'Unlisted Company',
-                    'Shares in unlisted companies',
-                    Icons.apartment_rounded,
-                  ),
-              ];
-              if (constraints.maxWidth < 540) {
-                return Column(
-                  children: [
-                    for (var i = 0; i < options.length; i++) ...[
-                      if (i > 0) const SizedBox(height: 12),
-                      options[i],
-                    ],
-                  ],
-                );
-              }
-              return Row(
-                children: [
-                  for (var i = 0; i < options.length; i++) ...[
-                    if (i > 0) const SizedBox(width: 12),
-                    Expanded(child: options[i]),
-                  ],
-                ],
-              );
-            },
-          ),
-        ),
-        const SizedBox(height: 20),
-        _FormSection(
-          number: '02',
           title: 'Investor & company',
-          description: 'Link this holding to the right investor.',
+          description: 'Link this holding to the right investor and company.',
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
@@ -256,9 +201,7 @@ class _UploadPortfolioViewState extends State<UploadPortfolioView> {
               SearchableTextField<CompanyStartup>(
                 controller: c.companyCTRL,
                 title: 'Company',
-                hint: c.isStartUp
-                    ? 'Search private equity companies'
-                    : 'Search unlisted companies',
+                hint: 'Search unlisted companies',
                 isRequired: true,
                 suggestions: c.list
                     .map(
@@ -278,7 +221,7 @@ class _UploadPortfolioViewState extends State<UploadPortfolioView> {
               ),
               const SizedBox(height: 8),
               Text(
-                'Can’t find the company? Enter its full name to add the holding.',
+                'Can’t find the company? Enter its full name. A company that is not on the platform can take up to 48 hours to appear.',
                 style: Theme.of(context).textTheme.bodySmall?.copyWith(
                   color: Theme.of(context).colorScheme.onSurfaceVariant,
                 ),
@@ -288,7 +231,7 @@ class _UploadPortfolioViewState extends State<UploadPortfolioView> {
         ),
         const SizedBox(height: 20),
         _FormSection(
-          number: '03',
+          number: '02',
           title: 'Holding details',
           description: 'Enter the quantity and original purchase price.',
           child: Column(
@@ -310,8 +253,8 @@ class _UploadPortfolioViewState extends State<UploadPortfolioView> {
                       ),
                       validator: (value) {
                         final quantity = int.tryParse(value ?? '');
-                        return quantity == null || quantity <= 0
-                            ? 'Enter a quantity greater than 0'
+                        return quantity == null || quantity < 1
+                            ? 'Enter at least 1 share'
                             : null;
                       },
                     ),
@@ -339,8 +282,8 @@ class _UploadPortfolioViewState extends State<UploadPortfolioView> {
                       ),
                       validator: (value) {
                         final price = double.tryParse(value ?? '');
-                        return price == null || !price.isFinite || price <= 0
-                            ? 'Enter a price greater than 0'
+                        return price == null || !price.isFinite || price < 0.01
+                            ? 'Enter a price of at least 0.01'
                             : null;
                       },
                     ),
@@ -396,67 +339,6 @@ class _UploadPortfolioViewState extends State<UploadPortfolioView> {
     );
   }
 
-  Widget _typeOption(
-    DashboardTypeEnum type,
-    String title,
-    String description,
-    IconData icon,
-  ) {
-    final colors = Theme.of(context).colorScheme;
-    final selected = c.currentIndex() == type;
-    return Semantics(
-      selected: selected,
-      child: Material(
-        color: selected
-            ? colors.primaryContainer.withValues(alpha: 0.45)
-            : colors.surface,
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(12),
-          side: BorderSide(
-            color: selected ? colors.primary : colors.outlineVariant,
-            width: selected ? 1.5 : 1,
-          ),
-        ),
-        child: InkWell(
-          borderRadius: BorderRadius.circular(12),
-          onTap: () {
-            if (selected) return;
-            _reset();
-            c.changeTab(type);
-          },
-          child: Padding(
-            padding: const EdgeInsets.all(16),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Row(
-                  children: [
-                    Icon(icon, color: colors.primary),
-                    const Spacer(),
-                    Icon(
-                      selected
-                          ? Icons.check_circle_rounded
-                          : Icons.radio_button_unchecked,
-                      color: selected ? colors.primary : colors.outline,
-                      size: 20,
-                    ),
-                  ],
-                ),
-                const SizedBox(height: 14),
-                Text(title, style: Theme.of(context).textTheme.titleSmall),
-                const SizedBox(height: 4),
-                Text(
-                  description,
-                  style: Theme.of(context).textTheme.bodySmall
-                      ?.copyWith(color: colors.onSurfaceVariant),
-                ),
-              ],
-            ),
-          ),
-        ),
-      ),
-    );
-  }
 }
 
 class _FormSection extends StatelessWidget {
@@ -691,11 +573,6 @@ class _PortfolioSummary extends StatelessWidget {
                   children: [
                     _detail(
                       context,
-                      'Asset class',
-                      c.isStartUp ? 'Private Equity' : 'Unlisted Company',
-                    ),
-                    _detail(
-                      context,
                       'Investor',
                       c.investorCTRL.text.trim().isEmpty
                           ? 'Not selected'
@@ -728,7 +605,11 @@ class _PortfolioSummary extends StatelessWidget {
                         const SizedBox(width: 8),
                         Expanded(
                           child: Text(
-                            'Review the details before adding this holding to the investor’s portfolio.',
+                            c.companyCTRL.text.trim().isEmpty
+                                ? 'Review the details before adding this holding to the investor’s portfolio.'
+                                : c.isCustomCompany
+                                ? 'This holding may take up to 48 hours to appear in the portfolio.'
+                                : 'This holding will be available in the portfolio immediately.',
                             style: theme.textTheme.bodySmall?.copyWith(
                               color: colors.onSurfaceVariant,
                             ),

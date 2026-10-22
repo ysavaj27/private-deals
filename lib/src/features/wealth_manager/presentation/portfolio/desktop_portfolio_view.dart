@@ -18,20 +18,19 @@ class DesktopPortfolioView extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       body: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 40, vertical: 20),
+        padding: AppPagePadding.of(context),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            const SizedBox(height: 20),
             Row(
               mainAxisAlignment: MainAxisAlignment.start,
               children: [
-                const TitleText("Portfolio"),
+                const TitleText('Portfolio'),
                 const Spacer(),
                 Visibility(
                   visible: app.wUser.isPreIpoAccess,
                   child: TabButton(
-                    title: "Unlisted",
+                    title: 'Unlisted',
                     type: EquityTypeEnum.preIpo,
                     onTap: () {
                       c.changeTab(EquityTypeEnum.preIpo);
@@ -47,13 +46,12 @@ class DesktopPortfolioView extends StatelessWidget {
                   visible:
                       app.wUser.isPrimaryAccess || app.wUser.isSecondaryAccess,
                   child: TabButton(
-                    title: "Equity",
+                    title: 'Equity',
                     type: EquityTypeEnum.equity,
                     onTap: () {
                       c.changeTab(EquityTypeEnum.equity);
                     },
                     currentIndex: c.currentIndex,
-                    // size: context,
                   ),
                 ),
                 Visibility(
@@ -65,7 +63,7 @@ class DesktopPortfolioView extends StatelessWidget {
                   visible:
                       app.wUser.isPrimaryAccess || app.wUser.isSecondaryAccess,
                   child: TabButton(
-                    title: "CCPS",
+                    title: 'CCPS',
                     type: EquityTypeEnum.ccps,
                     onTap: () {
                       c.changeTab(EquityTypeEnum.ccps);
@@ -82,7 +80,7 @@ class DesktopPortfolioView extends StatelessWidget {
                   visible:
                       app.wUser.isPrimaryAccess || app.wUser.isSecondaryAccess,
                   child: TabButton(
-                    title: "CCD",
+                    title: 'CCD',
                     type: EquityTypeEnum.ccd,
                     onTap: () {
                       c.changeTab(EquityTypeEnum.ccd);
@@ -90,18 +88,9 @@ class DesktopPortfolioView extends StatelessWidget {
                     currentIndex: c.currentIndex,
                   ),
                 ),
-                Visibility(
-                  visible:
-                      app.wUser.isPrimaryAccess || app.wUser.isSecondaryAccess,
-                  child: const SizedBox(width: 10),
-                ),
               ],
             ),
-            Visibility(
-              visible: app.wUser.isPreIpoAccess,
-              child: const SizedBox(height: 10),
-            ),
-            const SizedBox(height: 8),
+            const SizedBox(height: AppSpace.lg),
             Obx(
               () => c.currentIndex() == EquityTypeEnum.preIpo
                   ? const SizedBox.shrink()

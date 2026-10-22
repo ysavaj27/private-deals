@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:private_deals/src/shared/app_exports.dart';
 import 'package:private_deals/src/core/permissions/access_policy.dart';
 import 'package:private_deals/src/core/permissions/partner_role.dart';
@@ -63,6 +65,7 @@ class SessionNavigation {
 
   static Future<void> logout() async {
     // Clear local identity even if the server cannot be reached.
+    unawaited(Analytics.logout());
     await WAuthApi.logout();
     await app.clear();
     // GetX disposes route controllers after the outgoing widgets unmount.

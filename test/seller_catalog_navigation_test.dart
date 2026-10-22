@@ -143,6 +143,7 @@ void main() {
         AppUrl.wInvestorList,
         AppUrl.wInvestorDetail,
         AppUrl.wTransaction,
+        AppUrl.wEnquiry,
       ]) {
         await dioConfig.get(path, {});
       }
@@ -150,6 +151,11 @@ void main() {
         AppUrl.wPreIpoBuy,
         AppUrl.wPrimaryInvestment,
         AppUrl.wEnquiry,
+        '${AppUrl.wEnquiry}/withdraw',
+        '${AppUrl.wEnquiry}/reject',
+        '${AppUrl.wEnquiry}/accept',
+        '${AppUrl.wEnquiry}/accept-counterparty',
+        '${AppUrl.wEnquiry}/quotes/accept',
         AppUrl.wAddInvestor,
         'v2/business/investor/kyc/cml/read',
         'v2/business/investor/kyc/cml/save',
@@ -166,7 +172,10 @@ void main() {
         dioConfig.post(AppUrl.wCompanyDetail, {}),
         throwsException,
       );
-      await expectLater(dioConfig.get(AppUrl.wEnquiry, {}), throwsException);
+      await expectLater(
+        dioConfig.post('${AppUrl.wEnquiry}/unknown-action', {}),
+        throwsException,
+      );
       expect(adapter.requests, hasLength(count));
       await app.clear();
       await expectLater(

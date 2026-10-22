@@ -1,6 +1,8 @@
 import 'package:private_deals/src/features/auth/data/w_auth_api.dart';
 import 'package:private_deals/src/features/institution/data/api/institution_profile_api.dart';
 import 'package:private_deals/src/features/institution/data/models/common/enums.dart';
+import 'package:private_deals/src/features/investors/data/investor_model.dart';
+import 'package:private_deals/src/features/investors/data/w_investors_api.dart';
 import 'package:private_deals/src/features/wealth_manager/data/models/pre_ipo/company_model.dart';
 import 'dart:ui' as ui;
 
@@ -14,6 +16,9 @@ import 'package:private_deals/src/features/institution/support/plugins/file_pick
 import 'package:private_deals/src/features/institution/support/plugins/toast.dart';
 
 class SellerProfilePageCtrl extends GetxController {
+  static const selfInvestorMissingMessage =
+      'Your self investor is not set up yet. Contact support to buy deals.';
+
   final profile = _profileFromBusiness(app.wUser.toJson()).obs;
   /// Display photo via `GET`/`POST v2/business/profile` (logo form field only).
   final canEdit = true;
@@ -50,11 +55,18 @@ class SellerProfilePageCtrl extends GetxController {
   final error = ''.obs;
   final logo = Rxn<MediaModel>();
 
+  /// Institution self investor used by the existing CML KYC dialog.
+  final selfInvestor = Rxn<InvestorModel>();
+  final kycLoading = false.obs;
+  final kycError = ''.obs;
+  final kycMissing = false.obs;
+
   @override
   void onInit() {
     super.onInit();
     refreshProfile();
     refreshPublicProfile();
+    refreshSelfKyc();
   }
 
   @override
@@ -103,6 +115,52 @@ class SellerProfilePageCtrl extends GetxController {
     companiesPreviouslyListedCtrl.text = data.companiesPreviouslyListed;
     geographicPresenceCtrl.text = data.geographicPresence;
     approachCtrl.text = data.approach;
+  }
+
+  /// Loads KYC status for the seller's own investor. A successful save reloads
+  /// this list; completion is `preipo_kyc_status == 1`.
+  Future<void> refreshSelfKyc() async {
+    if (kycLoading.value || isClosed) return;
+    kycLoading.value = true;
+    try {
+      final result = await WInvestorsApi.investorsList(
+        isKyc: 'All',
+        isActive: 'All',
+        isAif: 'All',
+      );
+      if (isClosed) return;
+      if (!result.isSuccess || result.r == null) {
+        selfInvestor.value = null;
+        kycMissing.value = false;
+        kycError.value = result.m.isEmpty
+            ? 'Unable to load KYC. Please retry.'
+            : result.m;
+        return;
+      }
+      final id = app.wUser.selfInvestorId;
+      final investor = result.r!.firstWhereOrNull(
+        (item) => item.isSelf || (id != null && id > 0 && item.id == id),
+      );
+      if (investor == null) {
+        selfInvestor.value = null;
+        kycMissing.value = id == null || id <= 0;
+        kycError.value = kycMissing.value
+            ? ''
+            : 'Unable to load KYC. Please retry.';
+        return;
+      }
+      selfInvestor.value = investor;
+      kycMissing.value = false;
+      kycError.value = '';
+    } catch (_) {
+      if (!isClosed) {
+        selfInvestor.value = null;
+        kycMissing.value = false;
+        kycError.value = 'Unable to load KYC. Please retry.';
+      }
+    } finally {
+      if (!isClosed) kycLoading.value = false;
+    }
   }
 
   Future<bool> refreshPublicProfile() async {

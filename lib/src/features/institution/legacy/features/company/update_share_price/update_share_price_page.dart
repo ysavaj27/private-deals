@@ -10,6 +10,8 @@ import 'package:private_deals/src/shared/institution_widgets/app_button.dart';
 import 'package:private_deals/src/shared/institution_widgets/app_text_field.dart';
 
 import 'package:private_deals/src/features/institution/legacy/features/company/update_share_price/update_share_price_ctrl.dart';
+import 'package:private_deals/src/shared/theme/app_tokens.dart';
+import 'package:private_deals/src/shared/widgets/app_page_header.dart';
 import 'package:private_deals/src/shared/widgets/settlement_days_dropdown.dart';
 
 // Import your controller and common widgets.
@@ -158,11 +160,9 @@ class _DealTypeToggle extends StatelessWidget {
             border: Border(bottom: BorderSide(color: colors.outlineVariant)),
           ),
           child: Padding(
-            padding: EdgeInsets.fromLTRB(
-              phone ? 12 : 24,
-              12,
-              phone ? 12 : 24,
-              12,
+            padding: AppPagePadding.horizontalOnly(context).copyWith(
+              top: AppSpace.md,
+              bottom: AppSpace.md,
             ),
             child: phone
                 ? Column(
@@ -298,6 +298,7 @@ class SharePriceFixedHeader extends StatelessWidget {
                 icon: Icons.save_outlined,
                 expanded: true,
                 isLoading: saving,
+                analyticsName: 'share_price_save',
                 onPressed: saving || loading || !hasInput
                     ? null
                     : controller.save,
@@ -326,7 +327,7 @@ class SharePriceFixedHeader extends StatelessWidget {
 
     return Container(
       width: double.infinity,
-      padding: const EdgeInsets.all(24),
+      padding: AppPagePadding.of(context, bottom: AppSpace.xl),
       decoration: BoxDecoration(
         color: colors.surface,
         border: Border(bottom: BorderSide(color: colors.outlineVariant)),
@@ -336,11 +337,6 @@ class SharePriceFixedHeader extends StatelessWidget {
         children: [
           LayoutBuilder(
             builder: (context, constraints) {
-              final title = Text(
-                'Update Unlisted Share Price',
-                style: context.textTheme.headlineSmall,
-              );
-
               final actions = Wrap(
                 spacing: 8,
                 runSpacing: 8,
@@ -372,6 +368,7 @@ class SharePriceFixedHeader extends StatelessWidget {
                       icon: Icons.save_outlined,
                       variant: AppButtonVariant.primary,
                       isLoading: saving,
+                      analyticsName: 'share_price_save',
                       onPressed: saving || loading || !hasInput
                           ? null
                           : controller.save,
@@ -381,22 +378,23 @@ class SharePriceFixedHeader extends StatelessWidget {
               );
 
               if (constraints.maxWidth >= 1150) {
-                return Row(
-                  children: [
-                    Expanded(child: title),
-                    const SizedBox(width: 20),
-                    actions,
-                  ],
+                return AppPageHeader(
+                  title: 'Update Unlisted Share Price',
+                  trailing: actions,
                 );
               }
 
               return Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
-                children: [title, const SizedBox(height: 16), actions],
+                children: [
+                  const AppPageHeader(title: 'Update Unlisted Share Price'),
+                  const SizedBox(height: AppSpace.lg),
+                  actions,
+                ],
               );
             },
           ),
-          const SizedBox(height: 28),
+          const SizedBox(height: AppSpace.xl),
           const Divider(height: 1),
           const SizedBox(height: 20),
           ConstrainedBox(
@@ -484,11 +482,8 @@ class SharePriceTable extends StatelessWidget {
     final colors = context.theme.colorScheme;
 
     return Padding(
-      padding: EdgeInsets.fromLTRB(
-        context.isPhone ? 12 : 24,
-        16,
-        context.isPhone ? 12 : 24,
-        16,
+      padding: AppPagePadding.of(context, bottom: AppSpace.lg).copyWith(
+        top: AppSpace.lg,
       ),
       child: DecoratedBox(
         decoration: BoxDecoration(

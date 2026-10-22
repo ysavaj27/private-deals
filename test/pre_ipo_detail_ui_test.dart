@@ -944,7 +944,7 @@ void main() {
           ],
         },
       );
-      await tester.pump(const Duration(seconds: 3));
+      await tester.pump(const Duration(seconds: 5));
       await tester.pumpAndSettle();
       succeed = true;
       await tester.tap(find.text('Invest'));
@@ -952,7 +952,7 @@ void main() {
       expect(find.text('Unlisted transactions'), findsOneWidget);
       expect(find.byType(PreIPOInvestmentDialog), findsNothing);
       expect(c.investorList, isEmpty);
-      await tester.pump(const Duration(seconds: 3));
+      await tester.pump(const Duration(seconds: 5));
       await tester.pumpAndSettle();
       expect(tester.takeException(), isNull);
     },

@@ -1,3 +1,4 @@
+import 'package:private_deals/src/core/analytics/analytics_service.dart';
 import 'package:private_deals/src/features/investors/data/w_investors_api.dart';
 import 'package:private_deals/src/core/configuration/dio_config.dart';
 import 'package:private_deals/src/features/enquiries/data/enquiry_model.dart';
@@ -34,106 +35,130 @@ class EnquiryApi {
     required String uuid,
     required String action,
     String? reason,
-  }) async {
-    if (uuid.isEmpty ||
-        !(institution ? ['accept', 'reject'] : ['withdraw', 'reject']).contains(
-          action,
-        )) {
-      return BaseModel.fromError('This enquiry action is not available.');
-    }
-    final trimmedReason = reason?.trim() ?? '';
-    if (action == 'reject' &&
-        ((!institution && trimmedReason.isEmpty) ||
-            trimmedReason.length > 1000)) {
-      return BaseModel.fromError(
-        'Enter a rejection reason of up to 1000 characters.',
-      );
-    }
-    try {
-      final response = await dioConfig.post(
-        '${institution ? institutionPath : partnerPath}/$action',
-        {
-          'uuid': uuid,
-          if (action == 'reject')
-            'reason': trimmedReason.isEmpty ? null : trimmedReason,
-        },
-      );
-      // Institution rejection intentionally has no data object.
-      return BaseModel.fromMessage(response.data);
-    } catch (error) {
-      return BaseModel.fromError(error.toString());
-    }
-  }
+  }) => Analytics.trackRequest(
+    'enquiry_response',
+    params: {
+      'action': action,
+      'actor': institution ? 'institution' : 'partner',
+    },
+    request: () async {
+      final enquiryUuid = uuid.trim();
+      if (enquiryUuid.isEmpty ||
+          !(institution ? ['accept', 'reject'] : ['withdraw', 'reject'])
+              .contains(action)) {
+        return BaseModel.fromError('This enquiry action is not available.');
+      }
+      final trimmedReason = reason?.trim() ?? '';
+      if (action == 'reject' &&
+          ((!institution && trimmedReason.isEmpty) ||
+              trimmedReason.length > 1000)) {
+        return BaseModel.fromError(
+          'Enter a rejection reason of up to 1000 characters.',
+        );
+      }
+      try {
+        final response = await dioConfig.post(
+          '${institution ? institutionPath : partnerPath}/$action',
+          {
+            'uuid': enquiryUuid,
+            if (action == 'reject')
+              'reason': trimmedReason.isEmpty ? null : trimmedReason,
+          },
+        );
+        // Institution rejection intentionally has no data object.
+        return BaseModel.fromMessage(response.data);
+      } catch (error) {
+        return BaseModel.fromError(error.toString());
+      }
+    },
+  );
 
   static Future<BaseModel> sendQuote({
     required String uuid,
     required int quantity,
     required double sharePrice,
     required int settlementDays,
-  }) async {
-    if (uuid.isEmpty) {
-      return BaseModel.fromError('This enquiry is not available.');
-    }
-    if (quantity < 1) {
-      return BaseModel.fromError('Quantity must be at least 1.');
-    }
-    if (!sharePrice.isFinite || sharePrice < 0.01) {
-      return BaseModel.fromError('Offer price must be greater than 0.');
-    }
-    if (settlementDays < 1 || settlementDays > 30) {
-      return BaseModel.fromError('Select a settlement cycle from T+1 to T+30.');
-    }
-    try {
-      final response = await dioConfig.post('$institutionPath/quote', {
-        'uuid': uuid,
-        'quantity': quantity,
-        'share_price': sharePrice,
-        'settlement_days': settlementDays,
-      });
-      return BaseModel.fromMessage(response.data);
-    } catch (error) {
-      return BaseModel.fromError(error.toString());
-    }
-  }
+  }) => Analytics.trackRequest(
+    'enquiry_quote_submit',
+    request: () async {
+      final enquiryUuid = uuid.trim();
+      if (enquiryUuid.isEmpty) {
+        return BaseModel.fromError('This enquiry is not available.');
+      }
+      if (quantity < 1) {
+        return BaseModel.fromError('Quantity must be at least 1.');
+      }
+      if (!sharePrice.isFinite || sharePrice < 0.01) {
+        return BaseModel.fromError('Offer price must be greater than 0.');
+      }
+      if (settlementDays < 1 || settlementDays > 30) {
+        return BaseModel.fromError(
+          'Select a settlement cycle from T+1 to T+30.',
+        );
+      }
+      try {
+        final response = await dioConfig.post('$institutionPath/quote', {
+          'uuid': enquiryUuid,
+          'quantity': quantity,
+          'share_price': sharePrice,
+          'settlement_days': settlementDays,
+        });
+        return BaseModel.fromMessage(response.data);
+      } catch (error) {
+        return BaseModel.fromError(error.toString());
+      }
+    },
+  );
 
-  static Future<BaseModel> withdrawQuote({required String uuid}) async {
-    if (uuid.isEmpty) {
-      return BaseModel.fromError('This enquiry is not available.');
-    }
-    try {
-      final response = await dioConfig.post('$institutionPath/quote/withdraw', {
-        'uuid': uuid,
-      });
-      return BaseModel.fromMessage(response.data);
-    } catch (error) {
-      return BaseModel.fromError(error.toString());
-    }
-  }
+  static Future<BaseModel> withdrawQuote({required String uuid}) =>
+      Analytics.trackRequest(
+        'enquiry_quote_withdraw',
+        request: () async {
+          final enquiryUuid = uuid.trim();
+          if (enquiryUuid.isEmpty) {
+            return BaseModel.fromError('This enquiry is not available.');
+          }
+          try {
+            final response = await dioConfig.post(
+              '$institutionPath/quote/withdraw',
+              {'uuid': enquiryUuid},
+            );
+            return BaseModel.fromMessage(response.data);
+          } catch (error) {
+            return BaseModel.fromError(error.toString());
+          }
+        },
+      );
 
   static Future<BaseModel<PreIpoOrderModel>> acceptQuote({
     required String uuid,
     required String quoteUuid,
     required int investorId,
-  }) async {
-    if (uuid.isEmpty || quoteUuid.isEmpty) {
-      return BaseModel.fromError('This quote is not available.');
-    }
-    if (investorId <= 0) {
-      return BaseModel.fromError('Select an investor.');
-    }
-    final kycError = await WInvestorsApi.transactionKycError([investorId]);
-    if (kycError != null) return BaseModel.fromError(kycError);
-    try {
-      final response = await dioConfig.post('$partnerPath/quotes/accept', {
-        'uuid': uuid,
-        'quote_uuid': quoteUuid,
-        'investor_id': investorId,
-      });
-      return BaseModel.fromJson(response.data, PreIpoOrderModel.fromJson);
-    } catch (error) {
-      return BaseModel.fromError(error.toString());
-    }
-  }
+  }) => Analytics.trackRequest(
+    'enquiry_quote_accept',
+    request: () async {
+      final enquiryUuid = uuid.trim();
+      final acceptedQuoteUuid = quoteUuid.trim();
+      if (enquiryUuid.isEmpty || acceptedQuoteUuid.isEmpty) {
+        return BaseModel.fromError('This quote is not available.');
+      }
+      if (investorId <= 0) {
+        return BaseModel.fromError('Select an investor.');
+      }
+      try {
+        final kycError = await WInvestorsApi.transactionKycError([investorId]);
+        if (kycError != null) return BaseModel.fromError(kycError);
+        final response = await dioConfig.post('$partnerPath/quotes/accept', {
+          'uuid': enquiryUuid,
+          'quote_uuid': acceptedQuoteUuid,
+          'investor_id': investorId,
+        });
+        return BaseModel.fromJson(response.data, PreIpoOrderModel.fromJson);
+      } catch (error) {
+        return BaseModel.fromError(error.toString());
+      }
+    },
+  );
 
   static Future<BaseModel<PreIpoOrderModel>> accept({
     required String uuid,
@@ -154,20 +179,28 @@ class EnquiryApi {
     String action, {
     required String uuid,
     required int investorId,
-  }) async {
-    if (uuid.isEmpty || investorId <= 0) {
-      return BaseModel.fromError('Select an investor.');
-    }
-    final kycError = await WInvestorsApi.transactionKycError([investorId]);
-    if (kycError != null) return BaseModel.fromError(kycError);
-    try {
-      final response = await dioConfig.post('$partnerPath/$action', {
-        'uuid': uuid,
-        'investor_id': investorId,
-      });
-      return BaseModel.fromJson(response.data, PreIpoOrderModel.fromJson);
-    } catch (error) {
-      return BaseModel.fromError(error.toString());
-    }
-  }
+  }) => Analytics.trackRequest(
+    'enquiry_response',
+    params: {'action': action, 'actor': 'partner'},
+    request: () async {
+      final enquiryUuid = uuid.trim();
+      if (enquiryUuid.isEmpty) {
+        return BaseModel.fromError('This enquiry is not available.');
+      }
+      if (investorId <= 0) {
+        return BaseModel.fromError('Select an investor.');
+      }
+      try {
+        final kycError = await WInvestorsApi.transactionKycError([investorId]);
+        if (kycError != null) return BaseModel.fromError(kycError);
+        final response = await dioConfig.post('$partnerPath/$action', {
+          'uuid': enquiryUuid,
+          'investor_id': investorId,
+        });
+        return BaseModel.fromJson(response.data, PreIpoOrderModel.fromJson);
+      } catch (error) {
+        return BaseModel.fromError(error.toString());
+      }
+    },
+  );
 }

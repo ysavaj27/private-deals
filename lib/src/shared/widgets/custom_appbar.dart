@@ -35,6 +35,7 @@ class CustomAppBar extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
+      height: AppShell.desktopAppBarHeight,
       decoration: BoxDecoration(
         color: context.theme.colorScheme.surfaceContainerLow,
         border: Border(
@@ -177,6 +178,7 @@ class DropdownMenuWidget extends StatelessWidget {
             showCustomDialog(
               LogoutDialog(
                 onPressed: () async {
+                  Get.back();
                   await SessionNavigation.logout();
                 },
               ),
@@ -185,8 +187,9 @@ class DropdownMenuWidget extends StatelessWidget {
           case MenuItemEnum.deleteAccount:
             showCustomDialog(
               DeleteAccountDialog(
-                title: "Permanently Delete",
+                title: 'Delete account',
                 onDelete: () async {
+                  Get.back();
                   await WAuthApi.deleteAccount();
                   await Get.offAllNamed(Routes.signIn);
                   await app.setUser(prefUser: {});
@@ -232,15 +235,15 @@ class DropdownMenuWidget extends StatelessWidget {
         PopupMenuItem<MenuItemEnum>(
           value: MenuItemEnum.deleteAccount,
           child: ListTile(
-            textColor: Colors.red,
+            textColor: context.theme.colorScheme.error,
             dense: context.isPhone ? true : false,
             visualDensity: context.isPhone ? VisualDensity.compact : null,
             leading: Icon(
-              Icons.delete,
+              Icons.delete_outline_rounded,
               size: context.isPhone ? 20 : 24,
-              color: Colors.red,
+              color: context.theme.colorScheme.error,
             ),
-            title: const Text('Delete Account'),
+            title: const Text('Delete account'),
           ),
         ),
         PopupMenuItem<MenuItemEnum>(
@@ -248,8 +251,11 @@ class DropdownMenuWidget extends StatelessWidget {
           child: ListTile(
             dense: context.isPhone ? true : false,
             visualDensity: context.isPhone ? VisualDensity.compact : null,
-            leading: Icon(Icons.logout, size: context.isPhone ? 20 : 24),
-            title: const Text('Logout'),
+            leading: Icon(
+              Icons.logout_rounded,
+              size: context.isPhone ? 20 : 24,
+            ),
+            title: const Text('Sign out'),
           ),
         ),
       ],

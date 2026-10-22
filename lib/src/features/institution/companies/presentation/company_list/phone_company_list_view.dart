@@ -10,6 +10,7 @@ import 'package:private_deals/src/shared/institution_widgets/app_text_field.dart
 
 import 'package:private_deals/src/features/institution/companies/presentation/company_list/company_list_page.dart';
 import 'package:private_deals/src/features/institution/companies/presentation/company_list/company_list_page_ctrl.dart';
+import 'package:private_deals/src/shared/theme/app_tokens.dart';
 
 class PhoneCompanyListView extends StatelessWidget {
   final CompanyListPageCtrl c;
@@ -30,7 +31,7 @@ class PhoneCompanyListView extends StatelessWidget {
     return CustomScrollView(
       slivers: [
         SliverPadding(
-          padding: const EdgeInsets.fromLTRB(16, 12, 16, 12),
+          padding: AppPagePadding.of(context, bottom: AppSpace.md),
           sliver: SliverToBoxAdapter(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
@@ -111,8 +112,9 @@ class PhoneCompanyListView extends StatelessWidget {
             );
           }
 
+          final horizontal = AppPagePadding.horizontalOf(context);
           return SliverPadding(
-            padding: const EdgeInsets.fromLTRB(16, 0, 16, 24),
+            padding: EdgeInsets.fromLTRB(horizontal, 0, horizontal, AppSpace.xl),
             sliver: SliverList(
               delegate: SliverChildBuilderDelegate((context, index) {
                 final company = companies[index];

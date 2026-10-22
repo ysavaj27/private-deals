@@ -7,6 +7,7 @@ import 'package:private_deals/src/features/catalog/presentation/pre_ipo/pre_ipo_
 import 'package:private_deals/src/features/catalog/presentation/pre_ipo/pre_ipo_investment/pre_ipo_offer.dart';
 import 'package:private_deals/src/features/enquiries/presentation/enquiries_page.dart';
 import 'package:private_deals/src/features/wealth_manager/presentation/investor_transaction/investor_transaction_page_ctrl.dart';
+import 'package:private_deals/src/shared/widgets/settlement_days_dropdown.dart';
 
 import 'session_and_api_test.dart' show FakeAdapter, identity, response;
 import 'enquiry_flow_test.dart' show inquiry;
@@ -247,6 +248,15 @@ void main() {
                 institution ? 'Institution' : 'Wealth Manager',
               ),
             );
+            final originalConfig = app.config;
+            addTearDown(() => app.configModel(originalConfig));
+            app.configModel(
+              ConfigModel.fromJson({
+                'settlement_days': [
+                  {'value': 2, 'label': 'T+2'},
+                ],
+              }),
+            );
             final adapter = FakeAdapter(
               (_) async => response({'status': outcome == 'success' ? 1 : 0}),
             );
@@ -266,6 +276,12 @@ void main() {
             } else {
               await tester.enterText(find.byType(TextFormField).at(0), '10');
               await tester.enterText(find.byType(TextFormField).at(1), '100');
+              tester
+                  .widget<SettlementDaysDropdown>(
+                    find.byType(SettlementDaysDropdown),
+                  )
+                  .onChanged(2);
+              await tester.pumpAndSettle();
               await tester.ensureVisible(find.text('Submit'));
               final submit = tester.widget<CustomElevatedButton>(
                 find.ancestor(
@@ -324,6 +340,7 @@ void main() {
           );
           final link = find.text('View transactions');
           await tester.ensureVisible(link);
+          await tester.pumpAndSettle();
           await tester.tap(link);
           await tester.pumpAndSettle();
           expect(

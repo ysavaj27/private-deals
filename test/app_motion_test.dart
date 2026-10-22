@@ -128,7 +128,7 @@ void main() {
           tester.renderObject<RenderBox>(find.byKey(const ValueKey('cta')));
       loadingSize = loadingBox.size;
 
-      expect(loadingSize!.height, idleSize!.height);
+      expect(loadingSize.height, idleSize.height);
       expect(
         (loadingSize.width - idleSize.width).abs(),
         lessThan(2),
@@ -229,7 +229,13 @@ void main() {
         ),
       );
 
-      expect(find.byType(CircularProgressIndicator), findsOneWidget);
+      expect(
+        find.descendant(
+          of: find.byKey(const ValueKey('workspace-loading')),
+          matching: find.byType(CircularProgressIndicator),
+        ),
+        findsOneWidget,
+      );
 
       await tester.tap(find.text('Show empty'));
       await tester.pump();

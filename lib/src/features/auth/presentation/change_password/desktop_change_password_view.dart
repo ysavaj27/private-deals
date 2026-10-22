@@ -14,11 +14,10 @@ class DesktopChangePasswordView extends StatelessWidget {
     return Scaffold(
       appBar: AppBar(title: Text('Change Password'), centerTitle: false),
       body: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 40, vertical: 20),
+        padding: AppPagePadding.of(context),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            const SizedBox(height: 36),
             AppFadeIn(
               child: CustomCardWidget(
               radius: 12,

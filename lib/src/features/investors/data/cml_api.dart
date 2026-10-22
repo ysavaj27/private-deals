@@ -1,4 +1,7 @@
+import 'package:private_deals/src/core/analytics/analytics_service.dart';
+
 import 'dart:typed_data';
+
 import 'package:dio/dio.dart';
 import 'package:private_deals/src/core/configuration/dio_config.dart';
 import 'package:private_deals/src/core/session/auth_session.dart';
@@ -60,28 +63,33 @@ class CmlApi {
     InvestorModel investor,
     Map<String, String> fields,
     CmlDocument? document,
-  ) async {
-    try {
-      if (requiredFields.any((field) => (fields[field] ?? '').trim().isEmpty)) {
-        throw const FormatException('Complete all required fields.');
+  ) => Analytics.trackRequest(
+    'investor_kyc_submit',
+    request: () async {
+      try {
+        if (requiredFields.any(
+          (field) => (fields[field] ?? '').trim().isEmpty,
+        )) {
+          throw const FormatException('Complete all required fields.');
+        }
+        document?.validate();
+        final payload = <String, dynamic>{
+          'investor_id': investor.id,
+          for (final field in [...requiredFields, ...optionalFields])
+            if ((fields[field] ?? '').trim().isNotEmpty)
+              field: fields[field]!.trim(),
+          if (document != null)
+            'cml_file': MultipartFile.fromBytes(
+              document.bytes,
+              filename: document.name,
+              contentType: DioMediaType('application', 'pdf'),
+            ),
+        };
+        final response = await dioConfig.post('$base/save', payload, false);
+        return BaseModel.fromMessage(response.data);
+      } catch (e) {
+        return BaseModel.fromError(e.toString());
       }
-      document?.validate();
-      final payload = <String, dynamic>{
-        'investor_id': investor.id,
-        for (final field in [...requiredFields, ...optionalFields])
-          if ((fields[field] ?? '').trim().isNotEmpty)
-            field: fields[field]!.trim(),
-        if (document != null)
-          'cml_file': MultipartFile.fromBytes(
-            document.bytes,
-            filename: document.name,
-            contentType: DioMediaType('application', 'pdf'),
-          ),
-      };
-      final response = await dioConfig.post('$base/save', payload, false);
-      return BaseModel.fromMessage(response.data);
-    } catch (e) {
-      return BaseModel.fromError(e.toString());
-    }
-  }
+    },
+  );
 }

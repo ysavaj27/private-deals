@@ -31,35 +31,13 @@ class WealthDashboardView extends StatelessWidget {
         child: SingleChildScrollView(
           controller: c.scrollController,
           physics: const AlwaysScrollableScrollPhysics(),
-          child: Align(
-            alignment: Alignment.topCenter,
-            child: ConstrainedBox(
-              constraints: const BoxConstraints(maxWidth: 1500),
-              child: Padding(
-                padding: EdgeInsets.all(
-                  MediaQuery.sizeOf(context).width < 600 ? 16 : 28,
-                ),
+          child: Padding(
+                padding: AppPagePadding.of(context),
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     LayoutBuilder(
                       builder: (context, constraints) {
-                        final heading = Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Text(
-                              'Portfolio overview',
-                              style: theme.textTheme.headlineMedium,
-                            ),
-                            const SizedBox(height: 6),
-                            Text(
-                              'Your investments, exposure and investor priorities.',
-                              style: theme.textTheme.bodyMedium?.copyWith(
-                                color: theme.colorScheme.onSurfaceVariant,
-                              ),
-                            ),
-                          ],
-                        );
                         final controls = Wrap(
                           spacing: 10,
                           runSpacing: 8,
@@ -93,18 +71,21 @@ class WealthDashboardView extends StatelessWidget {
                           return Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
-                              heading,
-                              const SizedBox(height: 16),
+                              const AppPageHeader(
+                                title: 'Portfolio overview',
+                                subtitle:
+                                    'Your investments, exposure and investor priorities.',
+                              ),
+                              const SizedBox(height: AppSpace.lg),
                               controls,
                             ],
                           );
                         }
-                        return Row(
-                          children: [
-                            Expanded(child: heading),
-                            const SizedBox(width: 20),
-                            controls,
-                          ],
+                        return AppPageHeader(
+                          title: 'Portfolio overview',
+                          subtitle:
+                              'Your investments, exposure and investor priorities.',
+                          trailing: controls,
                         );
                       },
                     ),
@@ -254,8 +235,6 @@ class WealthDashboardView extends StatelessWidget {
                     const SizedBox(height: 24),
                   ],
                 ),
-              ),
-            ),
           ),
         ),
       );

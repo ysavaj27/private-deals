@@ -87,7 +87,7 @@ void main() {
 
   void fill() {
     c.investorCTRL.text = 'Aarav Shah';
-    c.companyCTRL.text = 'Northstar Technologies';
+    c.companyCTRL.text = 'Summit Consumer Brands';
     c.qtyCTRL.text = '1000';
     c.sharePriceCTRL.text = '125.50';
     c.purchaseDateCTRL.text = '08-10-2026';
@@ -136,40 +136,53 @@ void main() {
       await tap(tester, 'Add to portfolio');
       expect(c.submissions, 1);
       expect(c.submittedInvestor, 12);
-      expect(c.submittedCompany, 21);
+      expect(c.submittedCompany, 31);
+      expect(
+        find.text(
+          'This holding will be available in the portfolio immediately.',
+        ),
+        findsOneWidget,
+      );
       c.companyCTRL.text = 'Another Private Business';
+      await tester.pumpAndSettle();
+      expect(
+        find.text(
+          'This holding may take up to 48 hours to appear in the portfolio.',
+        ),
+        findsOneWidget,
+      );
       await tap(tester, 'Add to portfolio');
       expect(c.submissions, 2);
+      expect(c.submittedCompany, 0);
+      c.companyCTRL.text = 'Northstar Technologies';
+      c.sharePriceCTRL.text = '0';
+      await tap(tester, 'Add to portfolio');
+      expect(c.submissions, 2);
+      expect(find.text('Enter a price of at least 0.01'), findsOneWidget);
+      c.sharePriceCTRL.text = '0.01';
+      await tap(tester, 'Add to portfolio');
+      expect(c.submissions, 3);
       expect(c.submittedCompany, 0);
       expect(tester.takeException(), isNull);
     },
   );
 
   testWidgets(
-    'Switching asset class refreshes search and clears the previous holding on mobile',
+    'The form only uploads an unlisted company and requires that access',
     (tester) async {
       await show(tester, width: 390, height: 844);
+      expect(find.text('Private Equity'), findsNothing);
+      expect(find.text('Investment type'), findsNothing);
+      expect(find.text('Search unlisted companies'), findsOneWidget);
       fill();
       await tester.pumpAndSettle();
-      await tap(tester, 'Unlisted Company');
-      expect(c.currentIndex(), DashboardTypeEnum.preIpo);
+      await tap(tester, 'Clear form');
       expect(c.companyCTRL.text, isEmpty);
       expect(c.qtyCTRL.text, isEmpty);
-      expect(find.text('Search unlisted companies'), findsOneWidget);
       expect(find.text('₹ —'), findsOneWidget);
-      expect(tester.takeException(), isNull);
-    },
-  );
 
-  testWidgets(
-    'Access restrictions apply on mobile and no access has no submit action',
-    (tester) async {
-      app.wUser.isPrimaryAccess = false;
-      app.wUser.isSecondaryAccess = false;
-      c.currentIndex(DashboardTypeEnum.preIpo);
-      await show(tester, width: 390);
-      expect(find.text('Private Equity'), findsNothing);
-      expect(find.text('Unlisted Company'), findsNWidgets(2));
+      app.wUser.isPrimaryAccess = true;
+      app.wUser.isSecondaryAccess = true;
       app.wUser.isPreIpoAccess = false;
       await tester.pumpWidget(const SizedBox());
       await show(tester, width: 390);
@@ -178,6 +191,7 @@ void main() {
         findsOneWidget,
       );
       expect(find.text('Add to portfolio'), findsNothing);
+      expect(tester.takeException(), isNull);
     },
   );
 

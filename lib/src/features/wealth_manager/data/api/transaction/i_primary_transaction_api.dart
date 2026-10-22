@@ -36,35 +36,39 @@ class InvestorPrimaryTransactionApi {
     required double fees,
     required double gst,
     required PrimaryInvestmentType type,
-  }) async {
-    final kycError = await WInvestorsApi.transactionKycError([investorId]);
-    if (kycError != null) return BaseModel.fromError(kycError);
-    try {
-      Map<String, dynamic> body = {
-        "investor_id": investorId,
-        "startup_id": startupId,
-        "round_id": roundId,
-        "instrument": instrument, // equity,ccps,ccd
-        "shares": shares,
-        "share_price": sharesPrice,
-        "investment_amount": investedAmount,
-        "payment_mode": paymentMode, // Cheque,RTGS,Mandate
-        "type": type.name,
-        "fees": fees,
-        "gst": gst,
-      };
+  }) => Analytics.trackRequest(
+    'primary_investment',
+    params: {'company_id': startupId, 'round_id': roundId},
+    request: () async {
+      final kycError = await WInvestorsApi.transactionKycError([investorId]);
+      if (kycError != null) return BaseModel.fromError(kycError);
+      try {
+        Map<String, dynamic> body = {
+          "investor_id": investorId,
+          "startup_id": startupId,
+          "round_id": roundId,
+          "instrument": instrument, // equity,ccps,ccd
+          "shares": shares,
+          "share_price": sharesPrice,
+          "investment_amount": investedAmount,
+          "payment_mode": paymentMode, // Cheque,RTGS,Mandate
+          "type": type.name,
+          "fees": fees,
+          "gst": gst,
+        };
 
-      var res = await dioConfig.post(AppUrl.wPrimaryInvestment, body);
-      BaseModel<PrimaryTransactionModel> baseModel = BaseModel.fromJson(
-        res.data,
-        (p0) => PrimaryTransactionModel.fromJson(p0),
-      );
-      return baseModel;
-    } catch (e, t) {
-      logger.e("Error on Wealth Manager Investment", error: e, stackTrace: t);
-      return BaseModel.fromError(e.toString());
-    }
-  }
+        var res = await dioConfig.post(AppUrl.wPrimaryInvestment, body);
+        BaseModel<PrimaryTransactionModel> baseModel = BaseModel.fromJson(
+          res.data,
+          (p0) => PrimaryTransactionModel.fromJson(p0),
+        );
+        return baseModel;
+      } catch (e, t) {
+        logger.e("Error on Wealth Manager Investment", error: e, stackTrace: t);
+        return BaseModel.fromError(e.toString());
+      }
+    },
+  );
 
   static Future<BaseModel> paymentReceipt({
     required int transactionId,

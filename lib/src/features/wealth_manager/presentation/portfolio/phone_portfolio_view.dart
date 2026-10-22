@@ -17,11 +17,10 @@ class PhonePortfolioView extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 16),
+      padding: AppPagePadding.of(context, bottom: AppSpace.sm),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          const SizedBox(height: 10),
           Visibility(
             visible: !app.wUser.isPreIPOOnly,
             child: TabBar(

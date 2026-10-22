@@ -11,6 +11,7 @@ import 'package:private_deals/src/core/configuration/init_config.dart';
 import 'package:private_deals/src/features/institution/legacy/utils/functions/dialog.dart';
 import 'package:private_deals/src/features/institution/support/plugins/cache_image.dart';
 import 'package:private_deals/src/shared/theme/app_theme.dart';
+import 'package:private_deals/src/shared/theme/app_tokens.dart';
 import 'package:private_deals/src/features/institution/legacy/utils/widgets/delete_dialog_widget.dart';
 import 'package:private_deals/src/features/institution/legacy/utils/widgets/dialog_widget/logout_dialog.dart';
 
@@ -45,89 +46,80 @@ class CustomAppBar extends StatelessWidget {
 
     return Container(
       width: double.infinity,
-      height: 82,
+      height: AppShell.desktopAppBarHeight,
       decoration: BoxDecoration(
         color: background,
         border: Border(bottom: BorderSide(color: border)),
       ),
-      child: SafeArea(
-        bottom: false,
-        child: LayoutBuilder(
-          builder: (context, constraints) {
-            final compact = constraints.maxWidth < 600;
+      child: LayoutBuilder(
+        builder: (context, constraints) {
+          final compact = constraints.maxWidth < 600;
 
-            return Padding(
-              padding: EdgeInsets.symmetric(
-                horizontal: compact ? 16 : 24,
-                vertical: 12,
-              ),
-              child: Row(
-                children: [
-                  const Expanded(
-                    child: SingleChildScrollView(
-                      scrollDirection: Axis.horizontal,
-                      child: WAppbarOptionSegmented(institution: true),
+          return Padding(
+            padding: EdgeInsets.symmetric(
+              horizontal: compact ? 16 : 24,
+              vertical: 12,
+            ),
+            child: Row(
+              children: [
+                const Expanded(
+                  child: SingleChildScrollView(
+                    scrollDirection: Axis.horizontal,
+                    child: WAppbarOptionSegmented(institution: true),
+                  ),
+                ),
+                const SizedBox(width: 12),
+                Obx(() {
+                  final mode = init.themeModes();
+
+                  final IconData icon;
+                  final String tooltip;
+
+                  switch (mode) {
+                    case ThemeMode.light:
+                      icon = Icons.dark_mode_outlined;
+                      tooltip = 'Change theme · currently light';
+                      break;
+                    case ThemeMode.dark:
+                      icon = Icons.light_mode_outlined;
+                      tooltip = 'Change theme · currently dark';
+                      break;
+                    case ThemeMode.system:
+                      icon = Icons.brightness_auto_outlined;
+                      tooltip = 'Change theme · follows system';
+                      break;
+                  }
+
+                  return HeaderAction(
+                    icon: icon,
+                    tooltip: tooltip,
+                    onPressed: () async {
+                      await init.changeTheme();
+
+                      if (init.themeModes() == ThemeMode.dark) {
+                        await AppTheme.getTheme();
+                      }
+                    },
+                  );
+                }),
+                Padding(
+                  padding: EdgeInsets.symmetric(
+                    horizontal: compact ? 10 : 16,
+                  ),
+                  child: SizedBox(
+                    height: 24,
+                    child: VerticalDivider(
+                      width: 1,
+                      thickness: 1,
+                      color: border,
                     ),
                   ),
-                  const SizedBox(width: 12),
-                  // HeaderAction(
-                  //   icon: Icons.notifications_outlined,
-                  //   tooltip: 'Notifications',
-                  //   onPressed: onPressed,
-                  // ),
-                  // const SizedBox(width: 8),
-                  Obx(() {
-                    final mode = init.themeModes();
-
-                    final IconData icon;
-                    final String tooltip;
-
-                    switch (mode) {
-                      case ThemeMode.light:
-                        icon = Icons.dark_mode_outlined;
-                        tooltip = 'Change theme · currently light';
-                        break;
-                      case ThemeMode.dark:
-                        icon = Icons.light_mode_outlined;
-                        tooltip = 'Change theme · currently dark';
-                        break;
-                      case ThemeMode.system:
-                        icon = Icons.brightness_auto_outlined;
-                        tooltip = 'Change theme · follows system';
-                        break;
-                    }
-
-                    return HeaderAction(
-                      icon: icon,
-                      tooltip: tooltip,
-                      onPressed: () async {
-                        await init.changeTheme();
-
-                        if (init.themeModes() == ThemeMode.dark) {
-                          await AppTheme.getTheme();
-                        }
-                      },
-                    );
-                  }),
-                  Padding(
-                    padding: EdgeInsets.symmetric(
-                      horizontal: compact ? 10 : 16,
-                    ),
-                    child: SizedBox(
-                      height: 24,
-                      child: VerticalDivider(
-                        width: 1,
-                        thickness: 1,
-                        color: border,
-                      ),
-                    ),
-                  ),
-                  DropdownMenuWidget(),
-                ],
-              ),
-            );
-          },
-        ),
+                ),
+                DropdownMenuWidget(),
+              ],
+            ),
+          );
+        },
       ),
     );
   }
@@ -196,7 +188,7 @@ class DropdownMenuWidget extends StatelessWidget {
           case MenuItemEnum.deleteAccount:
             showCustomDialog(
               DeleteAccountDialog(
-                title: "Permanently Delete",
+                title: 'Delete account',
                 onDelete: () async {
                   Get.back();
                   await WAuthApi.deleteAccount();
@@ -244,15 +236,15 @@ class DropdownMenuWidget extends StatelessWidget {
         PopupMenuItem<MenuItemEnum>(
           value: MenuItemEnum.deleteAccount,
           child: ListTile(
-            textColor: Colors.red,
+            textColor: colors.error,
             dense: context.isPhone ? true : false,
             visualDensity: context.isPhone ? VisualDensity.compact : null,
             leading: Icon(
-              Icons.delete,
+              Icons.delete_outline_rounded,
               size: context.isPhone ? 20 : 24,
-              color: Colors.red,
+              color: colors.error,
             ),
-            title: const Text('Delete Account'),
+            title: const Text('Delete account'),
           ),
         ),
         PopupMenuItem<MenuItemEnum>(
@@ -260,8 +252,11 @@ class DropdownMenuWidget extends StatelessWidget {
           child: ListTile(
             dense: context.isPhone ? true : false,
             visualDensity: context.isPhone ? VisualDensity.compact : null,
-            leading: Icon(Icons.logout, size: context.isPhone ? 20 : 24),
-            title: const Text('Logout'),
+            leading: Icon(
+              Icons.logout_rounded,
+              size: context.isPhone ? 20 : 24,
+            ),
+            title: const Text('Sign out'),
           ),
         ),
       ],

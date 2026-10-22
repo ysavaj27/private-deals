@@ -35,69 +35,104 @@ class _DeleteAccountDialogState extends State<DeleteAccountDialog> {
   }
 
   @override
-  Widget build(BuildContext context) {
-    return CustomCardWidget(
-      color: context.theme.scaffoldBackgroundColor,
-      radius: 16,
-      padding: const EdgeInsets.symmetric(vertical: 30, horizontal: 30),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          Text(
-            widget.title ?? "Delete Account",
-            style: const TextStyle(fontSize: 22, fontWeight: FontWeight.w600),
-          ),
-          Divider(
-            color: context.theme.dividerColor,
-            height: 30,
-            thickness: 0.8,
-          ),
-          const SizedBox(height: 10),
-          Text(
-            widget.subTitle ??
-                "Please enter 'delete' in the field below to confirm account deletion.",
-            style: TextStyle(
-              color: context.theme.colorScheme.onSurfaceVariant,
-              fontSize: 16,
-            ),
-          ),
-          const SizedBox(height: 20),
-          CustomTextField(
-            controller: _textController,
-            hintText: "Type 'Delete' to confirm",
-          ),
-          const SizedBox(height: 40),
-          Row(
-            mainAxisAlignment: MainAxisAlignment.end,
-            children: [
-              CustomElevatedButton(
-                padding: EdgeInsets.zero,
-                size: const Size(80, 38),
-                radius: 15,
-                text: widget.primaryText ?? 'Delete',
-                onPressed: _isValid
-                    ? widget.onDelete
-                    : null, // Enable only when valid
-              ),
-              const SizedBox(width: 20),
-              CustomOutlinedButton(
-                size: const Size(80, 38),
-                borderRadius: 15,
-                borderColor: AppColors.borderColor(context),
-                onPressed: Get.back,
-                text: widget.secondaryText ?? "Cancel",
-              ),
-            ],
-          ),
-        ],
-      ),
-    );
-  }
-
-  @override
   void dispose() {
     _textController.dispose();
     super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final colors = context.theme.colorScheme;
+    final text = context.textTheme;
+    final compact = context.isPhone;
+
+    return CustomCardWidget(
+      color: colors.surfaceContainerLow,
+      radius: AppRadii.lg,
+      borderColor: colors.outlineVariant,
+      padding: EdgeInsets.all(compact ? AppSpace.xl : AppSpace.xxl),
+      child: SizedBox(
+        width: compact ? double.infinity : 420,
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Row(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Container(
+                  width: 44,
+                  height: 44,
+                  decoration: BoxDecoration(
+                    color: colors.errorContainer,
+                    borderRadius: AppRadii.mdAll,
+                  ),
+                  child: Icon(
+                    Icons.delete_outline_rounded,
+                    color: colors.onErrorContainer,
+                  ),
+                ),
+                const SizedBox(width: AppSpace.md),
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        widget.title ?? 'Delete account',
+                        style: text.titleLarge?.copyWith(
+                          fontWeight: FontWeight.w700,
+                        ),
+                      ),
+                      const SizedBox(height: AppSpace.xs),
+                      Text(
+                        widget.subTitle ??
+                            "This permanently removes your account. Type delete below to confirm.",
+                        style: text.bodyMedium?.copyWith(
+                          color: colors.onSurfaceVariant,
+                          height: 1.45,
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ],
+            ),
+            const SizedBox(height: AppSpace.xl),
+            CustomTextField(
+              controller: _textController,
+              hintText: "Type 'delete' to confirm",
+            ),
+            const SizedBox(height: AppSpace.xl),
+            Row(
+              children: [
+                Expanded(
+                  child: OutlinedButton(
+                    onPressed: Get.back,
+                    child: Text(widget.secondaryText ?? 'Cancel'),
+                  ),
+                ),
+                const SizedBox(width: AppSpace.md),
+                Expanded(
+                  child: FilledButton(
+                    onPressed: _isValid ? widget.onDelete : null,
+                    style: FilledButton.styleFrom(
+                      backgroundColor: colors.error,
+                      foregroundColor: colors.onError,
+                      disabledBackgroundColor: colors.error.withValues(
+                        alpha: 0.38,
+                      ),
+                      disabledForegroundColor: colors.onError.withValues(
+                        alpha: 0.6,
+                      ),
+                    ),
+                    child: Text(widget.primaryText ?? 'Delete'),
+                  ),
+                ),
+              ],
+            ),
+          ],
+        ),
+      ),
+    );
   }
 }

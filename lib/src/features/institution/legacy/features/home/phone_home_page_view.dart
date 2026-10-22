@@ -114,9 +114,9 @@ class PhoneHomePageView extends StatelessWidget {
                 label: 'Company',
               ),
               NavigationDestination(
-                icon: Icon(Icons.currency_rupee),
-                selectedIcon: Icon(Icons.currency_rupee),
-                label: 'Share Price',
+                icon: Icon(Icons.sell_outlined),
+                selectedIcon: Icon(Icons.sell),
+                label: 'Enquiries',
               ),
               NavigationDestination(
                 icon: Icon(Icons.account_balance_wallet_outlined),

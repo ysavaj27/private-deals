@@ -1,5 +1,40 @@
 # Changelog
 
+## 2026-10-21 — Company portfolio upload
+
+- Partner portfolio upload now uses `POST v2/business/portfolio/upload` for an unlisted company holding. The request always sends `type` `company`.
+- A listed company is sent as `company_id` and is available in the portfolio immediately. A company that is not on the platform is sent as `other_name` and can take up to 48 hours to appear. Startup upload is no longer offered on this screen.
+- A failed upload shows the API message. Accounts without unlisted access, investor sessions, and Institution sessions cannot submit.
+
+## 2026-10-19 — Seller inquiry flow hardening
+
+- Seller My Enquiries now opens the Institution transaction route, detail API,
+  and payment/share actions after approval, quote acceptance, or counterparty
+  acceptance. Detail dialogs no longer register an extra page controller.
+- Quote acceptance requires an owned, open, unlocked enquiry and a pending
+  quote. Stale quotes cannot re-enable completed decisions. Invalid identifiers,
+  unsupported deal types, and related-desk counterparty actions fail closed
+  unless the backend explicitly permits the counterparty.
+- Pending creation blocks editing, dismissal, and repeat submission. Completed
+  or disposed dialogs and responses from an earlier login cannot navigate a
+  different screen. Failure keeps the draft available for retry; notes validation
+  now reports errors and matches the text field's Unicode character limit.
+- Added 39 seller regressions covering creation, validation, KYC, ownership,
+  state races, failure recovery, and the real phone/desktop routes through
+  transaction details and payment confirmation. Kept mandate-delivery warnings
+  as successful conversions and corrected the documentation of pending mandates.
+- Corrected Share Price's mobile navigation selection after the Enquiries tab
+  addition. Updated existing loading/toast assertions for the current shared UI
+  and KYC fixtures to upload a CML PDF before saving, then verify the server's
+  refreshed eligibility. Production KYC requirements remain unchanged.
+- Validation: all 540 Flutter tests passed, including 39 new seller regressions.
+  Static analysis completed with no errors or warnings (130 existing informational
+  lints). The release web build and release verification passed. The optional
+  Wasm probe still reports the existing `get_storage`/`dart:html` incompatibility;
+  the JavaScript web release built successfully.
+- All HTTP test traffic uses fake adapters. Staging authorization, actual
+  mandate delivery, and settlement remain release acceptance requirements.
+
 ## 2026-10-13 — Config cleanup + partner documents
 
 - Stopped reading removed get-config fields (`app_version`, `build`, banners, tutorial, investment process, Calendly). Force-update and Windows EXE-from-config are gone.

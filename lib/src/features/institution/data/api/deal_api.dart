@@ -2,6 +2,7 @@ import 'dart:convert';
 import 'dart:typed_data';
 
 import 'package:get/get.dart';
+import 'package:private_deals/src/core/analytics/analytics_service.dart';
 import 'package:private_deals/src/features/institution/data/models/common/enums.dart';
 import 'package:private_deals/src/features/institution/data/models/common/media_model.dart';
 import 'package:private_deals/src/features/institution/data/models/deal/deal_model.dart';
@@ -14,6 +15,8 @@ import 'package:private_deals/src/features/institution/support/plugins/logger.da
 import 'package:private_deals/src/shared/models/base_model.dart';
 
 class DealApi {
+  static int _rowCount(Object? rows) => rows is List ? rows.length : 0;
+
   static Future<BaseModel<List<DealModel>>> getDealList({
     String search = '',
     CompanyType type = CompanyType.all,
@@ -48,157 +51,198 @@ class DealApi {
 
   static Future<BaseModel<DealModel>> createDeal(
     Map<String, dynamic> payload,
-  ) async {
-    try {
-      final res = await dioConfig.post(
-        InstitutionEndpoints.createDeal,
-        payload,
-      );
-      return BaseModel<DealModel>.fromJson(
-        res.data,
-        (data) => DealModel.fromJson(data),
-      );
-    } catch (e, t) {
-      logger.e('Error on Create Deal API', error: e, stackTrace: t);
-      return BaseModel.fromError(e.toString());
-    }
-  }
+  ) => Analytics.trackRequest(
+    'deal_create',
+    params: {
+      'company_id': payload['company_id'],
+      'deal_side': payload['deal_type'],
+      'is_hot_deal': payload['is_hot_deal'],
+    },
+    request: () async {
+      try {
+        final res = await dioConfig.post(
+          InstitutionEndpoints.createDeal,
+          payload,
+        );
+        return BaseModel<DealModel>.fromJson(
+          res.data,
+          (data) => DealModel.fromJson(data),
+        );
+      } catch (e, t) {
+        logger.e('Error on Create Deal API', error: e, stackTrace: t);
+        return BaseModel.fromError(e.toString());
+      }
+    },
+  );
 
-  static Future<BaseModel<DealModel>> deleteDeal(String uuid) async {
-    try {
-      final res = await dioConfig.post(InstitutionEndpoints.deleteDeal, {
-        "uuid": uuid,
-      });
-      return BaseModel<DealModel>.fromMessage(res.data);
-    } catch (e, t) {
-      logger.e('Error on Delete Deal API', error: e, stackTrace: t);
-      return BaseModel.fromError(e.toString());
-    }
-  }
-
-  static Future<BaseModel> updateDeal(Map<String, dynamic> payload) async {
-    try {
-      final res = await dioConfig.post(
-        InstitutionEndpoints.updateDeal,
-        payload,
+  static Future<BaseModel<DealModel>> deleteDeal(String uuid) =>
+      Analytics.trackRequest(
+        'deal_delete',
+        request: () async {
+          try {
+            final res = await dioConfig.post(InstitutionEndpoints.deleteDeal, {
+              "uuid": uuid,
+            });
+            return BaseModel<DealModel>.fromMessage(res.data);
+          } catch (e, t) {
+            logger.e('Error on Delete Deal API', error: e, stackTrace: t);
+            return BaseModel.fromError(e.toString());
+          }
+        },
       );
-      return BaseModel.fromMessage(res.data);
-    } catch (e) {
-      return BaseModel.fromError(e.toString());
-    }
-  }
 
-  static Future<BaseModel> bulkDeals(Map<String, dynamic> payload) async {
-    try {
-      final res = await dioConfig.post(InstitutionEndpoints.bulkDeals, payload);
-      return BaseModel.fromMessage(res.data);
-    } catch (e) {
-      return BaseModel.fromError(e.toString());
-    }
-  }
+  static Future<BaseModel> updateDeal(Map<String, dynamic> payload) =>
+      Analytics.trackRequest(
+        'deal_update',
+        params: {
+          'deal_side': payload['deal_type'],
+          'is_hot_deal': payload['is_hot_deal'],
+        },
+        request: () async {
+          try {
+            final res = await dioConfig.post(
+              InstitutionEndpoints.updateDeal,
+              payload,
+            );
+            return BaseModel.fromMessage(res.data);
+          } catch (e) {
+            return BaseModel.fromError(e.toString());
+          }
+        },
+      );
+
+  static Future<BaseModel> bulkDeals(Map<String, dynamic> payload) =>
+      Analytics.trackRequest(
+        'share_price_update',
+        params: {
+          'deal_side': _rowCount(payload['buy']) > 0
+              ? (_rowCount(payload['sell']) > 0 ? 'both' : 'buy')
+              : 'sell',
+          'company_count':
+              _rowCount(payload['buy']) + _rowCount(payload['sell']),
+        },
+        request: () async {
+          try {
+            final res = await dioConfig.post(
+              InstitutionEndpoints.bulkDeals,
+              payload,
+            );
+            return BaseModel.fromMessage(res.data);
+          } catch (e) {
+            return BaseModel.fromError(e.toString());
+          }
+        },
+      );
 
   /// Downloads the Institution price workbook (xlsx bytes).
   /// Failure responses are JSON with `status` 0 even when using bytes mode.
   static Future<BaseModel<Uint8List>> downloadPriceExcel({
     CompanyType type = CompanyType.unlisted,
-  }) async {
-    try {
-      final res = await dioConfig.getBytes(
-        InstitutionEndpoints.companyPricesExcel,
-        {'type': type.value},
-      );
+  }) => Analytics.trackRequest(
+    'price_excel_download',
+    params: {'company_type': type.name},
+    request: () async {
+      try {
+        final res = await dioConfig.getBytes(
+          InstitutionEndpoints.companyPricesExcel,
+          {'type': type.value},
+        );
 
-      final raw = res.data;
-      if (raw == null) {
-        return BaseModel.fromError('Download failed. Try again.');
-      }
-
-      final bytes = raw is Uint8List
-          ? raw
-          : Uint8List.fromList(List<int>.from(raw as List));
-
-      final contentType =
-          (res.headers.value('content-type') ?? '').toLowerCase();
-      final looksLikeJson =
-          contentType.contains('json') ||
-          (bytes.isNotEmpty && bytes.first == 0x7B);
-
-      if (looksLikeJson) {
-        try {
-          final decoded = jsonDecode(utf8.decode(bytes));
-          if (decoded is Map<String, dynamic>) {
-            final message = decoded['message']?.toString() ?? '';
-            return BaseModel.fromError(
-              message.isNotEmpty ? message : 'Download failed. Try again.',
-            );
-          }
-        } catch (_) {
+        final raw = res.data;
+        if (raw == null) {
           return BaseModel.fromError('Download failed. Try again.');
         }
-      }
 
-      if (bytes.isEmpty) {
-        return BaseModel.fromError('Download failed. Try again.');
-      }
+        final bytes = raw is Uint8List
+            ? raw
+            : Uint8List.fromList(List<int>.from(raw as List));
 
-      return BaseModel(s: 1, m: '', r: bytes);
-    } catch (e, t) {
-      logger.e('Error downloading price excel', error: e, stackTrace: t);
-      return BaseModel.fromError(e.toString());
-    }
-  }
+        final contentType = (res.headers.value('content-type') ?? '')
+            .toLowerCase();
+        final looksLikeJson =
+            contentType.contains('json') ||
+            (bytes.isNotEmpty && bytes.first == 0x7B);
+
+        if (looksLikeJson) {
+          try {
+            final decoded = jsonDecode(utf8.decode(bytes));
+            if (decoded is Map<String, dynamic>) {
+              final message = decoded['message']?.toString() ?? '';
+              return BaseModel.fromError(
+                message.isNotEmpty ? message : 'Download failed. Try again.',
+              );
+            }
+          } catch (_) {
+            return BaseModel.fromError('Download failed. Try again.');
+          }
+        }
+
+        if (bytes.isEmpty) {
+          return BaseModel.fromError('Download failed. Try again.');
+        }
+
+        return BaseModel(s: 1, m: '', r: bytes);
+      } catch (e, t) {
+        logger.e('Error downloading price excel', error: e, stackTrace: t);
+        return BaseModel.fromError(e.toString());
+      }
+    },
+  );
 
   /// Review (`confirm: false`) or save (`confirm: true`) an edited price sheet.
   /// Parses `data` even when `status` is 0 so review errors can be shown.
   static Future<BaseModel<PriceExcelReview>> uploadPriceExcel({
     required MediaModel file,
     required bool confirm,
-  }) async {
-    try {
-      final bytes = file.uint8list;
-      if (bytes == null || bytes.isEmpty) {
-        return BaseModel.fromError('Choose an .xlsx file to continue.');
+  }) => Analytics.trackRequest(
+    confirm ? 'price_excel_save' : 'price_excel_review',
+    request: () async {
+      try {
+        final bytes = file.uint8list;
+        if (bytes == null || bytes.isEmpty) {
+          return BaseModel.fromError('Choose an .xlsx file to continue.');
+        }
+
+        final body = <String, dynamic>{
+          'confirm': confirm ? '1' : '0',
+          ...await dioConfig.createBytesImage(
+            image: bytes,
+            imageName: file.name.isNotEmpty
+                ? file.name
+                : 'institution-prices.xlsx',
+            key: 'file',
+          ),
+        };
+
+        final res = await dioConfig.post(
+          InstitutionEndpoints.companyPricesExcel,
+          body,
+          false,
+        );
+
+        final json = res.data is Map<String, dynamic>
+            ? res.data as Map<String, dynamic>
+            : <String, dynamic>{};
+
+        final status = json['status'] ?? 0;
+        final message = json['message']?.toString() ?? '';
+        PriceExcelReview? review;
+        final data = json['data'];
+        if (data is Map<String, dynamic>) {
+          review = PriceExcelReview.fromJson(data);
+        } else if (data is Map) {
+          review = PriceExcelReview.fromJson(Map<String, dynamic>.from(data));
+        }
+
+        return BaseModel<PriceExcelReview>(
+          s: status is int ? status : int.tryParse(status.toString()) ?? 0,
+          m: message,
+          r: review,
+        );
+      } catch (e, t) {
+        logger.e('Error uploading price excel', error: e, stackTrace: t);
+        return BaseModel.fromError(e.toString());
       }
-
-      final body = <String, dynamic>{
-        'confirm': confirm ? '1' : '0',
-        ...await dioConfig.createBytesImage(
-          image: bytes,
-          imageName: file.name.isNotEmpty
-              ? file.name
-              : 'institution-prices.xlsx',
-          key: 'file',
-        ),
-      };
-
-      final res = await dioConfig.post(
-        InstitutionEndpoints.companyPricesExcel,
-        body,
-        false,
-      );
-
-      final json = res.data is Map<String, dynamic>
-          ? res.data as Map<String, dynamic>
-          : <String, dynamic>{};
-
-      final status = json['status'] ?? 0;
-      final message = json['message']?.toString() ?? '';
-      PriceExcelReview? review;
-      final data = json['data'];
-      if (data is Map<String, dynamic>) {
-        review = PriceExcelReview.fromJson(data);
-      } else if (data is Map) {
-        review = PriceExcelReview.fromJson(Map<String, dynamic>.from(data));
-      }
-
-      return BaseModel<PriceExcelReview>(
-        s: status is int ? status : int.tryParse(status.toString()) ?? 0,
-        m: message,
-        r: review,
-      );
-    } catch (e, t) {
-      logger.e('Error uploading price excel', error: e, stackTrace: t);
-      return BaseModel.fromError(e.toString());
-    }
-  }
+    },
+  );
 }

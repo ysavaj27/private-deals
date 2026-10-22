@@ -1,3 +1,4 @@
+import 'package:private_deals/src/core/analytics/analytics_service.dart';
 import 'package:private_deals/src/core/configuration/dio_config.dart';
 import 'package:private_deals/src/features/institution/data/institution_endpoints.dart';
 import 'package:private_deals/src/features/institution/support/plugins/logger.dart';
@@ -45,122 +46,146 @@ class PreIPOTransactionApi {
 
   static Future<BaseModel<PreIpoOrderModel>> approve({
     required int transactionId,
-  }) async {
-    try {
-      final res = await dioConfig.post(
-        InstitutionEndpoints.preIpoTransactionApprove,
-        {'transaction_id': transactionId},
-      );
-      return BaseModel.fromJson(
-        res.data,
-        (data) => PreIpoOrderModel.fromJson(data),
-      );
-    } catch (e, t) {
-      logger.e('Unable to approve transaction', error: e, stackTrace: t);
-      return BaseModel.fromError(e.toString());
-    }
-  }
+  }) => Analytics.trackRequest(
+    'transaction_action',
+    params: {'action': 'approve', 'actor': 'institution'},
+    request: () async {
+      try {
+        final res = await dioConfig.post(
+          InstitutionEndpoints.preIpoTransactionApprove,
+          {'transaction_id': transactionId},
+        );
+        return BaseModel.fromJson(
+          res.data,
+          (data) => PreIpoOrderModel.fromJson(data),
+        );
+      } catch (e, t) {
+        logger.e('Unable to approve transaction', error: e, stackTrace: t);
+        return BaseModel.fromError(e.toString());
+      }
+    },
+  );
 
   static Future<BaseModel<PreIpoOrderModel>> reject({
     required int transactionId,
     required String reason,
-  }) async {
-    try {
-      final res = await dioConfig.post(
-        InstitutionEndpoints.preIpoTransactionReject,
-        {'transaction_id': transactionId, 'reason': reason},
-      );
-      return BaseModel.fromJson(
-        res.data,
-        (data) => PreIpoOrderModel.fromJson(data),
-      );
-    } catch (e, t) {
-      logger.e('Unable to reject transaction', error: e, stackTrace: t);
-      return BaseModel.fromError(e.toString());
-    }
-  }
+  }) => Analytics.trackRequest(
+    'transaction_action',
+    params: {'action': 'reject', 'actor': 'institution'},
+    request: () async {
+      try {
+        final res = await dioConfig.post(
+          InstitutionEndpoints.preIpoTransactionReject,
+          {'transaction_id': transactionId, 'reason': reason},
+        );
+        return BaseModel.fromJson(
+          res.data,
+          (data) => PreIpoOrderModel.fromJson(data),
+        );
+      } catch (e, t) {
+        logger.e('Unable to reject transaction', error: e, stackTrace: t);
+        return BaseModel.fromError(e.toString());
+      }
+    },
+  );
 
   static Future<BaseModel<PreIpoOrderModel>> confirmPayment({
     required int transactionId,
-  }) async {
-    try {
-      final res = await dioConfig.post(
-        InstitutionEndpoints.preIpoConfirmPayment,
-        {'transaction_id': transactionId},
-      );
-      return BaseModel.fromJson(
-        res.data,
-        (data) => PreIpoOrderModel.fromJson(data),
-      );
-    } catch (e, t) {
-      logger.e('Unable to confirm payment', error: e, stackTrace: t);
-      return BaseModel.fromError(e.toString());
-    }
-  }
+  }) => Analytics.trackRequest(
+    'transaction_action',
+    params: {'action': 'confirm_payment', 'actor': 'institution'},
+    request: () async {
+      try {
+        final res = await dioConfig.post(
+          InstitutionEndpoints.preIpoConfirmPayment,
+          {'transaction_id': transactionId},
+        );
+        return BaseModel.fromJson(
+          res.data,
+          (data) => PreIpoOrderModel.fromJson(data),
+        );
+      } catch (e, t) {
+        logger.e('Unable to confirm payment', error: e, stackTrace: t);
+        return BaseModel.fromError(e.toString());
+      }
+    },
+  );
 
   static Future<BaseModel<PreIpoOrderModel>> confirmShareTransfer({
     required int transactionId,
-  }) async {
-    try {
-      final res = await dioConfig.post(
-        InstitutionEndpoints.preIpoConfirmShareTransfer,
-        {'transaction_id': transactionId},
-      );
-      return BaseModel.fromJson(
-        res.data,
-        (data) => PreIpoOrderModel.fromJson(data),
-      );
-    } catch (e, t) {
-      logger.e('Unable to confirm share transfer', error: e, stackTrace: t);
-      return BaseModel.fromError(e.toString());
-    }
-  }
+  }) => Analytics.trackRequest(
+    'transaction_action',
+    params: {'action': 'confirm_share_transfer', 'actor': 'institution'},
+    request: () async {
+      try {
+        final res = await dioConfig.post(
+          InstitutionEndpoints.preIpoConfirmShareTransfer,
+          {'transaction_id': transactionId},
+        );
+        return BaseModel.fromJson(
+          res.data,
+          (data) => PreIpoOrderModel.fromJson(data),
+        );
+      } catch (e, t) {
+        logger.e('Unable to confirm share transfer', error: e, stackTrace: t);
+        return BaseModel.fromError(e.toString());
+      }
+    },
+  );
 
   static Future<BaseModel<PreIpoOrderModel>> uploadShareTransferReceipt({
     required int transactionId,
     required MediaModel file,
-  }) async {
-    try {
-      Map<String, dynamic> body = {'transaction_id': transactionId};
-      body.addAll(await dioConfig.createMedia(file, 'file'));
-      final res = await dioConfig.post(
-        InstitutionEndpoints.preIpoShareTransferReceipt,
-        body,
-        false,
-      );
-      return BaseModel.fromJson(
-        res.data,
-        (data) => PreIpoOrderModel.fromJson(data),
-      );
-    } catch (e, t) {
-      logger.e(
-        'Unable to upload share-transfer receipt',
-        error: e,
-        stackTrace: t,
-      );
-      return BaseModel.fromError(e.toString());
-    }
-  }
+  }) => Analytics.trackRequest(
+    'transaction_action',
+    params: {'action': 'upload_share_transfer_receipt', 'actor': 'institution'},
+    request: () async {
+      try {
+        Map<String, dynamic> body = {'transaction_id': transactionId};
+        body.addAll(await dioConfig.createMedia(file, 'file'));
+        final res = await dioConfig.post(
+          InstitutionEndpoints.preIpoShareTransferReceipt,
+          body,
+          false,
+        );
+        return BaseModel.fromJson(
+          res.data,
+          (data) => PreIpoOrderModel.fromJson(data),
+        );
+      } catch (e, t) {
+        logger.e(
+          'Unable to upload share-transfer receipt',
+          error: e,
+          stackTrace: t,
+        );
+        return BaseModel.fromError(e.toString());
+      }
+    },
+  );
 
   static Future<BaseModel<PreIpoOrderModel>> uploadPaymentReceipt({
     required int transactionId,
     required MediaModel file,
-  }) async {
-    try {
-      Map<String, dynamic> body = {'transaction_id': transactionId};
-      body.addAll(await dioConfig.createMedia(file, 'file'));
-      final res = await dioConfig.post(
-        InstitutionEndpoints.preIpoPaymentReceipt,
-        body,
-        false,
-      );
-      return BaseModel.fromJson(
-        res.data,
-        (data) => PreIpoOrderModel.fromJson(data),
-      );
-    } catch (e, t) {
-      logger.e('Unable to upload payment receipt', error: e, stackTrace: t);
-      return BaseModel.fromError(e.toString());
-    }
-  }
+  }) => Analytics.trackRequest(
+    'transaction_action',
+    params: {'action': 'upload_payment_receipt', 'actor': 'institution'},
+    request: () async {
+      try {
+        Map<String, dynamic> body = {'transaction_id': transactionId};
+        body.addAll(await dioConfig.createMedia(file, 'file'));
+        final res = await dioConfig.post(
+          InstitutionEndpoints.preIpoPaymentReceipt,
+          body,
+          false,
+        );
+        return BaseModel.fromJson(
+          res.data,
+          (data) => PreIpoOrderModel.fromJson(data),
+        );
+      } catch (e, t) {
+        logger.e('Unable to upload payment receipt', error: e, stackTrace: t);
+        return BaseModel.fromError(e.toString());
+      }
+    },
+  );
 }

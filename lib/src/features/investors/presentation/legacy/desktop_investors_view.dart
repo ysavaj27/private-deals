@@ -22,67 +22,61 @@ class DesktopInvestorsView extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final colors = Theme.of(context).colorScheme;
-
     return PopScope(
       canPop: false,
       onPopInvokedWithResult: (didPop, result) => onBackLogic(context, didPop),
       child: Scaffold(
         body: Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 40, vertical: 20),
+          padding: AppPagePadding.of(context),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              const SizedBox(height: 20),
-              Row(
-                children: [
-                  const TitleText("Investors"),
-                  const Spacer(),
-                  CustomOutlinedButton(
-                    color: context.theme.iconTheme.color,
-                    width: 100,
-                    height: 45,
-                    onPressed: () {
-                      showCustomDialog(const InvestorFilterDialog());
-                    },
-                    child: const Text(
-                      "Filter",
-                      style: TextStyle(
-                        fontSize: 18,
-                        fontWeight: FontWeight.w600,
+              AppPageHeader(
+                title: 'Investors',
+                subtitle:
+                    'Clients linked to this account. Open KYC to verify investor details.',
+                trailing: Row(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    CustomOutlinedButton(
+                      color: context.theme.iconTheme.color,
+                      width: 100,
+                      height: 45,
+                      onPressed: () {
+                        showCustomDialog(const InvestorFilterDialog());
+                      },
+                      child: const Text(
+                        'Filter',
+                        style: TextStyle(
+                          fontSize: 18,
+                          fontWeight: FontWeight.w600,
+                        ),
                       ),
                     ),
-                  ),
-                  const SizedBox(width: 15),
-                  CustomElevatedButton(
-                    width: 100,
-                    height: 45,
-                    onPressed: () async {
-                      final result = await Get.toNamed(
-                        Routes.addInvestorPath(Get.currentRoute),
-                      );
-                      if (result == true) {
-                        await c.getInvestorList();
-                      }
-                    },
-                    child: const Text(
-                      "Add",
-                      style: TextStyle(
-                        fontSize: 18,
-                        fontWeight: FontWeight.w600,
+                    const SizedBox(width: 15),
+                    CustomElevatedButton(
+                      width: 100,
+                      height: 45,
+                      onPressed: () async {
+                        final result = await Get.toNamed(
+                          Routes.addInvestorPath(Get.currentRoute),
+                        );
+                        if (result == true) {
+                          await c.getInvestorList();
+                        }
+                      },
+                      child: const Text(
+                        'Add',
+                        style: TextStyle(
+                          fontSize: 18,
+                          fontWeight: FontWeight.w600,
+                        ),
                       ),
                     ),
-                  ),
-                ],
-              ),
-              const SizedBox(height: AppSpace.lg),
-              Text(
-                'Clients linked to this account. Open KYC to verify investor details.',
-                style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                  color: colors.onSurfaceVariant,
+                  ],
                 ),
               ),
-              const SizedBox(height: AppSpace.lg),
+              const SizedBox(height: AppSpace.xl),
               SearchBarTextField(
                 onChanged: (p0) => c.search(p0),
                 hintText: 'Search name, email or mobile',

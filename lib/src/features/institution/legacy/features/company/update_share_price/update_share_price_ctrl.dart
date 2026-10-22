@@ -49,6 +49,7 @@ class UpdateSharePriceCtrl extends GetxController {
   final buyRows = <SharePriceDraft>[].obs;
   final dealType = 'sell'.obs;
   final commonSettlementDays = RxnInt();
+
   /// Only one per-row settlement editor is open at a time (avoids N dropdowns).
   final editingSettlementCompanyId = RxnInt();
   RxList<SharePriceDraft> get rows =>

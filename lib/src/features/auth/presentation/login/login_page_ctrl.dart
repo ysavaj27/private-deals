@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/foundation.dart';
 import 'package:private_deals/src/shared/app_exports.dart';
 import 'package:private_deals/src/app/routing/session_navigation.dart';
@@ -20,8 +22,12 @@ class LoginPageCtrl extends GetxController {
     if (res.isSuccess && app.isUserLogin) {
       passwordCTRL.clear();
       await app.loginCounts();
+      unawaited(Analytics.login(role: app.role.apiValue));
       SessionNavigation.goHome();
     } else {
+      unawaited(
+        Analytics.event('login_failed', params: {'method': 'password'}),
+      );
       toast(res.m, MessageEnum.error);
     }
   }

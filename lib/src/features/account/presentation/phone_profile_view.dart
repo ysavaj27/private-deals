@@ -13,15 +13,15 @@ class PhoneProfileView extends StatelessWidget {
   Widget build(BuildContext context) {
     final scheme = context.theme.colorScheme;
     return SingleChildScrollView(
-      padding: const EdgeInsets.symmetric(
-        horizontal: AppSpace.xl,
-        vertical: AppSpace.xl,
-      ),
+      padding: AppPagePadding.of(context),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text('Account', style: context.textTheme.titleLarge),
-          const SizedBox(height: AppSpace.lg),
+          const AppPageHeader(
+            title: 'Account',
+            subtitle: 'Account details and preferences',
+          ),
+          const SizedBox(height: AppSpace.xl),
           ProfilePhotoSection(controller: c),
           Obx(() {
             if (c.error.value.isEmpty) return const SizedBox.shrink();
@@ -88,26 +88,13 @@ class PhoneProfileView extends StatelessWidget {
             },
           ),
           const SizedBox(height: AppSpace.xxl),
-          CustomOutlinedButton(
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                Icon(Icons.delete_outline_outlined, color: scheme.error),
-                const SizedBox(width: AppSpace.sm),
-                Text(
-                  "Delete Account",
-                  style: context.textTheme.labelLarge?.copyWith(
-                    color: scheme.error,
-                    fontWeight: FontWeight.w500,
-                  ),
-                ),
-              ],
-            ),
+          OutlinedButton.icon(
             onPressed: () {
               showCustomDialog(
                 DeleteAccountDialog(
-                  title: "Permanently Delete",
+                  title: 'Delete account',
                   onDelete: () async {
+                    Get.back();
                     await WAuthApi.deleteAccount();
                     await Get.offAll(() => LoginPage());
                     await app.setUser(prefUser: {});
@@ -115,6 +102,23 @@ class PhoneProfileView extends StatelessWidget {
                 ),
               );
             },
+            icon: Icon(Icons.delete_outline_rounded, color: scheme.error),
+            label: Text(
+              'Delete account',
+              style: context.textTheme.labelLarge?.copyWith(
+                color: scheme.error,
+                fontWeight: FontWeight.w600,
+              ),
+            ),
+            style: OutlinedButton.styleFrom(
+              foregroundColor: scheme.error,
+              side: BorderSide(color: scheme.error.withValues(alpha: 0.55)),
+              minimumSize: const Size(double.infinity, 48),
+              padding: const EdgeInsets.symmetric(vertical: 14),
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(AppRadii.md),
+              ),
+            ),
           ),
         ],
       ),

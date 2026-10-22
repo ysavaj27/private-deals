@@ -17,6 +17,15 @@ Future<void> main() async {
     await Firebase.initializeApp(
       options: DefaultFirebaseOptions.currentPlatform,
     );
+    await Analytics.init(
+      routeTemplates: Pages.pages.expand(
+        (page) => page.name.contains(':tab')
+            ? WTabBarEnum.values.map(
+                (tab) => page.name.replaceAll(':tab', tab.slug),
+              )
+            : [page.name],
+      ),
+    );
   } on FirebaseException catch (e) {
     logger.d(e);
   }
@@ -55,6 +64,7 @@ class MyApp extends StatelessWidget {
         locale: init.translation.toLocale(),
         initialRoute: Routes.init,
         getPages: Pages.pages,
+        navigatorObservers: [Analytics.observer],
         unknownRoute: GetPage(
           name: '/not-found',
           page: () => const NotFoundPage(),

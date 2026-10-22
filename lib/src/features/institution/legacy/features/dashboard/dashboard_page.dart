@@ -9,6 +9,8 @@ import 'package:private_deals/src/features/institution/data/models/common/enums.
 import 'package:private_deals/src/features/institution/legacy/utils/constant/app_url.dart';
 import 'package:private_deals/src/features/institution/legacy/features/home/home_page_ctrl.dart';
 import 'package:private_deals/src/features/institution/legacy/features/dashboard/phone_dashboard_view.dart';
+import 'package:private_deals/src/shared/theme/app_tokens.dart';
+import 'package:private_deals/src/shared/widgets/app_page_header.dart';
 import 'package:private_deals/src/shared/widgets/buttons/app_refresh_button.dart';
 
 const _purple = Color(0xFF2B5996);
@@ -186,40 +188,18 @@ class _DashboardPageState extends State<DashboardPage> {
             final wide = constraints.maxWidth >= 1000;
             return ListView(
               physics: const AlwaysScrollableScrollPhysics(),
-              padding: EdgeInsets.all(constraints.maxWidth < 600 ? 16 : 30),
+              padding: AppPagePadding.of(context),
               children: [
-                Wrap(
-                  alignment: WrapAlignment.spaceBetween,
-                  crossAxisAlignment: WrapCrossAlignment.center,
-                  spacing: 20,
-                  runSpacing: 12,
-                  children: [
-                    Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        text(
-                          'YOUR SELLER WORKSPACE',
-                          size: 10,
-                          color: _purple,
-                          weight: FontWeight.w700,
-                        ),
-                        const SizedBox(height: 6),
-                        text('Overview', size: 30, weight: FontWeight.w700),
-                        text(
-                          'A clear view of your business, all in one place.',
-                          color: muted,
-                          size: 13,
-                        ),
-                      ],
-                    ),
-                    AppRefreshButton(
-                      tooltip: 'Refresh dashboard',
-                      loading: loading,
-                      onPressed: _load,
-                    ),
-                  ],
+                AppPageHeader(
+                  title: 'Overview',
+                  subtitle: 'A clear view of your business, all in one place.',
+                  trailing: AppRefreshButton(
+                    tooltip: 'Refresh dashboard',
+                    loading: loading,
+                    onPressed: _load,
+                  ),
                 ),
-                const SizedBox(height: 24),
+                const SizedBox(height: AppSpace.xl),
                 _banner(d),
                 const SizedBox(height: 22),
                 if (failed)

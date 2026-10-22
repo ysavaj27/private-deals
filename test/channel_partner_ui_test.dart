@@ -162,7 +162,13 @@ void main() {
     expect(find.text('Build your partner network'), findsOneWidget);
     c.isLoading(true);
     await tester.pump();
-    expect(find.byType(CircularProgressIndicator), findsOneWidget);
+    expect(
+      find.descendant(
+        of: find.byKey(const ValueKey('workspace-loading')),
+        matching: find.byType(CircularProgressIndicator),
+      ),
+      findsOneWidget,
+    );
     c.isLoading(false);
     await tester.pumpAndSettle();
   });
@@ -238,8 +244,9 @@ void main() {
     await tester.pumpAndSettle(const Duration(milliseconds: 100));
     expect(find.text('Add channel partner'), findsNothing);
     expect(c.refreshes, 2);
-    await tester.pump(const Duration(seconds: 3));
+    await tester.tap(find.byTooltip('Dismiss notification'));
     await tester.pumpAndSettle();
+    expect(find.byTooltip('Dismiss notification'), findsNothing);
   });
 
   testWidgets('Relation managers do not require commission', (tester) async {
@@ -334,7 +341,7 @@ void main() {
     expect(form.isLoading(), false);
     expect(form.nameCTRL.text, 'Test Partner');
     expect(find.text('Add channel partner'), findsOneWidget);
-    await tester.pump(const Duration(seconds: 3));
+    await tester.tap(find.byTooltip('Dismiss notification'));
     await tester.pumpAndSettle();
     await tester.tap(find.text('Cancel'));
     await tester.pumpAndSettle();

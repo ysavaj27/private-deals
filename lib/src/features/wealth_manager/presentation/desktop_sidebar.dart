@@ -14,7 +14,7 @@ class DSideBarWidget extends StatelessWidget {
     final isDark = Theme.of(context).brightness == Brightness.dark;
     final muted = isDark ? const Color(0xFFB1BAC4) : const Color(0xFF5A6578);
 
-    // Parent Positioned(top/bottom) supplies height; keep width fixed at 260.
+    // Parent Positioned(top/bottom) supplies height; width matches [AppShell].
     return Material(
       color: isDark ? const Color(0xFF0D1117) : const Color(0xFFF7F9FC),
       child: DecoratedBox(
@@ -56,6 +56,12 @@ class DSideBarWidget extends StatelessWidget {
               icon: Icons.pie_chart_outline_rounded,
               title: 'Portfolio',
               tab: WTabBarEnum.portfolio,
+            ),
+            const SizedBox(height: 8),
+            DTabTileWidget(
+              icon: Icons.upload_file_outlined,
+              title: 'Upload Portfolio',
+              tab: WTabBarEnum.uploadPortfolio,
             ),
             const SizedBox(height: 8),
             DTabTileWidget(

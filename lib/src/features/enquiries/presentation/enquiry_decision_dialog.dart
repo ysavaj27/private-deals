@@ -81,10 +81,16 @@ class _EnquiryDecisionDialogState extends State<EnquiryDecisionDialog> {
                           ? 'Reason (optional)'
                           : 'Reason (required)',
                     ),
-                    validator: (value) =>
-                        !widget.institution && (value?.trim().isEmpty ?? true)
-                        ? 'Enter a rejection reason'
-                        : null,
+                    validator: (value) {
+                      final reason = value?.trim() ?? '';
+                      if (!widget.institution && reason.isEmpty) {
+                        return 'Enter a rejection reason';
+                      }
+                      if (reason.length > 1000) {
+                        return 'Use a rejection reason of up to 1000 characters';
+                      }
+                      return null;
+                    },
                   )
                 else if (_pickInvestor) ...[
                   Text(

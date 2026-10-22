@@ -13,6 +13,7 @@ import 'package:private_deals/src/features/institution/legacy/utils/widgets/dial
 
 import 'package:private_deals/src/features/institution/legacy/features/auth/profile/profile_page.dart';
 import 'package:private_deals/src/features/institution/legacy/features/auth/profile/profile_page_ctrl.dart';
+import 'package:private_deals/src/shared/theme/app_tokens.dart';
 
 /// Phone profile tab — basic identity + account actions only.
 class PhoneProfileView extends StatelessWidget {
@@ -57,7 +58,7 @@ class PhoneProfileView extends StatelessWidget {
           },
           child: ListView(
             physics: const AlwaysScrollableScrollPhysics(),
-            padding: const EdgeInsets.fromLTRB(20, 16, 20, 32),
+            padding: AppPagePadding.of(context),
             children: [
               if (controller.error.value.isNotEmpty) ...[
                 Material(
@@ -189,6 +190,8 @@ class PhoneProfileView extends StatelessWidget {
                 ),
               ),
               const SizedBox(height: 10),
+              SellerKycCard(controller: controller),
+              const SizedBox(height: 10),
               FilledButton.tonalIcon(
                 onPressed: () => Get.find<SellerHomePageCtrl>().onTap(
                   WTabBarEnum.changePassword,
@@ -221,17 +224,18 @@ class PhoneProfileView extends StatelessWidget {
                 style: OutlinedButton.styleFrom(
                   foregroundColor: colors.onSurface,
                   padding: const EdgeInsets.symmetric(vertical: 14),
+                  minimumSize: const Size(double.infinity, 48),
                   shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(14),
+                    borderRadius: BorderRadius.circular(12),
                   ),
                 ),
               ),
-              const SizedBox(height: 4),
-              TextButton(
+              const SizedBox(height: 10),
+              OutlinedButton.icon(
                 onPressed: () {
                   showCustomDialog(
                     DeleteAccountDialog(
-                      title: 'Permanently Delete',
+                      title: 'Delete account',
                       onDelete: () async {
                         Get.back();
                         await WAuthApi.deleteAccount();
@@ -241,8 +245,23 @@ class PhoneProfileView extends StatelessWidget {
                     ),
                   );
                 },
-                style: TextButton.styleFrom(foregroundColor: colors.error),
-                child: const Text('Delete account'),
+                icon: Icon(Icons.delete_outline_rounded, color: colors.error),
+                label: Text(
+                  'Delete account',
+                  style: TextStyle(
+                    color: colors.error,
+                    fontWeight: FontWeight.w600,
+                  ),
+                ),
+                style: OutlinedButton.styleFrom(
+                  foregroundColor: colors.error,
+                  side: BorderSide(color: colors.error.withValues(alpha: 0.55)),
+                  padding: const EdgeInsets.symmetric(vertical: 14),
+                  minimumSize: const Size(double.infinity, 48),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(12),
+                  ),
+                ),
               ),
               const SizedBox(height: 16),
               Text(

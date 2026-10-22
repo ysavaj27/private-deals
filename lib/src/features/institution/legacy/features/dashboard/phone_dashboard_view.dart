@@ -12,6 +12,7 @@ import 'package:private_deals/src/features/institution/support/plugins/loader.da
 import 'package:private_deals/src/shared/institution_widgets/custom_card_widget.dart';
 
 import 'package:private_deals/src/features/institution/legacy/features/home/home_page_ctrl.dart';
+import 'package:private_deals/src/shared/theme/app_tokens.dart';
 
 const _purple = Color(0xFF2B5996);
 const _green = Color(0xFF26A88A);
@@ -136,7 +137,7 @@ class _PhoneDashboardViewState extends State<PhoneDashboardView> {
         onRefresh: _load,
         child: ListView(
           physics: const AlwaysScrollableScrollPhysics(),
-          padding: const EdgeInsets.fromLTRB(12, 12, 12, 16),
+          padding: AppPagePadding.of(context),
           children: [
             if (failed)
               Padding(
