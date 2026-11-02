@@ -108,6 +108,8 @@ extension WTabBarRouteX on WTabBarEnum {
         return 'change-password';
       case WTabBarEnum.sellEnquiries:
         return 'sell-enquiries';
+      case WTabBarEnum.myInquiries:
+        return 'my-inquiries';
       case WTabBarEnum.companyDeals:
         return 'hot-deals/unlisted';
       case WTabBarEnum.secondaryDeals:
@@ -198,6 +200,7 @@ class RouteHierarchy {
 
 extension SellerTabPath on WTabBarEnum {
   String get sellerPath => switch (this) {
+    WTabBarEnum.myInquiries => '/wealth-manager/my-inquiries',
     WTabBarEnum.preIPOList => '/institution/companies/unlisted',
     WTabBarEnum.secondaryList => '/institution/companies/secondary',
     WTabBarEnum.companyDeals => '/institution/deals/hot/unlisted',

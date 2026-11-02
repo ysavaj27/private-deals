@@ -144,7 +144,21 @@ void main() {
     expect(find.byType(SellerSlotsWidget), findsNothing);
     expect(find.text('Fundamentals'), findsNothing);
     expect(find.textContaining('Long company overview'), findsNothing);
-    expect(find.byKey(const ValueKey('pre-ipo-enquiry-footer')), findsNothing);
+    expect(
+      find.byKey(const ValueKey('pre-ipo-enquiry-footer')),
+      findsOneWidget,
+    );
+    await tester.ensureVisible(find.widgetWithText(OutlinedButton, 'Enquire'));
+    await tester.tap(find.widgetWithText(OutlinedButton, 'Enquire'));
+    await tester.pumpAndSettle();
+    expect(
+      tester
+          .widget<DesktopEnquiryDialogView>(
+            find.byType(DesktopEnquiryDialogView),
+          )
+          .slug,
+      'northstar',
+    );
     expect(find.byKey(const ValueKey('seller-deals-board')), findsOneWidget);
     expect(tester.takeException(), isNull);
   });
@@ -176,7 +190,10 @@ void main() {
     tester,
   ) async {
     await _pump(tester, 390);
-    expect(find.byKey(const ValueKey('seller-deals-list-header')), findsNothing);
+    expect(
+      find.byKey(const ValueKey('seller-deals-list-header')),
+      findsNothing,
+    );
     final oakwood = tester.getTopLeft(find.text('Oakwood Securities'));
     final crescent = tester.getTopLeft(find.text('Crescent Investments'));
     expect(oakwood.dx, crescent.dx);
@@ -185,7 +202,7 @@ void main() {
     expect(tester.takeException(), isNull);
   });
 
-  testWidgets('Sellers can buy sell deals without the partner enquire footer', (
+  testWidgets('Sellers can buy sell deals alongside the bulk enquiry footer', (
     tester,
   ) async {
     final c = await _pump(tester, 1280);
@@ -197,7 +214,10 @@ void main() {
       findsOneWidget,
     );
     expect(find.widgetWithText(FilledButton, 'Buy'), findsNWidgets(3));
-    expect(find.byKey(const ValueKey('pre-ipo-enquiry-footer')), findsNothing);
+    expect(
+      find.byKey(const ValueKey('pre-ipo-enquiry-footer')),
+      findsOneWidget,
+    );
 
     await tester.tap(find.widgetWithText(FilledButton, 'Buy').first);
     await tester.pumpAndSettle();
@@ -206,7 +226,7 @@ void main() {
     await tester.tap(find.text('Harbour Securities'));
     await tester.pumpAndSettle();
     expect(find.text('Seller details'), findsOneWidget);
-    expect(find.textContaining('Enquire'), findsNothing);
+    expect(find.widgetWithText(OutlinedButton, 'Enquire'), findsOneWidget);
     await tester.tap(find.byTooltip('Close'));
     await tester.pumpAndSettle();
 
@@ -221,10 +241,7 @@ void main() {
     expect(find.text('Buyer details'), findsOneWidget);
     expect(find.text('Buy Now'), findsNothing);
     expect(find.widgetWithText(FilledButton, 'Sell Now'), findsOneWidget);
-    expect(
-      find.textContaining('raise a sell enquiry'),
-      findsOneWidget,
-    );
+    expect(find.textContaining('raise a sell enquiry'), findsOneWidget);
   });
 
   testWidgets(
@@ -317,7 +334,7 @@ void main() {
         'settlement_days': 2,
       });
       expect(Get.currentRoute, Routes.enquiriesPath());
-      expect(find.text('Seller enquiries'), findsOneWidget);
+      expect(find.text('My enquiries'), findsOneWidget);
       expect(tester.takeException(), isNull);
     },
   );

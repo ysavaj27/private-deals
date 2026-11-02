@@ -33,9 +33,7 @@ class _SellerDealsBoardState extends State<SellerDealsBoard> {
     final active = _buy ? buyDeals : sellDeals;
     final hot = active.where((deal) => deal.isHotDeal).toList();
     final normal = active.where((deal) => !deal.isHotDeal).toList();
-    final slots = _buy
-        ? company.sellerSharePrices
-        : <SellerSharePriceModel>[];
+    final slots = _buy ? company.sellerSharePrices : <SellerSharePriceModel>[];
     return Column(
       key: const ValueKey('seller-deals-board'),
       crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -73,6 +71,29 @@ class _SellerDealsBoardState extends State<SellerDealsBoard> {
           emptyText: _buy
               ? 'No buy offers at the moment.'
               : 'No sell offers at the moment.',
+        ),
+        const SizedBox(height: AppSpace.xl),
+        const Divider(height: 1),
+        Padding(
+          key: const ValueKey('pre-ipo-enquiry-footer'),
+          padding: const EdgeInsets.fromLTRB(20, 14, 20, 16),
+          child: Row(
+            crossAxisAlignment: CrossAxisAlignment.center,
+            children: [
+              Expanded(
+                child: Text(
+                  'Buying or selling in bulk?',
+                  style: Theme.of(context).textTheme.titleSmall,
+                ),
+              ),
+              const SizedBox(width: 16),
+              OutlinedButton.icon(
+                onPressed: _enquire,
+                icon: const Icon(Icons.chat_bubble_outline_rounded, size: 17),
+                label: const Text('Enquire'),
+              ),
+            ],
+          ),
         ),
       ],
     );
@@ -228,9 +249,7 @@ class _SellerDealsBoardState extends State<SellerDealsBoard> {
           seller: slot.seller,
           price: slot.sellPrice,
           minimumQty: slot.minQty,
-          availableQuantity: slot.totalQty > 0
-              ? slot.totalQty.toShowNum
-              : null,
+          availableQuantity: slot.totalQty > 0 ? slot.totalQty.toShowNum : null,
           badges: const ['Shares for sale'],
           footerText: 'Shares listed for sale at this price.',
         ),
@@ -290,7 +309,11 @@ class _BoardHeader extends StatelessWidget {
         if (constraints.maxWidth < 560) {
           return Column(
             crossAxisAlignment: CrossAxisAlignment.start,
-            children: [title, const SizedBox(height: AppSpace.lg), toggle],
+            children: [
+              title,
+              const SizedBox(height: AppSpace.lg),
+              toggle,
+            ],
           );
         }
         return Row(
@@ -473,8 +496,10 @@ class _ListHeader extends StatelessWidget {
     final style = theme.textTheme.labelMedium?.copyWith(
       color: theme.colorScheme.onSurfaceVariant,
     );
-    Widget cell(String text, int flex) =>
-        Expanded(flex: flex, child: Text(text, style: style));
+    Widget cell(String text, int flex) => Expanded(
+      flex: flex,
+      child: Text(text, style: style),
+    );
     return Container(
       key: const ValueKey('seller-deals-list-header'),
       color: theme.colorScheme.surfaceContainer,
@@ -602,7 +627,9 @@ class SellerDealRow extends StatelessWidget {
   Widget _party() => Row(
     crossAxisAlignment: CrossAxisAlignment.center,
     children: [
-      Expanded(child: SellerProfileWidget(seller: seller, label: label)),
+      Expanded(
+        child: SellerProfileWidget(seller: seller, label: label),
+      ),
       if (own) ...[
         const SizedBox(width: AppSpace.sm),
         const _RowBadge(key: ValueKey('own-deal-tag'), label: 'Your deal'),

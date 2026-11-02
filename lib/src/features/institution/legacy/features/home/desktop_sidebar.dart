@@ -68,11 +68,7 @@ class DSideBarWidget extends StatelessWidget {
               tab: WTabBarEnum.portfolio,
             ),
             const SizedBox(height: 8),
-            DTabTileWidget(
-              icon: Icons.sell_outlined,
-              title: 'My Enquiries',
-              tab: WTabBarEnum.sellEnquiries,
-            ),
+            const DEnquiriesMenu(),
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 22),
               child: Divider(
@@ -344,6 +340,34 @@ class DExpandableMenu extends GetView<SellerHomePageCtrl> {
       ],
     );
   }
+}
+
+class DEnquiriesMenu extends GetView<SellerHomePageCtrl> {
+  const DEnquiriesMenu({super.key});
+
+  @override
+  Widget build(BuildContext context) => Obx(() {
+    final selected = controller.isEnquiriesSection;
+    return DExpandableMenu(
+      title: 'Enquiries',
+      icon: Icons.question_answer_outlined,
+      selected: selected,
+      expanded: selected || controller.enquiriesExpanded.value,
+      onToggle: controller.enquiriesExpanded.toggle,
+      children: [
+        DTabTileWidget(
+          icon: Icons.person_outline_rounded,
+          title: 'My Inquiry',
+          tab: WTabBarEnum.myInquiries,
+        ),
+        DTabTileWidget(
+          icon: Icons.inbox_outlined,
+          title: 'All Enquiries',
+          tab: WTabBarEnum.sellEnquiries,
+        ),
+      ],
+    );
+  });
 }
 
 class DUnlistedMenu extends GetView<SellerHomePageCtrl> {

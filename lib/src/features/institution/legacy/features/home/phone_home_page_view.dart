@@ -40,6 +40,7 @@ class PhoneHomePageView extends StatelessWidget {
       child: Obx(() {
         final showUnlistedSubTabs = c.isUnlistedSection;
         final showLpSecondarySubTabs = c.isLpSecondarySection;
+        final showEnquirySubTabs = c.isEnquiriesSection;
 
         return Scaffold(
           appBar: AppBar(
@@ -59,7 +60,12 @@ class PhoneHomePageView extends StatelessWidget {
             ],
             bottom: PreferredSize(
               preferredSize: Size.fromHeight(
-                64 + (showUnlistedSubTabs || showLpSecondarySubTabs ? 48 : 0),
+                64 +
+                    (showUnlistedSubTabs ||
+                            showLpSecondarySubTabs ||
+                            showEnquirySubTabs
+                        ? 48
+                        : 0),
               ),
               child: Column(
                 children: [
@@ -82,6 +88,15 @@ class PhoneHomePageView extends StatelessWidget {
                       options: const [
                         (WTabBarEnum.secondaryList, 'Manage Company'),
                         (WTabBarEnum.manageDeals, 'Manage Deals'),
+                      ],
+                      selected: c.currentTab.value,
+                      onSelected: c.onTap,
+                    ),
+                  if (showEnquirySubTabs)
+                    _PhoneSubTabBar(
+                      options: const [
+                        (WTabBarEnum.myInquiries, 'My Inquiry'),
+                        (WTabBarEnum.sellEnquiries, 'All Enquiries'),
                       ],
                       selected: c.currentTab.value,
                       onSelected: c.onTap,

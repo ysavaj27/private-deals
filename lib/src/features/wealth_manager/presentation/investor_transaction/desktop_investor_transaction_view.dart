@@ -18,53 +18,45 @@ class DesktopInvestorTransactionView extends StatelessWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Row(
-              mainAxisAlignment: MainAxisAlignment.start,
-              children: [
-                const TitleText('Investor Transaction'),
-                const Spacer(),
-                Visibility(
-                  visible: app.wUser.isPreIpoAccess,
-                  child: TabButton(
-                    title: 'Unlisted',
-                    type: TransactionTypeEnum.preIpoBuy,
-                    onTap: () {
-                      c.changeTab(TransactionTypeEnum.preIpoBuy);
-                    },
-                    currentIndex: c.currentIndex,
+            SizedBox(
+              width: double.infinity,
+              child: Wrap(
+                alignment: WrapAlignment.spaceBetween,
+                spacing: AppSpace.lg,
+                runSpacing: AppSpace.md,
+                children: [
+                  const TitleText('Investor Transaction'),
+                  Wrap(
+                    spacing: 10,
+                    runSpacing: 10,
+                    children: [
+                      if (app.wUser.isPreIpoAccess)
+                        TabButton(
+                          title: 'Unlisted',
+                          type: TransactionTypeEnum.preIpoBuy,
+                          onTap: () =>
+                              c.changeTab(TransactionTypeEnum.preIpoBuy),
+                          currentIndex: c.currentIndex,
+                        ),
+                      if (app.wUser.isSecondaryAccess)
+                        TabButton(
+                          title: 'Secondary',
+                          type: TransactionTypeEnum.secondary,
+                          onTap: () =>
+                              c.changeTab(TransactionTypeEnum.secondary),
+                          currentIndex: c.currentIndex,
+                        ),
+                      if (app.wUser.isPrimaryAccess)
+                        TabButton(
+                          title: 'Private Equity',
+                          type: TransactionTypeEnum.primary,
+                          onTap: () => c.changeTab(TransactionTypeEnum.primary),
+                          currentIndex: c.currentIndex,
+                        ),
+                    ],
                   ),
-                ),
-                Visibility(
-                  visible: app.wUser.isPreIpoAccess,
-                  child: const SizedBox(width: 10),
-                ),
-                Visibility(
-                  visible: app.wUser.isSecondaryAccess,
-                  child: TabButton(
-                    title: 'Secondary',
-                    type: TransactionTypeEnum.secondary,
-                    onTap: () {
-                      c.changeTab(TransactionTypeEnum.secondary);
-                    },
-                    currentIndex: c.currentIndex,
-                  ),
-                ),
-                Visibility(
-                  visible: app.wUser.isSecondaryAccess,
-                  child: const SizedBox(width: 10),
-                ),
-                Visibility(
-                  visible: app.wUser.isPrimaryAccess,
-                  child: TabButton(
-                    title: 'Private Equity',
-                    type: TransactionTypeEnum.primary,
-                    onTap: () {
-                      c.changeTab(TransactionTypeEnum.primary);
-                    },
-                    currentIndex: c.currentIndex,
-                  ),
-                ),
-              ],
+                ],
+              ),
             ),
             const SizedBox(height: 18),
             Expanded(child: MainView()),

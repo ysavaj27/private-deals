@@ -10,11 +10,18 @@ import 'package:private_deals/src/features/wealth_manager/presentation/investor_
 import 'package:private_deals/src/features/wealth_manager/presentation/investor_transaction/pre_ipo/pre_ipo_buy_transaction/pre_ipo_order_detail_dialog.dart';
 
 class EnquiriesPage extends StatefulWidget {
-  const EnquiriesPage({super.key, this.institution = false});
+  const EnquiriesPage({
+    super.key,
+    this.institution = false,
+    this.ownOnly = false,
+    this.title,
+  }) : assert(!institution || !ownOnly);
 
   /// Selects the incoming Institution inbox API. Seller My Enquiries uses the
   /// shared partner API, so this is independent of the authenticated role.
   final bool institution;
+  final bool ownOnly;
+  final String? title;
 
   @override
   State<EnquiriesPage> createState() => _EnquiriesPageState();
@@ -290,7 +297,13 @@ class _EnquiriesPageState extends State<EnquiriesPage> {
     );
   }
 
-  Iterable<EnquiryModel> get _searched => _items.where(
+  Iterable<EnquiryModel> get _visibleItems => _items.where(
+    (item) => widget.ownOnly
+        ? item.isMine(app.wUser)
+        : !widget.institution || item.partnerId != app.userId,
+  );
+
+  Iterable<EnquiryModel> get _searched => _visibleItems.where(
     (item) =>
         '${item.companyName} ${item.partnerName} ${item.institutionName} ${item.dealType}'
             .toLowerCase()
@@ -351,9 +364,17 @@ class _EnquiriesPageState extends State<EnquiriesPage> {
         padding: AppPagePadding.of(context),
         children: [
           AppPageHeader(
-            title: widget.institution ? 'Incoming Enquiries' : 'Enquiries',
+            title:
+                widget.title ??
+                (widget.ownOnly
+                    ? 'My Inquiry'
+                    : widget.institution
+                    ? 'Incoming Enquiries'
+                    : 'Enquiries'),
             subtitle: widget.institution
-                ? 'Review buy and sell requests from wealth managers.'
+                ? 'Review incoming buy and sell enquiries from other partners.'
+                : widget.ownOnly
+                ? 'Track the buy and sell enquiries you have created.'
                 : 'Track your enquiries and accept open ones from other partners.',
             trailing: AppRefreshButton(
               tooltip: 'Refresh enquiries',

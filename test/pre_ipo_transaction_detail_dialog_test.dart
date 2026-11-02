@@ -163,7 +163,7 @@ void main() {
                   as RenderRepaintBoundary;
           final image = await boundary.toImage();
           final bytes = await image.toByteData(format: ui.ImageByteFormat.png);
-          await File('/tmp/transaction-detail-${width.toInt()}.png')
+          await File('${Directory.systemTemp.path}/transaction-detail-${width.toInt()}.png')
               .writeAsBytes(bytes!.buffer.asUint8List());
           image.dispose();
         });

@@ -300,10 +300,7 @@ void main() {
               outcome == 'success' ? Routes.enquiriesPath() : '/detail',
             );
             if (outcome == 'success') {
-              expect(
-                find.text(institution ? 'Seller enquiries' : 'My enquiries'),
-                findsOneWidget,
-              );
+              expect(find.text('My enquiries'), findsOneWidget);
               expect(Get.key.currentState!.canPop(), isFalse);
             } else if (outcome == 'failure') {
               expect(find.text('Submit'), findsOneWidget);
@@ -336,7 +333,7 @@ void main() {
           );
           await mountFlow(
             tester,
-            () => Scaffold(body: EnquiriesPage(institution: institution)),
+            () => Scaffold(body: EnquiriesPage(ownOnly: institution)),
           );
           final link = find.text('View transactions');
           await tester.ensureVisible(link);

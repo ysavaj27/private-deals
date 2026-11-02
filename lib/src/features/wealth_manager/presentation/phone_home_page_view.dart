@@ -176,30 +176,38 @@ class PhoneHomePageView extends StatelessWidget {
                   mainAxisSize: MainAxisSize.max,
                   mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                   children: <Widget>[
-                    CustomNavigationIcon(
-                      type: WTabBarEnum.dashboard,
-                      icon: AppAssets.dashboardIc2,
-                      label: 'Home',
-                      size: 22,
+                    Expanded(
+                      child: CustomNavigationIcon(
+                        type: WTabBarEnum.dashboard,
+                        icon: AppAssets.dashboardIc2,
+                        label: 'Home',
+                        size: 22,
+                      ),
                     ),
-                    CustomNavigationIcon(
-                      type: WTabBarEnum.investorTransactions,
-                      icon: AppAssets.transactionIc,
-                      label: 'Txns',
-                      size: 22,
+                    Expanded(
+                      child: CustomNavigationIcon(
+                        type: WTabBarEnum.investorTransactions,
+                        icon: AppAssets.transactionIc,
+                        label: 'Txns',
+                        size: 22,
+                      ),
                     ),
                     const SizedBox(width: 48),
-                    CustomNavigationIcon(
-                      type: WTabBarEnum.portfolio,
-                      icon: AppAssets.sendDocumentsIc,
-                      label: 'Portfolio',
-                      size: 24,
+                    Expanded(
+                      child: CustomNavigationIcon(
+                        type: WTabBarEnum.portfolio,
+                        icon: AppAssets.sendDocumentsIc,
+                        label: 'Portfolio',
+                        size: 24,
+                      ),
                     ),
-                    CustomNavigationIcon(
-                      type: WTabBarEnum.profile,
-                      icon: AppAssets.profileIc,
-                      label: 'Profile',
-                      size: 24,
+                    Expanded(
+                      child: CustomNavigationIcon(
+                        type: WTabBarEnum.profile,
+                        icon: AppAssets.profileIc,
+                        label: 'Profile',
+                        size: 24,
+                      ),
                     ),
                   ],
                 ),
@@ -275,6 +283,8 @@ class CustomNavigationIcon extends StatelessWidget {
                   const SizedBox(height: 2),
                   Text(
                     label,
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
                     style: context.textTheme.labelSmall?.copyWith(
                       color: color,
                       fontWeight: isSelected

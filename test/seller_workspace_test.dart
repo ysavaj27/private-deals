@@ -97,7 +97,7 @@ void main() {
       expect(find.text('Unlisted'), findsWidgets);
       expect(find.text('LP Secondary'), findsWidgets);
       expect(find.text('Deal of the day'), findsOneWidget);
-      expect(find.text('My Enquiries'), findsOneWidget);
+      expect(find.text('Enquiries'), findsOneWidget);
       await tester.tap(find.text('Unlisted').first);
       await tester.pumpAndSettle();
       expect(find.text('Manage Company'), findsWidgets);
@@ -105,17 +105,32 @@ void main() {
       await tester.tap(find.text('LP Secondary').first);
       await tester.pumpAndSettle();
       expect(find.text('Manage Deals'), findsOneWidget);
-      await tester.ensureVisible(find.text('My Enquiries'));
+      await tester.ensureVisible(find.text('Enquiries'));
       await tester.pumpAndSettle();
-      await tester.tap(find.text('My Enquiries'));
+      await tester.tap(find.text('Enquiries'));
+      await tester.pumpAndSettle();
+      await tester.ensureVisible(find.text('My Inquiry'));
+      await tester.pumpAndSettle();
+      await tester.tap(find.text('My Inquiry'));
+      await tester.pumpAndSettle();
+      expect(Get.currentRoute, '/wealth-manager/my-inquiries');
+      expect(
+        adapter.requests.any((r) => r.path == 'v2/business/enquiries/deals'),
+        isTrue,
+      );
+      await tester.ensureVisible(find.text('All Enquiries'));
+      await tester.pumpAndSettle();
+      await tester.tap(find.text('All Enquiries'));
       await tester.pumpAndSettle();
       expect(Get.currentRoute, '/institution/sell-enquiries');
       expect(
         adapter.requests.any(
-          (r) => r.path == 'v2/business/enquiries/deals',
+          (r) => r.path == 'v2/business/institution/enquiries',
         ),
         isTrue,
       );
+      await tester.ensureVisible(find.text('Transactions'));
+      await tester.pumpAndSettle();
       await tester.tap(find.text('Transactions'));
       await tester.pumpAndSettle();
       expect(Get.currentRoute, '/institution/unlisted-transactions');

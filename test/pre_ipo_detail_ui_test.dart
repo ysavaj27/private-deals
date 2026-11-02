@@ -284,7 +284,7 @@ Future<void> _capture(WidgetTester tester, GlobalKey key, String name) async {
         key.currentContext!.findRenderObject()! as RenderRepaintBoundary;
     final image = await boundary.toImage();
     final bytes = await image.toByteData(format: ui.ImageByteFormat.png);
-    await File('/tmp/pre-ipo-$name.png')
+    await File('${Directory.systemTemp.path}/pre-ipo-$name.png')
         .writeAsBytes(bytes!.buffer.asUint8List());
     image.dispose();
   });

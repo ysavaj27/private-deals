@@ -591,7 +591,9 @@ void main() {
           addTearDown(tester.view.resetPhysicalSize);
           addTearDown(tester.view.resetDevicePixelRatio);
           await app.setUser(
-            prefUser: institution ? identity() : identity('Wealth Manager'),
+            prefUser: institution
+                ? identity('Institution', 8)
+                : identity('Wealth Manager'),
           );
           final adapter = FakeAdapter(
             (_) async => response({
@@ -679,7 +681,7 @@ void main() {
         tester.view.devicePixelRatio = 1;
         addTearDown(tester.view.resetPhysicalSize);
         addTearDown(tester.view.resetDevicePixelRatio);
-        await app.setUser(prefUser: identity());
+        await app.setUser(prefUser: identity('Institution', 8));
         bool rejected = false;
         final adapter = FakeAdapter((request) async {
           if (request.method == 'POST') {
@@ -743,7 +745,7 @@ void main() {
   testWidgets(
     'racing seller approval refreshes stale actions and shows API message',
     (tester) async {
-      await app.setUser(prefUser: identity());
+      await app.setUser(prefUser: identity('Institution', 8));
       bool stale = false;
       final adapter = FakeAdapter((request) async {
         if (request.method == 'POST') {
@@ -793,14 +795,12 @@ void main() {
         tester.view.devicePixelRatio = 1;
         addTearDown(tester.view.resetPhysicalSize);
         addTearDown(tester.view.resetDevicePixelRatio);
-        await app.setUser(prefUser: identity());
+        await app.setUser(prefUser: identity('Institution', 8));
         seedSettlementConfig();
         final adapter = FakeAdapter(
           (_) async => response({
             'status': 1,
-            'data': [
-              inquiry('open', myQuote: quotePayload()),
-            ],
+            'data': [inquiry('open', myQuote: quotePayload())],
           }),
         );
         dioConfig.dio.httpClientAdapter = adapter;

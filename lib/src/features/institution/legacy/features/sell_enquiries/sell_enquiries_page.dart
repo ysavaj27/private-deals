@@ -4,8 +4,16 @@ import 'package:private_deals/src/features/enquiries/presentation/enquiries_page
 class SellEnquiriesPage extends StatelessWidget {
   const SellEnquiriesPage({super.key});
 
-  /// Seller My Enquiries uses the same partner create/list APIs as wealth
-  /// managers (`v2/business/enquiries/deals`), not the institution inbox.
+  /// Incoming buy and sell enquiries use the Institution inbox and decisions.
   @override
-  Widget build(BuildContext context) => const EnquiriesPage();
+  Widget build(BuildContext context) =>
+      const EnquiriesPage(institution: true, title: 'All Enquiries');
+}
+
+class SellerMyEnquiriesPage extends StatelessWidget {
+  const SellerMyEnquiriesPage({super.key});
+
+  /// Own enquiries retain the partner API and investor-based approval flow.
+  @override
+  Widget build(BuildContext context) => const EnquiriesPage(ownOnly: true);
 }

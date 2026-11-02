@@ -1,5 +1,31 @@
 # Changelog
 
+## 1.0.27+34 — Production release
+
+- Updated visual regression screenshot paths to the system temporary directory for Windows compatibility and refreshed the seller portfolio test for the current mobile drawer navigation.
+- Full static analysis reported no errors or warnings (132 informational style/deprecation notices); all 15 web-update checks passed. Regression failures from temporary paths and stale test navigation were corrected and verified in focused reruns; the seller-creation animation timing assertion passed on rerun.
+
+## 2026-10-29 — Restore Unlisted detail enquiry entry
+
+- Added the existing “Buying or selling in bulk?” / Enquire footer to the seller Unlisted deals board at desktop and compact widths. The Wealth Manager UI remains unchanged. It opens the existing dialog with the selected buy/sell side, including when no deals are listed, and navigates to My Inquiry after successful submission. The existing backend Institution-role restriction still needs the backend update.
+- The seller footer places the prompt and compact Enquire button in one row; the prompt wraps within the available width on smaller screens.
+- Validation: all 7 existing seller Unlisted detail regressions passed using mocked APIs.
+
+## 2026-10-29 — Wealth Manager enquiry verification
+
+- Fixed the Wealth Manager compact bottom navigation overflowing at 390px by sharing the available width between buttons.
+- Fixed the transaction heading and asset tabs overflowing at desktop widths reached through an enquiry's View transactions link. Tabs now wrap when needed.
+- Added real-route mocked integration checks at 390px, 1024px, and 1440px for sidebar navigation, mixed own/counterparty lists, filters, retry, buy/sell approvals, quote acceptance, counterparty acceptance, investor KYC rechecks, mandate delivery warnings, transaction details, and the Unlisted transaction destination. Added KYC-change and already-converted failure checks. No live backend transactions were performed.
+- Validation: all 23 new mocked scenarios passed across viewport batches. Analysis of the changed source and test files reported no errors or warnings; the existing ShowCaseWidget deprecation remains informational. Live backend behavior and a browser release build were not verified.
+
+## 2026-10-29 — Separate seller own and incoming enquiries
+
+- Added a nested Enquiries sidebar with My Inquiry and All Enquiries, plus matching compact sub-tabs.
+- My Inquiry uses `/wealth-manager/my-inquiries` within the Institution shell and filters the partner enquiry list and counts to the seller's own records. Successful creation returns here. Other Partner routes and Relation Manager restrictions remain unchanged.
+- All Enquiries at `/institution/sell-enquiries` uses the existing Institution inbox API for incoming buy and sell requests, with eligible approval, rejection, and counter-quote actions. Explicitly self-owned records are excluded.
+- Added route, ownership, responsive navigation, and buy/sell decision regressions; updated existing creation and seller transaction handoff coverage for the new destination.
+- Validation: 172 focused inquiry, creation, transaction handoff, route, and permission tests passed. Static analysis passed with no errors or warnings (132 informational notices), using the installed Flutter 3.47.8 / Dart 3.13.7. The broader workspace run reproduced a 6-pixel overflow in the existing mobile investor page with the original routing. Web release build approval was declined. Tests use fake API adapters; live backend visibility and decisions have not been verified.
+
 ## 2026-10-21 — Company portfolio upload
 
 - Partner portfolio upload now uses `POST v2/business/portfolio/upload` for an unlisted company holding. The request always sends `type` `company`.

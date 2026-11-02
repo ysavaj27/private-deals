@@ -62,6 +62,10 @@ void main() {
         ),
       );
       await tester.pumpAndSettle();
+      if (width <= 600) {
+        await tester.tap(find.byTooltip('Open navigation menu'));
+        await tester.pumpAndSettle();
+      }
       await tester.tap(find.text('Portfolio'));
       await tester.pumpAndSettle();
 
@@ -78,9 +82,7 @@ void main() {
         expect(find.byType(seller.DSideBarWidget), findsOneWidget);
       } else {
         expect(
-          tester
-              .widget<NavigationBar>(find.byType(NavigationBar))
-              .selectedIndex,
+          Get.find<SellerHomePageCtrl>().phoneNavIndex,
           4,
         );
         await tester.tap(find.byTooltip('Open navigation menu'));
@@ -112,6 +114,10 @@ void main() {
       // Leaving and reopening recreates the shared controller safely.
       Get.find<SellerHomePageCtrl>().onPhoneNavTap(0);
       await tester.pumpAndSettle();
+      if (width <= 600) {
+        await tester.tap(find.byTooltip('Open navigation menu'));
+        await tester.pumpAndSettle();
+      }
       await tester.tap(find.text('Portfolio'));
       await tester.pumpAndSettle();
       expect(find.byType(PortfolioPage), findsOneWidget);

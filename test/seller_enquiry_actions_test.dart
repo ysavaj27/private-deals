@@ -48,7 +48,7 @@ void main() {
       );
       dioConfig.dio.httpClientAdapter = adapter;
       await tester.pumpWidget(
-        const GetMaterialApp(home: Scaffold(body: SellEnquiriesPage())),
+        const GetMaterialApp(home: Scaffold(body: SellerMyEnquiriesPage())),
       );
       await tester.pumpAndSettle();
       expect(adapter.requests.single.path, EnquiryApi.partnerPath);
@@ -62,10 +62,12 @@ void main() {
       await tester.scrollUntilVisible(
         ownQuote,
         250,
-        scrollable: find.descendant(
-          of: find.byType(ListView),
-          matching: find.byType(Scrollable),
-        ).first,
+        scrollable: find
+            .descendant(
+              of: find.byType(ListView),
+              matching: find.byType(Scrollable),
+            )
+            .first,
       );
       expect(ownQuote, findsOneWidget);
       expect(tester.takeException(), isNull);
@@ -76,6 +78,7 @@ void main() {
     testWidgets('incoming $state enquiry ignores a stale pending quote', (
       tester,
     ) async {
+      await app.setUser(prefUser: identity('Institution', 8));
       dioConfig.dio.httpClientAdapter = FakeAdapter(
         (_) async => response({
           'status': 1,
@@ -88,6 +91,7 @@ void main() {
         ),
       );
       await tester.pumpAndSettle();
+      expect(find.text('Your quote'), findsOneWidget);
       expect(find.widgetWithText(OutlinedButton, 'Reject'), findsNothing);
       expect(find.widgetWithText(FilledButton, 'Approve'), findsNothing);
       expect(find.text('Replace quote'), findsNothing);
@@ -115,7 +119,7 @@ void main() {
       });
       dioConfig.dio.httpClientAdapter = adapter;
       await tester.pumpWidget(
-        const GetMaterialApp(home: Scaffold(body: SellEnquiriesPage())),
+        const GetMaterialApp(home: Scaffold(body: SellerMyEnquiriesPage())),
       );
       await tester.pumpAndSettle();
       final withdraw = find.widgetWithText(OutlinedButton, 'Withdraw');
@@ -162,7 +166,7 @@ void main() {
       });
       dioConfig.dio.httpClientAdapter = adapter;
       await tester.pumpWidget(
-        const GetMaterialApp(home: Scaffold(body: SellEnquiriesPage())),
+        const GetMaterialApp(home: Scaffold(body: SellerMyEnquiriesPage())),
       );
       await tester.pumpAndSettle();
       await tester.tap(find.widgetWithText(OutlinedButton, 'Reject'));

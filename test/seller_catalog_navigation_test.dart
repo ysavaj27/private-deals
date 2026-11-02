@@ -103,7 +103,7 @@ void main() {
         Routes.unlistedTransactionsPath(),
         '/institution/unlisted-transactions',
       );
-      expect(Routes.enquiriesPath(), '/institution/sell-enquiries');
+      expect(Routes.enquiriesPath(), '/wealth-manager/my-inquiries');
       await app.setUser(prefUser: identity('Wealth Manager'));
       for (final slug in [
         'private-equity',

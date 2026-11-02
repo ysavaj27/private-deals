@@ -11,10 +11,10 @@ class Routes {
       ? '/institution/unlisted-transactions'
       : '/wealth-manager/investor-transactions?asset=unlisted';
 
-  static String enquiriesPath({bool? institution}) =>
-      (institution ?? app.role == PartnerRole.institution)
-      ? '/institution/sell-enquiries'
-      : '/wealth-manager/my-inquiries';
+  static const myInquiries = '/wealth-manager/my-inquiries';
+
+  /// Newly created enquiries belong in My Inquiry in either workspace.
+  static String enquiriesPath({bool? institution}) => myInquiries;
 
   static const init = '/init';
   static const signIn = '/sign-in';

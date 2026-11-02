@@ -56,10 +56,12 @@ class MainWidgets extends StatelessWidget {
         WTabBarEnum.investors => const SizedBox.shrink(),
         WTabBarEnum.dashboard => const DashboardPage(),
         WTabBarEnum.portfolio => PortfolioPage(),
-        WTabBarEnum.preIPOList =>
-          CompanyListPage(key: ValueKey(Get.currentRoute)),
-        WTabBarEnum.secondaryList =>
-          CompanyListPage(key: ValueKey(Get.currentRoute)),
+        WTabBarEnum.preIPOList => CompanyListPage(
+          key: ValueKey(Get.currentRoute),
+        ),
+        WTabBarEnum.secondaryList => CompanyListPage(
+          key: ValueKey(Get.currentRoute),
+        ),
         WTabBarEnum.transactions => const SizedBox.shrink(),
         WTabBarEnum.sendDocuments => const SizedBox.shrink(),
         WTabBarEnum.profile => ProfilePageView(),
@@ -68,13 +70,17 @@ class MainWidgets extends StatelessWidget {
         WTabBarEnum.secondary => SecondaryLandingPage(),
         WTabBarEnum.preIPO => PreIPOLandingPage(),
         WTabBarEnum.sellEnquiries => const SellEnquiriesPage(),
-        WTabBarEnum.companyDeals =>
-          DealListView(key: ValueKey(Get.currentRoute)),
-        WTabBarEnum.secondaryDeals =>
-          DealListView(key: ValueKey(Get.currentRoute)),
+        WTabBarEnum.myInquiries => const SellerMyEnquiriesPage(),
+        WTabBarEnum.companyDeals => DealListView(
+          key: ValueKey(Get.currentRoute),
+        ),
+        WTabBarEnum.secondaryDeals => DealListView(
+          key: ValueKey(Get.currentRoute),
+        ),
         WTabBarEnum.priceUpdate => UpdateSharePricePage(),
-        WTabBarEnum.manageDeals =>
-          DealListView(key: ValueKey(Get.currentRoute)),
+        WTabBarEnum.manageDeals => DealListView(
+          key: ValueKey(Get.currentRoute),
+        ),
         WTabBarEnum.preIPOTransactions => PreIPOTransactionPage(),
         WTabBarEnum.secondaryTransactions => const EmptyView(
           message: 'LP Secondary transactions will be available soon.',

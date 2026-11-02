@@ -4,6 +4,7 @@ import 'package:get/get.dart';
 import 'package:private_deals/src/core/session/auth_session.dart';
 import 'package:private_deals/src/core/configuration/dio_config.dart';
 import 'package:private_deals/src/app/routing/pages.dart';
+
 import 'session_and_api_test.dart' show FakeAdapter, response, identity;
 
 void main() {
@@ -37,6 +38,7 @@ void main() {
     for (final path in [
       '/institution/dashboard',
       '/institution/sell-enquiries',
+      '/wealth-manager/my-inquiries',
       '/institution/unlisted-transactions',
       '/institution/secondary-transactions',
       '/institution/bulk-deals',
@@ -61,15 +63,17 @@ void main() {
           if (path == '/institution/dashboard') {
             final adapter = dioConfig.dio.httpClientAdapter as FakeAdapter;
             final request = adapter.requests.singleWhere(
-              (request) =>
-                  request.path == 'v2/business/institution/dashboard',
+              (request) => request.path == 'v2/business/institution/dashboard',
             );
             expect(request.uri.path, '/api/v2/business/institution/dashboard');
             expect(
               find.text(size.width < 600 ? 'Companies' : 'Total companies'),
               findsOneWidget,
             );
-            expect(find.text('Your dashboard couldn’t be loaded'), findsNothing);
+            expect(
+              find.text('Your dashboard couldn’t be loaded'),
+              findsNothing,
+            );
           }
           await tester.pumpWidget(const SizedBox());
         },

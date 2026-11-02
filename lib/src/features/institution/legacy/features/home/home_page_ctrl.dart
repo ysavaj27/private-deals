@@ -23,6 +23,11 @@ class SellerHomePageCtrl extends GetxController {
   final unlistedExpanded = false.obs;
   final lpSecondaryExpanded = false.obs;
   final dealOfTheDayExpanded = false.obs;
+  final enquiriesExpanded = false.obs;
+
+  bool get isEnquiriesSection =>
+      currentTab.value == WTabBarEnum.myInquiries ||
+      currentTab.value == WTabBarEnum.sellEnquiries;
 
   bool get isDealOfTheDayTab =>
       currentTab.value == WTabBarEnum.companyDeals ||
@@ -66,6 +71,7 @@ class SellerHomePageCtrl extends GetxController {
       case WTabBarEnum.manageDeals:
         return 2;
       case WTabBarEnum.sellEnquiries:
+      case WTabBarEnum.myInquiries:
         return 3;
       case WTabBarEnum.portfolio:
         return 4;
@@ -86,7 +92,7 @@ class SellerHomePageCtrl extends GetxController {
       case 2:
         if (!isCompanyTab) onTap(preferredCompanyTab);
       case 3:
-        onTap(WTabBarEnum.sellEnquiries);
+        if (!isEnquiriesSection) onTap(WTabBarEnum.myInquiries);
       case 4:
         onTap(WTabBarEnum.portfolio);
       case 5:
@@ -112,6 +118,9 @@ class SellerHomePageCtrl extends GetxController {
   }
 
   void _syncExpandedMenus(WTabBarEnum tab) {
+    if (tab == WTabBarEnum.myInquiries || tab == WTabBarEnum.sellEnquiries) {
+      enquiriesExpanded.value = true;
+    }
     if (tab == WTabBarEnum.preIPOList || tab == WTabBarEnum.priceUpdate) {
       unlistedExpanded.value = true;
     }
@@ -178,7 +187,9 @@ class SellerHomePageCtrl extends GetxController {
       case WTabBarEnum.preIPO:
         return 'Unlisted Shares';
       case WTabBarEnum.sellEnquiries:
-        return 'My Enquiries';
+        return 'All Enquiries';
+      case WTabBarEnum.myInquiries:
+        return 'My Inquiry';
       case WTabBarEnum.companyDeals:
         return 'Deal of the Day';
       case WTabBarEnum.secondaryDeals:

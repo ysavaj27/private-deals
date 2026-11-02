@@ -13,7 +13,11 @@ class SessionNavigation {
 
   static AccessScope scopeFor(String route) {
     final path = Uri.parse(route).path;
-    if (path == '/wealth-manager/my-inquiries') return AccessScope.enquiries;
+    if (path == Routes.myInquiries) {
+      return app.role == PartnerRole.institution
+          ? AccessScope.institution
+          : AccessScope.enquiries;
+    }
     if (path.startsWith('/institution/')) return AccessScope.institution;
     if (path == '/account' || path == Routes.changePassword)
       return AccessScope.account;

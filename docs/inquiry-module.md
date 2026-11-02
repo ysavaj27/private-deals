@@ -3,14 +3,25 @@
 Both seller (Institution) and wealth manager workspaces use the shared feature in
 `lib/src/features/enquiries`.
 
-- Seller: My Enquiries navigation (`/institution/sell-enquiries`) in the
-  desktop/phone sidebar and the phone home bottom nav (Share Price remains
-  under Unlisted). The page reuses the partner enquiry list UI and APIs
-  (`GET/POST v2/business/enquiries/deals`), not `v2/business/institution/enquiries`.
+- Seller: an expandable **Enquiries** sidebar contains **My Inquiry**
+  (`/wealth-manager/my-inquiries`) and **All Enquiries**
+  (`/institution/sell-enquiries`). Both retain the Institution shell, including
+  direct URLs and refreshes. Compact screens expose the same choices as sub-tabs
+  under the Enquiries bottom navigation item (Share Price remains under Unlisted).
+- Seller My Inquiry uses `GET v2/business/enquiries/deals` and filters the list,
+  search, and counts to the logged-in seller's own buy and sell enquiries. It uses
+  the existing ownership model: legacy responses without a partner ID are treated
+  as owned because that contract returned only the caller's enquiries.
+- Seller All Enquiries uses `GET v2/business/institution/enquiries` for incoming
+  buy and sell requests. Records explicitly owned by the logged-in seller are
+  excluded. Eligible open requests expose Approve, Reject, and Send Quote.
 - Partner: My Inquiries (`/wealth-manager/my-inquiries`) on desktop and mobile.
+  Its existing owner/counterparty list remains available to Wealth Managers,
+  Distributors, and Retailers; Relation Managers remain excluded. Institution
+  access to this exact shared URL does not grant access to other Partner pages.
 - Successful enquiry creation from Pre-IPO or Secondary company detail opens
-  My Inquiries (partners) or My Enquiries (`/institution/sell-enquiries` for
-  Institutions). Institutions raise sell enquiries from the seller deals board
+  `/wealth-manager/my-inquiries`, using the authenticated workspace's shell.
+  Institutions raise sell enquiries from the seller deals board
   against buyer interest using the same create dialog and
   `POST v2/business/enquiries/deals` endpoint as partners. Cancellation,
   validation errors, and API failures keep the user on the current screen. The
@@ -28,9 +39,8 @@ Both seller (Institution) and wealth manager workspaces use the shared feature i
   and sell), and optional `notes`. The price entered is the base price; the
   returned transaction price includes the processing fee. The API contract does not
   support an expiry or an existing deal identifier.
-- The shared component also supports an incoming Institution inbox mode, but
-  this mode has no current navigation entry. It is separate from seller My
-  Enquiries. Its decisions on original terms use `v2/business/institution/enquiries/accept`
+- All Enquiries uses the shared component's incoming Institution inbox mode.
+  Its decisions on original terms use `v2/business/institution/enquiries/accept`
   and `/reject` with `uuid` only on accept (no `settlement_days`). Rejection
   reason is optional. The list is refreshed after every decision, including
   rejected requests caused by another Institution accepting first.
@@ -52,6 +62,10 @@ Both seller (Institution) and wealth manager workspaces use the shared feature i
   enquiry do not re-enable its actions. Related Relation Managers under the same
   Wealth Manager cannot act as counterparties unless the server explicitly
   allows it.
+- Seller My Inquiry does not expose counterparty acceptance because other
+  partners' enquiries are excluded. All Enquiries uses Institution inbox actions
+  for both buy and sell requests; accepting original terms locks the request for
+  its owner's decision rather than immediately creating another order.
 - Approval returns the backend-created order and offers its transaction details.
   `mandate_sent: false` remains a successful conversion, with the server's warning
   shown. The app does not create a second order or resend the mandate.
@@ -71,9 +85,20 @@ are made. `test/enquiry_flow_test.dart` covers contract payloads, state rules,
 rejection validation, investor selection, seller lock races, quote
 send/replace/withdraw, partner quote accept, responsive screens, mandate
 delivery failure, transaction handoff, and sell-side endpoints.
+`test/wealth_enquiry_integration_test.dart` exercises the real Wealth Manager
+routes at 390px, 1024px, and 1440px: sidebar entry, mixed own/counterparty lists,
+filters and retry, buy/sell approvals and quote/counterparty acceptance, KYC
+rechecks, mandate-delivery warnings, transaction details, and the Unlisted
+transaction destination. It also checks KYC changes and already-converted
+responses after investor selection. Compact navigation buttons share the
+available width, and the desktop transaction heading/tabs wrap when needed.
 `test/pre_ipo_navigation_test.dart` covers purchase success/failure navigation,
 enquiry success/failure/cancellation at phone and desktop sizes, both workspaces'
 converted-enquiry links, and synchronized transaction tabs.
+`test/seller_enquiry_navigation_test.dart` covers both seller deep links, nested
+navigation at compact and desktop widths, ownership-filtered lists/counts,
+workspace permissions, and Institution approve/reject/quote payloads for both
+buy and sell enquiries.
 The `test/seller_enquiry_*_test.dart` regressions cover seller submission races,
 failure/retry, ownership and stale actions, self/client investor KYC checks,
 actual seller routes, and approval/quote/counterparty conversion through seller

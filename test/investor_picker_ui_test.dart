@@ -231,7 +231,7 @@ void main() {
               format: ui.ImageByteFormat.png,
             );
             await File(
-              '/tmp/investor-picker-${dark ? 'dark' : 'light'}-${width.toInt()}.png',
+              '${Directory.systemTemp.path}/investor-picker-${dark ? 'dark' : 'light'}-${width.toInt()}.png',
             ).writeAsBytes(bytes!.buffer.asUint8List());
             image.dispose();
           });

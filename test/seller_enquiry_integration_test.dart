@@ -2,6 +2,8 @@ import 'package:dio/dio.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:private_deals/src/features/enquiries/data/enquiry_api.dart';
 import 'package:private_deals/src/features/enquiries/presentation/enquiry_decision_dialog.dart';
+import 'package:private_deals/src/features/enquiries/presentation/enquiries_page.dart';
+import 'package:private_deals/src/shared/widgets/partner_shell.dart';
 import 'package:private_deals/src/features/institution/data/institution_endpoints.dart';
 import 'package:private_deals/src/features/institution/data/models/common/enums.dart'
     as institution;
@@ -33,20 +35,39 @@ void main() {
     Get.reset();
   });
 
-  Future<void> mountSellerEnquiries(WidgetTester tester, double width) async {
+  Future<void> mountSellerEnquiries(
+    WidgetTester tester,
+    double width, {
+    bool marketplace = false,
+  }) async {
     tester.view.physicalSize = Size(width, 1000);
     tester.view.devicePixelRatio = 1;
     addTearDown(tester.view.resetPhysicalSize);
     addTearDown(tester.view.resetDevicePixelRatio);
     await tester.pumpWidget(
       GetMaterialApp(
-        initialRoute: '/institution/sell-enquiries',
-        getPages: Pages.pages,
+        initialRoute: Routes.myInquiries,
+        // Keep the shared counterparty conversion regression, although the
+        // seller's own-only page no longer exposes marketplace acceptance.
+        getPages: marketplace
+            ? [
+                Pages.privatePage(
+                  Routes.myInquiries,
+                  () => const PartnerShell(
+                    title: 'Enquiries',
+                    child: EnquiriesPage(),
+                  ),
+                ),
+              ]
+            : Pages.pages,
       ),
     );
     await tester.pumpAndSettle();
-    expect(Get.currentRoute, '/institution/sell-enquiries');
-    expect(find.byType(SellEnquiriesPage), findsOneWidget);
+    expect(Get.currentRoute, Routes.myInquiries);
+    expect(find.byType(EnquiriesPage), findsOneWidget);
+    if (!marketplace) {
+      expect(find.byType(SellerMyEnquiriesPage), findsOneWidget);
+    }
   }
 
   test(
@@ -191,7 +212,11 @@ void main() {
             return response({'status': 1, 'data': []});
           });
           dioConfig.dio.httpClientAdapter = adapter;
-          await mountSellerEnquiries(tester, width);
+          await mountSellerEnquiries(
+            tester,
+            width,
+            marketplace: flow == 'counterparty',
+          );
 
           final action = switch (flow) {
             'quote' => find.byKey(
@@ -278,7 +303,7 @@ void main() {
             isFalse,
           );
           expect(find.text('Confirm payment'), findsNothing);
-          expect(Get.currentRoute, '/institution/sell-enquiries');
+          expect(Get.currentRoute, Routes.myInquiries);
           expect(Get.isRegistered<PreIPOTransactionPageCtrl>(), isFalse);
           expect(Get.isRegistered<PreIPOBuyTransactionPageCtrl>(), isFalse);
           // Let both queued success notices finish without cancelling a

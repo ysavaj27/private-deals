@@ -23,6 +23,7 @@ import 'package:private_deals/src/app/routing/middleware/auth_middleware.dart';
 import 'package:private_deals/src/shared/app_exports.dart';
 
 import 'package:private_deals/src/core/permissions/access_policy.dart';
+import 'package:private_deals/src/core/permissions/partner_role.dart';
 import 'package:private_deals/src/app/routing/session_pages.dart';
 import 'package:private_deals/src/features/institution/institution_dashboard.dart';
 import 'package:private_deals/src/features/institution/institution_routes.dart'
@@ -92,7 +93,14 @@ class Pages {
     GetPage(name: '/not-found', page: () => const NotFoundPage()),
     // Shell / product select — option is a push; home tabs stay instant.
     privatePushPage(Routes.option, () => OptionPage()),
-    privatePage(Routes.home, () => HomePage()),
+    // Keep :tab available to the Partner controller. The access guard permits
+    // Institutions only at the shared My Inquiry URL in this route family.
+    privatePage(
+      Routes.home,
+      () => app.role == PartnerRole.institution
+          ? const InstitutionDashboard()
+          : HomePage(),
+    ),
     privatePage(
       Routes.primaryListPage,
       () => PrimaryListPage(),

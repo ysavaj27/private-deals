@@ -95,6 +95,7 @@ enum WTabBarEnum {
   companyDeals,
   secondaryDeals,
   sellEnquiries,
+  myInquiries,
   preIPOList,
   profile,
   priceUpdate,
