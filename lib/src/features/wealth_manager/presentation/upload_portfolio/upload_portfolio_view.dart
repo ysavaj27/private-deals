@@ -88,69 +88,68 @@ class _UploadPortfolioViewState extends State<UploadPortfolioView> {
           return AppFadeIn(
             key: const ValueKey('upload-form'),
             child: ExcludeFocus(
-            excluding: uploading,
-            child: AbsorbPointer(
-              absorbing: uploading,
-              child: SingleChildScrollView(
-                padding: AppPagePadding.of(context),
-                child: Align(
-                  alignment: Alignment.topCenter,
-                  child: ConstrainedBox(
-                    constraints: const BoxConstraints(maxWidth: 1200),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text(
-                          'PORTFOLIO MANAGEMENT',
-                          style: theme.textTheme.labelSmall?.copyWith(
-                            color: colors.onSurfaceVariant,
-                            letterSpacing: 1.8,
+              excluding: uploading,
+              child: AbsorbPointer(
+                absorbing: uploading,
+                child: SingleChildScrollView(
+                  padding: AppPagePadding.of(context),
+                  child: Align(
+                    alignment: Alignment.topCenter,
+                    child: ConstrainedBox(
+                      constraints: const BoxConstraints(maxWidth: 1200),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            'PORTFOLIO MANAGEMENT',
+                            style: theme.textTheme.labelSmall?.copyWith(
+                              color: colors.onSurfaceVariant,
+                              letterSpacing: 1.8,
+                            ),
                           ),
-                        ),
-                        const SizedBox(height: AppSpace.sm),
-                        const AppPageHeader(
-                          title: 'Upload portfolio',
-                          subtitle:
-                              'Add an existing unlisted company holding to an investor’s portfolio.',
-                        ),
-                        const SizedBox(height: AppSpace.xl),
-                        Form(
-                          key: _formKey,
-                          child: LayoutBuilder(
-                            builder: (context, constraints) {
-                              final summary = _PortfolioSummary(
-                                controller: c,
-                                onSubmit: _submit,
-                                onReset: _reset,
-                                uploading: uploading,
-                              );
-                              if (constraints.maxWidth < 920) {
-                                return Column(
+                          const SizedBox(height: AppSpace.sm),
+                          const AppPageHeader(
+                            title: 'Upload portfolio',
+                            subtitle: 'Add an existing unlisted company holding to an investor’s portfolio.',
+                          ),
+                          const SizedBox(height: AppSpace.xl),
+                          Form(
+                            key: _formKey,
+                            child: LayoutBuilder(
+                              builder: (context, constraints) {
+                                final summary = _PortfolioSummary(
+                                  controller: c,
+                                  onSubmit: _submit,
+                                  onReset: _reset,
+                                  uploading: uploading,
+                                );
+                                if (constraints.maxWidth < 920) {
+                                  return Column(
+                                    children: [
+                                      fields,
+                                      const SizedBox(height: 20),
+                                      summary,
+                                    ],
+                                  );
+                                }
+                                return Row(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
                                   children: [
-                                    fields,
-                                    const SizedBox(height: 20),
-                                    summary,
+                                    Expanded(child: fields),
+                                    const SizedBox(width: 24),
+                                    SizedBox(width: 340, child: summary),
                                   ],
                                 );
-                              }
-                              return Row(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                                  Expanded(child: fields),
-                                  const SizedBox(width: 24),
-                                  SizedBox(width: 340, child: summary),
-                                ],
-                              );
-                            },
+                              },
+                            ),
                           ),
-                        ),
-                      ],
+                        ],
+                      ),
                     ),
                   ),
                 ),
               ),
             ),
-          ),
           );
         }),
       ),
@@ -338,7 +337,6 @@ class _UploadPortfolioViewState extends State<UploadPortfolioView> {
       ],
     );
   }
-
 }
 
 class _FormSection extends StatelessWidget {
@@ -361,7 +359,7 @@ class _FormSection extends StatelessWidget {
       padding: EdgeInsets.all(MediaQuery.sizeOf(context).width < 600 ? 20 : 24),
       decoration: BoxDecoration(
         color: theme.colorScheme.surface,
-        borderRadius: BorderRadius.circular(18),
+        borderRadius: BorderRadius.circular(AppRadii.card),
         border: Border.all(
           color: theme.colorScheme.outlineVariant.withValues(alpha: 0.65),
         ),
@@ -376,7 +374,7 @@ class _FormSection extends StatelessWidget {
                 padding: const EdgeInsets.all(9),
                 decoration: BoxDecoration(
                   color: theme.colorScheme.secondaryContainer,
-                  borderRadius: BorderRadius.circular(10),
+                  borderRadius: BorderRadius.circular(AppRadii.control),
                 ),
                 child: Text(
                   number,
@@ -499,7 +497,7 @@ class _PortfolioSummary extends StatelessWidget {
           clipBehavior: Clip.antiAlias,
           decoration: BoxDecoration(
             color: colors.surface,
-            borderRadius: BorderRadius.circular(18),
+            borderRadius: BorderRadius.circular(AppRadii.card),
             border: Border.all(
               color: colors.outlineVariant.withValues(alpha: 0.65),
             ),

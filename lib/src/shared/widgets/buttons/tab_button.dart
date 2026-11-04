@@ -24,7 +24,7 @@ class TabButton<T> extends StatelessWidget {
       return Clickable(
         analyticsName: analyticsName ?? 'tab_select',
         onTap: onTap,
-        borderRadius: BorderRadius.circular(14),
+        borderRadius: BorderRadius.circular(AppRadii.tab),
         child: AnimatedContainer(
           duration: AppMotion.duration(context, AppMotion.fast),
           curve: AppMotion.easeOut,
@@ -33,7 +33,7 @@ class TabButton<T> extends StatelessWidget {
             color: isSelected
                 ? scheme.primaryContainer
                 : scheme.surfaceContainerHigh,
-            borderRadius: BorderRadius.circular(12),
+            borderRadius: BorderRadius.circular(AppRadii.tab),
             border: Border.all(color: scheme.outlineVariant),
           ),
           child: Text(

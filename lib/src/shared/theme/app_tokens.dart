@@ -15,10 +15,8 @@ abstract final class AppSpace {
   static const EdgeInsets paddingLg = EdgeInsets.all(lg);
   static const EdgeInsets paddingXl = EdgeInsets.all(xl);
 
-  static const EdgeInsets horizontalLg =
-      EdgeInsets.symmetric(horizontal: lg);
-  static const EdgeInsets horizontalMd =
-      EdgeInsets.symmetric(horizontal: md);
+  static const EdgeInsets horizontalLg = EdgeInsets.symmetric(horizontal: lg);
+  static const EdgeInsets horizontalMd = EdgeInsets.symmetric(horizontal: md);
 }
 
 /// Shared desktop shell sizes for wealth manager and seller workspaces.
@@ -89,6 +87,23 @@ abstract final class AppRadii {
   static const double lg = 16;
   static const double xl = 20;
   static const double full = 999;
+
+  // Semantic defaults shared by every feature and by the application theme.
+  static const double card = lg;
+  static const double control = md;
+
+  /// Preserve the original desktop login button's 22-point corners app-wide.
+  static const double button = 22;
+
+  /// Tabs and category chips have tighter corners than action buttons.
+  static const double tab = md;
+  static const double badge = sm;
+  static const double dialog = card;
+  static const double sheet = card;
+
+  static BorderRadius get tabAll => BorderRadius.circular(tab);
+
+  static BorderRadius get buttonAll => BorderRadius.circular(button);
 
   static BorderRadius get xsAll => BorderRadius.circular(xs);
   static BorderRadius get smAll => BorderRadius.circular(sm);

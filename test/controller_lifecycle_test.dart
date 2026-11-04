@@ -76,10 +76,7 @@ void main() {
       final list = PreIPOListPageCtrl();
       final resources = <ChangeNotifier>[
         primary.scrollController,
-        primary.controller,
-        primary.liveDealController,
-        primary.completedDealController,
-        primary.blogController,
+        primary.searchController,
         dashboard.scrollController,
         detail.scrollController,
         detail.amountCTRL,
@@ -124,34 +121,26 @@ void main() {
     },
   );
 
-  testWidgets(
-    'carousel refresh keeps one timer and route deletion cancels it',
-    (tester) async {
-      dioConfig.dio.httpClientAdapter = FakeAdapter(
-        (_) async => response({
-          'status': 1,
-          'data': [{}, {}, {}],
-        }),
-      );
-      final controller = PrimaryListPageCtrl();
-      await pumpRequest(tester, controller.getData());
-      await tester.pump(const Duration(seconds: 3));
-      expect(controller.currentPage, 1);
-      final firstTimer = controller.timer!;
+  testWidgets('startup list refresh releases its search and scroll resources', (
+    tester,
+  ) async {
+    dioConfig.dio.httpClientAdapter = FakeAdapter(
+      (_) async => response({
+        'status': 1,
+        'data': [{}, {}, {}],
+      }),
+    );
+    final controller = PrimaryListPageCtrl();
+    await pumpRequest(tester, controller.getData());
+    expect(controller.list.length, 3);
+    await pumpRequest(tester, controller.getData());
+    expect(controller.list.length, 3);
+    controller.onDelete();
+    expectDisposed(controller.searchController);
+    expectDisposed(controller.scrollController);
+  });
 
-      await pumpRequest(tester, controller.getData());
-      expect(firstTimer.isActive, isFalse);
-      await tester.pump(const Duration(seconds: 3));
-      expect(controller.currentPage, 2);
-      controller.onDelete();
-      expect(controller.timer!.isActive, isFalse);
-      await tester.pump(const Duration(seconds: 6));
-      expect(controller.currentPage, 2);
-      expectDisposed(controller.pageController);
-    },
-  );
-
-  testWidgets('late carousel response cannot restart a timer after leaving', (
+  testWidgets('late startup list response cannot update a closed controller', (
     tester,
   ) async {
     final pending = Completer<ResponseBody>();
@@ -172,7 +161,6 @@ void main() {
     );
     await pumpRequest(tester, loading);
     await tester.pump(const Duration(seconds: 6));
-    expect(controller.timer, isNull);
     expect(controller.list, isEmpty);
   });
 }

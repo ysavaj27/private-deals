@@ -1,4 +1,5 @@
 import 'dart:math' as math;
+
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:intl/intl.dart';
@@ -86,7 +87,7 @@ class _DashboardPageState extends State<DashboardPage> {
     padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
     decoration: BoxDecoration(
       color: color.withValues(alpha: .12),
-      borderRadius: BorderRadius.circular(8),
+      borderRadius: BorderRadius.circular(AppRadii.badge),
     ),
     child: text(label, size: 11, color: color, weight: FontWeight.w600),
   );
@@ -94,7 +95,7 @@ class _DashboardPageState extends State<DashboardPage> {
     padding: const EdgeInsets.all(22),
     decoration: BoxDecoration(
       color: dark ? const Color(0xFF161B22) : Colors.white,
-      borderRadius: BorderRadius.circular(20),
+      borderRadius: BorderRadius.circular(AppRadii.card),
       border: Border.all(
         color: dark ? const Color(0xFF30363D) : const Color(0xFFB8C2D1),
       ),
@@ -299,7 +300,7 @@ class _DashboardPageState extends State<DashboardPage> {
   Widget _banner(DashboardModel d) => Container(
     padding: const EdgeInsets.all(26),
     decoration: BoxDecoration(
-      borderRadius: BorderRadius.circular(20),
+      borderRadius: BorderRadius.circular(AppRadii.card),
       gradient: const LinearGradient(
         colors: [Color(0xFF1A2E48), Color(0xFF243E61), Color(0xFF2B5996)],
       ),
@@ -340,7 +341,7 @@ class _DashboardPageState extends State<DashboardPage> {
                         ),
                         decoration: BoxDecoration(
                           color: Colors.white.withValues(alpha: .12),
-                          borderRadius: BorderRadius.circular(30),
+                          borderRadius: BorderRadius.circular(AppRadii.card),
                         ),
                         child: text(
                           '✓  ${entry.value}',
@@ -373,7 +374,7 @@ class _DashboardPageState extends State<DashboardPage> {
               padding: const EdgeInsets.all(9),
               decoration: BoxDecoration(
                 color: color.withValues(alpha: .1),
-                borderRadius: BorderRadius.circular(12),
+                borderRadius: BorderRadius.circular(AppRadii.control),
               ),
               child: Icon(icon, color: color, size: 20),
             ),
@@ -464,7 +465,9 @@ class _DashboardPageState extends State<DashboardPage> {
                                       width: double.infinity,
                                       decoration: BoxDecoration(
                                         color: _purple.withValues(alpha: .035),
-                                        borderRadius: BorderRadius.circular(8),
+                                        borderRadius: BorderRadius.circular(
+                                          AppRadii.badge,
+                                        ),
                                       ),
                                     ),
                                     AnimatedContainer(
@@ -489,7 +492,9 @@ class _DashboardPageState extends State<DashboardPage> {
                                             Color(0xFF8BAAD4),
                                           ],
                                         ),
-                                        borderRadius: BorderRadius.circular(8),
+                                        borderRadius: BorderRadius.circular(
+                                          AppRadii.badge,
+                                        ),
                                       ),
                                     ),
                                   ],
@@ -651,7 +656,7 @@ class _DashboardPageState extends State<DashboardPage> {
           ),
           const SizedBox(height: 18),
           ClipRRect(
-            borderRadius: BorderRadius.circular(10),
+            borderRadius: BorderRadius.circular(AppRadii.control),
             child: LinearProgressIndicator(
               value: progress,
               minHeight: 9,
@@ -700,7 +705,7 @@ class _DashboardPageState extends State<DashboardPage> {
       clipBehavior: Clip.antiAlias,
       decoration: BoxDecoration(
         color: _purple.withValues(alpha: .08),
-        borderRadius: BorderRadius.circular(12),
+        borderRadius: BorderRadius.circular(AppRadii.control),
       ),
       child: logo.isEmpty
           ? fallback

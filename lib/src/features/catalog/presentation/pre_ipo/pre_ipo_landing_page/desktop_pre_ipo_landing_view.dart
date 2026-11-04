@@ -1,5 +1,8 @@
 import 'dart:async';
 
+import '../../widgets/catalog_article_card.dart';
+import '../../widgets/catalog_section_style.dart';
+
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:cached_network_image_platform_interface/cached_network_image_platform_interface.dart';
 import 'package:flutter/rendering.dart';
@@ -21,28 +24,9 @@ class DesktopPreIPOLandingView extends StatelessWidget {
         child: Column(
           children: [
             const SizedBox(height: 24),
-            Text.rich(
-              TextSpan(
-                style: const TextStyle(
-                  fontSize: 36,
-                  fontWeight: FontWeight.w400,
-                ),
-                children: [
-                  TextSpan(
-                    text: 'Explore ',
-                    style: TextStyle(
-                      decorationThickness: 2.5,
-                      decorationColor: context.theme.primaryColor.withValues(
-                        alpha: 0.7,
-                      ),
-                    ),
-                  ),
-                  const TextSpan(
-                    text: 'Unlisted Shares',
-                    style: TextStyle(fontWeight: FontWeight.bold),
-                  ),
-                ],
-              ),
+            const CatalogSectionHeading(
+              prefix: 'Explore ',
+              title: 'Unlisted Shares',
             ),
 
             const SizedBox(height: 24),
@@ -63,8 +47,7 @@ class DesktopPreIPOLandingView extends StatelessWidget {
                           onSelected: c.changeTab,
                           isHighlighted: (tab) =>
                               tab == UnListedShareTabEnum.hotDeals,
-                          highlightedIcon:
-                              Icons.local_fire_department_rounded,
+                          highlightedIcon: Icons.local_fire_department_rounded,
                         );
                       }),
                     ),
@@ -76,7 +59,7 @@ class DesktopPreIPOLandingView extends StatelessWidget {
                       width: 400,
                       child: SearchBarTextField(
                         readOnly: true,
-                        radius: 16,
+                        radius: AppRadii.control,
                         hintText: "Search Company's",
                         onTap: () {
                           var routes = Routes.preIPOListPath(
@@ -150,7 +133,7 @@ class DesktopPreIPOLandingView extends StatelessWidget {
             const SizedBox(height: 40),
             Obx(() {
               return CustomElevatedButton(
-                radius: 22,
+                radius: AppRadii.button,
                 text: "Explore ${c.tab.value.label}",
                 // radius: 22,
                 width: 236,
@@ -188,8 +171,10 @@ class CustomTabBar<T> extends StatelessWidget {
     required this.onSelected,
     this.isHighlighted,
     this.highlightedIcon,
+    this.itemKey,
   });
 
+  final Key Function(T item)? itemKey;
   final List<T> items;
   final String Function(T item) labelBuilder;
   final T selected;
@@ -202,12 +187,13 @@ class CustomTabBar<T> extends StatelessWidget {
     return ListView.separated(
       scrollDirection: Axis.horizontal,
       itemCount: items.length,
-      separatorBuilder: (_, __) => const SizedBox(width: 10),
+      separatorBuilder: (_, _) => const SizedBox(width: 10),
       itemBuilder: (context, index) {
         final item = items[index];
         final isSelected = item == selected;
         final highlighted = isHighlighted?.call(item) ?? false;
         return _TabItem(
+          key: itemKey?.call(item),
           label: labelBuilder(item),
           isSelected: isSelected,
           isHighlighted: highlighted,
@@ -221,6 +207,7 @@ class CustomTabBar<T> extends StatelessWidget {
 
 class _TabItem extends StatelessWidget {
   const _TabItem({
+    super.key,
     required this.label,
     required this.isSelected,
     required this.onTap,
@@ -259,13 +246,13 @@ class _TabItem extends StatelessWidget {
 
     return Clickable(
       onTap: onTap,
-      borderRadius: BorderRadius.circular(24),
+      borderRadius: BorderRadius.circular(AppRadii.tab),
       child: AnimatedContainer(
         duration: const Duration(milliseconds: 180),
         padding: const EdgeInsets.symmetric(horizontal: 18, vertical: 10),
         decoration: BoxDecoration(
           color: bg,
-          borderRadius: BorderRadius.circular(24),
+          borderRadius: BorderRadius.circular(AppRadii.tab),
           border: Border.all(color: borderColor, width: borderWidth),
         ),
         alignment: Alignment.center,
@@ -344,17 +331,18 @@ class CustomCompanyCard extends StatelessWidget {
     // final sign = _isPositive ? '+' : '';
 
     final isPhone = context.isPhone;
-    final width =
-        isPhone ? MediaQuery.sizeOf(context).width - 24 : cardWidth;
-    final phoneContentHeight =
-        isPhone ? _phoneContentHeight(context, width) : 0.0;
+    final width = isPhone ? MediaQuery.sizeOf(context).width - 24 : cardWidth;
+    final phoneContentHeight = isPhone
+        ? _phoneContentHeight(context, width)
+        : 0.0;
     // Keep the 80 slot unless the badge or price row is taller than it.
-    final double? height =
-        isPhone ? (phoneContentHeight > 80 ? null : 80) : 120;
+    final double? height = isPhone
+        ? (phoneContentHeight > 80 ? null : 80)
+        : 120;
 
     return Clickable(
       onTap: onTap,
-      borderRadius: BorderRadius.circular(16),
+      borderRadius: BorderRadius.circular(AppRadii.card),
       child: SizedBox(
         width: width,
         height: height,
@@ -369,7 +357,7 @@ class CustomCompanyCard extends StatelessWidget {
               padding: EdgeInsets.all(context.isPhone ? 10 : 16),
               decoration: BoxDecoration(
                 color: cardBg,
-                borderRadius: BorderRadius.circular(16),
+                borderRadius: BorderRadius.circular(AppRadii.card),
                 border: Border.all(color: cardBorder),
               ),
               child: Row(
@@ -381,7 +369,7 @@ class CustomCompanyCard extends StatelessWidget {
                     height: context.isPhone ? 56 : 80,
                     decoration: BoxDecoration(
                       color: logoBg,
-                      borderRadius: BorderRadius.circular(12),
+                      borderRadius: BorderRadius.circular(AppRadii.control),
                       image: DecorationImage(
                         fit: BoxFit.cover,
                         image: CachedNetworkImageProvider(
@@ -426,7 +414,7 @@ class CustomCompanyCard extends StatelessWidget {
                             //   ),
                             //   decoration: BoxDecoration(
                             //     color: changeBg,f
-                            //     borderRadius: BorderRadius.circular(6),
+                            //     borderRadius: BorderRadius.circular(AppRadii.badge),
                             //   ),
                             //   child: Text(
                             //     '$sign${company.percentageChange.toStringAsFixed(1)}%',
@@ -464,8 +452,8 @@ class CustomCompanyCard extends StatelessWidget {
                 right: 0,
                 child: ClipRRect(
                   borderRadius: const BorderRadius.only(
-                    topRight: Radius.circular(16),
-                    bottomLeft: Radius.circular(12),
+                    topRight: Radius.circular(AppRadii.card),
+                    bottomLeft: Radius.circular(AppRadii.control),
                   ),
                   child: Container(
                     padding: const EdgeInsets.symmetric(
@@ -527,7 +515,8 @@ class CustomCompanyCard extends StatelessWidget {
 
     if (company.headingText.isEmpty) return body;
 
-    final badgeHeight = _textHeight(
+    final badgeHeight =
+        _textHeight(
           company.headingText,
           base.copyWith(fontSize: 13, fontWeight: FontWeight.w600),
           width - 28,
@@ -567,29 +556,7 @@ class FeaturedWidget extends StatelessWidget {
   Widget build(BuildContext context) {
     return Column(
       children: [
-        Text.rich(
-          TextSpan(
-            style: TextStyle(
-              fontSize: context.isPhone ? 22 : 36,
-              fontWeight: FontWeight.w400,
-            ),
-            children: [
-              TextSpan(
-                text: 'Featured ',
-                style: TextStyle(
-                  decorationThickness: 2.5,
-                  decorationColor: context.theme.primaryColor.withValues(
-                    alpha: 0.7,
-                  ),
-                ),
-              ),
-              TextSpan(
-                text: 'Sectors',
-                style: TextStyle(fontWeight: FontWeight.bold),
-              ),
-            ],
-          ),
-        ),
+        const CatalogSectionHeading(prefix: 'Featured ', title: 'Sectors'),
         SizedBox(height: context.isPhone ? 20 : 40),
         Obx(() {
           return AutoScrollSectorList(
@@ -621,159 +588,28 @@ class NewsWidget extends StatelessWidget {
   Widget build(BuildContext context) {
     return Column(
       children: [
-        Center(
-          child: Text(
-            'News',
-            style: TextStyle(
-              fontSize: context.isPhone ? 22 : 36,
-              fontWeight: FontWeight.bold,
+        const CatalogSectionHeading(title: 'News'),
+        const SizedBox(height: 60),
+        Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 20),
+          child: Obx(
+            () => CatalogArticleCarousel(
+              itemCount: c.newsSector().news.length,
+              itemBuilder: (context, index) {
+                final news = c.newsSector().news[index];
+                return CatalogArticleCard(
+                  image: news.image,
+                  title: news.title,
+                  description: news.description,
+                  date: news.createdAt,
+                  onTap: () => showNewsDetailBottomSheet(context, news: news),
+                );
+              },
             ),
           ),
         ),
-        const SizedBox(height: 60),
-        SizedBox(
-          height: 400,
-          child: Obx(() {
-            return ListView.separated(
-              padding: EdgeInsets.only(
-                left: context.width * 0.0276,
-                right: context.width * 0.1,
-              ),
-              itemCount: c.newsSector().news.length,
-              physics: const BouncingScrollPhysics(),
-              scrollDirection: Axis.horizontal,
-              itemBuilder: (context, index) {
-                var model = c.newsSector().news[index];
-                return SizedBox(
-                  width: 300,
-                  height: 425,
-                  child: Clickable(
-                    onTap: () {
-                      showNewsDetailBottomSheet(context, news: model);
-                    },
-                    borderRadius: BorderRadius.vertical(
-                      top: Radius.circular(14),
-                    ),
-                    child: CustomCardWidget(
-                      color: context.theme.scaffoldBackgroundColor,
-                      radius: 14,
-                      child: Column(
-                        children: [
-                          ClipRRect(
-                            borderRadius: const BorderRadius.vertical(
-                              top: Radius.circular(14),
-                            ),
-                            child: CacheImage(
-                              url: model.image,
-                              width: double.infinity,
-                              fit: BoxFit.cover,
-                              height: 200,
-                            ),
-                          ),
-                          Expanded(
-                            child: Padding(
-                              padding: const EdgeInsets.all(10),
-                              child: Column(
-                                mainAxisAlignment: MainAxisAlignment.start,
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                                  Expanded(
-                                    child: Column(
-                                      mainAxisAlignment:
-                                          MainAxisAlignment.start,
-                                      crossAxisAlignment:
-                                          CrossAxisAlignment.start,
-                                      children: [
-                                        Row(
-                                          children: [
-                                            Icon(
-                                              Icons.calendar_month,
-                                              color:
-                                                  context.theme.disabledColor,
-                                              size: 24,
-                                            ),
-                                            const SizedBox(width: 5),
-                                            Text(
-                                              model.createdAt.dateWithMonthYear,
-                                              style: const TextStyle(
-                                                fontSize: 14,
-                                              ),
-                                            ),
-                                          ],
-                                        ),
-                                        const SizedBox(height: 10),
-                                        Text(
-                                          model.title,
-                                          maxLines: 1,
-                                          overflow: TextOverflow.ellipsis,
-                                          // Ensure text does not overflow
-                                          style: const TextStyle(
-                                            fontWeight: FontWeight.w600,
-                                            fontSize: 18,
-                                          ),
-                                        ),
-                                        const SizedBox(height: 10),
-                                        Flexible(
-                                          child: Text(
-                                            model.description,
-                                            maxLines: 3,
-                                            overflow: TextOverflow.ellipsis,
-                                            // Ensure text does not overflow
-                                            style: TextStyle(
-                                              fontSize: 14,
-                                              color:
-                                                  context.theme.disabledColor,
-                                            ),
-                                          ),
-                                        ),
-                                      ],
-                                    ),
-                                  ),
-                                  TextButton(
-                                    onPressed: () {
-                                      showNewsDetailBottomSheet(
-                                        context,
-                                        news: model,
-                                      );
-                                    },
-                                    child: const Row(
-                                      mainAxisAlignment:
-                                          MainAxisAlignment.start,
-                                      mainAxisSize: MainAxisSize.min,
-                                      children: [
-                                        Text(
-                                          "Read More",
-                                          style: TextStyle(fontSize: 16),
-                                        ),
-                                        SizedBox(width: 5),
-                                        Icon(
-                                          Icons.arrow_forward_outlined,
-                                          size: 24,
-                                        ),
-                                      ],
-                                    ),
-                                  ),
-                                ],
-                              ),
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
-                  ),
-                );
-              },
-              separatorBuilder: (BuildContext context, int index) =>
-                  const SizedBox(width: 20),
-            );
-          }),
-        ),
         const SizedBox(height: 40),
-        CustomElevatedButton(
-          radius: 22,
-          text: "Explore More",
-          width: 236,
-          height: 56,
+        CatalogExploreButton(
           onPressed: () {
             Get.toNamed(Routes.newsListPath(Get.currentRoute));
           },
@@ -818,7 +654,7 @@ class SectorCard extends StatelessWidget {
       padding: EdgeInsets.all(context.isPhone ? 10 : 16),
       decoration: BoxDecoration(
         color: cardBg,
-        borderRadius: BorderRadius.circular(16),
+        borderRadius: BorderRadius.circular(AppRadii.card),
         border: Border.all(color: cardBorder),
       ),
       child: Column(
@@ -835,15 +671,21 @@ class SectorCard extends StatelessWidget {
                 alignment: Alignment.center,
                 decoration: BoxDecoration(
                   color: logoBg,
-                  borderRadius: BorderRadius.circular(12),
-                  image: DecorationImage(
-                    fit: BoxFit.contain,
-                    image: CachedNetworkImageProvider(
-                      icon,
-                      imageRenderMethodForWeb: ImageRenderMethodForWeb.HttpGet,
-                    ),
-                  ),
+                  borderRadius: BorderRadius.circular(AppRadii.control),
+                  image: icon.isEmpty
+                      ? null
+                      : DecorationImage(
+                          fit: BoxFit.contain,
+                          image: CachedNetworkImageProvider(
+                            icon,
+                            imageRenderMethodForWeb:
+                                ImageRenderMethodForWeb.HttpGet,
+                          ),
+                        ),
                 ),
+                child: icon.isEmpty
+                    ? Icon(Icons.category_outlined, color: scheme.primary)
+                    : null,
               ),
               const SizedBox(width: 12),
               Expanded(
@@ -862,7 +704,9 @@ class SectorCard extends StatelessWidget {
                     ),
                     const SizedBox(height: 6),
                     Text(
-                      '$companyCount Companies',
+                      companyCount > 0
+                          ? '$companyCount Companies'
+                          : 'Explore companies',
                       style: TextStyle(
                         color: subtitleColor,
                         fontSize: context.isPhone ? 12 : 14,
@@ -879,7 +723,9 @@ class SectorCard extends StatelessWidget {
               OverlappingLogoRow(
                 logos: logos,
                 overlap: context.isPhone ? 20 : 16,
-                maxVisible: context.isPhone ? 4 : 6,
+                maxVisible: context.isPhone
+                    ? (MediaQuery.textScalerOf(context).scale(14) > 17 ? 3 : 4)
+                    : 6,
                 size: 45,
                 onTap: onLogoTap,
               ),
@@ -982,16 +828,25 @@ class _LogoCircle extends StatelessWidget {
           shape: BoxShape.circle,
           color: bg,
           border: Border.all(color: ringColor, width: 2),
-          image: DecorationImage(
-            fit: BoxFit.contain,
-            image: CachedNetworkImageProvider(
-              model.logo,
-              imageRenderMethodForWeb: ImageRenderMethodForWeb.HttpGet,
-            ),
-          ),
+          image: model.logo.isEmpty
+              ? null
+              : DecorationImage(
+                  fit: BoxFit.contain,
+                  image: CachedNetworkImageProvider(
+                    model.logo,
+                    imageRenderMethodForWeb: ImageRenderMethodForWeb.HttpGet,
+                  ),
+                ),
         ),
         padding: const EdgeInsets.all(1),
         clipBehavior: Clip.antiAlias,
+        child: model.logo.isEmpty
+            ? Icon(
+                Icons.business_outlined,
+                size: 20,
+                color: scheme.onSurfaceVariant,
+              )
+            : null,
       ),
     );
   }
@@ -1065,11 +920,13 @@ class _AutoScrollSectorListState extends State<AutoScrollSectorList> {
   }
 
   void _startAutoScroll() {
+    if (!mounted) return;
     _autoScrollTimer?.cancel();
     _autoScrollTimer = Timer.periodic(_tickInterval, (_) {
       if (!_scrollController.hasClients) return;
 
       final maxExtent = _scrollController.position.maxScrollExtent;
+      if (maxExtent <= 0) return;
       final current = _scrollController.offset;
 
       if (current >= maxExtent - 1) {
@@ -1107,7 +964,11 @@ class _AutoScrollSectorListState extends State<AutoScrollSectorList> {
   @override
   Widget build(BuildContext context) {
     return SizedBox(
-      height: widget.isPhone ? 128 : 160,
+      height:
+          (widget.isPhone ? 128 : 160) +
+          ((MediaQuery.textScalerOf(context).scale(14) / 14).clamp(1.0, 3.0) -
+                  1) *
+              90,
       child: NotificationListener<ScrollNotification>(
         onNotification: (notification) {
           // If the user manually drags, pause auto-scroll and resume after a delay
@@ -1125,13 +986,16 @@ class _AutoScrollSectorListState extends State<AutoScrollSectorList> {
           separatorBuilder: (context, index) => const SizedBox(width: 10),
           itemBuilder: (context, index) {
             var model = widget.sectors[index];
-            return SectorCard(
-              icon: model.iconImage,
-              sectorName: model.name,
-              companyCount: model.companyCount,
-              logos: model.companies,
-              onViewMore: () => widget.onViewMore(model),
-              onLogoTap: (company) => widget.onLogoTap(model, company),
+            return Clickable(
+              onTap: model.slug.isEmpty ? null : () => widget.onViewMore(model),
+              child: SectorCard(
+                icon: model.iconImage,
+                sectorName: model.name,
+                companyCount: model.companyCount,
+                logos: model.companies,
+                onViewMore: () => widget.onViewMore(model),
+                onLogoTap: (company) => widget.onLogoTap(model, company),
+              ),
             );
           },
         ),

@@ -1,3 +1,4 @@
+import 'package:private_deals/src/shared/theme/app_tokens.dart';
 import 'package:flutter/material.dart';
 import 'package:private_deals/src/features/catalog/presentation/pre_ipo/pre_ipo_investment/seller_profile_widget.dart';
 import 'package:private_deals/src/features/wealth_manager/data/models/pre_ipo/company_model.dart';
@@ -172,7 +173,7 @@ class _InvestmentSummary extends StatelessWidget {
     ];
     return Container(
       decoration: BoxDecoration(
-        borderRadius: BorderRadius.circular(16),
+        borderRadius: BorderRadius.circular(AppRadii.card),
         border: Border.all(color: colors.outlineVariant),
       ),
       clipBehavior: Clip.antiAlias,
@@ -354,7 +355,7 @@ class _OfferBadge extends StatelessWidget {
       padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
       decoration: BoxDecoration(
         color: theme.colorScheme.secondaryContainer,
-        borderRadius: BorderRadius.circular(6),
+        borderRadius: BorderRadius.circular(AppRadii.badge),
       ),
       child: Text(
         label,

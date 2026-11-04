@@ -1,3 +1,4 @@
+import 'package:private_deals/src/shared/theme/app_tokens.dart';
 import 'package:flutter/material.dart';
 
 class CustomCardWidget extends StatelessWidget {
@@ -22,7 +23,7 @@ class CustomCardWidget extends StatelessWidget {
     required this.child,
     this.margin,
     this.padding,
-    this.radius = 16,
+    this.radius = AppRadii.card,
     this.height,
     this.width,
     this.isBorder = true,

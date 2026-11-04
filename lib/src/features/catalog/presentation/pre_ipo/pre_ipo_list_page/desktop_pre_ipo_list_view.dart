@@ -17,11 +17,10 @@ class DesktopPreIPOListView extends StatelessWidget {
       onPopInvokedWithResult: (didPop, result) => onBackLogic(context, didPop),
       child: Scaffold(
         appBar: AppBar(
-          leading: BackButton(
-            onPressed: onBackPressed,
-          ),
+          leading: BackButton(onPressed: onBackPressed),
           title: Text(
-              "${(Get.parameters['type'] ?? "").toString().capitalizeFirst}"),
+            "${(Get.parameters['type'] ?? "").toString().capitalizeFirst}",
+          ),
         ),
         body: Padding(
           padding: const EdgeInsets.symmetric(horizontal: 16),
@@ -38,7 +37,7 @@ class DesktopPreIPOListView extends StatelessWidget {
                   child: Container(
                     color: context.theme.scaffoldBackgroundColor,
                     child: SearchBarTextField(
-                      radius: 6,
+                      radius: AppRadii.control,
                       focusNode: c.searchFocusNode,
                       hintText: "Search Company's",
                       onChanged: (p0) => c.search(p0),
@@ -59,30 +58,29 @@ class DesktopPreIPOListView extends StatelessWidget {
 
                   return Obx(() {
                     return SliverGrid(
-                      delegate: SliverChildBuilderDelegate(
-                        (context, index) {
-                          var model = c.list[index];
-                          return CustomCompanyCard(
-                            company: model,
-                            onTap: () {
-                              if (c.isSecondary) {
-                                var route = Routes.preIPODetailPath(
-                                    Routes.catalogPath(WTabBarEnum.secondary.slug),
-                                    model.slug);
-                                logger.d(route);
-                                Get.toNamed(route);
-                              } else {
-                                var route = Routes.preIPODetailPath(
-                                    Routes.catalogPath(WTabBarEnum.preIPO.slug),
-                                    model.slug);
-                                logger.d(route);
-                                Get.toNamed(route);
-                              }
-                            },
-                          );
-                        },
-                        childCount: c.list.length,
-                      ),
+                      delegate: SliverChildBuilderDelegate((context, index) {
+                        var model = c.list[index];
+                        return CustomCompanyCard(
+                          company: model,
+                          onTap: () {
+                            if (c.isSecondary) {
+                              var route = Routes.preIPODetailPath(
+                                Routes.catalogPath(WTabBarEnum.secondary.slug),
+                                model.slug,
+                              );
+                              logger.d(route);
+                              Get.toNamed(route);
+                            } else {
+                              var route = Routes.preIPODetailPath(
+                                Routes.catalogPath(WTabBarEnum.preIPO.slug),
+                                model.slug,
+                              );
+                              logger.d(route);
+                              Get.toNamed(route);
+                            }
+                          },
+                        );
+                      }, childCount: c.list.length),
                       gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
                         crossAxisCount: crossAxisCount,
                         crossAxisSpacing: spacing,
@@ -93,9 +91,7 @@ class DesktopPreIPOListView extends StatelessWidget {
                   });
                 },
               ),
-              SliverToBoxAdapter(
-                child: SizedBox(height: 200),
-              ),
+              SliverToBoxAdapter(child: SizedBox(height: 200)),
             ],
           ),
         ),

@@ -32,7 +32,7 @@ class PreIPOCompanyHeader extends StatelessWidget {
                 height: compact ? 52 : 64,
                 decoration: BoxDecoration(
                   color: colors.primaryContainer,
-                  borderRadius: BorderRadius.circular(14),
+                  borderRadius: BorderRadius.circular(AppRadii.card),
                 ),
                 child: company.logo.isEmpty
                     ? Icon(
@@ -44,7 +44,7 @@ class PreIPOCompanyHeader extends StatelessWidget {
                         url: company.logo,
                         width: compact ? 52 : 64,
                         height: compact ? 52 : 64,
-                        radius: 14,
+                        radius: AppRadii.control,
                         fit: BoxFit.contain,
                       ),
               ),
@@ -312,7 +312,7 @@ class _Surface extends StatelessWidget {
     padding: EdgeInsets.all(MediaQuery.sizeOf(context).width < 600 ? 20 : 24),
     decoration: BoxDecoration(
       color: Theme.of(context).colorScheme.surface,
-      borderRadius: BorderRadius.circular(16),
+      borderRadius: BorderRadius.circular(AppRadii.card),
       border: Border.all(color: Theme.of(context).colorScheme.outlineVariant),
     ),
     child: child,
@@ -349,7 +349,7 @@ class _Section extends StatelessWidget {
                   alignment: Alignment.center,
                   decoration: BoxDecoration(
                     color: theme.colorScheme.secondaryContainer,
-                    borderRadius: BorderRadius.circular(8),
+                    borderRadius: BorderRadius.circular(AppRadii.badge),
                   ),
                   child: Text(
                     number!,
@@ -397,7 +397,7 @@ class _Badge extends StatelessWidget {
       padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
       decoration: BoxDecoration(
         color: accent ? colors.secondaryContainer : colors.surfaceContainer,
-        borderRadius: BorderRadius.circular(6),
+        borderRadius: BorderRadius.circular(AppRadii.badge),
       ),
       child: Text(
         label,
@@ -653,7 +653,7 @@ class _Shareholding extends StatelessWidget {
                 LinearProgressIndicator(
                   value: (holder.percentage / 100).clamp(0, 1),
                   minHeight: 6,
-                  borderRadius: BorderRadius.circular(6),
+                  borderRadius: BorderRadius.circular(AppRadii.badge),
                   color: colors.primary,
                   backgroundColor: colors.surfaceContainerHighest,
                   semanticsLabel: holder.name,
@@ -693,7 +693,7 @@ class _Events extends StatelessWidget {
                 padding: const EdgeInsets.symmetric(vertical: 8),
                 decoration: BoxDecoration(
                   color: theme.colorScheme.surfaceContainer,
-                  borderRadius: BorderRadius.circular(8),
+                  borderRadius: BorderRadius.circular(AppRadii.badge),
                 ),
                 child: Column(
                   children: [
@@ -773,7 +773,7 @@ class _Management extends StatelessWidget {
                 padding: const EdgeInsets.all(16),
                 decoration: BoxDecoration(
                   border: Border.all(color: theme.colorScheme.outlineVariant),
-                  borderRadius: BorderRadius.circular(12),
+                  borderRadius: BorderRadius.circular(AppRadii.control),
                 ),
                 child: Row(
                   crossAxisAlignment: CrossAxisAlignment.start,
@@ -960,7 +960,7 @@ class _SharePriceChartState extends State<_SharePriceChart> {
                         ),
                         decoration: BoxDecoration(
                           color: colors.surfaceContainerHigh,
-                          borderRadius: BorderRadius.circular(6),
+                          borderRadius: BorderRadius.circular(AppRadii.badge),
                         ),
                         child: Column(
                           mainAxisSize: MainAxisSize.min,

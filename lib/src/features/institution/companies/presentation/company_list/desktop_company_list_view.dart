@@ -199,7 +199,7 @@ class DesktopCompanyListView extends StatelessWidget {
                                         children: [
                                           LogoImage(
                                             url: company.logo,
-                                            radius: 12,
+                                            radius: AppRadii.control,
                                           ),
                                           const SizedBox(width: 12),
                                           Expanded(

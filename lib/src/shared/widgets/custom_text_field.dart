@@ -71,7 +71,7 @@ class CustomTextField extends StatelessWidget {
     this.fillColor,
     this.hintStyle,
     this.contentPadding,
-    this.radius = 12,
+    this.radius = AppRadii.control,
     this.errorStyle,
     this.borderColor,
     this.isAuthFocusBorder = false,
@@ -113,27 +113,31 @@ class CustomTextField extends StatelessWidget {
         label: hintText.isEmpty
             ? RichText(
                 text: TextSpan(
-                    text: label ?? "",
-                    style: TextStyle(
-                      fontSize: 14,
-                      fontWeight: FontWeight.w500,
-                      color: context.isDarkMode
-                          ? context.theme.disabledColor
-                          : context.theme.shadowColor.withOpacity(0.6),
-                      // color: Colors.grey,
-                    ),
-                    children: [
-                      if (isMandatory)
-                        const TextSpan(
-                            text: ' *',
-                            style: TextStyle(
-                                fontSize: 14,
-                                fontWeight: FontWeight.w500,
-                                color: Colors.red))
-                    ]),
+                  text: label ?? "",
+                  style: TextStyle(
+                    fontSize: 14,
+                    fontWeight: FontWeight.w500,
+                    color: context.isDarkMode
+                        ? context.theme.disabledColor
+                        : context.theme.shadowColor.withOpacity(0.6),
+                    // color: Colors.grey,
+                  ),
+                  children: [
+                    if (isMandatory)
+                      const TextSpan(
+                        text: ' *',
+                        style: TextStyle(
+                          fontSize: 14,
+                          fontWeight: FontWeight.w500,
+                          color: Colors.red,
+                        ),
+                      ),
+                  ],
+                ),
               )
             : null,
-        contentPadding: contentPadding ??
+        contentPadding:
+            contentPadding ??
             const EdgeInsets.symmetric(vertical: 18, horizontal: 17),
         hintStyle: hintStyle ?? context.theme.inputDecorationTheme.hintStyle,
         prefixIcon: prefixIcon,
@@ -151,7 +155,9 @@ class CustomTextField extends StatelessWidget {
             ? OutlineInputBorder(
                 borderRadius: BorderRadius.circular(radius),
                 borderSide: BorderSide(
-                    color: context.theme.colorScheme.primary, width: 2),
+                  color: context.theme.colorScheme.primary,
+                  width: 2,
+                ),
               )
             : InputBorder.none,
         isDense: isDense ?? true,
@@ -172,8 +178,8 @@ class CustomTextField extends StatelessWidget {
       borderSide: BorderSide(
         color: isBorder
             ? (error
-                ? context.theme.colorScheme.error
-                : borderColor ?? AppColors.borderColor(context))
+                  ? context.theme.colorScheme.error
+                  : borderColor ?? AppColors.borderColor(context))
             : Colors.transparent,
       ),
     );
@@ -251,9 +257,10 @@ class TitleTextField extends StatelessWidget {
         Text.rich(
           TextSpan(
             style: TextStyle(
-                fontWeight: FontWeight.w500,
-                color: context.theme.colorScheme.onSurfaceVariant,
-                fontSize: context.isPhone ? 14 : 16),
+              fontWeight: FontWeight.w500,
+              color: context.theme.colorScheme.onSurfaceVariant,
+              fontSize: context.isPhone ? 14 : 16,
+            ),
             children: [
               TextSpan(text: name),
               TextSpan(
@@ -266,7 +273,7 @@ class TitleTextField extends StatelessWidget {
         const SizedBox(height: 9),
         CustomTextField(
           onChanged: onChanged,
-          radius: 12,
+          radius: AppRadii.control,
           contentPadding: contentPadding,
           borderColor: borderColor ?? AppColors.borderColor(context),
           isAuthFocusBorder: isAuthFocusBorder,
@@ -307,14 +314,15 @@ class SearchBarTextField extends StatelessWidget {
   final bool readOnly;
   final void Function()? onTap;
 
-  const SearchBarTextField(
-      {super.key,
-      this.onChanged,
-      this.hintText,
-      this.radius,
-      this.focusNode,
-      this.readOnly = false,
-      this.onTap});
+  const SearchBarTextField({
+    super.key,
+    this.onChanged,
+    this.hintText,
+    this.radius,
+    this.focusNode,
+    this.readOnly = false,
+    this.onTap,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -322,8 +330,10 @@ class SearchBarTextField extends StatelessWidget {
       readOnly: readOnly,
       onTap: onTap,
       contentPadding: EdgeInsets.symmetric(
-          vertical: context.isPhone ? 15 : 22, horizontal: 30),
-      radius: radius ?? 12,
+        vertical: context.isPhone ? 15 : 22,
+        horizontal: 30,
+      ),
+      radius: radius ?? AppRadii.control,
       isBorder: true,
       hintStyle: const TextStyle(fontWeight: FontWeight.w400, fontSize: 14),
       hintText: hintText ?? "Search Company",
@@ -338,7 +348,9 @@ class SearchBarTextField extends StatelessWidget {
 class CReadingOrderTraversalPolicy extends OrderedTraversalPolicy {
   @override
   Iterable<FocusNode> sortDescendants(
-      Iterable<FocusNode> descendants, FocusNode currentNode) {
+    Iterable<FocusNode> descendants,
+    FocusNode currentNode,
+  ) {
     return descendants;
   }
 }
@@ -369,25 +381,30 @@ class IntegerSpinnerField extends StatelessWidget {
       // Add a text formatter that only allows integer values and a leading
       // minus sign.
       inputFormatters: <TextInputFormatter>[
-        TextInputFormatter.withFunction(
-          (TextEditingValue oldValue, TextEditingValue newValue) {
-            String newString;
-            if (newValue.text.startsWith('-')) {
-              newString = '-${newValue.text.replaceAll(RegExp(r'\D'), '')}';
-            } else {
-              newString = newValue.text.replaceAll(RegExp(r'\D'), '');
-            }
-            return newValue.copyWith(
-              text: newString,
-              selection: newValue.selection.copyWith(
-                baseOffset:
-                    newValue.selection.baseOffset.clamp(0, newString.length),
-                extentOffset:
-                    newValue.selection.extentOffset.clamp(0, newString.length),
+        TextInputFormatter.withFunction((
+          TextEditingValue oldValue,
+          TextEditingValue newValue,
+        ) {
+          String newString;
+          if (newValue.text.startsWith('-')) {
+            newString = '-${newValue.text.replaceAll(RegExp(r'\D'), '')}';
+          } else {
+            newString = newValue.text.replaceAll(RegExp(r'\D'), '');
+          }
+          return newValue.copyWith(
+            text: newString,
+            selection: newValue.selection.copyWith(
+              baseOffset: newValue.selection.baseOffset.clamp(
+                0,
+                newString.length,
               ),
-            );
-          },
-        )
+              extentOffset: newValue.selection.extentOffset.clamp(
+                0,
+                newString.length,
+              ),
+            ),
+          );
+        }),
       ],
     );
   }
@@ -486,9 +503,10 @@ class _SpinnerFieldState<T> extends State<SpinnerField<T>> {
         Text.rich(
           TextSpan(
             style: TextStyle(
-                fontWeight: FontWeight.w500,
-                color: context.theme.colorScheme.onSurfaceVariant,
-                fontSize: context.isPhone ? 14 : 16),
+              fontWeight: FontWeight.w500,
+              color: context.theme.colorScheme.onSurfaceVariant,
+              fontSize: context.isPhone ? 14 : 16,
+            ),
             children: [
               TextSpan(text: widget.name),
               TextSpan(
@@ -510,7 +528,7 @@ class _SpinnerFieldState<T> extends State<SpinnerField<T>> {
           child: Container(
             decoration: BoxDecoration(
               border: Border.all(color: AppColors.borderColor(context)),
-              borderRadius: BorderRadius.circular(10),
+              borderRadius: BorderRadius.circular(AppRadii.control),
               gradient: LinearGradient(
                 end: Alignment.centerRight,
                 begin: Alignment.centerLeft,
@@ -541,7 +559,7 @@ class _SpinnerFieldState<T> extends State<SpinnerField<T>> {
                     isBorder: false,
                     readOnly: true,
                     // contentPadding: EdgeInsets.all(10),
-                    radius: 4,
+                    radius: AppRadii.control,
 
                     autofocus: widget.autofocus,
                     inputFormatters: widget.inputFormatters,
@@ -564,7 +582,7 @@ class _SpinnerFieldState<T> extends State<SpinnerField<T>> {
                       icon: const Icon(Icons.add),
                     ),
                   ),
-                )
+                ),
               ],
             ),
           ),

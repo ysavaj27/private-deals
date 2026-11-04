@@ -28,14 +28,18 @@ class PhoneSecondaryLandingView extends StatelessWidget {
                   Container(
                     color: context.theme.scaffoldBackgroundColor,
                     padding: const EdgeInsets.symmetric(
-                        vertical: 12, horizontal: 12),
+                      vertical: 12,
+                      horizontal: 12,
+                    ),
                     child: SearchBarTextField(
-                      radius: 6,
+                      radius: AppRadii.control,
                       readOnly: true,
                       hintText: "Search Company's",
                       onTap: () {
-                        var routes =
-                            Routes.preIPOListPath(Get.currentRoute, 'search');
+                        var routes = Routes.preIPOListPath(
+                          Get.currentRoute,
+                          'search',
+                        );
                         logger.d(routes);
                         Get.toNamed(routes);
                       },
@@ -82,7 +86,9 @@ class PhoneSecondaryLandingView extends StatelessWidget {
 
                                 logger.d(company.slug);
                                 String routes = Routes.secondaryDetailPath(
-                                    Get.currentRoute, company.slug);
+                                  Get.currentRoute,
+                                  company.slug,
+                                );
                                 logger.d(routes);
                                 Get.toNamed(routes);
                               },
@@ -95,13 +101,15 @@ class PhoneSecondaryLandingView extends StatelessWidget {
                   const SizedBox(height: 20),
                   Center(
                     child: CustomOutlinedButton(
-                      borderRadius: 22,
+                      borderRadius: AppRadii.button,
                       color: context.theme.primaryColor,
                       text: "Explore More",
                       width: 150,
                       onPressed: () {
                         var routes = Routes.preIPOListPath(
-                            Get.currentRoute, UnListedShareTabEnum.aToZ.route);
+                          Get.currentRoute,
+                          UnListedShareTabEnum.aToZ.route,
+                        );
                         logger.d(routes);
                         Get.toNamed(routes);
                       },

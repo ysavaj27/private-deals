@@ -1,3 +1,4 @@
+import 'package:private_deals/src/shared/theme/app_tokens.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:pinput/pinput.dart';
@@ -34,14 +35,14 @@ class OtpTextField extends StatelessWidget {
           ),
           decoration: BoxDecoration(
             border: Border.all(color: scheme.outlineVariant),
-            borderRadius: BorderRadius.circular(8),
+            borderRadius: BorderRadius.circular(AppRadii.badge),
             color: scheme.surface,
           ),
         );
 
         final focusedPinTheme = defaultPinTheme.copyDecorationWith(
           border: Border.all(color: scheme.primary, width: 2),
-          borderRadius: BorderRadius.circular(12),
+          borderRadius: BorderRadius.circular(AppRadii.control),
         );
 
         final submittedPinTheme = defaultPinTheme.copyWith(

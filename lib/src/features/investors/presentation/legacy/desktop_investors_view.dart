@@ -5,7 +5,8 @@ import 'package:private_deals/src/shared/functions/on_back_logic.dart';
 
 import 'package:private_deals/src/features/wealth_manager/presentation/home_page_ctrl.dart';
 import 'package:private_deals/src/features/wealth_manager/presentation/portfolio/portfolio_page_ctrl.dart';
-import 'package:private_deals/src/features/investors/presentation/legacy/investor_filter/investor_filter_dialog.dart';
+
+import 'investors_toolbar.dart';
 
 class DesktopInvestorsView extends StatelessWidget {
   final InvestorsPageCtrl c = Get.find<InvestorsPageCtrl>();
@@ -33,54 +34,10 @@ class DesktopInvestorsView extends StatelessWidget {
             children: [
               AppPageHeader(
                 title: 'Investors',
-                subtitle:
-                    'Clients linked to this account. Open KYC to verify investor details.',
-                trailing: Row(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    CustomOutlinedButton(
-                      color: context.theme.iconTheme.color,
-                      width: 100,
-                      height: 45,
-                      onPressed: () {
-                        showCustomDialog(const InvestorFilterDialog());
-                      },
-                      child: const Text(
-                        'Filter',
-                        style: TextStyle(
-                          fontSize: 18,
-                          fontWeight: FontWeight.w600,
-                        ),
-                      ),
-                    ),
-                    const SizedBox(width: 15),
-                    CustomElevatedButton(
-                      width: 100,
-                      height: 45,
-                      onPressed: () async {
-                        final result = await Get.toNamed(
-                          Routes.addInvestorPath(Get.currentRoute),
-                        );
-                        if (result == true) {
-                          await c.getInvestorList();
-                        }
-                      },
-                      child: const Text(
-                        'Add',
-                        style: TextStyle(
-                          fontSize: 18,
-                          fontWeight: FontWeight.w600,
-                        ),
-                      ),
-                    ),
-                  ],
-                ),
+                subtitle: 'Clients linked to this account. Open KYC to verify investor details.',
               ),
               const SizedBox(height: AppSpace.xl),
-              SearchBarTextField(
-                onChanged: (p0) => c.search(p0),
-                hintText: 'Search name, email or mobile',
-              ),
+              const InvestorsToolbar(),
               Expanded(
                 child: Obx(() {
                   if (c.isLoading.isTrue) {

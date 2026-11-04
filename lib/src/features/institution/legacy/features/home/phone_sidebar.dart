@@ -1,3 +1,4 @@
+import 'package:private_deals/src/shared/theme/app_tokens.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:private_deals/src/features/institution/data/models/common/enums.dart';
@@ -30,7 +31,7 @@ class PSideBarWidget extends StatelessWidget {
                   height: 42,
                   decoration: BoxDecoration(
                     color: accent.withAlpha(isDark ? 30 : 22),
-                    borderRadius: BorderRadius.circular(13),
+                    borderRadius: BorderRadius.circular(AppRadii.control),
                   ),
                   child: Icon(
                     Icons.business_center_outlined,

@@ -58,7 +58,7 @@ class DPasswordWidget extends StatelessWidget {
   Widget build(BuildContext context) {
     return CustomCardWidget(
       width: 564.66,
-      radius: 16,
+      radius: AppRadii.card,
       color: context.theme.colorScheme.surface.withValues(alpha: 0.94),
       padding: EdgeInsets.symmetric(horizontal: 65, vertical: 50),
       borderColor: context.theme.dividerColor.withValues(alpha: 0.4),
@@ -176,7 +176,7 @@ class DPasswordWidget extends StatelessWidget {
               children: [
                 Obx(() {
                   return CustomElevatedButton(
-                    radius: 22,
+                    radius: AppRadii.button,
                     width: 222.25,
                     backgroundColor: context.theme.iconTheme.color,
                     color: context.theme.scaffoldBackgroundColor,
@@ -223,7 +223,7 @@ class DOtpWidget extends StatelessWidget {
   Widget build(BuildContext context) {
     return CustomCardWidget(
       width: 564.66,
-      radius: 16,
+      radius: AppRadii.card,
       color: context.theme.colorScheme.surface.withValues(alpha: 0.94),
       padding: EdgeInsets.symmetric(horizontal: 65, vertical: 50),
       borderColor: context.theme.dividerColor.withValues(alpha: 0.4),
@@ -303,7 +303,7 @@ class DOtpWidget extends StatelessWidget {
               children: [
                 Obx(() {
                   return CustomElevatedButton(
-                    radius: 22,
+                    radius: AppRadii.button,
                     width: 222.25,
                     backgroundColor: context.theme.iconTheme.color,
                     color: context.theme.scaffoldBackgroundColor,
@@ -350,7 +350,7 @@ class DMobileWidget extends StatelessWidget {
   Widget build(BuildContext context) {
     return CustomCardWidget(
       width: 564.66,
-      radius: 16,
+      radius: AppRadii.card,
       color: context.theme.colorScheme.surface.withValues(alpha: 0.94),
       padding: EdgeInsets.symmetric(horizontal: 65, vertical: 50),
       borderColor: context.theme.dividerColor.withValues(alpha: 0.4),
@@ -415,7 +415,7 @@ class DMobileWidget extends StatelessWidget {
               children: [
                 Obx(() {
                   return CustomElevatedButton(
-                    radius: 22,
+                    radius: AppRadii.button,
                     width: 222,
                     backgroundColor: context.theme.iconTheme.color,
                     color: context.theme.scaffoldBackgroundColor,

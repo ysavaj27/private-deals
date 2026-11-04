@@ -1,3 +1,4 @@
+import 'package:private_deals/src/shared/theme/app_tokens.dart';
 import 'package:flutter/material.dart';
 import 'package:private_deals/src/features/institution/data/models/deal/price_excel_review_model.dart';
 import 'package:private_deals/src/features/institution/deals/presentation/price_excel/update_prices_excel_ctrl.dart';
@@ -69,121 +70,124 @@ class _UpdatePricesExcelDialogState extends State<_UpdatePricesExcelDialog> {
 
     return CustomCardWidget(
       padding: EdgeInsets.zero,
-      radius: 24,
+      radius: AppRadii.card,
       child: ClipRRect(
-        borderRadius: BorderRadius.circular(24),
+        borderRadius: BorderRadius.circular(AppRadii.card),
         child: SizedBox.expand(
           child: Column(
-          children: [
-            Padding(
-              padding: EdgeInsets.fromLTRB(horizontal, 16, 8, 0),
-              child: Row(
-                children: [
-                  Container(
-                    padding: const EdgeInsets.all(12),
-                    decoration: BoxDecoration(
-                      color: colors.primaryContainer,
-                      borderRadius: BorderRadius.circular(14),
+            children: [
+              Padding(
+                padding: EdgeInsets.fromLTRB(horizontal, 16, 8, 0),
+                child: Row(
+                  children: [
+                    Container(
+                      padding: const EdgeInsets.all(12),
+                      decoration: BoxDecoration(
+                        color: colors.primaryContainer,
+                        borderRadius: BorderRadius.circular(AppRadii.card),
+                      ),
+                      child: Icon(
+                        Icons.table_view_rounded,
+                        color: colors.onPrimaryContainer,
+                      ),
                     ),
-                    child: Icon(
-                      Icons.table_view_rounded,
-                      color: colors.onPrimaryContainer,
-                    ),
-                  ),
-                  const SizedBox(width: 14),
-                  Expanded(
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text(
-                          _titleFor(ctrl.step),
-                          style: textTheme.titleLarge?.copyWith(
-                            fontWeight: FontWeight.w700,
-                          ),
-                        ),
-                        if (ctrl.step == PriceExcelStep.review &&
-                            ctrl.review != null) ...[
-                          const SizedBox(height: 4),
+                    const SizedBox(width: 14),
+                    Expanded(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
                           Text(
-                            '${ctrl.review!.createCount} to save · '
-                            '${ctrl.review!.skipCount} blank · '
-                            '${ctrl.review!.errorCount} need a fix',
-                            style: textTheme.bodyMedium?.copyWith(
-                              color: colors.onSurfaceVariant,
+                            _titleFor(ctrl.step),
+                            style: textTheme.titleLarge?.copyWith(
+                              fontWeight: FontWeight.w700,
                             ),
                           ),
+                          if (ctrl.step == PriceExcelStep.review &&
+                              ctrl.review != null) ...[
+                            const SizedBox(height: 4),
+                            Text(
+                              '${ctrl.review!.createCount} to save · '
+                              '${ctrl.review!.skipCount} blank · '
+                              '${ctrl.review!.errorCount} need a fix',
+                              style: textTheme.bodyMedium?.copyWith(
+                                color: colors.onSurfaceVariant,
+                              ),
+                            ),
+                          ],
                         ],
-                      ],
+                      ),
                     ),
-                  ),
-                  Tooltip(
-                    message: 'Close',
-                    child: Material(
-                      color: colors.surfaceContainerHighest,
-                      shape: const CircleBorder(),
-                      child: InkWell(
-                        customBorder: const CircleBorder(),
-                        onTap: () => _close(
-                          saved: ctrl.step == PriceExcelStep.done,
+                    Tooltip(
+                      message: 'Close',
+                      child: Material(
+                        color: colors.surfaceContainerHighest,
+                        shape: RoundedRectangleBorder(
+                          borderRadius: AppRadii.buttonAll,
                         ),
-                        child: SizedBox(
-                          width: 40,
-                          height: 40,
-                          child: Icon(
-                            Icons.close_rounded,
-                            size: 22,
-                            color: colors.onSurface,
+                        child: InkWell(
+                          customBorder: RoundedRectangleBorder(
+                            borderRadius: AppRadii.buttonAll,
+                          ),
+                          onTap: () =>
+                              _close(saved: ctrl.step == PriceExcelStep.done),
+                          child: SizedBox(
+                            width: 40,
+                            height: 40,
+                            child: Icon(
+                              Icons.close_rounded,
+                              size: 22,
+                              color: colors.onSurface,
+                            ),
                           ),
                         ),
                       ),
                     ),
-                  ),
-                  const SizedBox(width: 8),
-                ],
+                    const SizedBox(width: 8),
+                  ],
+                ),
               ),
-            ),
-            Padding(
-              padding: EdgeInsets.fromLTRB(horizontal, 12, horizontal, 12),
-              child: _StepIndicator(step: ctrl.step),
-            ),
-            Expanded(
-              child: switch (ctrl.step) {
-                PriceExcelStep.start => _StartStep(
-                  ctrl: ctrl,
-                  horizontal: horizontal,
-                ),
-                PriceExcelStep.review => _ReviewStep(
-                  ctrl: ctrl,
-                  horizontal: horizontal,
-                ),
-                PriceExcelStep.done => _DoneStep(count: ctrl.savedCount),
-              },
-            ),
-            if (ctrl.message.isNotEmpty)
               Padding(
-                padding: EdgeInsets.fromLTRB(horizontal, 0, horizontal, 8),
-                child: _InlineBanner(
-                  message: ctrl.message,
-                  isError: ctrl.messageIsError,
+                padding: EdgeInsets.fromLTRB(horizontal, 12, horizontal, 12),
+                child: _StepIndicator(step: ctrl.step),
+              ),
+              Expanded(
+                child: switch (ctrl.step) {
+                  PriceExcelStep.start => _StartStep(
+                    ctrl: ctrl,
+                    horizontal: horizontal,
+                  ),
+                  PriceExcelStep.review => _ReviewStep(
+                    ctrl: ctrl,
+                    horizontal: horizontal,
+                  ),
+                  PriceExcelStep.done => _DoneStep(count: ctrl.savedCount),
+                },
+              ),
+              if (ctrl.message.isNotEmpty)
+                Padding(
+                  padding: EdgeInsets.fromLTRB(horizontal, 0, horizontal, 8),
+                  child: _InlineBanner(
+                    message: ctrl.message,
+                    isError: ctrl.messageIsError,
+                  ),
+                ),
+              const Divider(height: 1),
+              Padding(
+                padding: EdgeInsets.fromLTRB(horizontal, 12, horizontal, 16),
+                child: _FooterActions(
+                  ctrl: ctrl,
+                  onClose: () => _close(saved: true),
+                  onDismiss: () => _close(),
+                  compact: compact,
                 ),
               ),
-            const Divider(height: 1),
-            Padding(
-              padding: EdgeInsets.fromLTRB(horizontal, 12, horizontal, 16),
-              child: _FooterActions(
-                ctrl: ctrl,
-                onClose: () => _close(saved: true),
-                onDismiss: () => _close(),
-                compact: compact,
-              ),
-            ),
-            if (ctrl.busy)
-              LinearProgressIndicator(
-                minHeight: 3,
-                backgroundColor: colors.surfaceContainerHighest,
-              ),
-          ],
-        ),
+              if (ctrl.busy)
+                LinearProgressIndicator(
+                  minHeight: 3,
+                  backgroundColor: colors.surfaceContainerHighest,
+                ),
+            ],
+          ),
         ),
       ),
     );
@@ -310,7 +314,7 @@ class _StartStep extends StatelessWidget {
                 padding: const EdgeInsets.all(20),
                 decoration: BoxDecoration(
                   color: colors.primaryContainer.withValues(alpha: 0.45),
-                  borderRadius: BorderRadius.circular(16),
+                  borderRadius: BorderRadius.circular(AppRadii.card),
                   border: Border.all(color: colors.outlineVariant),
                 ),
                 child: Row(
@@ -321,7 +325,7 @@ class _StartStep extends StatelessWidget {
                       height: 48,
                       decoration: BoxDecoration(
                         color: colors.surface,
-                        borderRadius: BorderRadius.circular(12),
+                        borderRadius: BorderRadius.circular(AppRadii.control),
                       ),
                       child: Icon(
                         Icons.table_view_rounded,
@@ -503,7 +507,7 @@ class _ReviewStep extends StatelessWidget {
                     padding: const EdgeInsets.all(20),
                     decoration: BoxDecoration(
                       color: colors.surfaceContainerLow,
-                      borderRadius: BorderRadius.circular(12),
+                      borderRadius: BorderRadius.circular(AppRadii.control),
                     ),
                     child: Text(
                       'No new prices to save. Fill at least one sell or buy price in the sheet.',
@@ -519,11 +523,11 @@ class _ReviewStep extends StatelessWidget {
                   child: DecoratedBox(
                     decoration: BoxDecoration(
                       color: colors.surface,
-                      borderRadius: BorderRadius.circular(12),
+                      borderRadius: BorderRadius.circular(AppRadii.control),
                       border: Border.all(color: colors.outlineVariant),
                     ),
                     child: ClipRRect(
-                      borderRadius: BorderRadius.circular(12),
+                      borderRadius: BorderRadius.circular(AppRadii.control),
                       child: Column(
                         children: [
                           if (wide) const _PriceListHeader(),
@@ -635,7 +639,7 @@ class _CountChip extends StatelessWidget {
       padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 12),
       decoration: BoxDecoration(
         color: bg,
-        borderRadius: BorderRadius.circular(12),
+        borderRadius: BorderRadius.circular(AppRadii.control),
         border: Border.all(
           color: isError ? warning.border : colors.outlineVariant,
         ),
@@ -667,10 +671,8 @@ class _PriceListHeader extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final colors = Theme.of(context).colorScheme;
-    final style = Theme.of(context).textTheme.labelMedium?.copyWith(
-      color: colors.onSurfaceVariant,
-      fontWeight: FontWeight.w700,
-    );
+    final style = Theme.of(context).textTheme.labelMedium
+        ?.copyWith(color: colors.onSurfaceVariant, fontWeight: FontWeight.w700);
 
     return Container(
       color: colors.surfaceContainerLow,
@@ -867,7 +869,7 @@ class _ErrorTile extends StatelessWidget {
       padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
       decoration: BoxDecoration(
         color: warning.background,
-        borderRadius: BorderRadius.circular(10),
+        borderRadius: BorderRadius.circular(AppRadii.control),
         border: Border.all(color: warning.border),
       ),
       child: Column(
@@ -929,8 +931,10 @@ class _InlineBanner extends StatelessWidget {
       width: double.infinity,
       padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
       decoration: BoxDecoration(
-        color: isError ? warning.background : colors.primaryContainer.withValues(alpha: 0.55),
-        borderRadius: BorderRadius.circular(10),
+        color: isError
+            ? warning.background
+            : colors.primaryContainer.withValues(alpha: 0.55),
+        borderRadius: BorderRadius.circular(AppRadii.control),
         border: isError ? Border.all(color: warning.border) : null,
       ),
       child: Text(
@@ -970,65 +974,13 @@ class _FooterActions extends StatelessWidget {
           onPressed: ctrl.canDismiss ? onDismiss : null,
         ),
       ),
-      PriceExcelStep.review => compact
-          ? Column(
-              crossAxisAlignment: CrossAxisAlignment.stretch,
-              children: [
-                AppButton(
-                  label: hasErrors
-                      ? 'Upload fixed sheet'
-                      : 'Save prices',
-                  icon: hasErrors
-                      ? Icons.upload_file_rounded
-                      : Icons.save_outlined,
-                  expanded: true,
-                  isLoading: ctrl.busy,
-                  onPressed: ctrl.busy
-                      ? null
-                      : hasErrors
-                      ? ctrl.uploadAnother
-                      : ctrl.canSave
-                      ? ctrl.savePrices
-                      : null,
-                ),
-                const SizedBox(height: 8),
-                if (!hasErrors)
+      PriceExcelStep.review =>
+        compact
+            ? Column(
+                crossAxisAlignment: CrossAxisAlignment.stretch,
+                children: [
                   AppButton(
-                    label: 'Upload another file',
-                    variant: AppButtonVariant.outline,
-                    expanded: true,
-                    onPressed: ctrl.busy ? null : ctrl.uploadAnother,
-                  )
-                else
-                  AppButton(
-                    label: 'Save prices',
-                    variant: AppButtonVariant.outline,
-                    expanded: true,
-                    onPressed: null,
-                  ),
-              ],
-            )
-          : Row(
-              children: [
-                Expanded(
-                  child: AppButton(
-                    label: hasErrors
-                        ? 'Save prices'
-                        : 'Upload another file',
-                    variant: AppButtonVariant.outline,
-                    expanded: true,
-                    onPressed: hasErrors || ctrl.busy
-                        ? null
-                        : ctrl.uploadAnother,
-                  ),
-                ),
-                const SizedBox(width: 12),
-                Expanded(
-                  flex: 2,
-                  child: AppButton(
-                    label: hasErrors
-                        ? 'Upload fixed sheet'
-                        : 'Save prices',
+                    label: hasErrors ? 'Upload fixed sheet' : 'Save prices',
                     icon: hasErrors
                         ? Icons.upload_file_rounded
                         : Icons.save_outlined,
@@ -1042,9 +994,56 @@ class _FooterActions extends StatelessWidget {
                         ? ctrl.savePrices
                         : null,
                   ),
-                ),
-              ],
-            ),
+                  const SizedBox(height: 8),
+                  if (!hasErrors)
+                    AppButton(
+                      label: 'Upload another file',
+                      variant: AppButtonVariant.outline,
+                      expanded: true,
+                      onPressed: ctrl.busy ? null : ctrl.uploadAnother,
+                    )
+                  else
+                    AppButton(
+                      label: 'Save prices',
+                      variant: AppButtonVariant.outline,
+                      expanded: true,
+                      onPressed: null,
+                    ),
+                ],
+              )
+            : Row(
+                children: [
+                  Expanded(
+                    child: AppButton(
+                      label: hasErrors ? 'Save prices' : 'Upload another file',
+                      variant: AppButtonVariant.outline,
+                      expanded: true,
+                      onPressed: hasErrors || ctrl.busy
+                          ? null
+                          : ctrl.uploadAnother,
+                    ),
+                  ),
+                  const SizedBox(width: 12),
+                  Expanded(
+                    flex: 2,
+                    child: AppButton(
+                      label: hasErrors ? 'Upload fixed sheet' : 'Save prices',
+                      icon: hasErrors
+                          ? Icons.upload_file_rounded
+                          : Icons.save_outlined,
+                      expanded: true,
+                      isLoading: ctrl.busy,
+                      onPressed: ctrl.busy
+                          ? null
+                          : hasErrors
+                          ? ctrl.uploadAnother
+                          : ctrl.canSave
+                          ? ctrl.savePrices
+                          : null,
+                    ),
+                  ),
+                ],
+              ),
       PriceExcelStep.done => Align(
         alignment: Alignment.centerRight,
         child: SizedBox(

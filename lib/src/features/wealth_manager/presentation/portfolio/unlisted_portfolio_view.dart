@@ -272,7 +272,7 @@ class _Surface extends StatelessWidget {
     decoration: BoxDecoration(
       color: Theme.of(context).colorScheme.surface,
       border: Border.all(color: Theme.of(context).colorScheme.outlineVariant),
-      borderRadius: BorderRadius.circular(16),
+      borderRadius: BorderRadius.circular(AppRadii.card),
     ),
     child: child,
   );
@@ -306,7 +306,7 @@ class _HoldingCard extends StatelessWidget {
                     height: 44,
                     decoration: BoxDecoration(
                       color: colors.primaryContainer,
-                      borderRadius: BorderRadius.circular(12),
+                      borderRadius: BorderRadius.circular(AppRadii.control),
                     ),
                     child: Icon(
                       Icons.business_rounded,
@@ -318,7 +318,7 @@ class _HoldingCard extends StatelessWidget {
                     url: holding.company.logo,
                     width: 44,
                     height: 44,
-                    radius: 12,
+                    radius: AppRadii.control,
                   ),
                 const SizedBox(width: 12),
                 Expanded(

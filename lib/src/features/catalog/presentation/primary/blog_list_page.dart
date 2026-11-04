@@ -1,6 +1,9 @@
 import 'package:private_deals/src/shared/app_exports.dart';
 import 'package:private_deals/src/shared/functions/on_back_logic.dart';
 
+import 'primary_landing_content.dart' show PrimaryBlogCard;
+import '../widgets/catalog_article_card.dart';
+
 class BlogListPage extends StatefulWidget {
   const BlogListPage({super.key});
 
@@ -36,24 +39,9 @@ class _BlogListPageState extends State<BlogListPage> {
         }
         final blogs = result.r ?? [];
         if (blogs.isEmpty) return const NoDataView(isRefreshButton: false);
-        return ListView.separated(
-          padding: const EdgeInsets.all(20),
+        return CatalogArticleGrid(
           itemCount: blogs.length,
-          separatorBuilder: (_, _) => const SizedBox(height: 12),
-          itemBuilder: (context, index) {
-            final blog = blogs[index];
-            return Card(
-              child: ListTile(
-                contentPadding: const EdgeInsets.all(16),
-                title: Text(blog.title),
-                subtitle: Text(blog.shortDescription),
-                trailing: const Icon(Icons.chevron_right),
-                onTap: () => Get.toNamed(
-                  Routes.blogDetailPath(Get.currentRoute, blog.urlSlug),
-                ),
-              ),
-            );
-          },
+          itemBuilder: (_, index) => PrimaryBlogCard(blog: blogs[index]),
         );
       },
     ),

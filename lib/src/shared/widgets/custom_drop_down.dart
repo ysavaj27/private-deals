@@ -60,7 +60,9 @@ class CustomDropDown<T> extends StatelessWidget {
                 ),
               )
             : null,
-        border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
+        border: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(AppRadii.control),
+        ),
       ),
       items: items,
       onChanged: onChanged,
@@ -69,7 +71,7 @@ class CustomDropDown<T> extends StatelessWidget {
 
   OutlineInputBorder border() {
     return OutlineInputBorder(
-      borderRadius: BorderRadius.circular(12),
+      borderRadius: BorderRadius.circular(AppRadii.control),
       borderSide: BorderSide(
         color: Get.isDarkMode ? Color(0xff232323) : Colors.grey.shade400,
       ),

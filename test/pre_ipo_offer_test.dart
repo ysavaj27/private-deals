@@ -50,6 +50,14 @@ void main() {
     );
   });
 
+  test('WM counterparty action inverts institution deal_type', () {
+    expect(deal.isSellDeal, isTrue);
+    expect(deal.counterpartyActionLabel, 'Buy');
+    final buyDeal = deal.copyWith(dealType: 'buy');
+    expect(buyDeal.isSellDeal, isFalse);
+    expect(buyDeal.counterpartyActionLabel, 'Sell');
+  });
+
   test('empty deal_type is treated as sell when deal id exists', () {
     final offer = PreIPOOffer.fromDeal(deal.copyWith(dealType: ''));
     expect(offer.isSellDeal, isTrue);

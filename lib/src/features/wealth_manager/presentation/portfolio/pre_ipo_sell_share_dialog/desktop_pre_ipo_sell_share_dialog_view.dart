@@ -20,10 +20,7 @@ class DesktopPreIPOSellShareDialogView extends StatelessWidget {
           children: [
             const Text(
               "Sell Now",
-              style: TextStyle(
-                fontSize: 32,
-                fontWeight: FontWeight.w600,
-              ),
+              style: TextStyle(fontSize: 32, fontWeight: FontWeight.w600),
             ),
             const SizedBox(height: 40),
             SizedBox(
@@ -57,11 +54,12 @@ class DesktopPreIPOSellShareDialogView extends StatelessWidget {
                         // double sellAmount = qty * c.model.currentSharePrice;
                         double minAmount = app.config.preIpoMinSellAmount;
                         double minShares =
-                        (minAmount / c.model.currentSharePrice)
-                            .ceilToDouble();
-                        double maxSellShares = ((investedAmount - minAmount) /
-                            c.model.currentSharePrice)
-                            .floorToDouble();
+                            (minAmount / c.model.currentSharePrice)
+                                .ceilToDouble();
+                        double maxSellShares =
+                            ((investedAmount - minAmount) /
+                                    c.model.currentSharePrice)
+                                .floorToDouble();
 
                         if (investedAmount < minAmount) {
                           if (qty == c.model.availableShares) {
@@ -78,13 +76,14 @@ class DesktopPreIPOSellShareDialogView extends StatelessWidget {
                           return "Minimum sell quantity is ${minShares.toInt()} shares";
                         }
 
-                        if (qty > maxSellShares && qty != c.model.availableShares) {
+                        if (qty > maxSellShares &&
+                            qty != c.model.availableShares) {
                           return "You can sell all shares or a quantity between ${minShares.toInt()} and ${maxSellShares.toInt()} shares";
                         }
 
                         return null;
                       },
-                       onChanged: (v) => c.shares(int.tryParse(v)),
+                      onChanged: (v) => c.shares(int.tryParse(v)),
                     ),
                   ),
                   const SizedBox(width: 10),
@@ -100,9 +99,10 @@ class DesktopPreIPOSellShareDialogView extends StatelessWidget {
                         height: 48,
                         width: 65,
                         decoration: BoxDecoration(
-                          borderRadius: BorderRadius.circular(10),
-                          border:
-                              Border.all(color: AppColors.borderColor(context)),
+                          borderRadius: BorderRadius.circular(AppRadii.control),
+                          border: Border.all(
+                            color: AppColors.borderColor(context),
+                          ),
                           color: context.isDarkMode
                               ? const Color(0xff242424)
                               : Colors.grey.shade400,
@@ -173,8 +173,9 @@ class DesktopPreIPOSellShareDialogView extends StatelessWidget {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       _DataText(
-                          title: "Available shares",
-                          subTitle: "${c.model.availableShares}"),
+                        title: "Available shares",
+                        subTitle: "${c.model.availableShares}",
+                      ),
                       const SizedBox(height: 18),
                       _DataText(
                         title: "Current share price",
@@ -195,8 +196,9 @@ class DesktopPreIPOSellShareDialogView extends StatelessWidget {
                       ),
                       const SizedBox(height: 18),
                       _DataText(
-                          title: "Last traded price",
-                          subTitle: c.model.lastTradedPrice.toCurrency),
+                        title: "Last traded price",
+                        subTitle: c.model.lastTradedPrice.toCurrency,
+                      ),
                       const SizedBox(height: 18),
                     ],
                   ),
@@ -248,9 +250,7 @@ class _DataText extends StatelessWidget {
       style: const TextStyle(fontSize: 16),
       TextSpan(
         children: [
-          TextSpan(
-            text: '$title:  ',
-          ),
+          TextSpan(text: '$title:  '),
           TextSpan(
             text: subTitle,
             style: const TextStyle(fontWeight: FontWeight.w500),

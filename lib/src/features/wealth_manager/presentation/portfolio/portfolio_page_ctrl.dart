@@ -99,15 +99,15 @@ class PortfolioPageCtrl extends GetxController
     tab.addIf(app.wUser.isPreIpoAccess, PreIpoListWidget());
     tab.addIf(
       app.wUser.isPrimaryAccess || app.wUser.isSecondaryAccess,
-      ListWidget(equityList),
+      ListWidget(equityList, type: EquityTypeEnum.equity),
     );
     tab.addIf(
       app.wUser.isPrimaryAccess || app.wUser.isSecondaryAccess,
-      ListWidget(ccpsList),
+      ListWidget(ccpsList, type: EquityTypeEnum.ccps),
     );
     tab.addIf(
       app.wUser.isPrimaryAccess || app.wUser.isSecondaryAccess,
-      ListWidget(ccdList),
+      ListWidget(ccdList, type: EquityTypeEnum.ccd),
     );
     return tab;
   }

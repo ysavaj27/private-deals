@@ -355,7 +355,7 @@ class _AddChannelPartnerFormState extends State<AddChannelPartnerForm> {
           padding: const EdgeInsets.all(10),
           decoration: BoxDecoration(
             color: theme.colorScheme.primaryContainer,
-            borderRadius: BorderRadius.circular(10),
+            borderRadius: BorderRadius.circular(AppRadii.control),
           ),
           child: Text(
             number,
@@ -398,7 +398,7 @@ class _AddChannelPartnerFormState extends State<AddChannelPartnerForm> {
             ? colors.primaryContainer.withValues(alpha: 0.4)
             : colors.surface,
         shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(12),
+          borderRadius: BorderRadius.circular(AppRadii.control),
           side: BorderSide(
             color: value()
                 ? colors.primary.withValues(alpha: 0.5)

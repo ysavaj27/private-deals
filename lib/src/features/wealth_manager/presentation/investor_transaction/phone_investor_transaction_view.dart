@@ -15,7 +15,7 @@ class PhoneInvestorTransactionView extends StatelessWidget {
         children: [
           TabBar(
             controller: c.tabController,
-            splashBorderRadius: BorderRadius.circular(50),
+            splashBorderRadius: AppRadii.tabAll,
             tabs: c.tabs(),
           ),
           Expanded(

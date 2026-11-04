@@ -1,0 +1,244 @@
+{
+  "captured_at": "2026-11-03T10:54:24.445875+00:00",
+  "focus": [
+    "get-config",
+    "pre-ipo home",
+    "company detail"
+  ],
+  "method": "warmup=2, runs=8, headtoken only",
+  "company_detail_slug": "choice-foods-pvt-ltd",
+  "note": "pre-ipo home and company detail require bearer auth; without login they return HTTP 401 (auth-gate latency only). get-config returns full payload.",
+  "compare": [
+    {
+      "key": "config",
+      "label": "GET /api/get-config",
+      "path": "/api/get-config",
+      "params": null,
+      "staging_median_ms": 127.8,
+      "production_median_ms": 115.1,
+      "staging_p95_ms": 140.4,
+      "production_p95_ms": 139.0,
+      "staging_min_ms": 110.9,
+      "production_min_ms": 106.2,
+      "staging_max_ms": 140.5,
+      "production_max_ms": 144.1,
+      "delta_ms": 12.7,
+      "staging_http": 200,
+      "production_http": 200,
+      "staging_bytes": 5344,
+      "production_bytes": 5352,
+      "staging_msg": "Config Data",
+      "production_msg": "Config Data",
+      "winner": "production",
+      "payload_complete": true
+    },
+    {
+      "key": "pre_ipo_home",
+      "label": "GET /api/v2/business/home/pre-ipo",
+      "path": "/api/v2/business/home/pre-ipo",
+      "params": null,
+      "staging_median_ms": 121.9,
+      "production_median_ms": 111.0,
+      "staging_p95_ms": 135.5,
+      "production_p95_ms": 130.1,
+      "staging_min_ms": 103.7,
+      "production_min_ms": 102.3,
+      "staging_max_ms": 135.8,
+      "production_max_ms": 133.6,
+      "delta_ms": 10.9,
+      "staging_http": 401,
+      "production_http": 401,
+      "staging_bytes": 30,
+      "production_bytes": 30,
+      "staging_msg": "Unauthenticated.",
+      "production_msg": "Unauthenticated.",
+      "winner": "production",
+      "payload_complete": false
+    },
+    {
+      "key": "company_detail",
+      "label": "GET /api/v2/business/company/detail?slug=choice-foods-pvt-ltd",
+      "path": "/api/v2/business/company/detail",
+      "params": {
+        "slug": "choice-foods-pvt-ltd"
+      },
+      "staging_median_ms": 119.3,
+      "production_median_ms": 116.0,
+      "staging_p95_ms": 128.8,
+      "production_p95_ms": 135.4,
+      "staging_min_ms": 105.4,
+      "production_min_ms": 105.2,
+      "staging_max_ms": 129.8,
+      "production_max_ms": 135.7,
+      "delta_ms": 3.3,
+      "staging_http": 401,
+      "production_http": 401,
+      "staging_bytes": 30,
+      "production_bytes": 30,
+      "staging_msg": "Unauthenticated.",
+      "production_msg": "Unauthenticated.",
+      "winner": "production",
+      "payload_complete": false
+    }
+  ],
+  "raw": {
+    "staging": {
+      "config": {
+        "label": "GET /api/get-config",
+        "path": "/api/get-config",
+        "params": null,
+        "http_mode": 200,
+        "bytes_median": 5344,
+        "msg": "Config Data",
+        "latency_ms": {
+          "min": 110.9,
+          "median": 127.8,
+          "avg": 128.6,
+          "p95": 140.4,
+          "max": 140.5,
+          "samples": [
+            110.9,
+            125.2,
+            125.8,
+            127.4,
+            128.1,
+            130.8,
+            140.3,
+            140.5
+          ]
+        }
+      },
+      "pre_ipo_home": {
+        "label": "GET /api/v2/business/home/pre-ipo",
+        "path": "/api/v2/business/home/pre-ipo",
+        "params": null,
+        "http_mode": 401,
+        "bytes_median": 30,
+        "msg": "Unauthenticated.",
+        "latency_ms": {
+          "min": 103.7,
+          "median": 121.9,
+          "avg": 122.4,
+          "p95": 135.5,
+          "max": 135.8,
+          "samples": [
+            103.7,
+            118.0,
+            118.8,
+            121.2,
+            122.6,
+            124.5,
+            134.8,
+            135.8
+          ]
+        }
+      },
+      "company_detail": {
+        "label": "GET /api/v2/business/company/detail?slug=choice-foods-pvt-ltd",
+        "path": "/api/v2/business/company/detail",
+        "params": {
+          "slug": "choice-foods-pvt-ltd"
+        },
+        "http_mode": 401,
+        "bytes_median": 30,
+        "msg": "Unauthenticated.",
+        "latency_ms": {
+          "min": 105.4,
+          "median": 119.3,
+          "avg": 117.6,
+          "p95": 128.8,
+          "max": 129.8,
+          "samples": [
+            105.4,
+            108.9,
+            110.1,
+            118.8,
+            119.8,
+            121.0,
+            127.0,
+            129.8
+          ]
+        }
+      }
+    },
+    "production": {
+      "config": {
+        "label": "GET /api/get-config",
+        "path": "/api/get-config",
+        "params": null,
+        "http_mode": 200,
+        "bytes_median": 5352,
+        "msg": "Config Data",
+        "latency_ms": {
+          "min": 106.2,
+          "median": 115.1,
+          "avg": 118.8,
+          "p95": 139.0,
+          "max": 144.1,
+          "samples": [
+            106.2,
+            107.1,
+            108.8,
+            108.9,
+            121.3,
+            124.3,
+            129.6,
+            144.1
+          ]
+        }
+      },
+      "pre_ipo_home": {
+        "label": "GET /api/v2/business/home/pre-ipo",
+        "path": "/api/v2/business/home/pre-ipo",
+        "params": null,
+        "http_mode": 401,
+        "bytes_median": 30,
+        "msg": "Unauthenticated.",
+        "latency_ms": {
+          "min": 102.3,
+          "median": 111.0,
+          "avg": 114.0,
+          "p95": 130.1,
+          "max": 133.6,
+          "samples": [
+            102.3,
+            102.7,
+            105.0,
+            109.1,
+            112.9,
+            122.7,
+            123.5,
+            133.6
+          ]
+        }
+      },
+      "company_detail": {
+        "label": "GET /api/v2/business/company/detail?slug=choice-foods-pvt-ltd",
+        "path": "/api/v2/business/company/detail",
+        "params": {
+          "slug": "choice-foods-pvt-ltd"
+        },
+        "http_mode": 401,
+        "bytes_median": 30,
+        "msg": "Unauthenticated.",
+        "latency_ms": {
+          "min": 105.2,
+          "median": 116.0,
+          "avg": 118.4,
+          "p95": 135.4,
+          "max": 135.7,
+          "samples": [
+            105.2,
+            108.3,
+            111.2,
+            114.8,
+            117.3,
+            120.0,
+            134.8,
+            135.7
+          ]
+        }
+      }
+    }
+  }
+}

@@ -202,9 +202,9 @@ class DashboardPriorities extends StatelessWidget {
                       child: Material(
                         color: theme.colorScheme.surfaceContainerHigh
                             .withValues(alpha: .5),
-                        borderRadius: BorderRadius.circular(10),
+                        borderRadius: BorderRadius.circular(AppRadii.control),
                         child: InkWell(
-                          borderRadius: BorderRadius.circular(10),
+                          borderRadius: BorderRadius.circular(AppRadii.control),
                           onTap: readOnly ? null : () => _open(item.$4),
                           child: Padding(
                             padding: const EdgeInsets.symmetric(

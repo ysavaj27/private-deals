@@ -106,8 +106,7 @@ class CreateCompanyForm extends StatelessWidget {
                 _section(
                   context,
                   title: 'Company fundamentals',
-                  subtitle:
-                      'Enter market cap in crores; other amounts are in rupees.',
+                  subtitle: 'Enter market cap in crores; other amounts are in rupees.',
                   children: CreateCompanyCtrl.financialFields
                       .map(_field)
                       .toList(),
@@ -306,7 +305,7 @@ class _DuplicateNotice extends StatelessWidget {
         padding: const EdgeInsets.all(14),
         decoration: BoxDecoration(
           color: hasError ? colors.errorContainer : colors.surfaceContainerLow,
-          borderRadius: BorderRadius.circular(12),
+          borderRadius: BorderRadius.circular(AppRadii.control),
         ),
         child: Row(
           crossAxisAlignment: CrossAxisAlignment.start,
@@ -379,11 +378,11 @@ class CompanyLogoPicker extends StatelessWidget {
         padding: const EdgeInsets.all(10),
         decoration: BoxDecoration(
           color: colors.surface,
-          borderRadius: BorderRadius.circular(14),
+          borderRadius: BorderRadius.circular(AppRadii.card),
           border: Border.all(color: colors.outlineVariant),
         ),
         child: ClipRRect(
-          borderRadius: BorderRadius.circular(8),
+          borderRadius: BorderRadius.circular(AppRadii.badge),
           child: picking
               ? const Loader()
               : hasImage
@@ -475,7 +474,7 @@ class CompanyLogoPicker extends StatelessWidget {
             padding: const EdgeInsets.all(18),
             decoration: BoxDecoration(
               color: colors.surfaceContainerLow,
-              borderRadius: BorderRadius.circular(16),
+              borderRadius: BorderRadius.circular(AppRadii.card),
               border: Border.all(
                 color: error.isEmpty ? colors.outlineVariant : colors.error,
               ),

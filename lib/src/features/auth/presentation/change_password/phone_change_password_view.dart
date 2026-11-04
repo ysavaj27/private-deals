@@ -20,7 +20,7 @@ class PhoneChangePasswordView extends StatelessWidget {
               constraints: BoxConstraints(minHeight: constraints.maxHeight),
               child: Center(
                 child: CustomCardWidget(
-                  radius: 12,
+                  radius: AppRadii.card,
                   margin: EdgeInsets.all(15),
                   child: Padding(
                     padding: const EdgeInsets.symmetric(

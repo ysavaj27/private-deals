@@ -1,5 +1,6 @@
 import 'dart:io';
 
+import 'package:private_deals/src/core/configuration/fcm_vapid_key.dart';
 import 'package:private_deals/src/shared/models/deep_link_model.dart';
 import 'package:private_deals/src/shared/app_exports.dart';
 import 'package:private_deals/src/shared/plugins/open_file.dart';
@@ -204,7 +205,9 @@ class NotificationServices {
     if (settings.authorizationStatus == AuthorizationStatus.authorized) {
       logger.d('User granted notification permission.');
 
-      String? token = await messaging.getToken();
+      final String? token = fcmWebVapidKey.isEmpty
+          ? await messaging.getToken()
+          : await messaging.getToken(vapidKey: fcmWebVapidKey);
 
       if (token != null) {
         return token;

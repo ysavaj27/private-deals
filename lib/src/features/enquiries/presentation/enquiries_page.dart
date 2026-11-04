@@ -865,7 +865,12 @@ class _CompanyLogo extends StatelessWidget {
   Widget build(BuildContext context) {
     final colors = Theme.of(context).colorScheme;
     if (url.isNotEmpty) {
-      return LogoImage(url: url, width: 48, height: 48, radius: 12);
+      return LogoImage(
+        url: url,
+        width: 48,
+        height: 48,
+        radius: AppRadii.control,
+      );
     }
     final initial = name.trim().isEmpty
         ? '?'

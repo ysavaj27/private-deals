@@ -25,7 +25,7 @@ class TransactionCardShell extends StatelessWidget {
       padding: padding ?? const EdgeInsets.all(16),
       decoration: BoxDecoration(
         color: colors.surface,
-        borderRadius: BorderRadius.circular(16),
+        borderRadius: BorderRadius.circular(AppRadii.card),
         border: Border.all(color: colors.outlineVariant),
       ),
       child: child,
@@ -52,7 +52,7 @@ class TransactionTypeBadge extends StatelessWidget {
       padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
       decoration: BoxDecoration(
         color: bg,
-        borderRadius: BorderRadius.circular(8),
+        borderRadius: BorderRadius.circular(AppRadii.badge),
       ),
       child: Text(
         label,
@@ -98,13 +98,13 @@ class TransactionCardHeader extends StatelessWidget {
           height: logoSize,
           decoration: BoxDecoration(
             color: colors.surfaceContainerHigh,
-            borderRadius: BorderRadius.circular(12),
+            borderRadius: BorderRadius.circular(AppRadii.control),
             border: Border.all(color: colors.outlineVariant),
           ),
           clipBehavior: Clip.antiAlias,
           child: LogoImage(
             url: logoUrl,
-            radius: 12,
+            radius: AppRadii.control,
             height: logoSize,
             width: logoSize,
             onTap: onLogoTap,
@@ -138,17 +138,11 @@ class TransactionCardHeader extends StatelessWidget {
                   ),
                 ),
               ],
-              if (badge != null) ...[
-                const SizedBox(height: 8),
-                badge!,
-              ],
+              if (badge != null) ...[const SizedBox(height: 8), badge!],
             ],
           ),
         ),
-        if (trailing != null) ...[
-          const SizedBox(width: 8),
-          trailing!,
-        ],
+        if (trailing != null) ...[const SizedBox(width: 8), trailing!],
       ],
     );
   }
@@ -172,7 +166,7 @@ class TransactionMetricChip extends StatelessWidget {
         padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 12),
         decoration: BoxDecoration(
           color: colors.surfaceContainerLow,
-          borderRadius: BorderRadius.circular(12),
+          borderRadius: BorderRadius.circular(AppRadii.control),
         ),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
@@ -214,7 +208,10 @@ class TransactionMetricRow extends StatelessWidget {
       children: [
         for (var i = 0; i < metrics.length; i++) ...[
           if (i > 0) const SizedBox(width: 8),
-          TransactionMetricChip(label: metrics[i].label, value: metrics[i].value),
+          TransactionMetricChip(
+            label: metrics[i].label,
+            value: metrics[i].value,
+          ),
         ],
       ],
     );
@@ -242,7 +239,7 @@ class TransactionInfoTile extends StatelessWidget {
         padding: const EdgeInsets.all(14),
         decoration: BoxDecoration(
           color: colors.surfaceContainerLow,
-          borderRadius: BorderRadius.circular(12),
+          borderRadius: BorderRadius.circular(AppRadii.control),
         ),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
@@ -317,11 +314,7 @@ class TransactionStatusRow extends StatelessWidget {
     return IntrinsicHeight(
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.stretch,
-        children: [
-          tiles[0],
-          const SizedBox(width: 8),
-          tiles[1],
-        ],
+        children: [tiles[0], const SizedBox(width: 8), tiles[1]],
       ),
     );
   }
@@ -349,7 +342,7 @@ class TransactionProgressSection extends StatelessWidget {
       ),
       decoration: BoxDecoration(
         color: colors.surfaceContainerLow,
-        borderRadius: BorderRadius.circular(12),
+        borderRadius: BorderRadius.circular(AppRadii.control),
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -412,11 +405,7 @@ class TransactionAmountLabel extends StatelessWidget {
   final String amount;
   final String? caption;
 
-  const TransactionAmountLabel({
-    super.key,
-    required this.amount,
-    this.caption,
-  });
+  const TransactionAmountLabel({super.key, required this.amount, this.caption});
 
   @override
   Widget build(BuildContext context) {
@@ -486,10 +475,7 @@ class TransactionExpireTimer extends StatelessWidget {
                 ),
                 TextSpan(
                   text: expiredAt.timeRemainingUnit,
-                  style: TextStyle(
-                    fontSize: 9,
-                    color: colors.onSurfaceVariant,
-                  ),
+                  style: TextStyle(fontSize: 9, color: colors.onSurfaceVariant),
                 ),
               ],
             ),

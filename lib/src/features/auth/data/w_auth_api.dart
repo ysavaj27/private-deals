@@ -6,11 +6,11 @@ class WAuthApi {
     required String password,
   }) async {
     try {
-      // var fcm = await NotificationServices.getToken();
+      final fcm = await NotificationServices.getToken();
       Map<String, dynamic> body = {
         'mobile_no': mobileNo,
         'password': password,
-        'firebase_token': "N/A",
+        'firebase_token': fcm.isEmpty ? 'N/A' : fcm,
         'device_id': init.deviceId,
         'device': init.deviceOs,
       };

@@ -27,10 +27,7 @@ class PhoneProfileView extends StatelessWidget {
             if (c.error.value.isEmpty) return const SizedBox.shrink();
             return Padding(
               padding: const EdgeInsets.only(top: AppSpace.sm),
-              child: Text(
-                c.error.value,
-                style: TextStyle(color: scheme.error),
-              ),
+              child: Text(c.error.value, style: TextStyle(color: scheme.error)),
             );
           }),
           const SizedBox(height: AppSpace.lg),
@@ -115,9 +112,7 @@ class PhoneProfileView extends StatelessWidget {
               side: BorderSide(color: scheme.error.withValues(alpha: 0.55)),
               minimumSize: const Size(double.infinity, 48),
               padding: const EdgeInsets.symmetric(vertical: 14),
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(AppRadii.md),
-              ),
+              shape: RoundedRectangleBorder(borderRadius: AppRadii.buttonAll),
             ),
           ),
         ],

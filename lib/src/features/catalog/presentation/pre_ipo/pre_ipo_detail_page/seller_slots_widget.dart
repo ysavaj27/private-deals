@@ -45,7 +45,7 @@ class _SellerSlotsWidgetState extends State<SellerSlotsWidget> {
           clipBehavior: Clip.antiAlias,
           decoration: BoxDecoration(
             color: colors.surface,
-            borderRadius: BorderRadius.circular(16),
+            borderRadius: BorderRadius.circular(AppRadii.card),
             border: Border.all(color: colors.outlineVariant),
           ),
           child: Obx(() {
@@ -245,7 +245,7 @@ class _SellerSlotsWidgetState extends State<SellerSlotsWidget> {
               margin: const EdgeInsets.symmetric(horizontal: 12),
               decoration: BoxDecoration(
                 color: colors.secondaryContainer.withValues(alpha: 0.18),
-                borderRadius: BorderRadius.circular(12),
+                borderRadius: BorderRadius.circular(AppRadii.control),
                 border: Border.all(
                   color: colors.secondary.withValues(alpha: 0.3),
                 ),
@@ -445,9 +445,7 @@ class _TradeHeader extends StatelessWidget {
           side: BorderSide(
             color: selected ? colors.primary : colors.outlineVariant,
           ),
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(10),
-          ),
+          shape: RoundedRectangleBorder(borderRadius: AppRadii.tabAll),
           padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
         ),
         child: Wrap(
@@ -563,7 +561,7 @@ class _OfferRow extends StatelessWidget {
                       ),
                       decoration: BoxDecoration(
                         color: colors.surfaceContainerHighest,
-                        borderRadius: BorderRadius.circular(8),
+                        borderRadius: BorderRadius.circular(AppRadii.badge),
                       ),
                       child: Text(
                         'Your deal',

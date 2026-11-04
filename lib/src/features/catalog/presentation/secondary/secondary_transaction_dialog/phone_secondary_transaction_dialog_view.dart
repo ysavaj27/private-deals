@@ -19,10 +19,7 @@ class PhoneSecondaryTransactionDialogView extends StatelessWidget {
         children: [
           const Text(
             "Secondary transaction",
-            style: TextStyle(
-              fontSize: 24,
-              fontWeight: FontWeight.w600,
-            ),
+            style: TextStyle(fontSize: 24, fontWeight: FontWeight.w600),
           ),
           const SizedBox(height: 18),
           Row(
@@ -51,17 +48,14 @@ class PhoneSecondaryTransactionDialogView extends StatelessWidget {
                   height: 48,
                   width: 65,
                   decoration: BoxDecoration(
-                    borderRadius: BorderRadius.circular(10),
+                    borderRadius: BorderRadius.circular(AppRadii.control),
                     border: Border.all(color: AppColors.borderColor(context)),
                     color: context.isDarkMode
                         ? const Color(0xff242424)
                         : Colors.grey.shade400,
                   ),
                   alignment: Alignment.center,
-                  child: const Text(
-                    "Max Qty",
-                    style: TextStyle(fontSize: 12),
-                  ),
+                  child: const Text("Max Qty", style: TextStyle(fontSize: 12)),
                 ),
               ),
             ],
@@ -74,12 +68,14 @@ class PhoneSecondaryTransactionDialogView extends StatelessWidget {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     _DataText(
-                        title: "Min Shares",
-                        subTitle: c.model.minimumQty.formattedDecimal),
+                      title: "Min Shares",
+                      subTitle: c.model.minimumQty.formattedDecimal,
+                    ),
                     const SizedBox(height: 18),
                     _DataText(
-                        title: "Currant shares price",
-                        subTitle: c.model.sharePrice.toCurrency),
+                      title: "Currant shares price",
+                      subTitle: c.model.sharePrice.toCurrency,
+                    ),
                     const SizedBox(height: 18),
                   ],
                 ),
@@ -91,8 +87,9 @@ class PhoneSecondaryTransactionDialogView extends StatelessWidget {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     _DataText(
-                        title: "Available Shares",
-                        subTitle: c.model.availableQuantity.toCurrency),
+                      title: "Available Shares",
+                      subTitle: c.model.availableQuantity.toCurrency,
+                    ),
                     const SizedBox(height: 18),
                     // _DataText(
                     //     title: "Last traded price",
@@ -120,7 +117,7 @@ class PhoneSecondaryTransactionDialogView extends StatelessWidget {
                   isLoading: c.isLoading.value,
                   width: 112,
                   height: 40,
-                  text: "Buy",
+                  text: c.actionLabel,
                 );
               }),
             ],
@@ -142,10 +139,7 @@ class _DataText extends StatelessWidget {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Text(
-          '$title:',
-          style: const TextStyle(fontSize: 12),
-        ),
+        Text('$title:', style: const TextStyle(fontSize: 12)),
         const SizedBox(height: 3),
         Text(
           subTitle,

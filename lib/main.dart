@@ -6,6 +6,7 @@ import 'package:flutter/foundation.dart';
 import 'package:private_deals/firebase_options.dart';
 import 'package:private_deals/src/app/routing/session_pages.dart';
 import 'package:private_deals/src/shared/app_exports.dart';
+import 'package:private_deals/src/shared/widgets/demo_environment_banner.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -68,6 +69,10 @@ class MyApp extends StatelessWidget {
         unknownRoute: GetPage(
           name: '/not-found',
           page: () => const NotFoundPage(),
+        ),
+        builder: (context, child) => DemoEnvironmentFrame(
+          baseUrl: AppUrl.baseUrl,
+          child: child ?? const SizedBox.shrink(),
         ),
       );
     });

@@ -10,7 +10,7 @@ class CustomDottedBorder extends StatelessWidget {
 
   const CustomDottedBorder({
     super.key,
-    this.radius = 12,
+    this.radius = AppRadii.control,
     this.padding = 6,
     required this.child,
     this.dashPattern,

@@ -26,7 +26,7 @@ class ProfilePhotoSection extends StatelessWidget {
             height: 72,
             decoration: BoxDecoration(
               color: scheme.primaryContainer,
-              borderRadius: BorderRadius.circular(16),
+              borderRadius: BorderRadius.circular(AppRadii.card),
             ),
             clipBehavior: Clip.antiAlias,
             child: selected?.uint8list != null
@@ -52,10 +52,7 @@ class ProfilePhotoSection extends StatelessWidget {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text(
-                  'Display photo',
-                  style: context.textTheme.titleSmall,
-                ),
+                Text('Display photo', style: context.textTheme.titleSmall),
                 const SizedBox(height: 4),
                 Text(
                   'Shown on your partner profile. Only the photo can be changed.',
@@ -78,12 +75,14 @@ class ProfilePhotoSection extends StatelessWidget {
                     runSpacing: 8,
                     children: [
                       OutlinedButton(
-                        onPressed:
-                            picking || saving ? null : controller.pickLogo,
+                        onPressed: picking || saving
+                            ? null
+                            : controller.pickLogo,
                         child: Text(picking ? 'Selecting…' : 'Choose photo'),
                       ),
                       FilledButton(
-                        onPressed: saving ||
+                        onPressed:
+                            saving ||
                                 picking ||
                                 controller.selectedLogo.value == null
                             ? null
@@ -91,8 +90,9 @@ class ProfilePhotoSection extends StatelessWidget {
                         child: Text(saving ? 'Saving…' : 'Save'),
                       ),
                       TextButton(
-                        onPressed:
-                            saving || picking ? null : controller.cancelPhoto,
+                        onPressed: saving || picking
+                            ? null
+                            : controller.cancelPhoto,
                         child: const Text('Cancel'),
                       ),
                     ],

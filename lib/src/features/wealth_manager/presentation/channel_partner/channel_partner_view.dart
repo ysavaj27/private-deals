@@ -257,7 +257,7 @@ class _PartnerCard extends StatelessWidget {
       padding: const EdgeInsets.all(20),
       decoration: BoxDecoration(
         color: colors.surface,
-        borderRadius: BorderRadius.circular(18),
+        borderRadius: BorderRadius.circular(AppRadii.card),
         border: Border.all(color: colors.outlineVariant),
       ),
       child: Column(
@@ -267,7 +267,7 @@ class _PartnerCard extends StatelessWidget {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               ClipRRect(
-                borderRadius: BorderRadius.circular(14),
+                borderRadius: BorderRadius.circular(AppRadii.card),
                 child: SizedBox(
                   width: 52,
                   height: 52,
@@ -418,7 +418,7 @@ class _Tag extends StatelessWidget {
     padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
     decoration: BoxDecoration(
       color: color.withValues(alpha: 0.09),
-      borderRadius: BorderRadius.circular(8),
+      borderRadius: BorderRadius.circular(AppRadii.badge),
     ),
     child: Text(
       text,

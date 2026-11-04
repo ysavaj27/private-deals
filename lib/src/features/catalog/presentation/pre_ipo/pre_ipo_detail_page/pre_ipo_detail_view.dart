@@ -184,7 +184,9 @@ class _SectionNavigation extends StatelessWidget {
                         : colors.onSurfaceVariant,
                     padding: const EdgeInsets.symmetric(horizontal: 16),
                     minimumSize: const Size(48, 46),
-                    shape: const RoundedRectangleBorder(),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: AppRadii.tabAll,
+                    ),
                   ),
                   child: Text(
                     labels[index],

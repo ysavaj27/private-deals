@@ -245,6 +245,87 @@ void main() {
     c.onDelete();
   });
 
+  test('Private Equity dashboard uses the equity portfolio when the dashboard endpoint fails', () async {
+    dioConfig.dio.httpClientAdapter = FakeAdapter((request) async {
+      if (request.path == AppUrl.wDashboard) {
+        return response({'message': 'Server Error'}, 500);
+      }
+      if (request.path == AppUrl.wPortfolio) {
+        expect(request.queryParameters['type'], 'equity');
+        return response({
+          'status': 1,
+          'data': [
+            {
+              'investor': {'id': 7, 'name': 'Aarav Shah'},
+              'total_company_count': 1,
+              'total_investment_amount': 250000,
+              'holdings': [
+                {
+                  'id': 1,
+                  'investor_id': 7,
+                  'startup_id': 9,
+                  'shares': 10,
+                  'purchase_price': 100,
+                  'investment_amount': 250000,
+                  'current_share_price': 120,
+                  'current_value': 300000,
+                  'created_at': '2026-08-15T00:00:00.000Z',
+                  'investor': {'id': 7, 'name': 'Aarav Shah'},
+                  'startup': {
+                    'id': 9,
+                    'brand_name': 'YOLO',
+                    'sector_id': 5,
+                    'cms': {'logo': 'startup/logo/yolo.png'},
+                  },
+                },
+              ],
+            },
+          ],
+        });
+      }
+      if (request.path == AppUrl.sector) {
+        return response({
+          'status': 1,
+          'data': [
+            {'id': 5, 'name': 'SaaS'},
+          ],
+        });
+      }
+      if (request.path == AppUrl.wInvestorList) {
+        return response({
+          'status': 1,
+          'data': [
+            {
+              'id': 7,
+              'name': 'Aarav Shah',
+              'kyc_status': 1,
+              'is_active': 1,
+              'email': 'aarav@example.com',
+            },
+          ],
+        });
+      }
+      return response({'status': 0}, 404);
+    });
+
+    final result = await DashboardApi.wealthManagerDashboard();
+    expect(result.isSuccess, isTrue);
+    final model = result.r!;
+    expect(model.totalStartups, 1);
+    expect(model.totalInvestors, 1);
+    expect(model.totalAmountInvested, 250000);
+    expect(model.sectors.single.name, 'SaaS');
+    expect(model.sectors.single.totalInvestment, 250000);
+    expect(model.investmentGrowth.single.startupName, 'YOLO');
+    expect(model.investmentGrowth.single.currentValue, 300000);
+    expect(model.investmentGrowth.single.hasCurrentValue, isTrue);
+    expect(model.investments.monthly.single.month, '2026-08');
+    expect(model.investments.quarterly.single.quarter, 'Q3 2026');
+    expect(model.investors.single.name, 'Aarav Shah');
+    expect(model.investorChartModel.kyc.single.kycStatus, 1);
+    expect(model.investorChartModel.active.single.isActive, 1);
+  });
+
   Future<void> show(
     WidgetTester tester,
     Widget child, {

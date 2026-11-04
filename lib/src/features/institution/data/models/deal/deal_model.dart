@@ -17,6 +17,7 @@ class DealModel {
   DateTime expiredAt;
   bool isExpired;
   bool isMine;
+  DateTime? recordedAt;
   LiteCompanyModel company;
 
   bool get isExpiryDate => expiredAt.isNotEmpty;
@@ -44,6 +45,7 @@ class DealModel {
     DateTime? expiredAt,
     this.isExpired = false,
     this.isMine = false,
+    this.recordedAt,
     LiteCompanyModel? company,
   }) : expiredAt = expiredAt ?? DateTime(0),
        company = company ?? LiteCompanyModel();
@@ -69,6 +71,7 @@ class DealModel {
       expiredAt: Parse.toDateTime(json['expired_at']),
       isExpired: Parse.toBool(json['is_expired']),
       isMine: Parse.toBool(json['is_mine']),
+      recordedAt: _recordedAt(json),
       company: LiteCompanyModel.fromJson(
         Map<String, dynamic>.from(json['company'] as Map? ?? {}),
       ),
@@ -91,7 +94,20 @@ class DealModel {
       "expired_at": expiredAt.toIso8601String(),
       "is_expired": isExpired,
       "is_mine": isMine,
+      if (recordedAt != null) "updated_at": recordedAt!.toIso8601String(),
       "company": company.toJson(),
     };
   }
+}
+
+/// Newest timestamp on the deal, when the API sends one.
+DateTime? _recordedAt(Map<String, dynamic> json) {
+  for (final key in ['updated_at', 'created_at']) {
+    final raw = json[key]?.toString().trim() ?? '';
+    if (raw.isEmpty) continue;
+    final parsed = DateTime.tryParse(raw.replaceFirst(' ', 'T'));
+    if (parsed == null || parsed.year < 1971) continue;
+    return parsed.isUtc ? parsed.toLocal() : parsed;
+  }
+  return null;
 }

@@ -20,8 +20,8 @@ class DSideBarWidget extends StatelessWidget {
         color: isDark ? const Color(0xFF0D1117) : const Color(0xFFF7F9FC),
         borderRadius: context.isPhone
             ? const BorderRadius.only(
-                topRight: Radius.circular(20),
-                bottomRight: Radius.circular(20),
+                topRight: Radius.circular(AppRadii.card),
+                bottomRight: Radius.circular(AppRadii.card),
               )
             : BorderRadius.zero,
         border: Border.all(
@@ -123,7 +123,7 @@ class DTabTileWidget extends StatelessWidget {
     final isDark = Theme.of(context).brightness == Brightness.dark;
     final accent = isDark ? const Color(0xFF8BAAD4) : const Color(0xFF2B5996);
     final muted = isDark ? const Color(0xFFB1BAC4) : const Color(0xFF5A6578);
-    final radius = BorderRadius.circular(12);
+    final radius = BorderRadius.circular(AppRadii.control);
 
     return Obx(() {
       final isSelected = c.currentTab() == tab;
@@ -201,7 +201,7 @@ class DActionTileWidget extends StatelessWidget {
     final accent = isDark ? const Color(0xFF8BAAD4) : const Color(0xFF2B5996);
     final muted = isDark ? const Color(0xFFB1BAC4) : const Color(0xFF5A6578);
     final color = destructive ? Theme.of(context).colorScheme.error : muted;
-    final radius = BorderRadius.circular(12);
+    final radius = BorderRadius.circular(AppRadii.control);
 
     return Material(
       color: Colors.transparent,
@@ -272,7 +272,7 @@ class DExpandableMenu extends GetView<SellerHomePageCtrl> {
           color: selected
               ? (isDark ? const Color(0xFF1A2E48) : const Color(0xFFD5E2F2))
               : Colors.transparent,
-          borderRadius: BorderRadius.circular(12),
+          borderRadius: BorderRadius.circular(AppRadii.control),
           clipBehavior: Clip.antiAlias,
           child: InkWell(
             onTap: () {

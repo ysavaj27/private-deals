@@ -12,8 +12,10 @@ class SecondaryFilterDialog extends StatelessWidget {
     return Container(
       padding: context.isPhone ? EdgeInsets.all(15) : EdgeInsets.all(25),
       decoration: BoxDecoration(
-        border: Border.all(color: context.theme.disabledColor.withValues(alpha: 0.2)),
-        borderRadius: BorderRadius.circular(20),
+        border: Border.all(
+          color: context.theme.disabledColor.withValues(alpha: 0.2),
+        ),
+        borderRadius: BorderRadius.circular(AppRadii.card),
         color: context.theme.scaffoldBackgroundColor,
       ),
       // constraints: BoxConstraints(
@@ -44,10 +46,8 @@ class SecondaryFilterDialog extends StatelessWidget {
               label: 'Sector',
               items: c.sectorList
                   .map(
-                    (e) => DropdownMenuItem<int>(
-                      child: Text(e.name),
-                      value: e.id,
-                    ),
+                    (e) =>
+                        DropdownMenuItem<int>(child: Text(e.name), value: e.id),
                   )
                   .toList(),
               onChanged: (int? e) {

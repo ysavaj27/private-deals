@@ -38,10 +38,9 @@ class _PendingTasksViewState extends State<PendingTasksView> {
     final documents = selected == PendingTaskEnum.document;
     final investors = c.investors
         .where(
-          (item) =>
-              '${item.name} ${item.email} ${item.mobileNumber}'
-                  .toLowerCase()
-                  .contains(_query),
+          (item) => '${item.name} ${item.email} ${item.mobileNumber}'
+              .toLowerCase()
+              .contains(_query),
         )
         .toList();
     final documentItems = c.documents
@@ -68,8 +67,8 @@ class _PendingTasksViewState extends State<PendingTasksView> {
     final itemCount = kyc
         ? investors.length
         : documents
-            ? documentItems.length
-            : transfers.length;
+        ? documentItems.length
+        : transfers.length;
     return WorkspacePage(
       title: 'Pending Tasks',
       subtitle: 'Keep investor onboarding and investments moving forward.',
@@ -96,8 +95,8 @@ class _PendingTasksViewState extends State<PendingTasksView> {
           kyc
               ? 'Complete investor KYC'
               : documents
-                  ? 'Documents awaiting signature'
-                  : 'Payments awaiting transfer',
+              ? 'Documents awaiting signature'
+              : 'Payments awaiting transfer',
           style: Theme.of(context).textTheme.titleMedium,
         ),
         const SizedBox(height: AppSpace.xs),
@@ -105,8 +104,8 @@ class _PendingTasksViewState extends State<PendingTasksView> {
           kyc
               ? 'Review investor details and continue their verification.'
               : documents
-                  ? 'Unsigned Pre-IPO Deal Slip, Buy Mandate, and Sell Mandate documents.'
-                  : 'Review unlisted transactions waiting for fund transfer.',
+              ? 'Unsigned Pre-IPO Deal Slip, Buy Mandate, and Sell Mandate documents.'
+              : 'Review unlisted transactions waiting for fund transfer.',
           style: Theme.of(context).textTheme.bodyMedium
               ?.copyWith(color: Theme.of(context).colorScheme.onSurfaceVariant),
         ),
@@ -154,7 +153,7 @@ class _PendingTasksViewState extends State<PendingTasksView> {
                   placeHolderImage: investor.placeholderImage,
                   height: 48,
                   width: 48,
-                  radius: 12,
+                  radius: AppRadii.control,
                   fit: BoxFit.cover,
                 ),
                 const SizedBox(width: AppSpace.md),
@@ -224,7 +223,7 @@ class _PendingTasksViewState extends State<PendingTasksView> {
                 url: document.company.logoUrl,
                 height: 44,
                 width: 44,
-                radius: 10,
+                radius: AppRadii.control,
               ),
               const SizedBox(width: AppSpace.md),
               Expanded(
@@ -314,7 +313,7 @@ class _PendingTasksViewState extends State<PendingTasksView> {
                 url: transfer.company.logoUrl,
                 height: 44,
                 width: 44,
-                radius: 10,
+                radius: AppRadii.control,
               ),
               const SizedBox(width: AppSpace.md),
               Expanded(

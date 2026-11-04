@@ -21,7 +21,7 @@ class PhonePrimaryInvestmentView extends StatelessWidget {
             Row(
               children: [
                 ClipRRect(
-                  borderRadius: BorderRadius.circular(5),
+                  borderRadius: BorderRadius.circular(AppRadii.xs),
                   child: CacheImage(
                     url: c.model().cms.logo,
                     height: 80,
@@ -159,7 +159,9 @@ class SummaryWidget extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return CustomCardWidget(
-      borderRadius: const BorderRadius.vertical(top: Radius.circular(33)),
+      borderRadius: const BorderRadius.vertical(
+        top: Radius.circular(AppRadii.card),
+      ),
       height: 320,
       child: Column(
         children: [
@@ -275,9 +277,7 @@ class SummaryWidget extends StatelessWidget {
             return CustomElevatedButton(
               backgroundColor: AppColors.green(context),
               isLoading: c.investing.value,
-              borderRadius: const BorderRadius.vertical(
-                top: Radius.circular(15),
-              ),
+              borderRadius: AppRadii.buttonAll,
               onPressed: () {
                 Get.back();
                 c.onPress();
@@ -429,7 +429,7 @@ class CaptableView extends StatelessWidget {
               child: Row(
                 children: [
                   InkWell(
-                    borderRadius: BorderRadius.circular(12),
+                    borderRadius: BorderRadius.circular(AppRadii.button),
                     onTap: () {
                       c.amountCTRL.text = c.minAmount.toString();
                       c.isMixedAmount(false);
@@ -437,7 +437,7 @@ class CaptableView extends StatelessWidget {
                       c.investedAmount(c.minAmount().toDouble());
                     },
                     child: CustomCardWidget(
-                      radius: 12,
+                      radius: AppRadii.button,
                       padding: const EdgeInsets.symmetric(
                         horizontal: 38,
                         vertical: 10,
@@ -461,7 +461,7 @@ class CaptableView extends StatelessWidget {
                     ),
                   ),
                   InkWell(
-                    borderRadius: BorderRadius.circular(12),
+                    borderRadius: BorderRadius.circular(AppRadii.button),
                     onTap: () {
                       c.amountCTRL.text = c.maxAmount.toString();
                       c.isMixedAmount(false);
@@ -469,7 +469,7 @@ class CaptableView extends StatelessWidget {
                       c.investedAmount(c.maxAmount().toDouble());
                     },
                     child: CustomCardWidget(
-                      radius: 12,
+                      radius: AppRadii.button,
                       padding: const EdgeInsets.symmetric(
                         horizontal: 38,
                         vertical: 10,
@@ -618,13 +618,13 @@ class MoreInfoDialog extends StatelessWidget {
               ),
               InkWell(
                 onTap: Get.back,
-                borderRadius: BorderRadius.circular(25),
+                borderRadius: AppRadii.buttonAll,
                 child: Container(
                   // height: 15,
                   // width: 15,
                   padding: const EdgeInsets.all(4),
                   decoration: BoxDecoration(
-                    shape: BoxShape.circle,
+                    borderRadius: AppRadii.buttonAll,
                     color: context.theme.disabledColor,
                   ),
                   child: const Icon(Icons.close, size: 15),
@@ -907,12 +907,12 @@ class _TabWidget extends StatelessWidget {
   Widget build(BuildContext context) {
     return Expanded(
       child: InkWell(
-        borderRadius: BorderRadius.circular(12),
+        borderRadius: BorderRadius.circular(AppRadii.tab),
         onTap: () => c.paymentMode(type),
         child: Obx(() {
           bool isSelected = c.paymentMode() == type;
           return CustomCardWidget(
-            radius: 12,
+            radius: AppRadii.tab,
             padding: const EdgeInsets.symmetric(vertical: 7),
             borderColor: isSelected ? context.theme.iconTheme.color : null,
             child: Center(

@@ -1,3 +1,4 @@
+import 'package:private_deals/src/shared/theme/app_tokens.dart';
 import 'package:flutter/material.dart';
 
 /// Keep financial columns readable at every viewport size.
@@ -61,7 +62,7 @@ class _PreIPODetailTableState extends State<PreIPODetailTable> {
                 ),
               ),
             ClipRRect(
-              borderRadius: BorderRadius.circular(10),
+              borderRadius: BorderRadius.circular(AppRadii.control),
               child: Scrollbar(
                 controller: _scrollController,
                 thumbVisibility: scrolls,

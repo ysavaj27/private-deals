@@ -1,77 +1,81 @@
+import 'package:private_deals/src/shared/theme/app_tokens.dart';
 import 'package:flutter/material.dart';
 
 import 'package:private_deals/src/shared/theme/brand_colors.dart';
 import 'package:private_deals/src/shared/theme/section_accents.dart';
 import 'package:private_deals/src/shared/theme/app_picker_theme.dart';
 
-export 'package:private_deals/src/shared/theme/brand_colors.dart' show BrandColors, partnerActionBlue;
+export 'package:private_deals/src/shared/theme/brand_colors.dart'
+    show BrandColors, partnerActionBlue;
 
 abstract final class LightTheme {
-  static final colorScheme = ColorScheme.fromSeed(
-    seedColor: BrandColors.navyAction,
-    brightness: Brightness.light,
-    secondary: BrandColors.gold,
-  ).copyWith(
-    primary: BrandColors.navyAction,
-    onPrimary: Colors.white,
-    primaryContainer: BrandColors.navyContainerLight,
-    onPrimaryContainer: BrandColors.navy,
-    secondary: BrandColors.gold,
-    onSecondary: BrandColors.onGold,
-    secondaryContainer: BrandColors.goldContainerLight,
-    onSecondaryContainer: BrandColors.onGold,
-    // Navy-tinted surface ladder — scaffold ≠ card ≠ elevated.
-    surface: const Color(0xFFF7F9FC),
-    onSurface: const Color(0xFF1A2233),
-    onSurfaceVariant: const Color(0xFF5A6578),
-    surfaceContainerLowest: const Color(0xFFF7F9FC),
-    surfaceContainerLow: const Color(0xFFE4E9F1),
-    surfaceContainer: const Color(0xFFD8DEE8),
-    surfaceContainerHigh: const Color(0xFFCDD5E2),
-    surfaceContainerHighest: const Color(0xFFC0CAD9),
-    outline: const Color(0xFF6B7589),
-    outlineVariant: const Color(0xFFB8C2D1),
-    error: const Color(0xFFBA1A1A),
-    onError: Colors.white,
-  );
+  static final colorScheme =
+      ColorScheme.fromSeed(
+        seedColor: BrandColors.navyAction,
+        brightness: Brightness.light,
+        secondary: BrandColors.gold,
+      ).copyWith(
+        primary: BrandColors.navyAction,
+        onPrimary: Colors.white,
+        primaryContainer: BrandColors.navyContainerLight,
+        onPrimaryContainer: BrandColors.navy,
+        secondary: BrandColors.gold,
+        onSecondary: BrandColors.onGold,
+        secondaryContainer: BrandColors.goldContainerLight,
+        onSecondaryContainer: BrandColors.onGold,
+        // Navy-tinted surface ladder — scaffold ≠ card ≠ elevated.
+        surface: const Color(0xFFF7F9FC),
+        onSurface: const Color(0xFF1A2233),
+        onSurfaceVariant: const Color(0xFF5A6578),
+        surfaceContainerLowest: const Color(0xFFF7F9FC),
+        surfaceContainerLow: const Color(0xFFE4E9F1),
+        surfaceContainer: const Color(0xFFD8DEE8),
+        surfaceContainerHigh: const Color(0xFFCDD5E2),
+        surfaceContainerHighest: const Color(0xFFC0CAD9),
+        outline: const Color(0xFF6B7589),
+        outlineVariant: const Color(0xFFB8C2D1),
+        error: const Color(0xFFBA1A1A),
+        onError: Colors.white,
+      );
 
   static final theme = _buildTheme(colorScheme);
 }
 
 abstract final class DarkTheme {
-  static final colorScheme = ColorScheme.fromSeed(
-    seedColor: BrandColors.navyAction,
-    brightness: Brightness.dark,
-    secondary: BrandColors.gold,
-  ).copyWith(
-    primary: BrandColors.navyLight,
-    onPrimary: BrandColors.navy,
-    primaryContainer: BrandColors.navyContainerDark,
-    onPrimaryContainer: const Color(0xFFE2EDFF),
-    secondary: BrandColors.gold,
-    onSecondary: BrandColors.onGold,
-    secondaryContainer: BrandColors.goldContainerDark,
-    onSecondaryContainer: const Color(0xFFF3E6D4),
-    surface: const Color(0xFF0D1117),
-    onSurface: const Color(0xFFF0F6FC),
-    onSurfaceVariant: const Color(0xFFB1BAC4),
-    surfaceContainerLowest: const Color(0xFF010409),
-    surfaceContainerLow: const Color(0xFF0D1117),
-    surfaceContainer: const Color(0xFF161B22),
-    surfaceContainerHigh: const Color(0xFF1C2128),
-    surfaceContainerHighest: const Color(0xFF30363D),
-    outline: const Color(0xFF6E7681),
-    outlineVariant: const Color(0xFF30363D),
-    error: const Color(0xFFFFB4AB),
-    onError: const Color(0xFF690005),
-  );
+  static final colorScheme =
+      ColorScheme.fromSeed(
+        seedColor: BrandColors.navyAction,
+        brightness: Brightness.dark,
+        secondary: BrandColors.gold,
+      ).copyWith(
+        primary: BrandColors.navyLight,
+        onPrimary: BrandColors.navy,
+        primaryContainer: BrandColors.navyContainerDark,
+        onPrimaryContainer: const Color(0xFFE2EDFF),
+        secondary: BrandColors.gold,
+        onSecondary: BrandColors.onGold,
+        secondaryContainer: BrandColors.goldContainerDark,
+        onSecondaryContainer: const Color(0xFFF3E6D4),
+        surface: const Color(0xFF0D1117),
+        onSurface: const Color(0xFFF0F6FC),
+        onSurfaceVariant: const Color(0xFFB1BAC4),
+        surfaceContainerLowest: const Color(0xFF010409),
+        surfaceContainerLow: const Color(0xFF0D1117),
+        surfaceContainer: const Color(0xFF161B22),
+        surfaceContainerHigh: const Color(0xFF1C2128),
+        surfaceContainerHighest: const Color(0xFF30363D),
+        outline: const Color(0xFF6E7681),
+        outlineVariant: const Color(0xFF30363D),
+        error: const Color(0xFFFFB4AB),
+        onError: const Color(0xFF690005),
+      );
 
   static final theme = _buildTheme(colorScheme);
 }
 
 ThemeData _buildTheme(ColorScheme colors) {
   final isDark = colors.brightness == Brightness.dark;
-  final radius = BorderRadius.circular(12);
+  final radius = BorderRadius.circular(AppRadii.control);
 
   final base = ThemeData(
     useMaterial3: true,
@@ -165,8 +169,9 @@ ThemeData _buildTheme(ColorScheme colors) {
       isDark ? SectionAccents.dark : SectionAccents.light,
     ],
     primaryColor: colors.primary,
-    scaffoldBackgroundColor:
-        isDark ? colors.surfaceContainerLowest : colors.surfaceContainerLow,
+    scaffoldBackgroundColor: isDark
+        ? colors.surfaceContainerLowest
+        : colors.surfaceContainerLow,
     cardColor: colors.surface,
     dividerColor: colors.outlineVariant,
     disabledColor: colors.onSurface.withAlpha(97),
@@ -189,8 +194,9 @@ ThemeData _buildTheme(ColorScheme colors) {
       surfaceTintColor: Colors.transparent,
       elevation: 0,
       shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(16),
-          side: BorderSide(color: colors.outlineVariant)),
+        borderRadius: BorderRadius.circular(AppRadii.card),
+        side: BorderSide(color: colors.outlineVariant),
+      ),
     ),
     bottomSheetTheme: BottomSheetThemeData(
       backgroundColor: colors.surfaceContainerLow,
@@ -198,20 +204,24 @@ ThemeData _buildTheme(ColorScheme colors) {
       elevation: 0,
       modalElevation: 0,
       shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.vertical(top: Radius.circular(16)),
-          side: BorderSide(color: colors.outlineVariant)),
+        borderRadius: BorderRadius.vertical(
+          top: Radius.circular(AppRadii.card),
+        ),
+        side: BorderSide(color: colors.outlineVariant),
+      ),
     ),
     drawerTheme: DrawerThemeData(
-        backgroundColor: colors.surfaceContainerLow,
-        surfaceTintColor: Colors.transparent,
-        elevation: 0),
+      backgroundColor: colors.surfaceContainerLow,
+      surfaceTintColor: Colors.transparent,
+      elevation: 0,
+    ),
     cardTheme: CardThemeData(
       elevation: 0,
       margin: EdgeInsets.zero,
       color: colors.surface,
       surfaceTintColor: Colors.transparent,
       shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(16),
+        borderRadius: BorderRadius.circular(AppRadii.card),
         side: BorderSide(color: colors.outlineVariant),
       ),
     ),
@@ -242,7 +252,7 @@ ThemeData _buildTheme(ColorScheme colors) {
         minimumSize: const Size(64, 48),
         padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 14),
         textStyle: textTheme.labelLarge,
-        shape: RoundedRectangleBorder(borderRadius: radius),
+        shape: RoundedRectangleBorder(borderRadius: AppRadii.buttonAll),
       ),
     ),
     elevatedButtonTheme: ElevatedButtonThemeData(
@@ -254,7 +264,7 @@ ThemeData _buildTheme(ColorScheme colors) {
         minimumSize: const Size(64, 48),
         padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 14),
         textStyle: textTheme.labelLarge,
-        shape: RoundedRectangleBorder(borderRadius: radius),
+        shape: RoundedRectangleBorder(borderRadius: AppRadii.buttonAll),
       ),
     ),
     outlinedButtonTheme: OutlinedButtonThemeData(
@@ -267,7 +277,7 @@ ThemeData _buildTheme(ColorScheme colors) {
         padding: const EdgeInsets.symmetric(horizontal: 20),
         side: BorderSide(color: colors.outline),
         textStyle: textTheme.labelLarge,
-        shape: RoundedRectangleBorder(borderRadius: radius),
+        shape: RoundedRectangleBorder(borderRadius: AppRadii.buttonAll),
       ),
     ),
     textButtonTheme: TextButtonThemeData(
@@ -275,7 +285,25 @@ ThemeData _buildTheme(ColorScheme colors) {
         foregroundColor: colors.primary,
         minimumSize: const Size(48, 48),
         textStyle: textTheme.labelLarge,
-        shape: RoundedRectangleBorder(borderRadius: radius),
+        shape: RoundedRectangleBorder(borderRadius: AppRadii.buttonAll),
+      ),
+    ),
+    iconButtonTheme: IconButtonThemeData(
+      style: IconButton.styleFrom(
+        shape: RoundedRectangleBorder(borderRadius: AppRadii.buttonAll),
+      ),
+    ),
+    floatingActionButtonTheme: FloatingActionButtonThemeData(
+      shape: RoundedRectangleBorder(borderRadius: AppRadii.buttonAll),
+    ),
+    chipTheme: ChipThemeData(
+      shape: RoundedRectangleBorder(borderRadius: AppRadii.tabAll),
+    ),
+    segmentedButtonTheme: SegmentedButtonThemeData(
+      style: ButtonStyle(
+        shape: WidgetStatePropertyAll(
+          RoundedRectangleBorder(borderRadius: AppRadii.tabAll),
+        ),
       ),
     ),
     iconTheme: IconThemeData(color: colors.onSurfaceVariant, size: 22),
@@ -290,7 +318,7 @@ ThemeData _buildTheme(ColorScheme colors) {
       elevation: 8,
       textStyle: textTheme.bodyMedium,
       shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(16),
+        borderRadius: BorderRadius.circular(AppRadii.card),
         side: BorderSide(color: colors.outlineVariant),
       ),
     ),

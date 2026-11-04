@@ -1,0 +1,1218 @@
+{
+  "captured_at": "2026-11-03T10:49:49.489058+00:00",
+  "method": "warmup=1, runs=5, headtoken only (no bearer), from same client",
+  "note": "Most business catalog/auth routes return HTTP 401 without bearer \u2014 those measure auth-gate latency, not full business payload work. Compare 200 OK rows for real payload work.",
+  "environments": {
+    "staging": {
+      "endpoint_count": 15,
+      "median_of_medians_ms": 120.5,
+      "slowest": "Home (v1)",
+      "slowest_median_ms": 246.8,
+      "fastest": "Startup lite",
+      "fastest_median_ms": 103.1
+    },
+    "production": {
+      "endpoint_count": 15,
+      "median_of_medians_ms": 122.7,
+      "slowest": "Home (v1)",
+      "slowest_median_ms": 312.8,
+      "fastest": "Secondary landing",
+      "fastest_median_ms": 107.1
+    }
+  },
+  "comparison": {
+    "api_endpoints": 15,
+    "staging_faster_count": 8,
+    "production_faster_count": 7,
+    "ties": 0,
+    "avg_delta_ms_staging_minus_prod": -5.8,
+    "ok200_endpoints": 4,
+    "auth_gate_endpoints": 11,
+    "largest_staging_penalty": {
+      "label": "Enquiries (auth)",
+      "group": "API_AUTH",
+      "path": "/api/v2/business/enquiries/deals",
+      "staging_median_ms": 193.0,
+      "production_median_ms": 133.6,
+      "staging_p95_ms": 269.0,
+      "production_p95_ms": 381.2,
+      "delta_ms": 59.4,
+      "ratio": 1.44,
+      "staging_http": 401,
+      "production_http": 401,
+      "staging_bytes": 30,
+      "production_bytes": 30,
+      "winner": "production"
+    },
+    "largest_staging_advantage": {
+      "label": "Home (v1)",
+      "group": "API",
+      "path": "/api/v1/get-home",
+      "staging_median_ms": 246.8,
+      "production_median_ms": 312.8,
+      "staging_p95_ms": 306.5,
+      "production_p95_ms": 329.1,
+      "delta_ms": -66.0,
+      "ratio": 0.79,
+      "staging_http": 200,
+      "production_http": 200,
+      "staging_bytes": 172579,
+      "production_bytes": 172579,
+      "winner": "staging"
+    }
+  },
+  "rows": [
+    {
+      "label": "Origin HTML",
+      "group": "WEB",
+      "path": "/",
+      "staging_median_ms": 145.2,
+      "production_median_ms": 207.6,
+      "staging_p95_ms": 173.9,
+      "production_p95_ms": 235.3,
+      "delta_ms": -62.4,
+      "ratio": 0.7,
+      "staging_http": 200,
+      "production_http": 200,
+      "staging_bytes": 51328,
+      "production_bytes": 51024,
+      "winner": "staging"
+    },
+    {
+      "label": "App config",
+      "group": "API",
+      "path": "/api/get-config",
+      "staging_median_ms": 106.5,
+      "production_median_ms": 121.3,
+      "staging_p95_ms": 111.3,
+      "production_p95_ms": 138.6,
+      "delta_ms": -14.8,
+      "ratio": 0.88,
+      "staging_http": 200,
+      "production_http": 200,
+      "staging_bytes": 5344,
+      "production_bytes": 5352,
+      "winner": "staging"
+    },
+    {
+      "label": "Sectors master",
+      "group": "API",
+      "path": "/api/master/get-sector",
+      "staging_median_ms": 123.8,
+      "production_median_ms": 136.2,
+      "staging_p95_ms": 134.8,
+      "production_p95_ms": 149.0,
+      "delta_ms": -12.4,
+      "ratio": 0.91,
+      "staging_http": 200,
+      "production_http": 200,
+      "staging_bytes": 3346,
+      "production_bytes": 3346,
+      "winner": "staging"
+    },
+    {
+      "label": "Blog master",
+      "group": "API",
+      "path": "/api/master/get-blog",
+      "staging_median_ms": 120.9,
+      "production_median_ms": 114.9,
+      "staging_p95_ms": 125.5,
+      "production_p95_ms": 136.1,
+      "delta_ms": 6.0,
+      "ratio": 1.05,
+      "staging_http": 200,
+      "production_http": 200,
+      "staging_bytes": 3523,
+      "production_bytes": 3523,
+      "winner": "production"
+    },
+    {
+      "label": "Home (v1)",
+      "group": "API",
+      "path": "/api/v1/get-home",
+      "staging_median_ms": 246.8,
+      "production_median_ms": 312.8,
+      "staging_p95_ms": 306.5,
+      "production_p95_ms": 329.1,
+      "delta_ms": -66.0,
+      "ratio": 0.79,
+      "staging_http": 200,
+      "production_http": 200,
+      "staging_bytes": 172579,
+      "production_bytes": 172579,
+      "winner": "staging"
+    },
+    {
+      "label": "Startup lite",
+      "group": "API",
+      "path": "/api/v1/business/get-startup-lite",
+      "staging_median_ms": 103.1,
+      "production_median_ms": 123.8,
+      "staging_p95_ms": 121.0,
+      "production_p95_ms": 148.0,
+      "delta_ms": -20.7,
+      "ratio": 0.83,
+      "staging_http": 401,
+      "production_http": 401,
+      "staging_bytes": 30,
+      "production_bytes": 30,
+      "winner": "staging"
+    },
+    {
+      "label": "Startup list",
+      "group": "API",
+      "path": "/api/v2/business/startup/list",
+      "staging_median_ms": 116.5,
+      "production_median_ms": 124.6,
+      "staging_p95_ms": 119.2,
+      "production_p95_ms": 136.2,
+      "delta_ms": -8.1,
+      "ratio": 0.93,
+      "staging_http": 401,
+      "production_http": 401,
+      "staging_bytes": 30,
+      "production_bytes": 30,
+      "winner": "staging"
+    },
+    {
+      "label": "Company / Pre-IPO list",
+      "group": "API",
+      "path": "/api/v2/business/company/list",
+      "staging_median_ms": 119.5,
+      "production_median_ms": 118.9,
+      "staging_p95_ms": 124.2,
+      "production_p95_ms": 138.0,
+      "delta_ms": 0.6,
+      "ratio": 1.01,
+      "staging_http": 401,
+      "production_http": 401,
+      "staging_bytes": 30,
+      "production_bytes": 30,
+      "winner": "production"
+    },
+    {
+      "label": "Secondary landing",
+      "group": "API",
+      "path": "/api/v2/business/home/secondary",
+      "staging_median_ms": 121.1,
+      "production_median_ms": 107.1,
+      "staging_p95_ms": 134.4,
+      "production_p95_ms": 135.5,
+      "delta_ms": 14.0,
+      "ratio": 1.13,
+      "staging_http": 401,
+      "production_http": 401,
+      "staging_bytes": 30,
+      "production_bytes": 30,
+      "winner": "production"
+    },
+    {
+      "label": "Pre-IPO home",
+      "group": "API",
+      "path": "/api/v2/business/home/pre-ipo",
+      "staging_median_ms": 118.4,
+      "production_median_ms": 116.9,
+      "staging_p95_ms": 132.1,
+      "production_p95_ms": 136.3,
+      "delta_ms": 1.5,
+      "ratio": 1.01,
+      "staging_http": 401,
+      "production_http": 401,
+      "staging_bytes": 30,
+      "production_bytes": 30,
+      "winner": "production"
+    },
+    {
+      "label": "Pre-IPO news sectors",
+      "group": "API",
+      "path": "/api/v2/business/home/pre-ipo/news-sectors",
+      "staging_median_ms": 122.2,
+      "production_median_ms": 121.3,
+      "staging_p95_ms": 132.5,
+      "production_p95_ms": 130.7,
+      "delta_ms": 0.9,
+      "ratio": 1.01,
+      "staging_http": 401,
+      "production_http": 401,
+      "staging_bytes": 30,
+      "production_bytes": 30,
+      "winner": "production"
+    },
+    {
+      "label": "Pre-IPO news",
+      "group": "API",
+      "path": "/api/v2/business/common/preipo-news",
+      "staging_median_ms": 120.5,
+      "production_median_ms": 113.0,
+      "staging_p95_ms": 132.7,
+      "production_p95_ms": 132.7,
+      "delta_ms": 7.5,
+      "ratio": 1.07,
+      "staging_http": 401,
+      "production_http": 401,
+      "staging_bytes": 30,
+      "production_bytes": 30,
+      "winner": "production"
+    },
+    {
+      "label": "Profile (auth)",
+      "group": "API_AUTH",
+      "path": "/api/v1/business/profile",
+      "staging_median_ms": 117.1,
+      "production_median_ms": 122.7,
+      "staging_p95_ms": 121.0,
+      "production_p95_ms": 133.9,
+      "delta_ms": -5.6,
+      "ratio": 0.95,
+      "staging_http": 401,
+      "production_http": 401,
+      "staging_bytes": 30,
+      "production_bytes": 30,
+      "winner": "staging"
+    },
+    {
+      "label": "Dashboard (auth)",
+      "group": "API_AUTH",
+      "path": "/api/v1/business/dashboard",
+      "staging_median_ms": 119.8,
+      "production_median_ms": 148.2,
+      "staging_p95_ms": 138.4,
+      "production_p95_ms": 161.2,
+      "delta_ms": -28.4,
+      "ratio": 0.81,
+      "staging_http": 401,
+      "production_http": 401,
+      "staging_bytes": 30,
+      "production_bytes": 30,
+      "winner": "staging"
+    },
+    {
+      "label": "Investor list (auth)",
+      "group": "API_AUTH",
+      "path": "/api/v2/business/investor",
+      "staging_median_ms": 134.2,
+      "production_median_ms": 155.6,
+      "staging_p95_ms": 147.6,
+      "production_p95_ms": 167.4,
+      "delta_ms": -21.4,
+      "ratio": 0.86,
+      "staging_http": 401,
+      "production_http": 401,
+      "staging_bytes": 30,
+      "production_bytes": 30,
+      "winner": "staging"
+    },
+    {
+      "label": "Enquiries (auth)",
+      "group": "API_AUTH",
+      "path": "/api/v2/business/enquiries/deals",
+      "staging_median_ms": 193.0,
+      "production_median_ms": 133.6,
+      "staging_p95_ms": 269.0,
+      "production_p95_ms": 381.2,
+      "delta_ms": 59.4,
+      "ratio": 1.44,
+      "staging_http": 401,
+      "production_http": 401,
+      "staging_bytes": 30,
+      "production_bytes": 30,
+      "winner": "production"
+    }
+  ],
+  "raw": {
+    "staging": {
+      "env": "staging",
+      "base_url": "https://staging.privatedeals.in",
+      "api_summary": {
+        "endpoint_count": 15,
+        "median_of_medians_ms": 120.5,
+        "slowest": "Home (v1)",
+        "slowest_median_ms": 246.8,
+        "fastest": "Startup lite",
+        "fastest_median_ms": 103.1
+      },
+      "endpoints": [
+        {
+          "group": "WEB",
+          "label": "Origin HTML",
+          "method": "GET",
+          "path": "/",
+          "http_status_mode": 200,
+          "biz_status_mode": null,
+          "bytes_median": 51328,
+          "latency_ms": {
+            "min": 142.0,
+            "median": 145.2,
+            "avg": 153.7,
+            "p95": 173.9,
+            "max": 177.3,
+            "samples": [
+              142.0,
+              143.6,
+              145.2,
+              160.3,
+              177.3
+            ]
+          },
+          "errors": [],
+          "sample_message": null
+        },
+        {
+          "group": "API",
+          "label": "App config",
+          "method": "GET",
+          "path": "/api/get-config",
+          "http_status_mode": 200,
+          "biz_status_mode": 1,
+          "bytes_median": 5344,
+          "latency_ms": {
+            "min": 97.9,
+            "median": 106.5,
+            "avg": 106.4,
+            "p95": 111.3,
+            "max": 111.7,
+            "samples": [
+              97.9,
+              106.3,
+              106.5,
+              109.5,
+              111.7
+            ]
+          },
+          "errors": [],
+          "sample_message": "Config Data"
+        },
+        {
+          "group": "API",
+          "label": "Sectors master",
+          "method": "GET",
+          "path": "/api/master/get-sector",
+          "http_status_mode": 200,
+          "biz_status_mode": 1,
+          "bytes_median": 3346,
+          "latency_ms": {
+            "min": 113.5,
+            "median": 123.8,
+            "avg": 124.7,
+            "p95": 134.8,
+            "max": 137.0,
+            "samples": [
+              113.5,
+              123.2,
+              123.8,
+              126.1,
+              137.0
+            ]
+          },
+          "errors": [],
+          "sample_message": "Sectors with startups count"
+        },
+        {
+          "group": "API",
+          "label": "Blog master",
+          "method": "GET",
+          "path": "/api/master/get-blog",
+          "http_status_mode": 200,
+          "biz_status_mode": 1,
+          "bytes_median": 3523,
+          "latency_ms": {
+            "min": 106.0,
+            "median": 120.9,
+            "avg": 117.4,
+            "p95": 125.5,
+            "max": 125.8,
+            "samples": [
+              106.0,
+              109.9,
+              120.9,
+              124.5,
+              125.8
+            ]
+          },
+          "errors": [],
+          "sample_message": "Blog List"
+        },
+        {
+          "group": "API",
+          "label": "Home (v1)",
+          "method": "GET",
+          "path": "/api/v1/get-home",
+          "http_status_mode": 200,
+          "biz_status_mode": 1,
+          "bytes_median": 172579,
+          "latency_ms": {
+            "min": 236.9,
+            "median": 246.8,
+            "avg": 262.5,
+            "p95": 306.5,
+            "max": 314.8,
+            "samples": [
+              236.9,
+              240.8,
+              246.8,
+              273.4,
+              314.8
+            ]
+          },
+          "errors": [],
+          "sample_message": "Home Page"
+        },
+        {
+          "group": "API",
+          "label": "Startup lite",
+          "method": "GET",
+          "path": "/api/v1/business/get-startup-lite",
+          "http_status_mode": 401,
+          "biz_status_mode": null,
+          "bytes_median": 30,
+          "latency_ms": {
+            "min": 98.4,
+            "median": 103.1,
+            "avg": 108.9,
+            "p95": 121.0,
+            "max": 121.3,
+            "samples": [
+              98.4,
+              101.9,
+              103.1,
+              120.0,
+              121.3
+            ]
+          },
+          "errors": [
+            "HTTPError 401",
+            "HTTPError 401"
+          ],
+          "sample_message": "Unauthenticated."
+        },
+        {
+          "group": "API",
+          "label": "Startup list",
+          "method": "GET",
+          "path": "/api/v2/business/startup/list",
+          "http_status_mode": 401,
+          "biz_status_mode": null,
+          "bytes_median": 30,
+          "latency_ms": {
+            "min": 96.7,
+            "median": 116.5,
+            "avg": 110.4,
+            "p95": 119.2,
+            "max": 119.9,
+            "samples": [
+              96.7,
+              102.4,
+              116.5,
+              116.6,
+              119.9
+            ]
+          },
+          "errors": [
+            "HTTPError 401",
+            "HTTPError 401"
+          ],
+          "sample_message": "Unauthenticated."
+        },
+        {
+          "group": "API",
+          "label": "Company / Pre-IPO list",
+          "method": "GET",
+          "path": "/api/v2/business/company/list",
+          "http_status_mode": 401,
+          "biz_status_mode": null,
+          "bytes_median": 30,
+          "latency_ms": {
+            "min": 114.6,
+            "median": 119.5,
+            "avg": 119.5,
+            "p95": 124.2,
+            "max": 125.0,
+            "samples": [
+              114.6,
+              117.5,
+              119.5,
+              120.9,
+              125.0
+            ]
+          },
+          "errors": [
+            "HTTPError 401",
+            "HTTPError 401"
+          ],
+          "sample_message": "Unauthenticated."
+        },
+        {
+          "group": "API",
+          "label": "Secondary landing",
+          "method": "GET",
+          "path": "/api/v2/business/home/secondary",
+          "http_status_mode": 401,
+          "biz_status_mode": null,
+          "bytes_median": 30,
+          "latency_ms": {
+            "min": 103.9,
+            "median": 121.1,
+            "avg": 118.3,
+            "p95": 134.4,
+            "max": 137.2,
+            "samples": [
+              103.9,
+              106.3,
+              121.1,
+              123.0,
+              137.2
+            ]
+          },
+          "errors": [
+            "HTTPError 401",
+            "HTTPError 401"
+          ],
+          "sample_message": "Unauthenticated."
+        },
+        {
+          "group": "API",
+          "label": "Pre-IPO home",
+          "method": "GET",
+          "path": "/api/v2/business/home/pre-ipo",
+          "http_status_mode": 401,
+          "biz_status_mode": null,
+          "bytes_median": 30,
+          "latency_ms": {
+            "min": 101.8,
+            "median": 118.4,
+            "avg": 117.3,
+            "p95": 132.1,
+            "max": 132.7,
+            "samples": [
+              101.8,
+              103.8,
+              118.4,
+              129.6,
+              132.7
+            ]
+          },
+          "errors": [
+            "HTTPError 401",
+            "HTTPError 401"
+          ],
+          "sample_message": "Unauthenticated."
+        },
+        {
+          "group": "API",
+          "label": "Pre-IPO news sectors",
+          "method": "GET",
+          "path": "/api/v2/business/home/pre-ipo/news-sectors",
+          "http_status_mode": 401,
+          "biz_status_mode": null,
+          "bytes_median": 30,
+          "latency_ms": {
+            "min": 101.2,
+            "median": 122.2,
+            "avg": 120.4,
+            "p95": 132.5,
+            "max": 133.2,
+            "samples": [
+              101.2,
+              115.6,
+              122.2,
+              129.7,
+              133.2
+            ]
+          },
+          "errors": [
+            "HTTPError 401",
+            "HTTPError 401"
+          ],
+          "sample_message": "Unauthenticated."
+        },
+        {
+          "group": "API",
+          "label": "Pre-IPO news",
+          "method": "GET",
+          "path": "/api/v2/business/common/preipo-news",
+          "http_status_mode": 401,
+          "biz_status_mode": null,
+          "bytes_median": 30,
+          "latency_ms": {
+            "min": 101.3,
+            "median": 120.5,
+            "avg": 119.7,
+            "p95": 132.7,
+            "max": 135.1,
+            "samples": [
+              101.3,
+              118.7,
+              120.5,
+              122.9,
+              135.1
+            ]
+          },
+          "errors": [
+            "HTTPError 401",
+            "HTTPError 401"
+          ],
+          "sample_message": "Unauthenticated."
+        },
+        {
+          "group": "API_AUTH",
+          "label": "Profile (auth)",
+          "method": "GET",
+          "path": "/api/v1/business/profile",
+          "http_status_mode": 401,
+          "biz_status_mode": null,
+          "bytes_median": 30,
+          "latency_ms": {
+            "min": 103.7,
+            "median": 117.1,
+            "avg": 114.5,
+            "p95": 121.0,
+            "max": 121.5,
+            "samples": [
+              103.7,
+              111.5,
+              117.1,
+              118.9,
+              121.5
+            ]
+          },
+          "errors": [
+            "HTTPError 401",
+            "HTTPError 401"
+          ],
+          "sample_message": "Unauthenticated."
+        },
+        {
+          "group": "API_AUTH",
+          "label": "Dashboard (auth)",
+          "method": "GET",
+          "path": "/api/v1/business/dashboard",
+          "http_status_mode": 401,
+          "biz_status_mode": null,
+          "bytes_median": 30,
+          "latency_ms": {
+            "min": 114.1,
+            "median": 119.8,
+            "avg": 123.7,
+            "p95": 138.4,
+            "max": 141.4,
+            "samples": [
+              114.1,
+              117.2,
+              119.8,
+              126.2,
+              141.4
+            ]
+          },
+          "errors": [
+            "HTTPError 401",
+            "HTTPError 401"
+          ],
+          "sample_message": "Unauthenticated."
+        },
+        {
+          "group": "API_AUTH",
+          "label": "Investor list (auth)",
+          "method": "GET",
+          "path": "/api/v2/business/investor",
+          "http_status_mode": 401,
+          "biz_status_mode": null,
+          "bytes_median": 30,
+          "latency_ms": {
+            "min": 107.3,
+            "median": 134.2,
+            "avg": 131.3,
+            "p95": 147.6,
+            "max": 148.1,
+            "samples": [
+              107.3,
+              121.4,
+              134.2,
+              145.6,
+              148.1
+            ]
+          },
+          "errors": [
+            "HTTPError 401",
+            "HTTPError 401"
+          ],
+          "sample_message": "Unauthenticated."
+        },
+        {
+          "group": "API_AUTH",
+          "label": "Enquiries (auth)",
+          "method": "GET",
+          "path": "/api/v2/business/enquiries/deals",
+          "http_status_mode": 401,
+          "biz_status_mode": null,
+          "bytes_median": 30,
+          "latency_ms": {
+            "min": 166.9,
+            "median": 193.0,
+            "avg": 212.4,
+            "p95": 269.0,
+            "max": 278.5,
+            "samples": [
+              166.9,
+              192.3,
+              193.0,
+              231.2,
+              278.5
+            ]
+          },
+          "errors": [
+            "HTTPError 401",
+            "HTTPError 401"
+          ],
+          "sample_message": "Unauthenticated."
+        }
+      ]
+    },
+    "production": {
+      "env": "production",
+      "base_url": "https://www.privatedeals.in",
+      "api_summary": {
+        "endpoint_count": 15,
+        "median_of_medians_ms": 122.7,
+        "slowest": "Home (v1)",
+        "slowest_median_ms": 312.8,
+        "fastest": "Secondary landing",
+        "fastest_median_ms": 107.1
+      },
+      "endpoints": [
+        {
+          "group": "WEB",
+          "label": "Origin HTML",
+          "method": "GET",
+          "path": "/",
+          "http_status_mode": 200,
+          "biz_status_mode": null,
+          "bytes_median": 51024,
+          "latency_ms": {
+            "min": 173.4,
+            "median": 207.6,
+            "avg": 203.8,
+            "p95": 235.3,
+            "max": 240.7,
+            "samples": [
+              173.4,
+              183.9,
+              207.6,
+              213.6,
+              240.7
+            ]
+          },
+          "errors": [],
+          "sample_message": null
+        },
+        {
+          "group": "API",
+          "label": "App config",
+          "method": "GET",
+          "path": "/api/get-config",
+          "http_status_mode": 200,
+          "biz_status_mode": 1,
+          "bytes_median": 5352,
+          "latency_ms": {
+            "min": 112.2,
+            "median": 121.3,
+            "avg": 124.7,
+            "p95": 138.6,
+            "max": 140.8,
+            "samples": [
+              112.2,
+              119.5,
+              121.3,
+              129.9,
+              140.8
+            ]
+          },
+          "errors": [],
+          "sample_message": "Config Data"
+        },
+        {
+          "group": "API",
+          "label": "Sectors master",
+          "method": "GET",
+          "path": "/api/master/get-sector",
+          "http_status_mode": 200,
+          "biz_status_mode": 1,
+          "bytes_median": 3346,
+          "latency_ms": {
+            "min": 122.4,
+            "median": 136.2,
+            "avg": 134.7,
+            "p95": 149.0,
+            "max": 151.7,
+            "samples": [
+              122.4,
+              125.0,
+              136.2,
+              138.0,
+              151.7
+            ]
+          },
+          "errors": [],
+          "sample_message": "Sectors with startups count"
+        },
+        {
+          "group": "API",
+          "label": "Blog master",
+          "method": "GET",
+          "path": "/api/master/get-blog",
+          "http_status_mode": 200,
+          "biz_status_mode": 1,
+          "bytes_median": 3523,
+          "latency_ms": {
+            "min": 111.9,
+            "median": 114.9,
+            "avg": 121.5,
+            "p95": 136.1,
+            "max": 137.6,
+            "samples": [
+              111.9,
+              112.8,
+              114.9,
+              130.1,
+              137.6
+            ]
+          },
+          "errors": [],
+          "sample_message": "Blog List"
+        },
+        {
+          "group": "API",
+          "label": "Home (v1)",
+          "method": "GET",
+          "path": "/api/v1/get-home",
+          "http_status_mode": 200,
+          "biz_status_mode": 1,
+          "bytes_median": 172579,
+          "latency_ms": {
+            "min": 261.0,
+            "median": 312.8,
+            "avg": 304.3,
+            "p95": 329.1,
+            "max": 331.2,
+            "samples": [
+              261.0,
+              296.0,
+              312.8,
+              320.6,
+              331.2
+            ]
+          },
+          "errors": [],
+          "sample_message": "Home Page"
+        },
+        {
+          "group": "API",
+          "label": "Startup lite",
+          "method": "GET",
+          "path": "/api/v1/business/get-startup-lite",
+          "http_status_mode": 401,
+          "biz_status_mode": null,
+          "bytes_median": 30,
+          "latency_ms": {
+            "min": 105.7,
+            "median": 123.8,
+            "avg": 128.0,
+            "p95": 148.0,
+            "max": 150.7,
+            "samples": [
+              105.7,
+              122.5,
+              123.8,
+              137.4,
+              150.7
+            ]
+          },
+          "errors": [
+            "HTTPError 401",
+            "HTTPError 401"
+          ],
+          "sample_message": "Unauthenticated."
+        },
+        {
+          "group": "API",
+          "label": "Startup list",
+          "method": "GET",
+          "path": "/api/v2/business/startup/list",
+          "http_status_mode": 401,
+          "biz_status_mode": null,
+          "bytes_median": 30,
+          "latency_ms": {
+            "min": 120.5,
+            "median": 124.6,
+            "avg": 126.7,
+            "p95": 136.2,
+            "max": 139.0,
+            "samples": [
+              120.5,
+              124.5,
+              124.6,
+              125.0,
+              139.0
+            ]
+          },
+          "errors": [
+            "HTTPError 401",
+            "HTTPError 401"
+          ],
+          "sample_message": "Unauthenticated."
+        },
+        {
+          "group": "API",
+          "label": "Company / Pre-IPO list",
+          "method": "GET",
+          "path": "/api/v2/business/company/list",
+          "http_status_mode": 401,
+          "biz_status_mode": null,
+          "bytes_median": 30,
+          "latency_ms": {
+            "min": 109.1,
+            "median": 118.9,
+            "avg": 120.9,
+            "p95": 138.0,
+            "max": 141.1,
+            "samples": [
+              109.1,
+              109.6,
+              118.9,
+              125.8,
+              141.1
+            ]
+          },
+          "errors": [
+            "HTTPError 401",
+            "HTTPError 401"
+          ],
+          "sample_message": "Unauthenticated."
+        },
+        {
+          "group": "API",
+          "label": "Secondary landing",
+          "method": "GET",
+          "path": "/api/v2/business/home/secondary",
+          "http_status_mode": 401,
+          "biz_status_mode": null,
+          "bytes_median": 30,
+          "latency_ms": {
+            "min": 106.9,
+            "median": 107.1,
+            "avg": 115.9,
+            "p95": 135.5,
+            "max": 139.6,
+            "samples": [
+              106.9,
+              107.0,
+              107.1,
+              118.9,
+              139.6
+            ]
+          },
+          "errors": [
+            "HTTPError 401",
+            "HTTPError 401"
+          ],
+          "sample_message": "Unauthenticated."
+        },
+        {
+          "group": "API",
+          "label": "Pre-IPO home",
+          "method": "GET",
+          "path": "/api/v2/business/home/pre-ipo",
+          "http_status_mode": 401,
+          "biz_status_mode": null,
+          "bytes_median": 30,
+          "latency_ms": {
+            "min": 105.5,
+            "median": 116.9,
+            "avg": 117.6,
+            "p95": 136.3,
+            "max": 140.8,
+            "samples": [
+              105.5,
+              106.5,
+              116.9,
+              118.3,
+              140.8
+            ]
+          },
+          "errors": [
+            "HTTPError 401",
+            "HTTPError 401"
+          ],
+          "sample_message": "Unauthenticated."
+        },
+        {
+          "group": "API",
+          "label": "Pre-IPO news sectors",
+          "method": "GET",
+          "path": "/api/v2/business/home/pre-ipo/news-sectors",
+          "http_status_mode": 401,
+          "biz_status_mode": null,
+          "bytes_median": 30,
+          "latency_ms": {
+            "min": 111.6,
+            "median": 121.3,
+            "avg": 121.0,
+            "p95": 130.7,
+            "max": 133.0,
+            "samples": [
+              111.6,
+              117.5,
+              121.3,
+              121.5,
+              133.0
+            ]
+          },
+          "errors": [
+            "HTTPError 401",
+            "HTTPError 401"
+          ],
+          "sample_message": "Unauthenticated."
+        },
+        {
+          "group": "API",
+          "label": "Pre-IPO news",
+          "method": "GET",
+          "path": "/api/v2/business/common/preipo-news",
+          "http_status_mode": 401,
+          "biz_status_mode": null,
+          "bytes_median": 30,
+          "latency_ms": {
+            "min": 108.3,
+            "median": 113.0,
+            "avg": 117.1,
+            "p95": 132.7,
+            "max": 137.1,
+            "samples": [
+              108.3,
+              111.7,
+              113.0,
+              115.3,
+              137.1
+            ]
+          },
+          "errors": [
+            "HTTPError 401",
+            "HTTPError 401"
+          ],
+          "sample_message": "Unauthenticated."
+        },
+        {
+          "group": "API_AUTH",
+          "label": "Profile (auth)",
+          "method": "GET",
+          "path": "/api/v1/business/profile",
+          "http_status_mode": 401,
+          "biz_status_mode": null,
+          "bytes_median": 30,
+          "latency_ms": {
+            "min": 110.4,
+            "median": 122.7,
+            "avg": 123.8,
+            "p95": 133.9,
+            "max": 134.9,
+            "samples": [
+              110.4,
+              121.0,
+              122.7,
+              130.0,
+              134.9
+            ]
+          },
+          "errors": [
+            "HTTPError 401",
+            "HTTPError 401"
+          ],
+          "sample_message": "Unauthenticated."
+        },
+        {
+          "group": "API_AUTH",
+          "label": "Dashboard (auth)",
+          "method": "GET",
+          "path": "/api/v1/business/dashboard",
+          "http_status_mode": 401,
+          "biz_status_mode": null,
+          "bytes_median": 30,
+          "latency_ms": {
+            "min": 141.4,
+            "median": 148.2,
+            "avg": 150.9,
+            "p95": 161.2,
+            "max": 162.3,
+            "samples": [
+              141.4,
+              145.5,
+              148.2,
+              157.0,
+              162.3
+            ]
+          },
+          "errors": [
+            "HTTPError 401",
+            "HTTPError 401"
+          ],
+          "sample_message": "Unauthenticated."
+        },
+        {
+          "group": "API_AUTH",
+          "label": "Investor list (auth)",
+          "method": "GET",
+          "path": "/api/v2/business/investor",
+          "http_status_mode": 401,
+          "biz_status_mode": null,
+          "bytes_median": 30,
+          "latency_ms": {
+            "min": 142.3,
+            "median": 155.6,
+            "avg": 156.1,
+            "p95": 167.4,
+            "max": 169.1,
+            "samples": [
+              142.3,
+              152.7,
+              155.6,
+              160.7,
+              169.1
+            ]
+          },
+          "errors": [
+            "HTTPError 401",
+            "HTTPError 401"
+          ],
+          "sample_message": "Unauthenticated."
+        },
+        {
+          "group": "API_AUTH",
+          "label": "Enquiries (auth)",
+          "method": "GET",
+          "path": "/api/v2/business/enquiries/deals",
+          "http_status_mode": 401,
+          "biz_status_mode": null,
+          "bytes_median": 30,
+          "latency_ms": {
+            "min": 101.1,
+            "median": 133.6,
+            "avg": 188.9,
+            "p95": 381.2,
+            "max": 437.3,
+            "samples": [
+              101.1,
+              115.4,
+              133.6,
+              156.9,
+              437.3
+            ]
+          },
+          "errors": [
+            "HTTPError 401",
+            "HTTPError 401"
+          ],
+          "sample_message": "Unauthenticated."
+        }
+      ]
+    }
+  }
+}

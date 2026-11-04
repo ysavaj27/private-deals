@@ -1,3 +1,4 @@
+import 'package:private_deals/src/shared/theme/app_tokens.dart';
 import 'package:flutter/material.dart';
 
 import 'brand_colors.dart';
@@ -12,7 +13,7 @@ abstract final class AppPickerTheme {
 
   static RoundedRectangleBorder _shape(ColorScheme colors) =>
       RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(24),
+        borderRadius: BorderRadius.circular(AppRadii.card),
         side: BorderSide(color: colors.outlineVariant.withValues(alpha: 0.65)),
       );
 
@@ -21,7 +22,7 @@ abstract final class AppPickerTheme {
     foregroundColor: colors.onPrimary,
     minimumSize: const Size(96, 48),
     padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
-    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+    shape: RoundedRectangleBorder(borderRadius: AppRadii.buttonAll),
     textStyle: const TextStyle(
       fontFamily: 'inter',
       fontWeight: FontWeight.w600,
@@ -32,7 +33,7 @@ abstract final class AppPickerTheme {
     foregroundColor: colors.onSurfaceVariant,
     minimumSize: const Size(64, 48),
     padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 12),
-    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+    shape: RoundedRectangleBorder(borderRadius: AppRadii.buttonAll),
   );
 
   static WidgetStateProperty<Color?> _foreground(ColorScheme colors) =>
@@ -98,7 +99,7 @@ abstract final class AppPickerTheme {
       letterSpacing: 0.5,
     ),
     hourMinuteShape: RoundedRectangleBorder(
-      borderRadius: BorderRadius.circular(16),
+      borderRadius: BorderRadius.circular(AppRadii.card),
     ),
     hourMinuteColor: WidgetStateColor.resolveWith(
       (states) => states.contains(WidgetState.selected)
@@ -119,7 +120,7 @@ abstract final class AppPickerTheme {
       text.displayMedium?.copyWith(fontSize: 40),
     ),
     dayPeriodShape: RoundedRectangleBorder(
-      borderRadius: BorderRadius.circular(12),
+      borderRadius: BorderRadius.circular(AppRadii.control),
     ),
     dayPeriodBorderSide: BorderSide(color: colors.outlineVariant),
     dayPeriodColor: WidgetStateColor.resolveWith(
@@ -152,7 +153,7 @@ abstract final class AppPickerTheme {
   static InputDecorationThemeData _input(ColorScheme colors) {
     OutlineInputBorder border(Color color, [double width = 1]) =>
         OutlineInputBorder(
-          borderRadius: BorderRadius.circular(12),
+          borderRadius: BorderRadius.circular(AppRadii.control),
           borderSide: BorderSide(color: color, width: width),
         );
     return InputDecorationThemeData(

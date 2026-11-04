@@ -8,7 +8,7 @@ class SectorStartupDialog extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return CustomCardWidget(
-      radius: 20,
+      radius: AppRadii.card,
       height: 400,
       width: 500,
       color: context.theme.scaffoldBackgroundColor,
@@ -24,10 +24,7 @@ class SectorStartupDialog extends StatelessWidget {
                 : const EdgeInsets.symmetric(horizontal: 32),
             child: const Text(
               "Sector Bifurcation startup wise",
-              style: TextStyle(
-                fontSize: 16,
-                fontWeight: FontWeight.w500,
-              ),
+              style: TextStyle(fontSize: 16, fontWeight: FontWeight.w500),
             ),
           ),
           const SizedBox(height: 10),
@@ -86,17 +83,39 @@ class SectorStartupDialog extends StatelessWidget {
                     ? const EdgeInsets.symmetric(horizontal: 10)
                     : const EdgeInsets.symmetric(horizontal: 32),
                 child: Column(
-                    mainAxisSize: MainAxisSize.min,
-                    children: startups!.map((e) {
-                      return Padding(
-                        padding: const EdgeInsets.only(bottom: 8),
-                        child: Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                          children: [
-                            Expanded(
-                              flex: 2,
+                  mainAxisSize: MainAxisSize.min,
+                  children: startups!.map((e) {
+                    return Padding(
+                      padding: const EdgeInsets.only(bottom: 8),
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          Expanded(
+                            flex: 2,
+                            child: Text(
+                              e.investorName,
+                              style: TextStyle(
+                                fontSize: 14,
+                                fontWeight: FontWeight.w500,
+                                color: context.theme.disabledColor,
+                              ),
+                            ),
+                          ),
+                          Expanded(
+                            child: Text(
+                              e.startupName,
+                              style: TextStyle(
+                                fontSize: 14,
+                                fontWeight: FontWeight.w500,
+                                color: context.theme.disabledColor,
+                              ),
+                            ),
+                          ),
+                          Expanded(
+                            child: Align(
+                              alignment: Alignment.centerRight,
                               child: Text(
-                                e.investorName,
+                                "${e.currentValue.toCurrency}",
                                 style: TextStyle(
                                   fontSize: 14,
                                   fontWeight: FontWeight.w500,
@@ -104,33 +123,12 @@ class SectorStartupDialog extends StatelessWidget {
                                 ),
                               ),
                             ),
-                            Expanded(
-                              child: Text(
-                                e.startupName,
-                                style: TextStyle(
-                                  fontSize: 14,
-                                  fontWeight: FontWeight.w500,
-                                  color: context.theme.disabledColor,
-                                ),
-                              ),
-                            ),
-                            Expanded(
-                              child: Align(
-                                alignment: Alignment.centerRight,
-                                child: Text(
-                                  "${e.currentValue.toCurrency}",
-                                  style: TextStyle(
-                                    fontSize: 14,
-                                    fontWeight: FontWeight.w500,
-                                    color: context.theme.disabledColor,
-                                  ),
-                                ),
-                              ),
-                            ),
-                          ],
-                        ),
-                      );
-                    }).toList()),
+                          ),
+                        ],
+                      ),
+                    );
+                  }).toList(),
+                ),
               ),
             ),
           ] else ...[
@@ -155,9 +153,8 @@ class SectorStartupDialog extends StatelessWidget {
                   ),
                 ),
                 Text(
-                  "${(startups
-                      ?.map((e) => e.investmentAmount) // Replace null amounts with 0
-                      .reduce((value, element) => value + element))?.toCurrency}",
+                  "${(startups?.map((e) => e.investmentAmount) // Replace null amounts with 0
+                  .reduce((value, element) => value + element))?.toCurrency}",
                   style: TextStyle(
                     // fontSize: 14,
                     fontWeight: FontWeight.w500,

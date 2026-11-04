@@ -344,7 +344,7 @@ class DealCompanyDropdown extends StatelessWidget {
             Text('Company *', style: context.textTheme.bodyMedium),
             const SizedBox(height: 8),
             InkWell(
-              borderRadius: BorderRadius.circular(12),
+              borderRadius: BorderRadius.circular(AppRadii.control),
               onTap: () async {
                 final selected = await showDialog<LiteCompanyModel>(
                   context: context,
@@ -424,7 +424,7 @@ class _CompanySearchDialog extends StatelessWidget {
                         url: company.logo,
                         width: 40,
                         height: 40,
-                        radius: 8,
+                        radius: AppRadii.control,
                       ),
                       title: Text(company.brandName),
                       subtitle: company.brandName != company.brandName

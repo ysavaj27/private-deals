@@ -1,6 +1,9 @@
 import 'package:private_deals/src/features/catalog/presentation/pre_ipo/news_list/news_detail_dialog.dart';
 import 'package:private_deals/src/shared/app_exports.dart';
 
+import '../../widgets/catalog_article_card.dart';
+import '../../widgets/catalog_section_style.dart';
+
 import 'package:private_deals/src/features/catalog/presentation/pre_ipo/pre_ipo_landing_page/desktop_pre_ipo_landing_view.dart';
 import 'package:private_deals/src/features/catalog/presentation/pre_ipo/pre_ipo_landing_page/pre_ipo_landing_page_ctrl.dart';
 
@@ -20,7 +23,7 @@ class PhonePreIPOLandingView extends StatelessWidget {
               padding: const EdgeInsets.symmetric(horizontal: 12),
               child: SearchBarTextField(
                 readOnly: true,
-                radius: 16,
+                radius: AppRadii.control,
                 hintText: "Search Company's",
                 onTap: () {
                   var routes = Routes.preIPOListPath(
@@ -104,7 +107,7 @@ class PhonePreIPOLandingView extends StatelessWidget {
             }),
             const SizedBox(height: 20),
             CustomOutlinedButton(
-              borderRadius: 22,
+              borderRadius: AppRadii.button,
               color: context.theme.primaryColor,
               text: "Explore More",
               width: 150,
@@ -150,88 +153,23 @@ class PhoneNewsWidget extends StatelessWidget {
   Widget build(BuildContext context) {
     return Column(
       children: [
-        Center(
-          child: Text(
-            'News',
-            style: TextStyle(
-              fontSize: context.isPhone ? 22 : 36,
-              fontWeight: FontWeight.bold,
-            ),
-          ),
+        const CatalogSectionHeading(title: 'News'),
+        const SizedBox(height: 20),
+        CatalogArticleCarousel(
+          itemCount: list.length,
+          itemBuilder: (context, index) {
+            final news = list[index];
+            return CatalogArticleCard(
+              image: news.image,
+              title: news.title,
+              description: news.description,
+              date: news.createdAt,
+              onTap: () => showNewsDetailBottomSheet(context, news: news),
+            );
+          },
         ),
         const SizedBox(height: 20),
-        SizedBox(
-          height: 167,
-          child: ListView.separated(
-            clipBehavior: Clip.none,
-            itemCount: list.length,
-            padding: EdgeInsets.zero,
-            scrollDirection: Axis.horizontal,
-            separatorBuilder: (context, index) => SizedBox(width: 12),
-            itemBuilder: (context, index) {
-              var model = list[index];
-              return SizedBox(
-                width: 180,
-                child: Clickable(
-                  onTap: () {
-                    showNewsDetailBottomSheet(context, news: model);
-                  },
-                  borderRadius: BorderRadius.vertical(top: Radius.circular(14)),
-                  child: CustomCardWidget(
-                    color: context.theme.scaffoldBackgroundColor,
-                    padding: EdgeInsets.symmetric(vertical: 10, horizontal: 10),
-                    radius: 14,
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        SizedBox(
-                          height: 90,
-                          width: double.infinity,
-                          child: ClipRRect(
-                            borderRadius: BorderRadius.circular(12),
-                            child: CacheImage(
-                              url: model.image,
-                              fit: BoxFit.cover,
-                            ),
-                          ),
-                        ),
-                        SizedBox(height: 9),
-                        Text(
-                          model.title,
-                          maxLines: 1,
-                          overflow: TextOverflow.ellipsis,
-                          style: context.textTheme.bodySmall?.copyWith(
-                            fontWeight: FontWeight.w700,
-                          ),
-                        ),
-                        SizedBox(height: 4),
-                        Expanded(
-                          child: Text(
-                            model.description,
-                            maxLines: 2,
-                            style: TextStyle(
-                              fontSize: 10,
-                              color: Color.fromRGBO(124, 124, 124, 1),
-                            ),
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-                ),
-              );
-            },
-          ),
-        ),
-        const SizedBox(height: 20),
-        CustomOutlinedButton(
-          borderRadius: 22,
-          color: context.theme.primaryColor,
-          text: "Explore More",
-          width: 150,
-          // height: 56,
-          onPressed: onPress,
-        ),
+        CatalogExploreButton(onPressed: onPress),
       ],
     );
   }

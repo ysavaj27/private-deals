@@ -103,9 +103,7 @@ class CustomAppBar extends StatelessWidget {
                   );
                 }),
                 Padding(
-                  padding: EdgeInsets.symmetric(
-                    horizontal: compact ? 10 : 16,
-                  ),
+                  padding: EdgeInsets.symmetric(horizontal: compact ? 10 : 16),
                   child: SizedBox(
                     height: 24,
                     child: VerticalDivider(
@@ -148,7 +146,7 @@ class DropdownMenuWidget extends StatelessWidget {
       elevation: 8,
       offset: const Offset(0, 8),
       shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(16),
+        borderRadius: BorderRadius.circular(AppRadii.card),
         side: BorderSide(color: border),
       ),
       onSelected: (MenuItemEnum result) {
@@ -266,11 +264,11 @@ class DropdownMenuWidget extends StatelessWidget {
         padding: const EdgeInsets.all(4),
         decoration: BoxDecoration(
           color: colors.primaryContainer,
-          borderRadius: BorderRadius.circular(14),
+          borderRadius: BorderRadius.circular(AppRadii.card),
           border: Border.all(color: border),
         ),
         child: ClipRRect(
-          borderRadius: BorderRadius.circular(10),
+          borderRadius: BorderRadius.circular(AppRadii.control),
           child: Obx(() {
             if (app.wUser.profilePhoto.isEmpty) {
               return Icon(

@@ -36,7 +36,7 @@ class PhonePreIPOInvestmentView extends StatelessWidget {
                 Row(
                   children: [
                     LogoImage(
-                      radius: 5,
+                      radius: AppRadii.control,
                       url: c.model().logo,
                       height: 80,
                       width: 80,
@@ -108,7 +108,7 @@ class PhonePreIPOInvestmentView extends StatelessWidget {
                     margin: const EdgeInsets.symmetric(vertical: 12),
                     padding: const EdgeInsets.all(12),
                     decoration: BoxDecoration(
-                      borderRadius: BorderRadius.circular(12),
+                      borderRadius: BorderRadius.circular(AppRadii.control),
                       border: Border.all(color: AppColors.borderColor(context)),
                     ),
                     child: SellerProfileWidget(
@@ -200,7 +200,7 @@ class PhonePreIPOInvestmentView extends StatelessWidget {
               isLoading: c.investing.value,
               backgroundColor: AppColors.preIpoButton(context),
               analyticsName: 'pre_ipo_invest',
-              // borderRadius: const BorderRadius.vertical(top: Radius.circular(15)),
+              // borderRadius: const BorderRadius.vertical(top: Radius.circular(AppRadii.card)),
               onPressed: () {
                 if (c.phoneKey.currentState?.validate() ?? false) {
                   c.onPress();
@@ -240,7 +240,7 @@ class CardView extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return CustomCardWidget(
-      radius: 12,
+      radius: AppRadii.card,
       child: Column(
         children: [
           Padding(
@@ -263,7 +263,7 @@ class CardView extends StatelessWidget {
                     child: Container(
                       padding: const EdgeInsets.all(13),
                       decoration: BoxDecoration(
-                        borderRadius: BorderRadius.circular(4),
+                        borderRadius: BorderRadius.circular(AppRadii.xs),
                         border: Border.all(
                           color: AppColors.borderColor(context),
                         ),

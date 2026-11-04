@@ -1,3 +1,4 @@
+import 'package:private_deals/src/shared/theme/app_tokens.dart';
 import 'package:private_deals/src/shared/constant/app_colors.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
@@ -24,7 +25,7 @@ class CustomCardWidget extends StatelessWidget {
     required this.child,
     this.margin,
     this.padding,
-    this.radius = 16,
+    this.radius = AppRadii.card,
     this.height,
     this.width,
     this.isBorder = true,
@@ -50,12 +51,12 @@ class CustomCardWidget extends StatelessWidget {
           ? BoxDecoration(
               border: isBorder
                   ? border ??
-                      Border.all(
-                        width: borderWidth,
-                        color: borderColor != null
-                            ? borderColor!
-                            : AppColors.borderColor(context),
-                      )
+                        Border.all(
+                          width: borderWidth,
+                          color: borderColor != null
+                              ? borderColor!
+                              : AppColors.borderColor(context),
+                        )
                   : null,
               /* border: isGradient && isBorder
             ? GradientBoxBorder(
@@ -86,12 +87,12 @@ class CustomCardWidget extends StatelessWidget {
               color: color ?? context.theme.colorScheme.surface,
               border: isBorder
                   ? border ??
-                      Border.all(
-                        width: borderWidth,
-                        color: borderColor != null
-                            ? borderColor!
-                            : AppColors.borderColor(context),
-                      )
+                        Border.all(
+                          width: borderWidth,
+                          color: borderColor != null
+                              ? borderColor!
+                              : AppColors.borderColor(context),
+                        )
                   : null,
               /* border: isGradient && isBorder
             ? GradientBoxBorder(

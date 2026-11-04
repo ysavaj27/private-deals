@@ -159,7 +159,7 @@ class DashboardLegend extends StatelessWidget {
         height: 9,
         decoration: BoxDecoration(
           color: color,
-          borderRadius: BorderRadius.circular(3),
+          borderRadius: BorderRadius.circular(AppRadii.xs),
         ),
       ),
       const SizedBox(width: 7),
@@ -186,7 +186,7 @@ class DashboardBar extends StatelessWidget {
   Widget build(BuildContext context) => Semantics(
     label: label,
     child: ClipRRect(
-      borderRadius: BorderRadius.circular(4),
+      borderRadius: BorderRadius.circular(AppRadii.xs),
       child: LinearProgressIndicator(
         value: fraction.clamp(0.0, 1.0),
         minHeight: height,

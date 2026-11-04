@@ -1,3 +1,4 @@
+import 'package:private_deals/src/shared/theme/app_tokens.dart';
 import 'package:private_deals/src/shared/widgets/custom_appbar.dart'
     show WAppbarOptionSegmented;
 import 'package:flutter/material.dart';
@@ -195,7 +196,9 @@ class _SellerPhoneNavBar extends StatelessWidget {
                               color: selected
                                   ? scheme.secondaryContainer
                                   : Colors.transparent,
-                              borderRadius: BorderRadius.circular(16),
+                              borderRadius: BorderRadius.circular(
+                                AppRadii.card,
+                              ),
                             ),
                             child: SizedBox(
                               width: 64,

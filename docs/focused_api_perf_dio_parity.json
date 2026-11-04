@@ -1,0 +1,228 @@
+{
+  "captured_at": "2026-11-03T10:56:25.398708+00:00",
+  "dio_headers_applied": {
+    "Accept": "application/json",
+    "Content-Type": "application/json",
+    "headtoken": "REDACTED",
+    "deviceid": "perf-web-40e5eab37a46",
+    "devicetype": "web",
+    "userid": "0",
+    "usertype": "distributor",
+    "isdebug": "1",
+    "User-Agent": "PrivateDeals-DioParity/1.0"
+  },
+  "authorization": "omitted (logged-out parity)",
+  "interceptor_source": "lib/src/core/configuration/dio_config.dart ApiInterceptor.onRequest",
+  "compare": [
+    {
+      "key": "config",
+      "path": "/api/get-config",
+      "query": {},
+      "staging_median_ms": 122.6,
+      "production_median_ms": 144.0,
+      "staging_p95_ms": 135.3,
+      "production_p95_ms": 163.9,
+      "delta_ms": -21.4,
+      "staging_http": 200,
+      "production_http": 200,
+      "staging_bytes": 5344,
+      "production_bytes": 5352,
+      "staging_msg": "Config Data",
+      "production_msg": "Config Data",
+      "payload_complete": true,
+      "winner": "staging"
+    },
+    {
+      "key": "pre_ipo_home",
+      "path": "/api/v2/business/home/pre-ipo",
+      "query": {},
+      "staging_median_ms": 116.7,
+      "production_median_ms": 134.5,
+      "staging_p95_ms": 125.9,
+      "production_p95_ms": 276.6,
+      "delta_ms": -17.8,
+      "staging_http": 401,
+      "production_http": 401,
+      "staging_bytes": 30,
+      "production_bytes": 30,
+      "staging_msg": "Unauthenticated.",
+      "production_msg": "Unauthenticated.",
+      "payload_complete": false,
+      "winner": "staging"
+    },
+    {
+      "key": "company_detail",
+      "path": "/api/v2/business/company/detail",
+      "query": {
+        "slug": "choice-foods-pvt-ltd"
+      },
+      "staging_median_ms": 116.3,
+      "production_median_ms": 138.9,
+      "staging_p95_ms": 138.7,
+      "production_p95_ms": 207.0,
+      "delta_ms": -22.6,
+      "staging_http": 401,
+      "production_http": 401,
+      "staging_bytes": 30,
+      "production_bytes": 30,
+      "staging_msg": "Unauthenticated.",
+      "production_msg": "Unauthenticated.",
+      "payload_complete": false,
+      "winner": "staging"
+    }
+  ],
+  "raw": {
+    "staging": {
+      "config": {
+        "path": "/api/get-config",
+        "query": {},
+        "http_mode": 200,
+        "bytes_median": 5344,
+        "msg": "Config Data",
+        "latency_ms": {
+          "min": 120.9,
+          "median": 122.6,
+          "avg": 125.6,
+          "p95": 135.3,
+          "max": 139.3,
+          "samples": [
+            120.9,
+            121.7,
+            122.4,
+            122.6,
+            122.6,
+            127.2,
+            127.8,
+            139.3
+          ]
+        }
+      },
+      "pre_ipo_home": {
+        "path": "/api/v2/business/home/pre-ipo",
+        "query": {},
+        "http_mode": 401,
+        "bytes_median": 30,
+        "msg": "Unauthenticated.",
+        "latency_ms": {
+          "min": 100.8,
+          "median": 116.7,
+          "avg": 114.9,
+          "p95": 125.9,
+          "max": 127.5,
+          "samples": [
+            100.8,
+            102.1,
+            112.7,
+            115.6,
+            117.8,
+            119.8,
+            122.8,
+            127.5
+          ]
+        }
+      },
+      "company_detail": {
+        "path": "/api/v2/business/company/detail",
+        "query": {
+          "slug": "choice-foods-pvt-ltd"
+        },
+        "http_mode": 401,
+        "bytes_median": 30,
+        "msg": "Unauthenticated.",
+        "latency_ms": {
+          "min": 98.2,
+          "median": 116.3,
+          "avg": 118.5,
+          "p95": 138.7,
+          "max": 143.1,
+          "samples": [
+            98.2,
+            104.8,
+            109.8,
+            114.8,
+            117.8,
+            128.9,
+            130.5,
+            143.1
+          ]
+        }
+      }
+    },
+    "production": {
+      "config": {
+        "path": "/api/get-config",
+        "query": {},
+        "http_mode": 200,
+        "bytes_median": 5352,
+        "msg": "Config Data",
+        "latency_ms": {
+          "min": 128.7,
+          "median": 144.0,
+          "avg": 145.4,
+          "p95": 163.9,
+          "max": 166.7,
+          "samples": [
+            128.7,
+            137.5,
+            137.7,
+            143.0,
+            145.0,
+            146.2,
+            158.7,
+            166.7
+          ]
+        }
+      },
+      "pre_ipo_home": {
+        "path": "/api/v2/business/home/pre-ipo",
+        "query": {},
+        "http_mode": 401,
+        "bytes_median": 30,
+        "msg": "Unauthenticated.",
+        "latency_ms": {
+          "min": 111.5,
+          "median": 134.5,
+          "avg": 163.1,
+          "p95": 276.6,
+          "max": 303.3,
+          "samples": [
+            111.5,
+            120.7,
+            122.3,
+            123.8,
+            145.2,
+            150.6,
+            227.0,
+            303.3
+          ]
+        }
+      },
+      "company_detail": {
+        "path": "/api/v2/business/company/detail",
+        "query": {
+          "slug": "choice-foods-pvt-ltd"
+        },
+        "http_mode": 401,
+        "bytes_median": 30,
+        "msg": "Unauthenticated.",
+        "latency_ms": {
+          "min": 107.0,
+          "median": 138.9,
+          "avg": 147.9,
+          "p95": 207.0,
+          "max": 221.6,
+          "samples": [
+            107.0,
+            119.6,
+            130.8,
+            137.8,
+            139.9,
+            146.4,
+            179.9,
+            221.6
+          ]
+        }
+      }
+    }
+  }
+}

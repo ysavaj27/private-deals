@@ -18,12 +18,9 @@ class DesktopSecondaryTransactionDialogView extends StatelessWidget {
         mainAxisSize: MainAxisSize.min,
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          const Text(
-            "Buy",
-            style: TextStyle(
-              fontSize: 32,
-              fontWeight: FontWeight.w600,
-            ),
+          Text(
+            c.actionLabel,
+            style: const TextStyle(fontSize: 32, fontWeight: FontWeight.w600),
           ),
           const SizedBox(height: 40),
           Row(
@@ -53,17 +50,14 @@ class DesktopSecondaryTransactionDialogView extends StatelessWidget {
                   height: 48,
                   width: 65,
                   decoration: BoxDecoration(
-                    borderRadius: BorderRadius.circular(10),
+                    borderRadius: BorderRadius.circular(AppRadii.control),
                     border: Border.all(color: AppColors.borderColor(context)),
                     color: context.isDarkMode
                         ? const Color(0xff242424)
                         : Colors.grey.shade400,
                   ),
                   alignment: Alignment.center,
-                  child: const Text(
-                    "Max Qty",
-                    style: TextStyle(fontSize: 12),
-                  ),
+                  child: const Text("Max Qty", style: TextStyle(fontSize: 12)),
                 ),
               ),
             ],
@@ -75,14 +69,16 @@ class DesktopSecondaryTransactionDialogView extends StatelessWidget {
             children: [
               Expanded(
                 child: _DataText(
-                    title: "Min Shares",
-                    subTitle: c.model.minimumQty.toShowNum),
+                  title: "Min Shares",
+                  subTitle: c.model.minimumQty.toShowNum,
+                ),
               ),
               const SizedBox(width: 40),
               Expanded(
                 child: _DataText(
-                    title: "Available Shares",
-                    subTitle: c.model.availableQuantity.toShowNum),
+                  title: "Available Shares",
+                  subTitle: c.model.availableQuantity.toShowNum,
+                ),
               ),
             ],
           ),
@@ -102,12 +98,15 @@ class DesktopSecondaryTransactionDialogView extends StatelessWidget {
                   children: [
                     Expanded(
                       child: _DataText(
-                          title: "Shares price",
-                          subTitle: c.model.sharePrice.toCurrency),
+                        title: "Shares price",
+                        subTitle: c.model.sharePrice.toCurrency,
+                      ),
                     ),
                     Expanded(
                       child: _DataText(
-                          title: "Shares", subTitle: c.shares.value.toShowNum),
+                        title: "Shares",
+                        subTitle: c.shares.value.toShowNum,
+                      ),
                     ),
                   ],
                 ),
@@ -164,7 +163,7 @@ class DesktopSecondaryTransactionDialogView extends StatelessWidget {
                   isLoading: c.isLoading.value,
                   width: 169,
                   height: 49,
-                  text: "Buy",
+                  text: c.actionLabel,
                 );
               }),
             ],

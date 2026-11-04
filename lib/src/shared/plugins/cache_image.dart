@@ -1,3 +1,4 @@
+import 'package:private_deals/src/shared/theme/app_tokens.dart';
 import 'package:private_deals/src/shared/widgets/image_placeholder.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:cached_network_image_platform_interface/cached_network_image_platform_interface.dart';
@@ -99,7 +100,7 @@ class LogoImage extends StatelessWidget {
     required this.url,
     this.width,
     this.height,
-    this.radius = 6,
+    this.radius = AppRadii.control,
     this.fit,
     this.placeHolderImage = '',
     this.imageBuilder,

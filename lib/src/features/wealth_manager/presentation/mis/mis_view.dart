@@ -1,5 +1,6 @@
 import 'package:intl/intl.dart';
 import 'package:private_deals/src/shared/app_exports.dart';
+
 import 'mis_page_ctrl.dart';
 import '../widgets/workspace_widgets.dart';
 
@@ -136,7 +137,7 @@ class _MisViewState extends State<MisView> {
             url: company.startupLogo,
             height: 44,
             width: 44,
-            radius: 10,
+            radius: AppRadii.control,
           ),
           title: Text(
             company.startupName,
@@ -144,9 +145,8 @@ class _MisViewState extends State<MisView> {
           ),
           subtitle: Text(
             '${visibleReports.length} ${visibleReports.length == 1 ? 'report' : 'reports'}',
-            style: Theme.of(
-              context,
-            ).textTheme.bodySmall?.copyWith(color: colors.onSurfaceVariant),
+            style: Theme.of(context).textTheme.bodySmall
+                ?.copyWith(color: colors.onSurfaceVariant),
           ),
           children: [
             if (visibleReports.isEmpty)
@@ -188,9 +188,8 @@ class _MisViewState extends State<MisView> {
                       const SizedBox(height: AppSpace.sm),
                       Text(
                         report.description,
-                        style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                          color: colors.onSurfaceVariant,
-                        ),
+                        style: Theme.of(context).textTheme.bodyMedium
+                            ?.copyWith(color: colors.onSurfaceVariant),
                       ),
                     ],
                     const SizedBox(height: AppSpace.md),
@@ -201,9 +200,8 @@ class _MisViewState extends State<MisView> {
                       children: [
                         Text(
                           report.createdAt.year > 0
-                              ? DateFormat(
-                                  'dd MMM yyyy',
-                                ).format(report.createdAt)
+                              ? DateFormat('dd MMM yyyy')
+                                    .format(report.createdAt)
                               : 'Date unavailable',
                           style: Theme.of(context).textTheme.bodySmall,
                         ),

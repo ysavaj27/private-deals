@@ -20,7 +20,7 @@ class CustomProgressBar extends StatefulWidget {
       Color(0xFF50752B),
       Color(0xFF608D35),
     ],
-    this.radius = 5,
+    this.radius = AppRadii.xs,
   });
 
   @override
@@ -111,11 +111,11 @@ class _CustomPercentageProgressBarState
       height: 20,
       decoration: BoxDecoration(
         color: context.theme.disabledColor.withValues(alpha: 0.1),
-        borderRadius: const BorderRadius.all(Radius.circular(19)),
+        borderRadius: const BorderRadius.all(Radius.circular(AppRadii.card)),
       ),
       alignment: Alignment.centerLeft,
       child: ClipRRect(
-        borderRadius: const BorderRadius.all(Radius.circular(19)),
+        borderRadius: const BorderRadius.all(Radius.circular(AppRadii.card)),
         child: AnimatedFractionallySizedBox(
           widthFactor: widget.progress / 100,
           duration: const Duration(seconds: 1),

@@ -12,6 +12,12 @@ class SecondaryTransactionDialogCtrl extends GetxController {
 
   RxBool isLoading = false.obs;
 
+  /// Institution sell → WM buys; institution buy → WM sells.
+  InvestmentTypeEnum get inquiryType =>
+      model.isSellDeal ? InvestmentTypeEnum.buy : InvestmentTypeEnum.sell;
+
+  String get actionLabel => model.counterpartyActionLabel;
+
   // Function to increment the sell quantity
   int incrementSellQuantity() {
     // Increment by minQty, but don't exceed totalShares
@@ -69,7 +75,7 @@ class SecondaryTransactionDialogCtrl extends GetxController {
     isLoading(true);
     logger.d(model.toJson());
     var res = await WPreIpoTransactionApi.inquiry(
-      type: InvestmentTypeEnum.buy,
+      type: inquiryType,
       companySlug: model.companySlug,
       quantity: shares.value,
       offerPrice: model.sharePrice,

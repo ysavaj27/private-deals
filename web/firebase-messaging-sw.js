@@ -15,4 +15,12 @@ const messaging = firebase.messaging();
 
 messaging.onBackgroundMessage((payload) => {
   console.log('Received background message:', payload);
+  const notification = payload.notification || {};
+  const title = notification.title || 'Private Deals';
+  const options = {
+    body: notification.body || '',
+    icon: '/icons/android-icon-192x192.png',
+    data: payload.data || {},
+  };
+  return self.registration.showNotification(title, options);
 });

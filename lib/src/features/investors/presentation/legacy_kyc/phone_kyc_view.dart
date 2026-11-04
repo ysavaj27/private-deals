@@ -35,7 +35,7 @@ class MainWidget extends StatelessWidget {
         case KycStatusEnum.approve:
           return FadeIn(
             child: CustomCardWidget(
-              radius: 10,
+              radius: AppRadii.card,
               margin: const EdgeInsets.all(15),
               padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 12),
               child: Column(
@@ -51,7 +51,7 @@ class MainWidget extends StatelessWidget {
                         height: 61,
                         width: 61,
                         decoration: BoxDecoration(
-                          borderRadius: BorderRadius.circular(4),
+                          borderRadius: BorderRadius.circular(AppRadii.xs),
                           border: Border.all(
                             color: context.theme.disabledColor.withValues(
                               alpha: 0.1,
@@ -185,7 +185,7 @@ class MainWidget extends StatelessWidget {
         case KycStatusEnum.approvalPending:
           return FadeIn(
             child: CustomCardWidget(
-              radius: 10,
+              radius: AppRadii.card,
               margin: const EdgeInsets.all(15),
               padding: const EdgeInsets.symmetric(vertical: 59, horizontal: 25),
               child: const Column(
@@ -206,7 +206,7 @@ class MainWidget extends StatelessWidget {
         case KycStatusEnum.rejected:
           return FadeIn(
             child: CustomCardWidget(
-              radius: 10,
+              radius: AppRadii.card,
               margin: const EdgeInsets.all(15),
               padding: const EdgeInsets.symmetric(vertical: 20, horizontal: 14),
               child: SingleChildScrollView(
@@ -300,7 +300,7 @@ class DocumentCard extends StatelessWidget {
   Widget build(BuildContext context) {
     // logger.d("Model IMage :${model().url}");
     return InkWell(
-      borderRadius: BorderRadius.circular(16),
+      borderRadius: BorderRadius.circular(AppRadii.card),
       onTap: () async {
         var res = await FilePickers().pickSingleImage();
         if (res != null) {
@@ -309,7 +309,7 @@ class DocumentCard extends StatelessWidget {
         }
       },
       child: CustomDottedBorder(
-        radius: 16,
+        radius: AppRadii.control,
         padding: 15,
         child: Row(
           children: [
@@ -383,14 +383,14 @@ class DocumentCard extends StatelessWidget {
                             model().dataType = FileDataType.none;
                             model.refresh();
                           },
-                          borderRadius: BorderRadius.circular(50),
+                          borderRadius: AppRadii.buttonAll,
                           child: Container(
                             height: 18,
                             width: 18,
                             // padding: const EdgeInsets.all(8),
                             decoration: BoxDecoration(
                               color: context.theme.primaryColor,
-                              shape: BoxShape.circle,
+                              borderRadius: AppRadii.buttonAll,
                             ),
                             child: const Icon(Icons.clear, size: 14),
                           ),

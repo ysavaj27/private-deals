@@ -1,13 +1,68 @@
 import 'package:private_deals/src/features/institution/data/api/deal_api.dart';
 import 'package:private_deals/src/features/institution/data/deal_payloads.dart';
+import 'package:private_deals/src/features/institution/data/models/deal/deal_model.dart';
 import 'package:private_deals/src/features/institution/support/plugins/toast.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:intl/intl.dart';
 import 'package:private_deals/src/features/institution/data/api/company_api.dart';
 import 'package:private_deals/src/features/institution/data/models/common/enums.dart';
 import 'package:private_deals/src/features/institution/data/models/company/lite_company_model.dart';
 import 'package:private_deals/src/shared/app_exports.dart' show app;
 import 'package:private_deals/src/shared/models/settlement_option.dart';
+
+/// Last saved non-hot deal for one company on the current buy or sell tab.
+class PreviousSharePrice {
+  const PreviousSharePrice({
+    required this.companyId,
+    required this.companyName,
+    required this.basePrice,
+    required this.minQty,
+    this.totalQty,
+    this.settlementDays,
+    this.recordedAt,
+  });
+
+  final int companyId;
+  final String companyName;
+  final double basePrice;
+  final int minQty;
+  final int? totalQty;
+  final int? settlementDays;
+  final DateTime? recordedAt;
+
+  String get priceText => _plainNumber(basePrice);
+}
+
+/// Wealth manager share price: the typed base plus the 1% institution fee,
+/// rounded to paise the same way the server builds `share_price`.
+double wealthManagerSharePrice(double basePrice) {
+  final paise = (basePrice * 100).round();
+  return (paise * 101).round() / 10000;
+}
+
+class PreviousPriceLookup {
+  const PreviousPriceLookup({this.prices = const [], this.error = ''});
+
+  final List<PreviousSharePrice> prices;
+  final String error;
+
+  bool get isSuccess => error.isEmpty;
+}
+
+final _inr = NumberFormat.currency(
+  locale: 'en_IN',
+  symbol: '₹',
+  decimalDigits: 2,
+);
+
+String _plainNumber(num value) {
+  if (value == value.roundToDouble()) return value.toInt().toString();
+  var text = value.toStringAsFixed(2);
+  text = text.replaceFirst(RegExp(r'0+$'), '');
+  if (text.endsWith('.')) text = text.substring(0, text.length - 1);
+  return text;
+}
 
 class SharePriceDraft {
   SharePriceDraft(this.company, {int? settlementDays})
@@ -74,7 +129,15 @@ class UpdateSharePriceCtrl extends GetxController {
   final feedbackIsError = false.obs;
 
   final revision = 0.obs;
+  final listOrder = 0.obs;
   final pinnedCompanyId = Rxn<int>();
+  final loadingPrevious = false.obs;
+
+  /// Previous prices already filled, per buy/sell tab. Drives list order.
+  final _loadedPrevious = <String, Map<int, PreviousSharePrice>>{
+    'sell': {},
+    'buy': {},
+  };
 
   final searchController = TextEditingController();
   final scrollController = ScrollController();
@@ -87,8 +150,10 @@ class UpdateSharePriceCtrl extends GetxController {
   }
 
   List<SharePriceDraft> get visibleRows {
+    listOrder.value;
     final search = query.value.trim().toLowerCase();
     final pinned = pinnedCompanyId.value;
+    final loaded = _loadedPrevious[dealType.value] ?? const {};
 
     final result = rows.where((row) {
       final company = row.company;
@@ -97,6 +162,8 @@ class UpdateSharePriceCtrl extends GetxController {
           .toLowerCase()
           .contains(search);
     }).toList();
+
+    result.sort((a, b) => _compareRows(a, b, loaded));
 
     if (pinned != null) {
       final index = result.indexWhere((row) => row.company.id == pinned);
@@ -190,6 +257,130 @@ class UpdateSharePriceCtrl extends GetxController {
   void fieldChanged(SharePriceDraft row) {
     row.errors.clear();
     feedback.value = '';
+  }
+
+  /// Minimum amount using the wealth manager price (base + 1%) × minimum qty.
+  String? minTransactionLabel(SharePriceDraft row) {
+    final price = double.tryParse(row.price.text.trim());
+    final minimum = int.tryParse(row.minQty.text.trim());
+    if (price == null || minimum == null || price <= 0 || minimum < 1) {
+      return null;
+    }
+    final amount = wealthManagerSharePrice(price) * minimum;
+    return 'Min transaction ${_inr.format(amount)}';
+  }
+
+  /// Loads the latest saved price for this tab and writes it into the fields.
+  Future<void> fillPreviousPrices() async {
+    if (loadingPrevious.value || saving.value || loading.value) return;
+    loadingPrevious.value = true;
+    feedback.value = '';
+    try {
+      final lookup = await lookupPreviousPrices();
+      if (isClosed) return;
+      if (!lookup.isSuccess) {
+        feedbackIsError.value = true;
+        feedback.value = lookup.error;
+        toast(lookup.error, MessageEnum.error);
+        return;
+      }
+      if (lookup.prices.isEmpty) {
+        feedbackIsError.value = true;
+        feedback.value = isSell
+            ? 'No previous sell price was found.'
+            : 'No previous buy price was found.';
+        return;
+      }
+      applyPreviousPrices(lookup.prices);
+      toast(feedback.value, MessageEnum.success);
+    } finally {
+      if (!isClosed) loadingPrevious.value = false;
+    }
+  }
+
+  /// Loads this institution's latest non-hot deal per company for the open tab.
+  Future<PreviousPriceLookup> lookupPreviousPrices() async {
+    try {
+      final deals = await _fetchUnlistedDeals();
+      if (isClosed) return const PreviousPriceLookup();
+
+      final latest = <int, PreviousSharePrice>{};
+      for (final deal in deals) {
+        if (deal.dealType.toLowerCase() != dealType.value) continue;
+        final companyId = deal.company.id;
+        if (companyId <= 0) continue;
+        final price = _basePriceOf(deal);
+        final minimum = deal.minimumQty.round();
+        if (price == null || minimum < 1) continue;
+        final total = deal.availableQuantity.round();
+        final candidate = PreviousSharePrice(
+          companyId: companyId,
+          companyName: _companyLabel(deal.company),
+          basePrice: price,
+          minQty: minimum,
+          totalQty: total >= 1 ? total : null,
+          settlementDays: deal.settlementDays,
+          recordedAt: deal.recordedAt,
+        );
+        final current = latest[companyId];
+        if (current == null || _isNewer(candidate, current)) {
+          latest[companyId] = candidate;
+        }
+      }
+
+      final prices = <PreviousSharePrice>[];
+      for (final row in rows) {
+        final previous = latest[row.company.id];
+        if (previous == null) continue;
+        prices.add(
+          PreviousSharePrice(
+            companyId: row.company.id,
+            companyName: _companyLabel(row.company),
+            basePrice: previous.basePrice,
+            minQty: previous.minQty,
+            totalQty: previous.totalQty,
+            settlementDays: previous.settlementDays,
+            recordedAt: previous.recordedAt,
+          ),
+        );
+      }
+      prices.sort(_comparePrevious);
+      return PreviousPriceLookup(prices: prices);
+    } on FormatException catch (error) {
+      return PreviousPriceLookup(error: error.message);
+    } catch (_) {
+      return const PreviousPriceLookup(
+        error: 'Unable to load previous prices. Please retry.',
+      );
+    }
+  }
+
+  /// Writes [prices] into the open tab and moves those companies to the top.
+  int applyPreviousPrices(List<PreviousSharePrice> prices) {
+    if (prices.isEmpty) return 0;
+    final byCompany = {for (final price in prices) price.companyId: price};
+    var filled = 0;
+    for (final row in rows) {
+      final previous = byCompany[row.company.id];
+      if (previous == null) continue;
+      row.price.text = previous.priceText;
+      row.minQty.text = previous.minQty.toString();
+      row.totalQty.text = previous.totalQty?.toString() ?? '';
+      if (isSell && previous.settlementDays != null) {
+        row.settlementDays.value = previous.settlementDays;
+      }
+      row.errors.clear();
+      filled++;
+    }
+    _loadedPrevious[dealType.value] = byCompany;
+    pinnedCompanyId.value = null;
+    revision.value++;
+    listOrder.value++;
+    feedbackIsError.value = false;
+    feedback.value = filled == 1
+        ? 'Filled the previous price for 1 company.'
+        : 'Filled previous prices for $filled companies.';
+    return filled;
   }
 
   /// Applies the common cycle to rows still on the previous common value.
@@ -317,8 +508,9 @@ class UpdateSharePriceCtrl extends GetxController {
       }
 
       if (row.price.text.trim().isEmpty ||
-          num.tryParse(row.price.text.trim()) == 0)
+          num.tryParse(row.price.text.trim()) == 0) {
         continue;
+      }
 
       prices.add({
         'company_id': row.company.id,
@@ -398,6 +590,92 @@ class UpdateSharePriceCtrl extends GetxController {
     } finally {
       if (!isClosed) saving.value = false;
     }
+  }
+
+  Future<List<DealModel>> _fetchUnlistedDeals() async {
+    const pageSize = 20;
+    final all = <DealModel>[];
+    var skip = 0;
+    while (skip < 1000) {
+      final response = await DealApi.getDealList(
+        type: CompanyType.unlisted,
+        skip: skip,
+        isHotDeal: false,
+      );
+      if (!response.isSuccess || response.r == null) {
+        final message = response.m.trim();
+        throw FormatException(
+          message.isEmpty
+              ? 'Unable to load previous prices. Please retry.'
+              : message,
+        );
+      }
+      final page = response.r!;
+      all.addAll(page);
+      if (page.length < pageSize) return all;
+      skip += pageSize;
+    }
+    return all;
+  }
+
+  double? _basePriceOf(DealModel deal) {
+    final base = deal.basePrice;
+    if (base != null && base > 0) return base;
+    if (deal.sharePrice > 0) return deal.sharePrice;
+    return null;
+  }
+
+  String _companyLabel(LiteCompanyModel company) {
+    final brand = company.brandName.trim();
+    if (brand.isNotEmpty) return brand;
+    return company.companyName.trim();
+  }
+
+  bool _isNewer(PreviousSharePrice next, PreviousSharePrice current) {
+    final nextAt = next.recordedAt;
+    final currentAt = current.recordedAt;
+    if (nextAt != null && currentAt != null) return nextAt.isAfter(currentAt);
+    if (nextAt != null) return true;
+    return false;
+  }
+
+  int _comparePrevious(PreviousSharePrice a, PreviousSharePrice b) {
+    final aAt = a.recordedAt;
+    final bAt = b.recordedAt;
+    if (aAt != null && bAt != null) {
+      final byDate = bAt.compareTo(aAt);
+      if (byDate != 0) return byDate;
+    } else if (aAt != null) {
+      return -1;
+    } else if (bAt != null) {
+      return 1;
+    }
+    final byName = a.companyName.toLowerCase().compareTo(
+      b.companyName.toLowerCase(),
+    );
+    if (byName != 0) return byName;
+    return a.companyId.compareTo(b.companyId);
+  }
+
+  int _compareRows(
+    SharePriceDraft a,
+    SharePriceDraft b,
+    Map<int, PreviousSharePrice> loaded,
+  ) {
+    final aPrevious = loaded[a.company.id];
+    final bPrevious = loaded[b.company.id];
+    if ((aPrevious != null) != (bPrevious != null)) {
+      return aPrevious != null ? -1 : 1;
+    }
+    if (aPrevious != null && bPrevious != null) {
+      final byPrice = _comparePrevious(aPrevious, bPrevious);
+      if (byPrice != 0) return byPrice;
+    }
+    final byName = _companyLabel(a.company).toLowerCase().compareTo(
+      _companyLabel(b.company).toLowerCase(),
+    );
+    if (byName != 0) return byName;
+    return a.company.id.compareTo(b.company.id);
   }
 
   @override

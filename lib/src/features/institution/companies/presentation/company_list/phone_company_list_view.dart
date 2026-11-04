@@ -114,7 +114,12 @@ class PhoneCompanyListView extends StatelessWidget {
 
           final horizontal = AppPagePadding.horizontalOf(context);
           return SliverPadding(
-            padding: EdgeInsets.fromLTRB(horizontal, 0, horizontal, AppSpace.xl),
+            padding: EdgeInsets.fromLTRB(
+              horizontal,
+              0,
+              horizontal,
+              AppSpace.xl,
+            ),
             sliver: SliverList(
               delegate: SliverChildBuilderDelegate((context, index) {
                 final company = companies[index];
@@ -130,7 +135,10 @@ class PhoneCompanyListView extends StatelessWidget {
                         children: [
                           Row(
                             children: [
-                              LogoImage(url: company.logo, radius: 12),
+                              LogoImage(
+                                url: company.logo,
+                                radius: AppRadii.control,
+                              ),
                               const SizedBox(width: 12),
                               Expanded(
                                 child: Column(

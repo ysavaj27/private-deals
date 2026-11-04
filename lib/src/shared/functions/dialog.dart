@@ -13,19 +13,26 @@ Future<Object?> showCustomDialog(
     barrierLabel: MaterialLocalizations.of(context).modalBarrierDismissLabel,
     barrierColor: Colors.black54,
     transitionDuration: duration,
-    pageBuilder: (BuildContext buildContext, Animation<double> animation,
-        Animation<double> secondaryAnimation) {
-      return AlertDialog(
-        insetPadding: const EdgeInsets.symmetric(vertical: 40, horizontal: 15),
-        backgroundColor: Colors.transparent,
-        elevation: 0,
-        contentPadding: EdgeInsets.zero,
-        content: widget,
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(16),
-        ),
-      );
-    },
+    pageBuilder:
+        (
+          BuildContext buildContext,
+          Animation<double> animation,
+          Animation<double> secondaryAnimation,
+        ) {
+          return AlertDialog(
+            insetPadding: const EdgeInsets.symmetric(
+              vertical: 40,
+              horizontal: 15,
+            ),
+            backgroundColor: Colors.transparent,
+            elevation: 0,
+            contentPadding: EdgeInsets.zero,
+            content: widget,
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(AppRadii.card),
+            ),
+          );
+        },
     transitionBuilder: (context, animation, secondaryAnimation, child) {
       final curved = CurvedAnimation(
         parent: animation,

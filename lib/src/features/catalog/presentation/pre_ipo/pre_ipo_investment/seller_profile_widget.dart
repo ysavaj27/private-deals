@@ -29,7 +29,7 @@ class SellerProfileWidget extends StatelessWidget {
       alignment: Alignment.center,
       decoration: BoxDecoration(
         color: context.theme.primaryColor.withValues(alpha: 0.08),
-        borderRadius: BorderRadius.circular(10),
+        borderRadius: BorderRadius.circular(AppRadii.control),
         border: Border.all(color: AppColors.borderColor(context)),
       ),
       child: const Icon(Icons.business_outlined, size: 22),
@@ -46,7 +46,7 @@ class SellerProfileWidget extends StatelessWidget {
       children: [
         if (_canLoadLogo)
           ClipRRect(
-            borderRadius: BorderRadius.circular(10),
+            borderRadius: BorderRadius.circular(AppRadii.control),
             child: CacheImage(
               url: seller.logo,
               height: 40,
@@ -60,7 +60,7 @@ class SellerProfileWidget extends StatelessWidget {
                   decoration: BoxDecoration(
                     border: Border.all(color: AppColors.borderColor(context)),
                     color: AppColors.logoBgColor(context),
-                    borderRadius: BorderRadius.circular(10),
+                    borderRadius: BorderRadius.circular(AppRadii.control),
                     image: DecorationImage(
                       image: imageProvider,
                       fit: BoxFit.contain,
@@ -241,7 +241,7 @@ class _ProfileStat extends StatelessWidget {
         color: theme.colorScheme.surfaceContainerHighest.withValues(
           alpha: 0.22,
         ),
-        borderRadius: BorderRadius.circular(10),
+        borderRadius: BorderRadius.circular(AppRadii.control),
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -293,7 +293,7 @@ class _ProfileDetailState extends State<_ProfileDetail> {
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
         border: Border.all(color: colors.outlineVariant.withValues(alpha: 0.7)),
-        borderRadius: BorderRadius.circular(12),
+        borderRadius: BorderRadius.circular(AppRadii.control),
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,

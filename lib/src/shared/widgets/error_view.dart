@@ -18,6 +18,7 @@ class ErrorView extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final scheme = context.theme.colorScheme;
+    final detail = message?.trim();
     return AppFadeIn(
       child: Center(
         child: Padding(
@@ -25,11 +26,7 @@ class ErrorView extends StatelessWidget {
           child: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
-              Icon(
-                Icons.error_outline_rounded,
-                size: 56,
-                color: scheme.error,
-              ),
+              Icon(Icons.error_outline_rounded, size: 56, color: scheme.error),
               const SizedBox(height: AppSpace.lg),
               Text(
                 title,
@@ -38,10 +35,10 @@ class ErrorView extends StatelessWidget {
                 ),
                 textAlign: TextAlign.center,
               ),
-              if (message != null && message!.isNotEmpty) ...[
+              if (detail != null && detail.isNotEmpty) ...[
                 const SizedBox(height: AppSpace.sm),
                 Text(
-                  message!,
+                  detail,
                   style: context.textTheme.bodyMedium?.copyWith(
                     color: scheme.onSurfaceVariant,
                   ),
@@ -52,7 +49,7 @@ class ErrorView extends StatelessWidget {
                 const SizedBox(height: AppSpace.xl),
                 CustomElevatedButton(
                   text: retryLabel,
-                  radius: AppRadii.md,
+                  radius: AppRadii.button,
                   width: context.isPhone ? 140 : 200,
                   height: 44,
                   onPressed: onRetry,

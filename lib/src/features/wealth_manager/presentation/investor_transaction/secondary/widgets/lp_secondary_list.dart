@@ -29,12 +29,7 @@ class LpSecondaryTransactionList extends StatelessWidget {
           physics: const BouncingScrollPhysics(
             parent: AlwaysScrollableScrollPhysics(),
           ),
-          padding: EdgeInsets.fromLTRB(
-            isPhone ? 0 : 4,
-            4,
-            isPhone ? 0 : 4,
-            24,
-          ),
+          padding: EdgeInsets.fromLTRB(isPhone ? 0 : 4, 4, isPhone ? 0 : 4, 24),
           itemCount: ctrl.finalList.length,
           separatorBuilder: (_, __) => SizedBox(height: isPhone ? 10 : 12),
           itemBuilder: (context, index) {
@@ -77,7 +72,7 @@ class _ListPanel extends StatelessWidget {
     return Container(
       decoration: BoxDecoration(
         color: colors.surface,
-        borderRadius: BorderRadius.circular(14),
+        borderRadius: BorderRadius.circular(AppRadii.card),
         border: Border.all(color: colors.outlineVariant),
       ),
       clipBehavior: Clip.antiAlias,
@@ -109,7 +104,7 @@ class _SideBadge extends StatelessWidget {
       padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
       decoration: BoxDecoration(
         color: isBuy ? colors.primaryContainer : colors.surfaceContainerHighest,
-        borderRadius: BorderRadius.circular(6),
+        borderRadius: BorderRadius.circular(AppRadii.badge),
       ),
       child: Text(
         label,
@@ -202,10 +197,7 @@ class _DocsMenu extends StatelessWidget {
         );
         list.addIf(
           hasReceipt,
-          const PopupMenuItem(
-            value: 2,
-            child: Text('Share transfer receipt'),
-          ),
+          const PopupMenuItem(value: 2, child: Text('Share transfer receipt')),
         );
         return list;
       },
@@ -226,7 +218,7 @@ class _ExpirePill extends StatelessWidget {
       padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
       decoration: BoxDecoration(
         color: color.withValues(alpha: 0.12),
-        borderRadius: BorderRadius.circular(20),
+        borderRadius: BorderRadius.circular(AppRadii.card),
         border: Border.all(color: color.withValues(alpha: 0.35)),
       ),
       child: Row(
@@ -356,10 +348,7 @@ class _BuyListItem extends StatelessWidget {
               mainAxisSize: MainAxisSize.min,
               children: [
                 if (model.showExpire)
-                  _ExpirePill(
-                    expiredAt: model.expiredAt,
-                    color: model.color,
-                  ),
+                  _ExpirePill(expiredAt: model.expiredAt, color: model.color),
                 _DocsMenu(model: model),
               ],
             ),
@@ -490,9 +479,7 @@ class _SellListItem extends StatelessWidget {
               width: double.infinity,
               decoration: BoxDecoration(
                 color: colors.surfaceContainerLow,
-                border: Border(
-                  top: BorderSide(color: colors.outlineVariant),
-                ),
+                border: Border(top: BorderSide(color: colors.outlineVariant)),
               ),
               child: Column(
                 children: [
@@ -534,8 +521,7 @@ class _SellBuyerRow extends StatelessWidget {
   Widget build(BuildContext context) {
     final colors = context.theme.colorScheme;
     final hasAction = model.upload || model.approve;
-    final buyerName =
-        model.buyer.name.isNotEmpty ? model.buyer.name : 'Buyer';
+    final buyerName = model.buyer.name.isNotEmpty ? model.buyer.name : 'Buyer';
 
     return Padding(
       padding: EdgeInsets.fromLTRB(isPhone ? 14 : 16, 12, 10, 12),
@@ -694,13 +680,13 @@ class _CompanyRow extends StatelessWidget {
       children: [
         InkWell(
           onTap: onLogoTap,
-          borderRadius: BorderRadius.circular(10),
+          borderRadius: BorderRadius.circular(AppRadii.control),
           child: Container(
             width: size,
             height: size,
             decoration: BoxDecoration(
               color: colors.surfaceContainerHigh,
-              borderRadius: BorderRadius.circular(10),
+              borderRadius: BorderRadius.circular(AppRadii.control),
               border: Border.all(color: colors.outlineVariant),
             ),
             clipBehavior: Clip.antiAlias,
@@ -708,7 +694,7 @@ class _CompanyRow extends StatelessWidget {
               url: logo,
               width: size,
               height: size,
-              radius: 10,
+              radius: AppRadii.control,
             ),
           ),
         ),
@@ -754,10 +740,7 @@ class _CompanyRow extends StatelessWidget {
           children: [
             Text(
               amountCaption,
-              style: TextStyle(
-                fontSize: 10,
-                color: colors.onSurfaceVariant,
-              ),
+              style: TextStyle(fontSize: 10, color: colors.onSurfaceVariant),
             ),
             const SizedBox(height: 2),
             Text(
@@ -844,11 +827,7 @@ class _StatusBlock extends StatelessWidget {
         const SizedBox(height: 4),
         Text(
           status,
-          style: TextStyle(
-            fontSize: 13,
-            height: 1.35,
-            color: colors.onSurface,
-          ),
+          style: TextStyle(fontSize: 13, height: 1.35, color: colors.onSurface),
         ),
         if (showNext && nextStep.isNotEmpty) ...[
           const SizedBox(height: 8),

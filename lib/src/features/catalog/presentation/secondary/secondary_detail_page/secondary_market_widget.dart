@@ -32,7 +32,7 @@ class MarketWidget extends StatelessWidget {
             decoration: BoxDecoration(
               color: Theme.of(context).colorScheme.surfaceContainerHighest
                   .withValues(alpha: 0.45),
-              borderRadius: BorderRadius.circular(10),
+              borderRadius: BorderRadius.circular(AppRadii.control),
             ),
             child: const Row(
               children: [
@@ -88,7 +88,10 @@ class MarketWidget extends StatelessWidget {
             itemBuilder: (context, index) {
               final model = deals[index];
               return Padding(
-                padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 4),
+                padding: const EdgeInsets.symmetric(
+                  vertical: 10,
+                  horizontal: 4,
+                ),
                 child: Row(
                   children: [
                     Expanded(
@@ -128,7 +131,7 @@ class MarketWidget extends StatelessWidget {
                           },
                           width: 96,
                           height: 36,
-                          text: 'Buy',
+                          text: model.counterpartyActionLabel,
                         ),
                       ),
                     ),

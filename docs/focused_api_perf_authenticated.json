@@ -1,0 +1,56 @@
+{
+  "captured_at": "2026-11-03T11:00:07.460996+00:00",
+  "auth": {
+    "mobile": "7984718397",
+    "device": "web",
+    "device_id": "perf-web-31609f3b760a"
+  },
+  "note": "Authenticated Dio-parity headers + Bearer. Password not stored. Tokens not stored.",
+  "sessions": {
+    "staging": {
+      "http": 200,
+      "biz_status": 0,
+      "message": "Mobile number and Password do not match.",
+      "user_id": null,
+      "user_type": null,
+      "has_token": false,
+      "login_ms": 388.1
+    },
+    "production": {
+      "http": 200,
+      "biz_status": 0,
+      "message": "Mobile number not registered.",
+      "user_id": null,
+      "user_type": null,
+      "has_token": false,
+      "login_ms": 154.4
+    }
+  },
+  "compare": [],
+  "results": {
+    "staging": {
+      "login_failed": true,
+      "login": {
+        "http": 200,
+        "biz_status": 0,
+        "message": "Mobile number and Password do not match.",
+        "user_id": null,
+        "user_type": null,
+        "has_token": false,
+        "login_ms": 388.1
+      }
+    },
+    "production": {
+      "login_failed": true,
+      "login": {
+        "http": 200,
+        "biz_status": 0,
+        "message": "Mobile number not registered.",
+        "user_id": null,
+        "user_type": null,
+        "has_token": false,
+        "login_ms": 154.4
+      }
+    }
+  }
+}

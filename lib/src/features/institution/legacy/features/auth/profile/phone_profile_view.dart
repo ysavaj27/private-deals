@@ -63,7 +63,7 @@ class PhoneProfileView extends StatelessWidget {
               if (controller.error.value.isNotEmpty) ...[
                 Material(
                   color: colors.errorContainer,
-                  borderRadius: BorderRadius.circular(12),
+                  borderRadius: BorderRadius.circular(AppRadii.control),
                   child: Padding(
                     padding: const EdgeInsets.all(12),
                     child: Row(
@@ -93,7 +93,7 @@ class PhoneProfileView extends StatelessWidget {
               Material(
                 color: colors.surface,
                 shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(18),
+                  borderRadius: BorderRadius.circular(AppRadii.card),
                   side: BorderSide(
                     color: colors.outlineVariant.withValues(alpha: 0.7),
                   ),
@@ -107,7 +107,7 @@ class PhoneProfileView extends StatelessWidget {
                         height: 72,
                         decoration: BoxDecoration(
                           color: colors.primaryContainer,
-                          borderRadius: BorderRadius.circular(20),
+                          borderRadius: BorderRadius.circular(AppRadii.card),
                         ),
                         clipBehavior: Clip.antiAlias,
                         child: profile.logo.isNotEmpty
@@ -201,7 +201,7 @@ class PhoneProfileView extends StatelessWidget {
                 style: FilledButton.styleFrom(
                   padding: const EdgeInsets.symmetric(vertical: 14),
                   shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(14),
+                    borderRadius: AppRadii.buttonAll,
                   ),
                 ),
               ),
@@ -226,7 +226,7 @@ class PhoneProfileView extends StatelessWidget {
                   padding: const EdgeInsets.symmetric(vertical: 14),
                   minimumSize: const Size(double.infinity, 48),
                   shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(12),
+                    borderRadius: AppRadii.buttonAll,
                   ),
                 ),
               ),
@@ -259,7 +259,7 @@ class PhoneProfileView extends StatelessWidget {
                   padding: const EdgeInsets.symmetric(vertical: 14),
                   minimumSize: const Size(double.infinity, 48),
                   shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(12),
+                    borderRadius: AppRadii.buttonAll,
                   ),
                 ),
               ),
@@ -312,7 +312,7 @@ class _StatusChip extends StatelessWidget {
       padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
       decoration: BoxDecoration(
         color: bg,
-        borderRadius: BorderRadius.circular(20),
+        borderRadius: BorderRadius.circular(AppRadii.card),
       ),
       child: Text(
         label,

@@ -93,7 +93,7 @@ class _DashboardActivityChartState extends State<DashboardActivityChart> {
                     padding: const EdgeInsets.all(16),
                     decoration: BoxDecoration(
                       color: colors.primaryContainer.withValues(alpha: .4),
-                      borderRadius: BorderRadius.circular(10),
+                      borderRadius: BorderRadius.circular(AppRadii.control),
                     ),
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
@@ -200,7 +200,7 @@ class _DashboardActivityChartState extends State<DashboardActivityChart> {
                           color: colors.primary,
                           width: periods.length <= 3 ? .32 : .55,
                           borderRadius: const BorderRadius.vertical(
-                            top: Radius.circular(5),
+                            top: Radius.circular(AppRadii.xs),
                           ),
                           animationDuration: 0,
                           pointColorMapper: (_, index) =>
@@ -347,10 +347,10 @@ class _SectorExposureRow extends StatelessWidget {
     final theme = Theme.of(context);
     return Material(
       color: Colors.transparent,
-      borderRadius: BorderRadius.circular(10),
+      borderRadius: BorderRadius.circular(AppRadii.control),
       child: InkWell(
         onTap: () => showDashboardSector(context, sector.sector),
-        borderRadius: BorderRadius.circular(10),
+        borderRadius: BorderRadius.circular(AppRadii.control),
         child: Padding(
           padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 4),
           child: Column(
@@ -807,7 +807,7 @@ class _InvestorStatusGroup extends StatelessWidget {
         if (total > 0) ...[
           const SizedBox(height: 16),
           ClipRRect(
-            borderRadius: BorderRadius.circular(5),
+            borderRadius: BorderRadius.circular(AppRadii.xs),
             child: SizedBox(
               height: 10,
               child: Row(

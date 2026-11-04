@@ -39,7 +39,7 @@ class CustomElevatedButton extends StatelessWidget {
     this.style,
     this.color,
     this.isLoading = false,
-    this.radius = 12.0,
+    this.radius = AppRadii.button,
     this.padding,
     this.child,
     this.isLoginGradient = true,

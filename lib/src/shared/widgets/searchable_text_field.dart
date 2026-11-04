@@ -29,9 +29,10 @@ class SearchableTextField<T> extends StatelessWidget {
         Text.rich(
           TextSpan(
             style: TextStyle(
-                fontWeight: FontWeight.w500,
-                color: context.theme.colorScheme.onSurfaceVariant,
-                fontSize: context.isPhone ? 14 : 16),
+              fontWeight: FontWeight.w500,
+              color: context.theme.colorScheme.onSurfaceVariant,
+              fontSize: context.isPhone ? 14 : 16,
+            ),
             children: [
               TextSpan(text: title),
               TextSpan(
@@ -47,20 +48,28 @@ class SearchableTextField<T> extends StatelessWidget {
           hint: hint,
           controller: controller,
           searchInputDecoration: SearchInputDecoration(
-            contentPadding:
-                const EdgeInsets.symmetric(vertical: 18, horizontal: 17),
+            contentPadding: const EdgeInsets.symmetric(
+              vertical: 18,
+              horizontal: 17,
+            ),
             hintStyle: const TextStyle(color: Colors.grey, fontSize: 14),
             filled: true,
             fillColor: context.theme.colorScheme.surface,
-            border: _buildBorder(context, 12),
-            enabledBorder: _buildBorder(context, 12),
+            border: _buildBorder(context, AppRadii.control),
+            enabledBorder: _buildBorder(context, AppRadii.control),
             focusedBorder: OutlineInputBorder(
-              borderRadius: BorderRadius.circular(12),
+              borderRadius: BorderRadius.circular(AppRadii.control),
               borderSide: BorderSide(
-                  color: context.theme.colorScheme.primary, width: 2),
+                color: context.theme.colorScheme.primary,
+                width: 2,
+              ),
             ),
-            errorBorder: _buildBorder(context, 12, isError: true),
-            focusedErrorBorder: _buildBorder(context, 12, isError: true),
+            errorBorder: _buildBorder(context, AppRadii.control, isError: true),
+            focusedErrorBorder: _buildBorder(
+              context,
+              AppRadii.control,
+              isError: true,
+            ),
             prefixIcon: Icon(Icons.search, color: context.theme.primaryColor),
           ),
           maxSuggestionsInViewPort: 5,
@@ -72,8 +81,11 @@ class SearchableTextField<T> extends StatelessWidget {
     );
   }
 
-  static OutlineInputBorder _buildBorder(BuildContext context, double radius,
-      {bool isError = false}) {
+  static OutlineInputBorder _buildBorder(
+    BuildContext context,
+    double radius, {
+    bool isError = false,
+  }) {
     return OutlineInputBorder(
       borderRadius: BorderRadius.circular(radius),
       borderSide: BorderSide(

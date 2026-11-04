@@ -1,3 +1,4 @@
+import 'package:private_deals/src/shared/theme/app_tokens.dart';
 import 'package:chewie/chewie.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/scheduler.dart';
@@ -5,6 +6,8 @@ import 'package:get/get.dart';
 import 'package:private_deals/src/shared/plugins/loader.dart';
 import 'package:video_player/video_player.dart';
 import 'package:visibility_detector/visibility_detector.dart';
+
+import 'video_controls.dart';
 
 // For Windows video player
 // import 'package:video_player_win/video_player_win.dart' ;
@@ -20,7 +23,7 @@ class VideoPlayerScreen extends StatelessWidget {
       width: MediaQuery.of(context).size.width * 0.9,
       decoration: BoxDecoration(
         color: Theme.of(context).scaffoldBackgroundColor,
-        borderRadius: BorderRadius.circular(10),
+        borderRadius: BorderRadius.circular(AppRadii.control),
       ),
       padding: const EdgeInsets.all(10),
       child: Column(
@@ -93,6 +96,7 @@ class _CustomVideoPlayerState extends State<CustomVideoPlayer> {
           _chewieController = ChewieController(
             videoPlayerController: _controller,
             autoPlay: true,
+            customControls: const AppVideoControls(),
             looping: false,
             aspectRatio: value.aspectRatio,
             autoInitialize: true,
@@ -136,14 +140,14 @@ class _CustomVideoPlayerState extends State<CustomVideoPlayer> {
   }
 
   void _handleVisibilityChanged(VisibilityInfo info) {
-    if (_disposed || !mounted) return;
+    if (_disposed || !mounted || _chewieController?.isFullScreen == true) {
+      return;
+    }
     if (info.visibleFraction > 0.5 && !isPlaying) {
       _controller.play();
-      _chewieController?.play();
       isPlaying = true;
     } else if (info.visibleFraction <= 0.5 && isPlaying) {
       _controller.pause();
-      _chewieController?.pause();
       isPlaying = false;
     }
   }
@@ -153,12 +157,14 @@ class _CustomVideoPlayerState extends State<CustomVideoPlayer> {
     return VisibilityDetector(
       key: Key('video-key-${widget.url}'),
       onVisibilityChanged: _handleVisibilityChanged,
-      child: _controller.value.isInitialized && _chewieController != null
-          ? AspectRatio(
-              aspectRatio: 16 / 9,
-              child: Chewie(controller: _chewieController!),
-            ) // Use Chewie for enhanced controls
-          : const Loader(),
+      child: RepaintBoundary(
+        child: AspectRatio(
+          aspectRatio: 16 / 9,
+          child: _controller.value.isInitialized && _chewieController != null
+              ? Chewie(controller: _chewieController!)
+              : const Loader(),
+        ),
+      ),
     );
   }
 }

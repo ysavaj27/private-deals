@@ -1,86 +1,57 @@
-part of 'desktop_primary_landing_view.dart';
+import 'package:private_deals/src/shared/app_exports.dart';
 
-class FeaturedWidget extends StatelessWidget {
-  final PrimaryLandingPageCtrl c = Get.find<PrimaryLandingPageCtrl>();
+import '../widgets/catalog_article_card.dart';
+import '../widgets/catalog_section_style.dart';
+import '../pre_ipo/pre_ipo_landing_page/desktop_pre_ipo_landing_view.dart'
+    show AutoScrollSectorList;
 
-  FeaturedWidget({super.key});
+import 'primary_landing_page_ctrl.dart';
+import 'primary_startup_card.dart';
+import 'blog_detail/blog_detail_page.dart';
 
+class PrimaryFeaturedSectors extends StatelessWidget {
+  const PrimaryFeaturedSectors({super.key});
   @override
   Widget build(BuildContext context) {
+    final c = Get.find<PrimaryLandingPageCtrl>();
     return Column(
+      crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
-        const SizedBox(height: 25),
-        Text.rich(
-          TextSpan(
-            style: const TextStyle(fontSize: 36, fontWeight: FontWeight.w400),
-            children: [
-              const TextSpan(
-                text: 'Featured ',
-                style: TextStyle(fontWeight: FontWeight.bold),
-              ),
-              TextSpan(
-                text: 'Sectors',
-                style: TextStyle(
-                  decorationThickness: 2.5,
-                  decorationColor: context.theme.primaryColor.withValues(
-                    alpha: 0.7,
-                  ),
-                ),
-              ),
-            ],
-          ),
-        ),
-        const SizedBox(height: 70),
+        const CatalogSectionHeading(prefix: 'Featured ', title: 'Sectors'),
+        SizedBox(height: context.isPhone ? 20 : 40),
         Obx(() {
-          return SizedBox(
-            height: 200,
-            child: ListView.builder(
-              scrollDirection: Axis.horizontal,
-              padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 15),
-              itemCount: c.sectors.length,
-              itemBuilder: (context, index) {
-                var model = c.sectors[index];
-                return Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 20),
-                  child: Clickable(
-                    onTap: () {
-                      Get.toNamed(
-                        Routes.primaryListPath(Get.currentRoute, model.slug),
-                      );
+          if (c.sectorsLoading.value) {
+            return const SizedBox(height: 120, child: Loader());
+          }
+          if (c.sectorsError.value.isNotEmpty) {
+            return PrimaryCatalogState(
+              title: 'Sectors are unavailable',
+              message: c.sectorsError.value,
+              onRetry: c.sectorList,
+            );
+          }
+          if (c.sectors.isEmpty) {
+            return const PrimaryCatalogState(
+              title: 'Sectors are coming soon',
+              message: 'Check back for more opportunities.',
+            );
+          }
+          void openSector(SectorModel sector) {
+            if (sector.slug.isNotEmpty) {
+              Get.toNamed(
+                Routes.primaryListPath(
+                  Routes.catalogPath(WTabBarEnum.primary.slug),
+                  sector.slug,
+                ),
+              );
+            }
+          }
 
-                      // Get.toNamed(Routes.startUpList, arguments: model.id);
-                    },
-                    borderRadius: BorderRadius.circular(15),
-                    child: CustomCardWidget(
-                      radius: 15,
-                      child: Container(
-                        padding: const EdgeInsets.all(20),
-                        width: 250,
-                        height: 192,
-                        child: Column(
-                          children: [
-                            Expanded(
-                              child: CacheImage(
-                                url: model.iconImage,
-                                // color: context.textTheme.titleMedium?.color,
-                              ),
-                            ),
-                            const SizedBox(height: 15),
-                            Text(
-                              model.name.toUpperCase(),
-                              style: const TextStyle(
-                                fontWeight: FontWeight.w600,
-                                fontSize: 16,
-                              ),
-                            ),
-                          ],
-                        ),
-                      ),
-                    ),
-                  ),
-                );
-              },
-            ),
+          return AutoScrollSectorList(
+            sectors: c.sectors.toList(),
+            isPhone: MediaQuery.sizeOf(context).width < 600,
+            onViewMore: openSector,
+            onLogoTap: (sector, _) => openSector(sector),
           );
         }),
       ],
@@ -88,377 +59,66 @@ class FeaturedWidget extends StatelessWidget {
   }
 }
 
-class BlogWidget extends StatelessWidget {
-  final PrimaryLandingPageCtrl c = Get.find<PrimaryLandingPageCtrl>();
-
-  BlogWidget({super.key});
-
+class PrimaryArticles extends StatelessWidget {
+  const PrimaryArticles({super.key});
   @override
   Widget build(BuildContext context) {
+    final c = Get.find<PrimaryLandingPageCtrl>();
     return Column(
+      crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
-        Container(
-          width: context.width,
-          margin: EdgeInsets.only(right: context.width * 0.1),
-          decoration: BoxDecoration(
-            color: context.isDarkMode
-                ? const Color(0xff0C0C0C)
-                : context.theme.primaryColor.withValues(alpha: 0.08),
-            borderRadius: const BorderRadius.only(
-              topRight: Radius.circular(400),
+        const CatalogSectionHeading(title: 'Blogs'),
+        SizedBox(height: context.isPhone ? 20 : 60),
+        Obx(() {
+          if (c.blogsLoading.value) {
+            return const SizedBox(height: 180, child: Loader());
+          }
+          if (c.blogsError.value.isNotEmpty) {
+            return PrimaryCatalogState(
+              title: 'Articles are unavailable',
+              message: c.blogsError.value,
+              onRetry: c.blogList,
+            );
+          }
+          if (c.blogs.isEmpty) {
+            return const PrimaryCatalogState(
+              title: 'New insights are on the way',
+              message: 'Articles will appear here when published.',
+            );
+          }
+          return Padding(
+            padding: EdgeInsets.symmetric(horizontal: context.isPhone ? 0 : 20),
+            child: CatalogArticleCarousel(
+              itemCount: c.blogs.length,
+              itemBuilder: (_, index) => PrimaryBlogCard(blog: c.blogs[index]),
             ),
+          );
+        }),
+        SizedBox(height: context.isPhone ? 20 : 40),
+        CatalogExploreButton(
+          onPressed: () => Get.toNamed(
+            Routes.blogListPath(Routes.catalogPath(WTabBarEnum.primary.slug)),
           ),
-          child: ClipRRect(
-            borderRadius: const BorderRadius.only(
-              topRight: Radius.circular(400),
-            ),
-            child: Column(
-              children: [
-                const SizedBox(height: 25),
-                Row(
-                  children: [
-                    const SizedBox(width: 20),
-                    Row(
-                      children: [
-                        IconButton(
-                          mouseCursor: SystemMouseCursors.click,
-                          onPressed: () {
-                            c.blogController.animateTo(
-                              c.blogController.offset - 200,
-                              duration: const Duration(milliseconds: 400),
-                              curve: Curves.decelerate,
-                            );
-                          },
-                          icon: const Icon(Icons.arrow_back_ios_new_outlined),
-                        ),
-                        const SizedBox(width: 5),
-                        IconButton(
-                          mouseCursor: SystemMouseCursors.click,
-                          onPressed: () {
-                            c.blogController.animateTo(
-                              c.blogController.offset + 200,
-                              duration: const Duration(milliseconds: 400),
-                              curve: Curves.decelerate,
-                            );
-                          },
-                          icon: const Icon(Icons.arrow_forward_ios_outlined),
-                        ),
-                      ],
-                    ),
-                    Expanded(
-                      child: Center(
-                        child: Text.rich(
-                          TextSpan(
-                            style: const TextStyle(
-                              fontSize: 36,
-                              fontWeight: FontWeight.w400,
-                            ),
-                            children: [
-                              // const TextSpan(
-                              //   text: 'Completed ',
-                              //   style: TextStyle(fontWeight: FontWeight.bold),
-                              // ),
-                              TextSpan(
-                                text: 'Blog',
-                                style: TextStyle(
-                                  decorationThickness: 2.5,
-                                  decorationColor: context.theme.primaryColor
-                                      .withValues(alpha: 0.7),
-                                ),
-                              ),
-                            ],
-                          ),
-                        ),
-                      ),
-                    ),
-                    const SizedBox(width: 85),
-                  ],
-                ),
-                const SizedBox(height: 40),
-                SizedBox(
-                  height: 400,
-                  child: Obx(() {
-                    return ListView.separated(
-                      controller: c.blogController,
-                      padding: EdgeInsets.only(
-                        left: context.width * 0.0276,
-                        right: context.width * 0.1,
-                      ),
-                      itemCount: c.blogs.length,
-                      physics: const BouncingScrollPhysics(),
-                      scrollDirection: Axis.horizontal,
-                      itemBuilder: (context, index) {
-                        var model = c.blogs[index];
-                        return SizedBox(
-                          width: 300,
-                          height: 425,
-                          child: Clickable(
-                            // splashColor: Colors.transparent,
-                            // hoverColor: Colors.transparent,
-                            // highlightColor: Colors.transparent,
-                            // borderRadius: BorderRadius.circular(14),
-                            onTap: () {
-                              Get.toNamed(
-                                Routes.blogDetailPath(
-                                  Get.currentRoute,
-                                  model.urlSlug,
-                                ),
-                              );
-                            },
-                            child: CustomCardWidget(
-                              color: context.theme.scaffoldBackgroundColor,
-                              radius: 14,
-                              child: Column(
-                                children: [
-                                  ClipRRect(
-                                    borderRadius: const BorderRadius.vertical(
-                                      top: Radius.circular(14),
-                                    ),
-                                    child: CacheImage(
-                                      url: model.banner,
-                                      width: double.infinity,
-                                      fit: BoxFit.cover,
-                                      height: 200,
-                                    ),
-                                  ),
-                                  Expanded(
-                                    child: Padding(
-                                      padding: const EdgeInsets.all(10),
-                                      child: Column(
-                                        mainAxisAlignment:
-                                            MainAxisAlignment.start,
-                                        crossAxisAlignment:
-                                            CrossAxisAlignment.start,
-                                        children: [
-                                          Expanded(
-                                            child: Column(
-                                              mainAxisAlignment:
-                                                  MainAxisAlignment.start,
-                                              crossAxisAlignment:
-                                                  CrossAxisAlignment.start,
-                                              children: [
-                                                Row(
-                                                  children: [
-                                                    Icon(
-                                                      Icons.calendar_month,
-                                                      color: context
-                                                          .theme
-                                                          .disabledColor,
-                                                      size: 24,
-                                                    ),
-                                                    const SizedBox(width: 5),
-                                                    Text(
-                                                      model
-                                                          .createdAt
-                                                          .dateWithMonthYear,
-                                                      style: const TextStyle(
-                                                        fontSize: 14,
-                                                      ),
-                                                    ),
-                                                  ],
-                                                ),
-                                                const SizedBox(height: 10),
-                                                Text(
-                                                  model.title,
-                                                  maxLines: 1,
-                                                  overflow:
-                                                      TextOverflow.ellipsis,
-                                                  // Ensure text does not overflow
-                                                  style: const TextStyle(
-                                                    fontWeight: FontWeight.w600,
-                                                    fontSize: 18,
-                                                  ),
-                                                ),
-                                                const SizedBox(height: 10),
-                                                Flexible(
-                                                  child: Text(
-                                                    model.shortDescription,
-                                                    maxLines: 3,
-                                                    overflow:
-                                                        TextOverflow.ellipsis,
-                                                    // Ensure text does not overflow
-                                                    style: TextStyle(
-                                                      fontSize: 14,
-                                                      color: context
-                                                          .theme
-                                                          .disabledColor,
-                                                    ),
-                                                  ),
-                                                ),
-                                              ],
-                                            ),
-                                          ),
-                                          TextButton(
-                                            onPressed: () {
-                                              Get.toNamed(
-                                                Routes.blogDetailPath(
-                                                  Get.currentRoute,
-                                                  model.urlSlug,
-                                                ),
-                                              );
-                                              // Get.toNamed(Routes.blogDetailPage,
-                                              //     arguments: model);
-                                            },
-                                            child: const Row(
-                                              mainAxisAlignment:
-                                                  MainAxisAlignment.start,
-                                              mainAxisSize: MainAxisSize.min,
-                                              children: [
-                                                Text(
-                                                  "Read More",
-                                                  style: TextStyle(
-                                                    fontSize: 16,
-                                                  ),
-                                                ),
-                                                SizedBox(width: 5),
-                                                Icon(
-                                                  Icons.arrow_forward_outlined,
-                                                  size: 24,
-                                                ),
-                                              ],
-                                            ),
-                                          ),
-                                        ],
-                                      ),
-                                    ),
-                                  ),
-                                ],
-                              ),
-                            ),
-                          ),
-                        );
-                      },
-                      separatorBuilder: (BuildContext context, int index) =>
-                          const SizedBox(width: 20),
-                    );
-                  }),
-                ),
-                const SizedBox(height: 20),
-              ],
-            ),
-          ),
-        ),
-        const SizedBox(height: 20),
-        CustomElevatedButton(
-          text: "Explore More",
-          radius: 22,
-          width: 236,
-          height: 56,
-          onPressed: () {
-            Get.toNamed(Routes.blogListPath(Get.currentRoute));
-            // Get.to(() => BlogListPage());
-          },
         ),
       ],
     );
   }
 }
 
-class AchievementWidget extends StatelessWidget {
-  final String image;
-  final String title;
-  final String subTitle;
-  final double? subTitleSize;
-  final double? titleSize;
-
-  const AchievementWidget({
-    super.key,
-    required this.image,
-    required this.title,
-    required this.subTitle,
-    this.subTitleSize,
-    this.titleSize,
-  });
-
+class PrimaryBlogCard extends StatelessWidget {
+  const PrimaryBlogCard({super.key, required this.blog, this.onTap});
+  final BlogModel blog;
+  final VoidCallback? onTap;
   @override
-  Widget build(BuildContext context) {
-    return CustomCardWidget(
-      width: 300,
-      height: 156,
-      padding: const EdgeInsets.symmetric(horizontal: 30, vertical: 41),
-      radius: 4,
-      child: Row(
-        crossAxisAlignment: CrossAxisAlignment.center,
-        children: [
-          Container(
-            height: 68,
-            width: 68,
-            margin: const EdgeInsets.symmetric(horizontal: 10),
-            decoration: const BoxDecoration(
-              shape: BoxShape.circle,
-              color: Color(0xffFACFD4),
-            ),
-            padding: const EdgeInsets.all(10),
-            child: SVGImage(image),
-          ),
-          const SizedBox(width: 16),
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                Text(
-                  title,
-                  style: TextStyle(
-                    fontSize: titleSize ?? 18,
-                    fontWeight: FontWeight.w600,
-                  ),
-                ),
-                const SizedBox(height: 8),
-                Text(
-                  subTitle,
-                  maxLines: 3,
-                  style: TextStyle(
-                    fontSize: subTitleSize,
-                    color: context.theme.colorScheme.onSurfaceVariant
-                        .withValues(alpha: 0.8),
-                  ),
-                ),
-              ],
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-}
-
-class CustomTextButton extends StatelessWidget {
-  final PrimaryLandingPageCtrl c = Get.find<PrimaryLandingPageCtrl>();
-
-  final String title;
-
-  // final LandingEnum type;
-  final void Function()? onTap;
-  final Color? color;
-
-  CustomTextButton({
-    super.key,
-    required this.title,
-    this.onTap,
-    this.color,
-    /*required this.type*/
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    // return Obx(() {
-    // var isSelected = c.currentPage() == type;
-    //                                    Scrollable.ensureVisible(
-    //                                         c.liveDeal.currentContext!);
-    return Clickable(
-      onTap: onTap,
-      child: Padding(
-        padding: const EdgeInsets.symmetric(vertical: 5, horizontal: 10),
-        child: Text(
-          title,
-          style: TextStyle(
-            color: color,
-            // color: isSelected ? context.theme.primaryColor : null,
-          ),
+  Widget build(BuildContext context) => CatalogArticleCard(
+    image: blog.banner,
+    title: blog.title,
+    description: blog.shortDescription,
+    date: blog.createdAt,
+    onTap:
+        onTap ??
+        () => Get.toNamed(
+          Routes.blogDetailPath(Get.currentRoute, blog.urlSlug),
         ),
-      ),
-    );
-    // });
-  }
+  );
 }

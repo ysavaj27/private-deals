@@ -164,7 +164,7 @@ class DTabTileWidget extends StatelessWidget {
     final isDark = Theme.of(context).brightness == Brightness.dark;
     final accent = isDark ? const Color(0xFF8BAAD4) : const Color(0xFF2B5996);
     final muted = isDark ? const Color(0xFFB1BAC4) : const Color(0xFF5A6578);
-    final radius = BorderRadius.circular(12);
+    final radius = BorderRadius.circular(AppRadii.control);
 
     return Obx(() {
       if (SessionNavigation.check('/wealth-manager/${tab.slug}') !=

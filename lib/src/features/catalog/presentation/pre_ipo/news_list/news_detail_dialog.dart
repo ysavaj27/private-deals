@@ -1,17 +1,17 @@
 import 'package:url_launcher/url_launcher.dart';
 import 'package:private_deals/src/shared/app_exports.dart';
 
-Future<void> showNewsDetailBottomSheet(BuildContext context,
-    {required NewsModel news}) {
+Future<void> showNewsDetailBottomSheet(
+  BuildContext context, {
+  required NewsModel news,
+}) {
   return showModalBottomSheet(
     context: context,
     isScrollControlled: true,
 
     backgroundColor: Colors.transparent,
     constraints: const BoxConstraints(maxWidth: 900),
-    builder: (context) => NewsDetailBottomSheet(
-      news: news,
-    ),
+    builder: (context) => NewsDetailBottomSheet(news: news),
   );
 }
 
@@ -70,7 +70,9 @@ class NewsDetailBottomSheet extends StatelessWidget {
         return Container(
           decoration: BoxDecoration(
             color: sheetBg,
-            borderRadius: const BorderRadius.vertical(top: Radius.circular(24)),
+            borderRadius: const BorderRadius.vertical(
+              top: Radius.circular(AppRadii.card),
+            ),
           ),
           child: Column(
             children: [
@@ -81,7 +83,7 @@ class NewsDetailBottomSheet extends StatelessWidget {
                 height: 4,
                 decoration: BoxDecoration(
                   color: handleColor,
-                  borderRadius: BorderRadius.circular(4),
+                  borderRadius: BorderRadius.circular(AppRadii.xs),
                 ),
               ),
               Expanded(
@@ -93,11 +95,10 @@ class NewsDetailBottomSheet extends StatelessWidget {
                     // Image
                     SizedBox(
                       width: double.infinity,
-                      height: MediaQuery.sizeOf(context).width < 600 ? 200 : 400,
-                      child: CacheImage(
-                        url: news.image,
-                        fit: BoxFit.cover,
-                      ),
+                      height: MediaQuery.sizeOf(context).width < 600
+                          ? 200
+                          : 400,
+                      child: CacheImage(url: news.image, fit: BoxFit.cover),
                     ),
                     SizedBox(height: 18),
                     Padding(
@@ -115,7 +116,9 @@ class NewsDetailBottomSheet extends StatelessWidget {
                                 ),
                                 decoration: BoxDecoration(
                                   color: badgeBg,
-                                  borderRadius: BorderRadius.circular(6),
+                                  borderRadius: BorderRadius.circular(
+                                    AppRadii.badge,
+                                  ),
                                 ),
                                 child: Text(
                                   news.platformName,
@@ -133,7 +136,9 @@ class NewsDetailBottomSheet extends StatelessWidget {
                                   maxLines: 1,
                                   overflow: TextOverflow.ellipsis,
                                   style: TextStyle(
-                                      color: mutedColor, fontSize: 13),
+                                    color: mutedColor,
+                                    fontSize: 13,
+                                  ),
                                 ),
                               ),
                             ],
@@ -179,7 +184,7 @@ class NewsDetailBottomSheet extends StatelessWidget {
                         backgroundColor: primaryColor,
                         foregroundColor: Colors.white,
                         shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(12),
+                          borderRadius: AppRadii.buttonAll,
                         ),
                         elevation: 0,
                       ),

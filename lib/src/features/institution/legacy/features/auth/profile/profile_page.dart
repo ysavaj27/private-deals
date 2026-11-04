@@ -85,146 +85,139 @@ class ProfileDetailView extends StatelessWidget {
             physics: const AlwaysScrollableScrollPhysics(),
             padding: AppPagePadding.of(context),
             child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.stretch,
-                  children: [
-                    if (showPageTitle) ...[
-                      const AppPageHeader(
-                        title: 'My profile',
-                        subtitle:
-                            'Your company, contact and account information.',
-                      ),
-                      const SizedBox(height: AppSpace.xl),
-                    ],
-                    _ProfileHeader(profile: profile, controller: controller),
-                    const SizedBox(height: 20),
-                    SellerKycCard(controller: controller),
-                    if (controller.error.value.isNotEmpty) ...[
-                      const SizedBox(height: 12),
-                      Text(
-                        controller.error.value,
-                        style: TextStyle(
-                          color: context.theme.colorScheme.error,
-                        ),
-                      ),
-                      if (!controller.editing.value)
-                        TextButton(
-                          onPressed:
-                              controller.loading.value ||
-                                  controller.saving.value
-                              ? null
-                              : () async {
-                                  if (await controller.refreshProfile()) {
-                                    controller.logo.value = null;
-                                  }
-                                },
-                          child: const Text('Retry refresh'),
-                        ),
-                    ],
-                    const SizedBox(height: 20),
-                    _PublicSellerProfileSection(controller: controller),
-                    const SizedBox(height: 20),
-                    _ProfileSection(
-                      title: 'Company details',
-                      icon: Icons.business_outlined,
-                      fields: [
-                        _ProfileField(
-                          label: 'Company name',
-                          value: profile.companyName,
-                        ),
-                        _ProfileField(
-                          label: 'CIN',
-                          value: profile.cin,
-                          copyable: true,
-                        ),
-                        _ProfileField(
-                          label: 'PAN',
-                          value: profile.pan,
-                          copyable: true,
-                        ),
-                        _ProfileField(label: 'Address', value: profile.address),
-                      ],
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              children: [
+                if (showPageTitle) ...[
+                  const AppPageHeader(
+                    title: 'My profile',
+                    subtitle: 'Your company, contact and account information.',
+                  ),
+                  const SizedBox(height: AppSpace.xl),
+                ],
+                _ProfileHeader(profile: profile, controller: controller),
+                const SizedBox(height: 20),
+                SellerKycCard(controller: controller),
+                if (controller.error.value.isNotEmpty) ...[
+                  const SizedBox(height: 12),
+                  Text(
+                    controller.error.value,
+                    style: TextStyle(color: context.theme.colorScheme.error),
+                  ),
+                  if (!controller.editing.value)
+                    TextButton(
+                      onPressed:
+                          controller.loading.value || controller.saving.value
+                          ? null
+                          : () async {
+                              if (await controller.refreshProfile()) {
+                                controller.logo.value = null;
+                              }
+                            },
+                      child: const Text('Retry refresh'),
                     ),
-                    const SizedBox(height: 20),
-                    _ProfileSection(
-                      title: 'Contact details',
-                      icon: Icons.contact_mail_outlined,
-                      fields: [
-                        _ProfileField(
-                          label: 'Email address',
-                          value: profile.email,
-                          copyable: true,
-                        ),
-                        _ProfileField(
-                          label: 'Mobile number',
-                          value: profile.mobileNumber,
-                          copyable: true,
-                        ),
-                      ],
+                ],
+                const SizedBox(height: 20),
+                _PublicSellerProfileSection(controller: controller),
+                const SizedBox(height: 20),
+                _ProfileSection(
+                  title: 'Company details',
+                  icon: Icons.business_outlined,
+                  fields: [
+                    _ProfileField(
+                      label: 'Company name',
+                      value: profile.companyName,
                     ),
-                    const SizedBox(height: 20),
-                    _ProfileSection(
-                      title: 'Demat account',
-                      icon: Icons.account_balance_wallet_outlined,
-                      fields: [
-                        _ProfileField(
-                          label: 'DP ID',
-                          value: profile.dpId,
-                          copyable: true,
-                        ),
-                        _ProfileField(
-                          label: 'Client ID',
-                          value: profile.clientId,
-                          copyable: true,
-                        ),
-                      ],
+                    _ProfileField(
+                      label: 'CIN',
+                      value: profile.cin,
+                      copyable: true,
                     ),
-                    const SizedBox(height: 20),
-                    _ProfileSection(
-                      title: 'Bank details',
-                      icon: Icons.account_balance_outlined,
-                      fields: [
-                        _ProfileField(
-                          label: 'Bank name',
-                          value: profile.bankName,
-                        ),
-                        _ProfileField(
-                          label: 'Account number',
-                          value: profile.accountNumber,
-                          copyable: true,
-                        ),
-                        _ProfileField(
-                          label: 'IFSC',
-                          value: profile.ifsc,
-                          copyable: true,
-                        ),
-                        _ProfileField(label: 'Branch', value: profile.branch),
-                      ],
+                    _ProfileField(
+                      label: 'PAN',
+                      value: profile.pan,
+                      copyable: true,
                     ),
-                    const SizedBox(height: 20),
-                    _ProfileSection(
-                      title: 'Account information',
-                      icon: Icons.info_outline_rounded,
-                      fields: [
-                        _ProfileField(
-                          label: 'Account status',
-                          value: profile.accountStatus,
-                        ),
-                        _ProfileField(
-                          label: 'Password change required',
-                          value: profile.askPasswordChange ? 'Yes' : 'No',
-                        ),
-                        _ProfileField(
-                          label: 'Created on (IST)',
-                          value: formatProfileDate(profile.createdAt),
-                        ),
-                        _ProfileField(
-                          label: 'Last updated (IST)',
-                          value: formatProfileDate(profile.updatedAt),
-                        ),
-                      ],
-                    ),
-                    if (isPhone) const SizedBox(height: 24),
+                    _ProfileField(label: 'Address', value: profile.address),
                   ],
+                ),
+                const SizedBox(height: 20),
+                _ProfileSection(
+                  title: 'Contact details',
+                  icon: Icons.contact_mail_outlined,
+                  fields: [
+                    _ProfileField(
+                      label: 'Email address',
+                      value: profile.email,
+                      copyable: true,
+                    ),
+                    _ProfileField(
+                      label: 'Mobile number',
+                      value: profile.mobileNumber,
+                      copyable: true,
+                    ),
+                  ],
+                ),
+                const SizedBox(height: 20),
+                _ProfileSection(
+                  title: 'Demat account',
+                  icon: Icons.account_balance_wallet_outlined,
+                  fields: [
+                    _ProfileField(
+                      label: 'DP ID',
+                      value: profile.dpId,
+                      copyable: true,
+                    ),
+                    _ProfileField(
+                      label: 'Client ID',
+                      value: profile.clientId,
+                      copyable: true,
+                    ),
+                  ],
+                ),
+                const SizedBox(height: 20),
+                _ProfileSection(
+                  title: 'Bank details',
+                  icon: Icons.account_balance_outlined,
+                  fields: [
+                    _ProfileField(label: 'Bank name', value: profile.bankName),
+                    _ProfileField(
+                      label: 'Account number',
+                      value: profile.accountNumber,
+                      copyable: true,
+                    ),
+                    _ProfileField(
+                      label: 'IFSC',
+                      value: profile.ifsc,
+                      copyable: true,
+                    ),
+                    _ProfileField(label: 'Branch', value: profile.branch),
+                  ],
+                ),
+                const SizedBox(height: 20),
+                _ProfileSection(
+                  title: 'Account information',
+                  icon: Icons.info_outline_rounded,
+                  fields: [
+                    _ProfileField(
+                      label: 'Account status',
+                      value: profile.accountStatus,
+                    ),
+                    _ProfileField(
+                      label: 'Password change required',
+                      value: profile.askPasswordChange ? 'Yes' : 'No',
+                    ),
+                    _ProfileField(
+                      label: 'Created on (IST)',
+                      value: formatProfileDate(profile.createdAt),
+                    ),
+                    _ProfileField(
+                      label: 'Last updated (IST)',
+                      value: formatProfileDate(profile.updatedAt),
+                    ),
+                  ],
+                ),
+                if (isPhone) const SizedBox(height: 24),
+              ],
             ),
           ),
         );
@@ -316,9 +309,7 @@ class _PublicSellerProfileSection extends StatelessWidget {
                   if (error.isNotEmpty) ...[
                     Text(
                       error,
-                      style: TextStyle(
-                        color: context.theme.colorScheme.error,
-                      ),
+                      style: TextStyle(color: context.theme.colorScheme.error),
                     ),
                     if (!editing)
                       Align(
@@ -355,8 +346,7 @@ class _PublicSellerProfileSection extends StatelessWidget {
                       hint: 'e.g. Verified Seller',
                     ),
                     _PublicProfileField(
-                      label:
-                          'Companies Previously Listed / Transacted on the Platform',
+                      label: 'Companies Previously Listed / Transacted on the Platform',
                       controller: controller.companiesPreviouslyListedCtrl,
                       maxLength: 5000,
                       maxLines: 3,
@@ -379,13 +369,15 @@ class _PublicSellerProfileSection extends StatelessWidget {
                       runSpacing: 8,
                       children: [
                         FilledButton(
-                          onPressed:
-                              saving ? null : controller.savePublicProfile,
+                          onPressed: saving
+                              ? null
+                              : controller.savePublicProfile,
                           child: Text(saving ? 'Saving…' : 'Save'),
                         ),
                         TextButton(
-                          onPressed:
-                              saving ? null : controller.cancelPublicProfile,
+                          onPressed: saving
+                              ? null
+                              : controller.cancelPublicProfile,
                           child: const Text('Cancel'),
                         ),
                       ],
@@ -541,7 +533,7 @@ class _ProfileHeader extends StatelessWidget {
                 height: 64,
                 decoration: BoxDecoration(
                   color: scheme.primaryContainer,
-                  borderRadius: BorderRadius.circular(16),
+                  borderRadius: BorderRadius.circular(AppRadii.card),
                 ),
                 clipBehavior: Clip.antiAlias,
                 child: selectedLogo?.uint8list != null
@@ -687,7 +679,7 @@ class _ProfileStatus extends StatelessWidget {
       padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 7),
       decoration: BoxDecoration(
         color: background,
-        borderRadius: BorderRadius.circular(8),
+        borderRadius: BorderRadius.circular(AppRadii.badge),
       ),
       child: Text(
         profile.accountStatus,

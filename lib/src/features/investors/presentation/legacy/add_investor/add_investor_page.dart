@@ -47,8 +47,9 @@ class _AddInvestorPageState extends State<AddInvestorPage> {
           : kInvestorTypes.first;
       _gender = user.gender.isNotEmpty ? user.gender : null;
       _nameCTRL.text = user.name;
-      _phoneNoCTRL.text =
-          user.mobileNumber == 0 ? '' : user.mobileNumber.toString();
+      _phoneNoCTRL.text = user.mobileNumber == 0
+          ? ''
+          : user.mobileNumber.toString();
       _emailCTRL.text = user.email;
     } else {
       _investor = InvestorModel.fromJson({});
@@ -177,10 +178,8 @@ class _PhoneAddInvestorView extends StatelessWidget {
                 value: investorType,
                 items: kInvestorTypes
                     .map(
-                      (type) => DropdownMenuItem(
-                        value: type,
-                        child: Text(type),
-                      ),
+                      (type) =>
+                          DropdownMenuItem(value: type, child: Text(type)),
                     )
                     .toList(),
                 onChanged: saving ? null : onTypeChanged,
@@ -254,9 +253,7 @@ class _PhoneAddInvestorView extends StatelessWidget {
                 value: gender,
                 isRequired: false,
                 items: kInvestorGenders
-                    .map(
-                      (g) => DropdownMenuItem(value: g, child: Text(g)),
-                    )
+                    .map((g) => DropdownMenuItem(value: g, child: Text(g)))
                     .toList(),
                 onChanged: saving ? null : onGenderChanged,
               ),
@@ -324,7 +321,7 @@ class _DesktopAddInvestorView extends StatelessWidget {
               physics: const BouncingScrollPhysics(),
               child: CustomCardWidget(
                 margin: EdgeInsets.zero,
-                radius: 12,
+                radius: AppRadii.card,
                 padding: const EdgeInsets.symmetric(
                   horizontal: 100,
                   vertical: 30,

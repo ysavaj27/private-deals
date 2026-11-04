@@ -187,18 +187,18 @@ class DesktopPrimaryInvestmentView extends StatelessWidget {
                                 horizontal: 40,
                               )
                             : null,
-                        radius: 20,
+                        radius: AppRadii.card,
                         child: Align(
                           alignment: Alignment.topCenter,
                           child: CustomCardWidget(
-                            radius: 20,
+                            radius: AppRadii.card,
                             child: Column(
                               crossAxisAlignment: CrossAxisAlignment.start,
                               mainAxisSize: MainAxisSize.min,
                               children: [
                                 ClipRRect(
                                   borderRadius: const BorderRadius.vertical(
-                                    top: Radius.circular(20),
+                                    top: Radius.circular(AppRadii.card),
                                   ),
                                   child: Obx(() {
                                     return CacheImage(
@@ -436,13 +436,13 @@ class _TabWidget extends StatelessWidget {
     return Expanded(
       child: InkWell(
         mouseCursor: SystemMouseCursors.click,
-        borderRadius: BorderRadius.circular(16),
+        borderRadius: BorderRadius.circular(AppRadii.tab),
         onTap: () => c.paymentMode(type),
         child: Obx(() {
           bool isSelected = c.paymentMode() == type;
           return CustomCardWidget(
             borderWidth: isSelected ? 2 : 1,
-            radius: 16,
+            radius: AppRadii.tab,
             padding: const EdgeInsets.symmetric(vertical: 13),
             borderColor: isSelected ? context.theme.iconTheme.color : null,
             child: Center(
@@ -600,7 +600,7 @@ class CaptableView extends StatelessWidget {
                 children: [
                   InkWell(
                     mouseCursor: SystemMouseCursors.click,
-                    borderRadius: BorderRadius.circular(12),
+                    borderRadius: BorderRadius.circular(AppRadii.button),
                     onTap: () {
                       c.amountCTRL.text = c.minAmount.toString();
                       c.isMixedAmount(false);
@@ -608,7 +608,7 @@ class CaptableView extends StatelessWidget {
                       c.investedAmount(c.minAmount().toDouble());
                     },
                     child: CustomCardWidget(
-                      radius: 12,
+                      radius: AppRadii.button,
                       padding: const EdgeInsets.symmetric(
                         horizontal: 38,
                         vertical: 10,
@@ -633,7 +633,7 @@ class CaptableView extends StatelessWidget {
                   ),
                   InkWell(
                     mouseCursor: SystemMouseCursors.click,
-                    borderRadius: BorderRadius.circular(12),
+                    borderRadius: BorderRadius.circular(AppRadii.button),
                     onTap: () {
                       c.amountCTRL.text = c.maxAmount.toString();
                       c.isMixedAmount(false);
@@ -641,7 +641,7 @@ class CaptableView extends StatelessWidget {
                       c.investedAmount(c.maxAmount().toDouble());
                     },
                     child: CustomCardWidget(
-                      radius: 12,
+                      radius: AppRadii.button,
                       padding: const EdgeInsets.symmetric(
                         horizontal: 38,
                         vertical: 10,

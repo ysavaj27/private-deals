@@ -19,16 +19,20 @@ class DownloadButton extends StatelessWidget {
     return Clickable(
       analyticsName: analyticsName ?? 'download',
       onTap: onTap,
-      borderRadius: BorderRadius.circular(8),
+      borderRadius: BorderRadius.circular(AppRadii.button),
       child: Container(
         height: 26,
         width: 26,
         decoration: BoxDecoration(
-            borderRadius: BorderRadius.circular(8),
-            border: Border.all(color: color ?? context.theme.primaryColor)),
+          borderRadius: BorderRadius.circular(AppRadii.button),
+          border: Border.all(color: color ?? context.theme.primaryColor),
+        ),
         child: Center(
-          child: FaIcon(FontAwesomeIcons.download,
-              color: color ?? context.theme.primaryColor, size: 14),
+          child: FaIcon(
+            FontAwesomeIcons.download,
+            color: color ?? context.theme.primaryColor,
+            size: 14,
+          ),
         ),
       ),
     );

@@ -22,18 +22,22 @@ class DesktopSecondaryLandingView extends StatelessWidget {
               children: [
                 Container(
                   color: context.theme.scaffoldBackgroundColor,
-                  padding:
-                      const EdgeInsets.symmetric(vertical: 30, horizontal: 40),
+                  padding: const EdgeInsets.symmetric(
+                    vertical: 30,
+                    horizontal: 40,
+                  ),
                   child: Row(
                     children: [
                       Expanded(
                         child: SearchBarTextField(
-                          radius: 6,
+                          radius: AppRadii.control,
                           readOnly: true,
                           hintText: "Search Company's",
                           onTap: () {
                             var routes = Routes.preIPOListPath(
-                                Get.currentRoute, 'search');
+                              Get.currentRoute,
+                              'search',
+                            );
                             Get.toNamed(routes);
                           },
                           // onChanged: (p0) => c.search(p0),
@@ -42,14 +46,14 @@ class DesktopSecondaryLandingView extends StatelessWidget {
                       const SizedBox(width: 20),
                       InkWell(
                         mouseCursor: SystemMouseCursors.click,
-                        borderRadius: BorderRadius.circular(6),
+                        borderRadius: BorderRadius.circular(AppRadii.button),
                         onTap: () {
                           showCustomDialog(SecondaryFilterDialog());
                         },
                         child: const CustomCardWidget(
                           height: 55,
                           width: 55,
-                          radius: 6,
+                          radius: AppRadii.button,
                           child: Icon(Icons.filter_list_rounded),
                         ),
                       ),
@@ -93,7 +97,9 @@ class DesktopSecondaryLandingView extends StatelessWidget {
 
                             logger.d(company.slug);
                             String routes = Routes.secondaryDetailPath(
-                                Get.currentRoute, company.slug);
+                              Get.currentRoute,
+                              company.slug,
+                            );
                             logger.d(routes);
                             Get.toNamed(routes);
                           },
@@ -105,13 +111,15 @@ class DesktopSecondaryLandingView extends StatelessWidget {
                 const SizedBox(height: 20),
                 Center(
                   child: CustomElevatedButton(
-                    radius: 22,
+                    radius: AppRadii.button,
                     text: "Explore More",
                     width: 236,
                     height: 56,
                     onPressed: () {
                       var routes = Routes.preIPOListPath(
-                          Get.currentRoute, UnListedShareTabEnum.aToZ.route);
+                        Get.currentRoute,
+                        UnListedShareTabEnum.aToZ.route,
+                      );
                       Get.toNamed(routes);
                     },
                   ),
@@ -151,8 +159,9 @@ class FeaturedWidget extends StatelessWidget {
                 text: 'Featured ',
                 style: TextStyle(
                   decorationThickness: 2.5,
-                  decorationColor:
-                      context.theme.primaryColor.withValues(alpha: 0.7),
+                  decorationColor: context.theme.primaryColor.withValues(
+                    alpha: 0.7,
+                  ),
                 ),
               ),
               TextSpan(
@@ -206,7 +215,9 @@ class NewsWidget extends StatelessWidget {
             child: Obx(() {
               return ListView.separated(
                 padding: EdgeInsets.only(
-                    left: context.width * 0.0276, right: context.width * 0.1),
+                  left: context.width * 0.0276,
+                  right: context.width * 0.1,
+                ),
                 itemCount: c.model().news.length,
                 physics: const BouncingScrollPhysics(),
                 scrollDirection: Axis.horizontal,
@@ -219,7 +230,7 @@ class NewsWidget extends StatelessWidget {
                       // splashColor: Colors.transparent,
                       // hoverColor: Colors.transparent,
                       // highlightColor: Colors.transparent,
-                      // borderRadius: BorderRadius.circular(14),
+                      // borderRadius: BorderRadius.circular(AppRadii.card),
                       onTap: () {
                         // Get.toNamed(
                         // Routes.blogDetailPath(
@@ -228,12 +239,13 @@ class NewsWidget extends StatelessWidget {
                       },
                       child: CustomCardWidget(
                         color: context.theme.scaffoldBackgroundColor,
-                        radius: 14,
+                        radius: AppRadii.card,
                         child: Column(
                           children: [
                             ClipRRect(
                               borderRadius: const BorderRadius.vertical(
-                                  top: Radius.circular(14)),
+                                top: Radius.circular(AppRadii.card),
+                              ),
                               child: CacheImage(
                                 url: model.image,
                                 width: double.infinity,
@@ -257,16 +269,20 @@ class NewsWidget extends StatelessWidget {
                                         children: [
                                           Row(
                                             children: [
-                                              Icon(Icons.calendar_month,
-                                                  color: context
-                                                      .theme.disabledColor,
-                                                  size: 24),
+                                              Icon(
+                                                Icons.calendar_month,
+                                                color:
+                                                    context.theme.disabledColor,
+                                                size: 24,
+                                              ),
                                               const SizedBox(width: 5),
                                               Text(
-                                                model.createdAt
+                                                model
+                                                    .createdAt
                                                     .dateWithMonthYear,
                                                 style: const TextStyle(
-                                                    fontSize: 14),
+                                                  fontSize: 14,
+                                                ),
                                               ),
                                             ],
                                           ),
@@ -316,8 +332,10 @@ class NewsWidget extends StatelessWidget {
                                             style: TextStyle(fontSize: 16),
                                           ),
                                           SizedBox(width: 5),
-                                          Icon(Icons.arrow_forward_outlined,
-                                              size: 24),
+                                          Icon(
+                                            Icons.arrow_forward_outlined,
+                                            size: 24,
+                                          ),
                                         ],
                                       ),
                                     ),
@@ -332,15 +350,13 @@ class NewsWidget extends StatelessWidget {
                   );
                 },
                 separatorBuilder: (BuildContext context, int index) =>
-                    const SizedBox(
-                  width: 20,
-                ),
+                    const SizedBox(width: 20),
               );
             }),
           ),
           const SizedBox(height: 40),
           CustomElevatedButton(
-            radius: 22,
+            radius: AppRadii.button,
             text: "Explore More",
             width: 236,
             height: 56,
@@ -376,12 +392,8 @@ class ChartWidget extends StatelessWidget {
       child: SfCartesianChart(
         margin: EdgeInsets.zero,
         plotAreaBorderWidth: 0,
-        primaryXAxis: const NumericAxis(
-          isVisible: false,
-        ),
-        primaryYAxis: const NumericAxis(
-          isVisible: false,
-        ),
+        primaryXAxis: const NumericAxis(isVisible: false),
+        primaryYAxis: const NumericAxis(isVisible: false),
         series: _getDefaultAreaSeries(context),
         tooltipBehavior: TooltipBehavior(enable: false),
       ),
@@ -417,11 +429,7 @@ class ChartSampleData {
   double values;
   String text;
 
-  ChartSampleData({
-    required this.values,
-    this.text = '',
-    required this.date,
-  });
+  ChartSampleData({required this.values, this.text = '', required this.date});
 }
 
 // Delegate for SliverPersistentHeader
@@ -444,7 +452,10 @@ class SliverAppBarDelegate extends SliverPersistentHeaderDelegate {
 
   @override
   Widget build(
-      BuildContext context, double shrinkOffset, bool overlapsContent) {
+    BuildContext context,
+    double shrinkOffset,
+    bool overlapsContent,
+  ) {
     return SizedBox.expand(child: child);
   }
 

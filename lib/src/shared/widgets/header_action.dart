@@ -1,3 +1,4 @@
+import 'package:private_deals/src/shared/theme/app_tokens.dart';
 import 'package:flutter/material.dart';
 
 /// Common desktop header controls for seller and wealth manager workspaces.
@@ -22,7 +23,7 @@ class HeaderAction extends StatelessWidget {
       child: Material(
         color: colors.surfaceContainer,
         shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(12),
+          borderRadius: BorderRadius.circular(AppRadii.button),
           side: BorderSide(color: colors.outlineVariant),
         ),
         clipBehavior: Clip.antiAlias,

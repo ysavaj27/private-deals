@@ -15,7 +15,7 @@ class InitConfig extends GetxService {
   static final InitConfig instance = InitConfig();
 
   // RxBool isDarkMode = false.obs;
-  Rx<ThemeMode> themeModes = ThemeMode.dark.obs;
+  Rx<ThemeMode> themeModes = ThemeMode.light.obs;
 
   Rx<int> color = 0.obs;
 
@@ -213,7 +213,7 @@ class InitConfig extends GetxService {
   }
 
   Future<void> getTheme() async {
-    var themes = await prefs.getValue(key: "theme") ?? 2;
+    var themes = await prefs.getValue(key: "theme") ?? ThemeMode.light.index;
     var c =
         await prefs.getValue(key: "color") ??
         AppColors.sectionPrivateEquity.toARGB32();

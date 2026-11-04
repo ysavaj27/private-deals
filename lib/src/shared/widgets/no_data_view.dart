@@ -53,7 +53,7 @@ class NoDataView extends StatelessWidget {
                 const SizedBox(height: AppSpace.lg),
                 CustomElevatedButton(
                   text: 'Refresh',
-                  radius: AppRadii.full,
+                  radius: AppRadii.button,
                   width: context.isPhone ? 118 : 236,
                   height: context.isPhone ? 38 : 56,
                   fontSize: context.isPhone ? 12 : null,

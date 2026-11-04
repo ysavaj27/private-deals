@@ -9,7 +9,7 @@ class NoInternetDialog extends StatelessWidget {
   Widget build(BuildContext context) {
     return Container(
       decoration: BoxDecoration(
-        borderRadius: BorderRadius.circular(10),
+        borderRadius: BorderRadius.circular(AppRadii.control),
         color: context.theme.dialogBackgroundColor,
       ),
       padding: const EdgeInsets.all(15.0),

@@ -125,9 +125,7 @@ class _DealTypeToggle extends StatelessWidget {
       );
 
       final hint = Text(
-        buying
-            ? 'Prices and quantities you are willing to buy.'
-            : 'Default settlement applies to all sell rows. Change any row to override.',
+        buying ? 'Prices and quantities you are willing to buy.' : 'Default settlement applies to all sell rows. Change any row to override.',
         style: context.textTheme.bodySmall?.copyWith(
           color: colors.onSurfaceVariant,
         ),
@@ -160,10 +158,8 @@ class _DealTypeToggle extends StatelessWidget {
             border: Border(bottom: BorderSide(color: colors.outlineVariant)),
           ),
           child: Padding(
-            padding: AppPagePadding.horizontalOnly(context).copyWith(
-              top: AppSpace.md,
-              bottom: AppSpace.md,
-            ),
+            padding: AppPagePadding.horizontalOnly(context)
+                .copyWith(top: AppSpace.md, bottom: AppSpace.md),
             child: phone
                 ? Column(
                     crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -288,6 +284,24 @@ class SharePriceFixedHeader extends StatelessWidget {
             ),
             const SizedBox(height: 8),
             Obx(() {
+              final saving = controller.saving.value;
+              final loading = controller.loading.value;
+              final loadingPrevious = controller.loadingPrevious.value;
+              final busy = saving || loading || loadingPrevious;
+              return AppButton(
+                label: 'Load previous price',
+                icon: Icons.history,
+                variant: AppButtonVariant.outline,
+                expanded: true,
+                isLoading: loadingPrevious,
+                analyticsName: 'share_price_load_previous',
+                onPressed: busy || controller.rows.isEmpty
+                    ? null
+                    : controller.fillPreviousPrices,
+              );
+            }),
+            const SizedBox(height: 8),
+            Obx(() {
               final count = controller.pendingCount;
               final saving = controller.saving.value;
               final loading = controller.loading.value;
@@ -342,6 +356,22 @@ class SharePriceFixedHeader extends StatelessWidget {
                 runSpacing: 8,
                 crossAxisAlignment: WrapCrossAlignment.center,
                 children: [
+                  Obx(() {
+                    final saving = controller.saving.value;
+                    final loading = controller.loading.value;
+                    final loadingPrevious = controller.loadingPrevious.value;
+                    final busy = saving || loading || loadingPrevious;
+                    return AppButton(
+                      label: 'Load previous price',
+                      icon: Icons.history,
+                      variant: AppButtonVariant.outline,
+                      isLoading: loadingPrevious,
+                      analyticsName: 'share_price_load_previous',
+                      onPressed: busy || controller.rows.isEmpty
+                          ? null
+                          : controller.fillPreviousPrices,
+                    );
+                  }),
                   AppButton(
                     label: 'Update from Excel',
                     icon: Icons.table_view_rounded,
@@ -482,21 +512,21 @@ class SharePriceTable extends StatelessWidget {
     final colors = context.theme.colorScheme;
 
     return Padding(
-      padding: AppPagePadding.of(context, bottom: AppSpace.lg).copyWith(
-        top: AppSpace.lg,
-      ),
+      padding: AppPagePadding.of(
+        context,
+        bottom: AppSpace.lg,
+      ).copyWith(top: AppSpace.lg),
       child: DecoratedBox(
         decoration: BoxDecoration(
           color: colors.surface,
-          borderRadius: BorderRadius.circular(12),
+          borderRadius: BorderRadius.circular(AppRadii.control),
           border: Border.all(color: colors.outlineVariant),
         ),
         child: ClipRRect(
-          borderRadius: BorderRadius.circular(12),
+          borderRadius: BorderRadius.circular(AppRadii.control),
           child: LayoutBuilder(
             builder: (context, constraints) {
-              final useCards =
-                  constraints.maxWidth < AppWindow.desktopMinWidth;
+              final useCards = constraints.maxWidth < AppWindow.desktopMinWidth;
 
               if (useCards) {
                 return ListView.separated(
@@ -517,8 +547,8 @@ class SharePriceTable extends StatelessWidget {
                 );
               }
 
-              final tableWidth = constraints.maxWidth <
-                      (controller.isSell ? 1200 : 1040)
+              final tableWidth =
+                  constraints.maxWidth < (controller.isSell ? 1200 : 1040)
                   ? (controller.isSell ? 1200.0 : 1040.0)
                   : constraints.maxWidth;
 
@@ -620,6 +650,7 @@ class _SharePriceTableRow extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Obx(() {
+      controller.revision.value;
       final colors = context.theme.colorScheme;
       final hasError = row.errors.isNotEmpty;
       return Container(
@@ -678,6 +709,7 @@ class _SharePriceMobileCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Obx(() {
+      controller.revision.value;
       final colors = context.theme.colorScheme;
       final hasError = row.errors.isNotEmpty;
 
@@ -687,7 +719,7 @@ class _SharePriceMobileCard extends StatelessWidget {
           color: hasError
               ? colors.errorContainer.withAlpha(45)
               : colors.surface,
-          borderRadius: BorderRadius.circular(12),
+          borderRadius: BorderRadius.circular(AppRadii.control),
           border: Border.all(color: colors.outlineVariant),
         ),
         child: Column(
@@ -752,7 +784,12 @@ class _SharePriceCompanyCell extends StatelessWidget {
 
     return Row(
       children: [
-        LogoImage(url: row.company.logo, width: 42, height: 42, radius: 10),
+        LogoImage(
+          url: row.company.logo,
+          width: 42,
+          height: 42,
+          radius: AppRadii.control,
+        ),
         const SizedBox(width: 12),
         Expanded(
           child: Column(
@@ -794,6 +831,9 @@ Widget _sharePriceInput(
   bool showLabel = false,
 }) {
   final error = row.errors[fieldKey];
+  final minTransaction = fieldKey == 'min_qty'
+      ? controller.minTransactionLabel(row)
+      : null;
 
   return Column(
     crossAxisAlignment: CrossAxisAlignment.start,
@@ -827,6 +867,15 @@ Widget _sharePriceInput(
           error,
           style: context.textTheme.bodySmall?.copyWith(
             color: context.theme.colorScheme.error,
+          ),
+        ),
+      ],
+      if (minTransaction != null) ...[
+        const SizedBox(height: 6),
+        Text(
+          minTransaction,
+          style: context.textTheme.bodySmall?.copyWith(
+            color: context.theme.colorScheme.onSurfaceVariant,
           ),
         ),
       ],
@@ -928,7 +977,7 @@ Widget _shareSettlementPicker(
                   onTap: enabled
                       ? () => controller.beginEditSettlement(row)
                       : null,
-                  borderRadius: BorderRadius.circular(4),
+                  borderRadius: BorderRadius.circular(AppRadii.xs),
                   child: InputDecorator(
                     isEmpty: label.isEmpty,
                     decoration: decoration,

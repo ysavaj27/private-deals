@@ -260,11 +260,11 @@ class _RadioTile<T> extends StatelessWidget {
     final selected = value == groupValue;
     return InkWell(
       onTap: onChanged == null ? null : () => onChanged!(value),
-      borderRadius: BorderRadius.circular(10),
+      borderRadius: BorderRadius.circular(AppRadii.control),
       child: Container(
         padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
         decoration: BoxDecoration(
-          borderRadius: BorderRadius.circular(10),
+          borderRadius: BorderRadius.circular(AppRadii.control),
           border: Border.all(
             color: selected
                 ? Theme.of(context).primaryColor

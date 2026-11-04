@@ -20,10 +20,7 @@ class DesktopPrimarySellShareDialogView extends StatelessWidget {
           children: [
             const Text(
               "Sell Now",
-              style: TextStyle(
-                fontSize: 32,
-                fontWeight: FontWeight.w600,
-              ),
+              style: TextStyle(fontSize: 32, fontWeight: FontWeight.w600),
             ),
             const SizedBox(height: 40),
             SizedBox(
@@ -58,9 +55,10 @@ class DesktopPrimarySellShareDialogView extends StatelessWidget {
                       height: 48,
                       width: 65,
                       decoration: BoxDecoration(
-                        borderRadius: BorderRadius.circular(10),
-                        border:
-                            Border.all(color: AppColors.borderColor(context)),
+                        borderRadius: BorderRadius.circular(AppRadii.control),
+                        border: Border.all(
+                          color: AppColors.borderColor(context),
+                        ),
                         color: context.isDarkMode
                             ? const Color(0xff242424)
                             : Colors.grey.shade400,
@@ -107,8 +105,9 @@ class DesktopPrimarySellShareDialogView extends StatelessWidget {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       _DataText(
-                          title: "Available shares",
-                          subTitle: "${c.model.availableShares}"),
+                        title: "Available shares",
+                        subTitle: "${c.model.availableShares}",
+                      ),
                       const SizedBox(height: 18),
                       _DataText(
                         title: "Current share price",
@@ -129,8 +128,9 @@ class DesktopPrimarySellShareDialogView extends StatelessWidget {
                       ),
                       const SizedBox(height: 18),
                       _DataText(
-                          title: "Last traded price",
-                          subTitle: c.model.lastTradedPrice.toCurrency),
+                        title: "Last traded price",
+                        subTitle: c.model.lastTradedPrice.toCurrency,
+                      ),
                       const SizedBox(height: 18),
                     ],
                   ),
@@ -182,9 +182,7 @@ class _DataText extends StatelessWidget {
       style: const TextStyle(fontSize: 16),
       TextSpan(
         children: [
-          TextSpan(
-            text: '$title:  ',
-          ),
+          TextSpan(text: '$title:  '),
           TextSpan(
             text: subTitle,
             style: const TextStyle(fontWeight: FontWeight.w500),

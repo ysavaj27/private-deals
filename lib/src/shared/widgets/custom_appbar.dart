@@ -54,7 +54,7 @@ class CustomAppBar extends StatelessWidget {
               );
             },
             child: CustomCardWidget(
-              radius: 8,
+              radius: AppRadii.card,
               color: context.theme.primaryColor.withValues(alpha: 0.1),
               borderColor: context.theme.primaryColor,
               padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 20),
@@ -146,7 +146,7 @@ class DropdownMenuWidget extends StatelessWidget {
       elevation: 8,
       offset: const Offset(0, 8),
       shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(16),
+        borderRadius: BorderRadius.circular(AppRadii.card),
         side: BorderSide(color: context.theme.colorScheme.outlineVariant),
       ),
       style: ButtonStyle(
@@ -265,11 +265,11 @@ class DropdownMenuWidget extends StatelessWidget {
         padding: const EdgeInsets.all(4),
         decoration: BoxDecoration(
           color: context.theme.colorScheme.primaryContainer,
-          borderRadius: BorderRadius.circular(14),
+          borderRadius: BorderRadius.circular(AppRadii.card),
           border: Border.all(color: context.theme.colorScheme.outlineVariant),
         ),
         child: ClipRRect(
-          borderRadius: BorderRadius.circular(10),
+          borderRadius: BorderRadius.circular(AppRadii.control),
           child: Obx(() {
             Widget fallback() => Center(
               child: Icon(
@@ -323,7 +323,7 @@ class WAppbarOptionSegmented extends StatelessWidget {
           padding: const EdgeInsets.symmetric(vertical: 6, horizontal: 8),
           decoration: BoxDecoration(
             color: context.theme.colorScheme.surfaceContainer,
-            borderRadius: BorderRadius.circular(12),
+            borderRadius: BorderRadius.circular(AppRadii.control),
             border: Border.all(color: c.border),
           ),
           child: Row(
@@ -389,7 +389,7 @@ class _SegmentButtonState extends State<_SegmentButton> {
             color: selected
                 ? colors.primaryContainer
                 : (_hover ? colors.surfaceContainerHigh : Colors.transparent),
-            borderRadius: BorderRadius.circular(9),
+            borderRadius: BorderRadius.circular(AppRadii.tab),
             border: Border.all(
               color: selected ? colors.outlineVariant : Colors.transparent,
             ),
@@ -531,7 +531,7 @@ class _WAppbarOptionSwitcherState extends State<WAppbarOptionSwitcher>
                           width: 300,
                           decoration: BoxDecoration(
                             color: c.surface,
-                            borderRadius: BorderRadius.circular(14),
+                            borderRadius: BorderRadius.circular(AppRadii.card),
                             border: Border.all(color: c.border),
                             boxShadow: [
                               BoxShadow(
@@ -613,7 +613,7 @@ class _WAppbarOptionSwitcherState extends State<WAppbarOptionSwitcher>
           child: Material(
             color: Colors.transparent,
             child: Clickable(
-              borderRadius: BorderRadius.circular(10),
+              borderRadius: BorderRadius.circular(AppRadii.control),
               onTap: () => _toggle(current),
               child: AnimatedContainer(
                 duration: const Duration(milliseconds: 160),
@@ -631,7 +631,7 @@ class _WAppbarOptionSwitcherState extends State<WAppbarOptionSwitcher>
                     accent.withValues(alpha: isDark ? 0.1 : 0.14),
                     context.theme.colorScheme.surfaceContainerLow,
                   ),
-                  borderRadius: BorderRadius.circular(10),
+                  borderRadius: BorderRadius.circular(AppRadii.control),
                   border: Border.all(
                     color: context.theme.colorScheme.outlineVariant,
                   ),
@@ -645,7 +645,7 @@ class _WAppbarOptionSwitcherState extends State<WAppbarOptionSwitcher>
                       margin: const EdgeInsets.only(right: 10),
                       decoration: BoxDecoration(
                         color: accent,
-                        borderRadius: BorderRadius.circular(4),
+                        borderRadius: BorderRadius.circular(AppRadii.xs),
                       ),
                     ),
                     Text(
@@ -719,7 +719,7 @@ class _OptionRowState extends State<_OptionRow> {
                 height: 36,
                 decoration: BoxDecoration(
                   color: context.theme.colorScheme.primaryContainer,
-                  borderRadius: BorderRadius.circular(10),
+                  borderRadius: BorderRadius.circular(AppRadii.control),
                 ),
                 child: Icon(
                   o.icon,

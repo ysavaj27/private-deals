@@ -559,6 +559,14 @@ class DealModel {
     this.status = '',
   });
 
+  /// Institution-side sell listing. Treat anything other than buy as sell.
+  /// Counterparty (wealth manager) can buy these; institution buy deals are
+  /// sell opportunities for the wealth manager.
+  bool get isSellDeal => dealType.toLowerCase() != 'buy';
+
+  /// Action the wealth manager takes against this institution deal.
+  String get counterpartyActionLabel => isSellDeal ? 'Buy' : 'Sell';
+
   DealModel copyWith({
     int? id,
     SharePriceSellerModel? seller,

@@ -303,7 +303,7 @@ class PreIpoPaymentDetailsPanel extends StatelessWidget {
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
         color: colors.surfaceContainerLow,
-        borderRadius: BorderRadius.circular(12),
+        borderRadius: BorderRadius.circular(AppRadii.control),
         border: Border.all(color: colors.outlineVariant),
       ),
       child: Column(
@@ -446,7 +446,7 @@ class PreIpoOrderStepHeader extends StatelessWidget {
               padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
               decoration: BoxDecoration(
                 color: colors.primaryContainer,
-                borderRadius: BorderRadius.circular(8),
+                borderRadius: BorderRadius.circular(AppRadii.badge),
               ),
               child: Text(
                 parts.join(' · '),
@@ -471,7 +471,7 @@ class PreIpoOrderStepHeader extends StatelessWidget {
           padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
           decoration: BoxDecoration(
             color: colors.primaryContainer,
-            borderRadius: BorderRadius.circular(8),
+            borderRadius: BorderRadius.circular(AppRadii.badge),
           ),
           child: Text(
             stepLabel,
@@ -523,7 +523,7 @@ class PreIpoOrderSideChip extends StatelessWidget {
       padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
       decoration: BoxDecoration(
         color: bg,
-        borderRadius: BorderRadius.circular(8),
+        borderRadius: BorderRadius.circular(AppRadii.badge),
       ),
       child: Row(
         mainAxisSize: MainAxisSize.min,
@@ -691,7 +691,7 @@ class PreIpoOrderDocumentsPanel extends StatelessWidget {
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
         color: colors.surfaceContainerLow,
-        borderRadius: BorderRadius.circular(12),
+        borderRadius: BorderRadius.circular(AppRadii.control),
         border: Border.all(color: colors.outlineVariant),
       ),
       child: Column(

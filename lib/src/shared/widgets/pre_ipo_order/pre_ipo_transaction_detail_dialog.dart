@@ -1,3 +1,4 @@
+import 'package:private_deals/src/shared/theme/app_tokens.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:private_deals/src/core/session/auth_session.dart';
@@ -82,7 +83,9 @@ class _PreIpoTransactionDetailDialogState
       backgroundColor: colors.surface,
       insetPadding: EdgeInsets.all(compact ? 12 : 32),
       clipBehavior: Clip.antiAlias,
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(24)),
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(AppRadii.card),
+      ),
       child: ConstrainedBox(
         constraints: BoxConstraints(
           maxWidth: 1080,
@@ -99,7 +102,7 @@ class _PreIpoTransactionDetailDialogState
                     padding: const EdgeInsets.all(12),
                     decoration: BoxDecoration(
                       color: colors.primaryContainer,
-                      borderRadius: BorderRadius.circular(14),
+                      borderRadius: BorderRadius.circular(AppRadii.card),
                     ),
                     child: Icon(
                       Icons.receipt_long_outlined,
@@ -199,7 +202,12 @@ class _PreIpoTransactionDetailDialogState
       children: [
         Row(
           children: [
-            LogoImage(url: row.company.logo, radius: 14, width: 56, height: 56),
+            LogoImage(
+              url: row.company.logo,
+              radius: AppRadii.control,
+              width: 56,
+              height: 56,
+            ),
             const SizedBox(width: 12),
             Expanded(
               child: Column(
@@ -232,7 +240,7 @@ class _PreIpoTransactionDetailDialogState
           padding: const EdgeInsets.all(20),
           decoration: BoxDecoration(
             color: colors.primaryContainer,
-            borderRadius: BorderRadius.circular(18),
+            borderRadius: BorderRadius.circular(AppRadii.card),
           ),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,

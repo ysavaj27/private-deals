@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:private_deals/src/shared/models/pre_ipo_order_model.dart';
-import 'package:private_deals/src/shared/app_exports.dart' show Launcher;
+import 'package:private_deals/src/shared/app_exports.dart'
+    show Launcher, AppRadii;
 
 import 'pre_ipo_order_widgets.dart';
 
@@ -116,7 +117,7 @@ class PreIpoOrderProgress extends StatelessWidget {
                   child: LinearProgressIndicator(
                     value: progress / 100,
                     minHeight: 6,
-                    borderRadius: BorderRadius.circular(6),
+                    borderRadius: BorderRadius.circular(AppRadii.badge),
                     semanticsLabel: 'Transaction progress',
                     semanticsValue: '${progress.round()}%',
                   ),
@@ -265,7 +266,7 @@ class _DetailSection extends StatelessWidget {
       padding: const EdgeInsets.all(20),
       decoration: BoxDecoration(
         color: theme.colorScheme.surfaceContainerLow,
-        borderRadius: BorderRadius.circular(18),
+        borderRadius: BorderRadius.circular(AppRadii.card),
         border: Border.all(color: theme.colorScheme.outlineVariant),
       ),
       child: Column(

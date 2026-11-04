@@ -278,7 +278,7 @@ class _PhoneDashboardViewState extends State<PhoneDashboardView> {
                   ),
                   const SizedBox(height: 10),
                   ClipRRect(
-                    borderRadius: BorderRadius.circular(8),
+                    borderRadius: BorderRadius.circular(AppRadii.badge),
                     child: LinearProgressIndicator(
                       value: priceProgress,
                       minHeight: 7,
@@ -471,7 +471,9 @@ class _PhoneDashboardViewState extends State<PhoneDashboardView> {
                                     child: DecoratedBox(
                                       decoration: BoxDecoration(
                                         color: _purple,
-                                        borderRadius: BorderRadius.circular(6),
+                                        borderRadius: BorderRadius.circular(
+                                          AppRadii.badge,
+                                        ),
                                       ),
                                     ),
                                   ),
@@ -585,14 +587,14 @@ class _MetricTile extends StatelessWidget {
     final dark = Theme.of(context).brightness == Brightness.dark;
     return Material(
       color: dark ? const Color(0xFF161B22) : Colors.white,
-      borderRadius: BorderRadius.circular(14),
+      borderRadius: BorderRadius.circular(AppRadii.card),
       child: InkWell(
         onTap: onTap,
-        borderRadius: BorderRadius.circular(14),
+        borderRadius: BorderRadius.circular(AppRadii.card),
         child: Container(
           padding: const EdgeInsets.fromLTRB(12, 12, 12, 12),
           decoration: BoxDecoration(
-            borderRadius: BorderRadius.circular(14),
+            borderRadius: BorderRadius.circular(AppRadii.card),
             border: Border.all(
               color: dark ? const Color(0xFF30363D) : const Color(0xFFB8C2D1),
             ),
@@ -644,7 +646,7 @@ class _SectionCard extends StatelessWidget {
       padding: const EdgeInsets.fromLTRB(14, 12, 8, 10),
       decoration: BoxDecoration(
         color: surface,
-        borderRadius: BorderRadius.circular(14),
+        borderRadius: BorderRadius.circular(AppRadii.card),
         border: Border.all(color: border),
       ),
       child: child,
@@ -669,7 +671,7 @@ class _StatusChip extends StatelessWidget {
       padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
       decoration: BoxDecoration(
         color: color.withValues(alpha: .12),
-        borderRadius: BorderRadius.circular(20),
+        borderRadius: BorderRadius.circular(AppRadii.card),
       ),
       child: Text(
         '$label · $value',
@@ -717,7 +719,7 @@ class _ActivityRow extends StatelessWidget {
               clipBehavior: Clip.antiAlias,
               decoration: BoxDecoration(
                 color: _purple.withValues(alpha: .08),
-                borderRadius: BorderRadius.circular(10),
+                borderRadius: BorderRadius.circular(AppRadii.control),
               ),
               child: logo.isEmpty
                   ? Center(

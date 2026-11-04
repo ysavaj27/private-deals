@@ -29,6 +29,15 @@ class AppButton extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final colors = Theme.of(context).colorScheme;
+    final enabled = onPressed != null && !isLoading;
+    final Color iconColor = !enabled
+        ? colors.onSurface.withAlpha(97)
+        : switch (variant) {
+            AppButtonVariant.primary => colors.onPrimary,
+            AppButtonVariant.secondary => colors.onSecondaryContainer,
+            AppButtonVariant.outline => colors.onSurface,
+            AppButtonVariant.text => colors.primary,
+          };
     final VoidCallback? callback = isLoading || onPressed == null
         ? null
         : () {
@@ -62,7 +71,7 @@ class AppButton extends StatelessWidget {
                     : Row(
                         mainAxisSize: MainAxisSize.min,
                         children: [
-                          Icon(icon, size: 20),
+                          Icon(icon, size: 20, color: iconColor),
                           const SizedBox(width: 8),
                           Flexible(child: Text(label)),
                         ],

@@ -1,3 +1,6 @@
+import 'dart:io';
+
+import 'package:private_deals/src/shared/theme/app_tokens.dart';
 import 'package:flutter/material.dart';
 import 'package:private_deals/src/shared/theme/brand_colors.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -8,6 +11,74 @@ import 'package:private_deals/src/shared/widgets/buttons/custom_elevated_button.
 import 'package:private_deals/src/shared/widgets/buttons/custom_outlined_button.dart';
 
 void main() {
+  test('rounded corners across the app use the common radius scale', () {
+    final hardcoded = RegExp(r'(?:BorderRadius|Radius)\.circular\(\s*[1-9]');
+    final violations = Directory('lib')
+        .listSync(recursive: true)
+        .whereType<File>()
+        .where((file) => file.path.endsWith('.dart'))
+        .where((file) => hardcoded.hasMatch(file.readAsStringSync()))
+        .map((file) => file.path)
+        .toList();
+    expect(
+      violations,
+      isEmpty,
+      reason: 'Use AppRadii instead of local corner values.',
+    );
+  });
+
+  test('both themes share card, dialog, sheet and control corner shapes', () {
+    for (final theme in [AppTheme.lightTheme, AppTheme.darkTheme]) {
+      final cards =
+          (theme.cardTheme.shape! as RoundedRectangleBorder).borderRadius;
+      final dialogs =
+          (theme.dialogTheme.shape! as RoundedRectangleBorder).borderRadius;
+      final sheets = (theme.bottomSheetTheme.shape! as RoundedRectangleBorder)
+          .borderRadius;
+      expect(cards, BorderRadius.circular(AppRadii.card));
+      expect(dialogs, cards);
+      expect(
+        sheets,
+        const BorderRadius.vertical(top: Radius.circular(AppRadii.sheet)),
+      );
+      expect(
+        (theme.inputDecorationTheme.border! as OutlineInputBorder).borderRadius,
+        BorderRadius.circular(AppRadii.control),
+      );
+      for (final style in [
+        theme.elevatedButtonTheme.style!,
+        theme.filledButtonTheme.style!,
+        theme.outlinedButtonTheme.style!,
+        theme.textButtonTheme.style!,
+        theme.iconButtonTheme.style!,
+      ]) {
+        for (final states in <Set<WidgetState>>[
+          {},
+          {WidgetState.disabled},
+          {WidgetState.pressed},
+        ]) {
+          final shape = style.shape!.resolve(states)! as RoundedRectangleBorder;
+          expect(shape.borderRadius, BorderRadius.circular(AppRadii.button));
+        }
+      }
+      expect(
+        (theme.segmentedButtonTheme.style!.shape!.resolve({})!
+                as RoundedRectangleBorder)
+            .borderRadius,
+        AppRadii.tabAll,
+      );
+      expect(
+        (theme.chipTheme.shape! as RoundedRectangleBorder).borderRadius,
+        AppRadii.tabAll,
+      );
+      expect(
+        (theme.floatingActionButtonTheme.shape! as RoundedRectangleBorder)
+            .borderRadius,
+        AppRadii.buttonAll,
+      );
+    }
+  });
+
   test('Partner navy actions retain readable text and dark focus accents', () {
     final theme = AppTheme.darkTheme;
     final style = theme.elevatedButtonTheme.style!;

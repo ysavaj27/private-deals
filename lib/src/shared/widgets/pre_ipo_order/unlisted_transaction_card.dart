@@ -51,7 +51,7 @@ class UnlistedTransactionCard extends StatelessWidget {
       padding: const EdgeInsets.all(20),
       decoration: BoxDecoration(
         color: colors.surface,
-        borderRadius: BorderRadius.circular(16),
+        borderRadius: BorderRadius.circular(AppRadii.card),
         border: Border.all(color: colors.outlineVariant),
       ),
       child: Column(
@@ -68,7 +68,7 @@ class UnlistedTransactionCard extends StatelessWidget {
                       height: 44,
                       decoration: BoxDecoration(
                         color: colors.primaryContainer,
-                        borderRadius: BorderRadius.circular(12),
+                        borderRadius: BorderRadius.circular(AppRadii.control),
                       ),
                       child: Icon(
                         Icons.business_rounded,
@@ -80,7 +80,7 @@ class UnlistedTransactionCard extends StatelessWidget {
                       url: order.company.logo,
                       width: 44,
                       height: 44,
-                      radius: 12,
+                      radius: AppRadii.control,
                     ),
                   const SizedBox(width: 12),
                   Expanded(
@@ -119,7 +119,7 @@ class UnlistedTransactionCard extends StatelessWidget {
                 ),
                 decoration: BoxDecoration(
                   color: statusColor.withValues(alpha: 0.10),
-                  borderRadius: BorderRadius.circular(8),
+                  borderRadius: BorderRadius.circular(AppRadii.badge),
                 ),
                 child: Row(
                   mainAxisSize: MainAxisSize.min,
@@ -245,7 +245,7 @@ class UnlistedTransactionCard extends StatelessWidget {
               padding: const EdgeInsets.all(14),
               decoration: BoxDecoration(
                 color: colors.surfaceContainerLow,
-                borderRadius: BorderRadius.circular(12),
+                borderRadius: BorderRadius.circular(AppRadii.control),
               ),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
@@ -299,10 +299,7 @@ class UnlistedTransactionCard extends StatelessWidget {
                         child: CircularProgressIndicator(strokeWidth: 2),
                       ),
                     )
-                  : PreIpoOrderActionBar(
-                      order: order,
-                      onAction: onAction,
-                    );
+                  : PreIpoOrderActionBar(order: order, onAction: onAction);
               if (box.maxWidth < 600) {
                 return Column(
                   crossAxisAlignment: CrossAxisAlignment.start,

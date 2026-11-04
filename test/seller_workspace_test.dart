@@ -251,4 +251,118 @@ void main() {
       await tester.pumpWidget(const SizedBox());
     },
   );
+
+  testWidgets(
+    'Load previous price fills the latest deal and lists it first',
+    (tester) async {
+      tester.view.physicalSize = const Size(1280, 1400);
+      tester.view.devicePixelRatio = 1;
+      addTearDown(tester.view.resetPhysicalSize);
+      addTearDown(tester.view.resetDevicePixelRatio);
+      await app.setUser(prefUser: identity());
+      app.configModel(
+        ConfigModel.fromJson({
+          'settlement_days': [
+            {'value': 1, 'label': 'T+1'},
+            {'value': 2, 'label': 'T+2'},
+          ],
+        }),
+      );
+      dioConfig.dio.httpClientAdapter = FakeAdapter((request) async {
+        if (request.path.endsWith('company/deals')) {
+          return response({
+            'status': 1,
+            'data': [
+              {
+                'deal_type': 'sell',
+                'base_price': 10,
+                'minimum_qty': 1,
+                'available_quantity': 5,
+                'settlement_days': 2,
+                'updated_at': '2026-01-01T00:00:00',
+                'company': {
+                  'id': 2,
+                  'brand_name': 'Beta',
+                  'company_name': 'Beta Ltd',
+                },
+              },
+              {
+                'deal_type': 'sell',
+                'base_price': 80,
+                'share_price': 80.8,
+                'minimum_qty': 4,
+                'available_quantity': 20,
+                'settlement_days': 1,
+                'updated_at': '2026-10-20T10:00:00',
+                'company': {
+                  'id': 2,
+                  'brand_name': 'Beta',
+                  'company_name': 'Beta Ltd',
+                },
+              },
+              {
+                'deal_type': 'buy',
+                'base_price': 70,
+                'minimum_qty': 2,
+                'company': {
+                  'id': 1,
+                  'brand_name': 'Alpha',
+                  'company_name': 'Alpha Ltd',
+                },
+              },
+            ],
+          });
+        }
+        return response({
+          'status': 1,
+          'data': [
+            {'id': 2, 'brand_name': 'Beta', 'company_name': 'Beta Ltd'},
+            {'id': 1, 'brand_name': 'Alpha', 'company_name': 'Alpha Ltd'},
+          ],
+        });
+      });
+      await tester.pumpWidget(
+        GetMaterialApp(
+          initialRoute: '/institution/bulk-deals',
+          getPages: Pages.pages,
+        ),
+      );
+      await tester.pumpAndSettle();
+
+      expect(
+        tester.getTopLeft(find.text('Alpha')).dy,
+        lessThan(tester.getTopLeft(find.text('Beta')).dy),
+      );
+
+      await tester.ensureVisible(find.text('Load previous price'));
+      await tester.tap(find.text('Load previous price'));
+      await tester.pump();
+      await tester.pump(const Duration(milliseconds: 400));
+
+      final controller = Get.find<UpdateSharePriceCtrl>();
+      final beta = controller.rows.firstWhere((row) => row.company.id == 2);
+      final alpha = controller.rows.firstWhere((row) => row.company.id == 1);
+      expect(beta.price.text, '80');
+      expect(beta.minQty.text, '4');
+      expect(beta.totalQty.text, '20');
+      expect(beta.settlementDays.value, 1);
+      expect(alpha.price.text, isEmpty);
+      expect(
+        controller.buyRows
+            .firstWhere((row) => row.company.id == 1)
+            .price
+            .text,
+        isEmpty,
+      );
+      expect(
+        tester.getTopLeft(find.text('Beta')).dy,
+        lessThan(tester.getTopLeft(find.text('Alpha')).dy),
+      );
+      expect(find.byType(Dialog), findsNothing);
+      expect(find.textContaining('Min transaction'), findsWidgets);
+      expect(find.textContaining('323.20'), findsWidgets);
+      expect(tester.takeException(), isNull);
+      await tester.pumpWidget(const SizedBox());
+    },
+  );
 }

@@ -277,7 +277,7 @@ class _DealCompany extends StatelessWidget {
     // logger.d(deal.toJson());
     return Row(
       children: [
-        LogoImage(url: deal.company.logo, radius: 12),
+        LogoImage(url: deal.company.logo, radius: AppRadii.control),
         const SizedBox(width: 12),
         Expanded(
           child: Text(
@@ -360,12 +360,7 @@ class _MobileDealItem extends StatelessWidget {
                   ),
                   _field(context, width, 'Min qty', '${deal.minimumQty}'),
                   if (deal.settlementLabel != null)
-                    _field(
-                      context,
-                      width,
-                      'Settlement',
-                      deal.settlementLabel!,
-                    ),
+                    _field(context, width, 'Settlement', deal.settlementLabel!),
                   _field(
                     context,
                     width,
@@ -499,9 +494,9 @@ class DealDeleteButton extends StatelessWidget {
                 FilledButton(
                   style: FilledButton.styleFrom(
                     backgroundColor: Theme.of(dialogContext).colorScheme.error,
-                    foregroundColor: Theme.of(
-                      dialogContext,
-                    ).colorScheme.onError,
+                    foregroundColor: Theme.of(dialogContext)
+                        .colorScheme
+                        .onError,
                   ),
                   onPressed: deleting
                       ? null
@@ -545,7 +540,7 @@ class _DealTypeChip extends StatelessWidget {
       padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
       decoration: BoxDecoration(
         color: color.withValues(alpha: 0.12),
-        borderRadius: BorderRadius.circular(8),
+        borderRadius: BorderRadius.circular(AppRadii.badge),
       ),
       child: Text(
         deal.dealTypeLabel,
@@ -572,7 +567,7 @@ class _DealStatus extends StatelessWidget {
       padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
       decoration: BoxDecoration(
         color: color.withValues(alpha: 0.12),
-        borderRadius: BorderRadius.circular(8),
+        borderRadius: BorderRadius.circular(AppRadii.badge),
       ),
       child: Text(
         active ? 'Active' : 'Expired',

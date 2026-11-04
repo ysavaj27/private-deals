@@ -37,7 +37,7 @@ class PhonePreIPOListView extends StatelessWidget {
                     horizontal: 16,
                   ),
                   child: SearchBarTextField(
-                    radius: 6,
+                    radius: AppRadii.control,
                     hintText: "Search Businesses",
                     onChanged: (p0) => c.search(p0),
                   ),
@@ -58,7 +58,7 @@ class PhonePreIPOListView extends StatelessWidget {
                             vertical: 7,
                           ),
                           child: InkWell(
-                            borderRadius: BorderRadius.circular(6),
+                            borderRadius: BorderRadius.circular(AppRadii.badge),
                             onTap: () {
                               Get.toNamed(
                                 Routes.preIPODetailPath(
@@ -72,7 +72,7 @@ class PhonePreIPOListView extends StatelessWidget {
                               );
                             },
                             child: CustomCardWidget(
-                              radius: 6,
+                              radius: AppRadii.card,
                               padding: const EdgeInsets.symmetric(
                                 vertical: 10,
                                 horizontal: 10,
@@ -83,7 +83,7 @@ class PhonePreIPOListView extends StatelessWidget {
                                     children: [
                                       LogoImage(
                                         url: model.logo,
-                                        radius: 6,
+                                        radius: AppRadii.control,
                                         height: 53,
                                         width: 53,
                                       ),

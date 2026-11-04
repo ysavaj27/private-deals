@@ -17,10 +17,7 @@ class DesktopTransactionSlipDialogView extends StatelessWidget {
         children: [
           Text(
             "${c.model.paymentSlipMessage}",
-            style: TextStyle(
-              fontWeight: FontWeight.w500,
-              fontSize: 25,
-            ),
+            style: TextStyle(fontWeight: FontWeight.w500, fontSize: 25),
           ),
           const SizedBox(height: 21),
           DropTarget(
@@ -40,7 +37,7 @@ class DesktopTransactionSlipDialogView extends StatelessWidget {
               }
             },
             child: CustomDottedBorder(
-              radius: 28,
+              radius: AppRadii.control,
               padding: 2,
               child: Center(
                 child: Column(
@@ -81,15 +78,13 @@ class DesktopTransactionSlipDialogView extends StatelessWidget {
                             : c.receipt().path.fileName,
                         maxLines: 1,
                         overflow: TextOverflow.ellipsis,
-                        style: const TextStyle(
-                          fontWeight: FontWeight.w500,
-                        ),
+                        style: const TextStyle(fontWeight: FontWeight.w500),
                       );
                     }),
                     const SizedBox(height: 25),
                     CustomElevatedButton(
                       text: "Upload",
-                      radius: 10,
+                      radius: AppRadii.button,
                       height: 45,
                       width: 140,
                       fontSize: 18,
@@ -135,7 +130,7 @@ class DesktopTransactionSlipDialogView extends StatelessWidget {
       ),
     );
 
-/*
+    /*
     return CustomCardWidget(
       color: context.theme.scaffoldBackgroundColor,
       padding: EdgeInsets.all(20),

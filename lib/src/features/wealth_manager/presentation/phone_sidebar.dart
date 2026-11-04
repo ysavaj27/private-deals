@@ -17,8 +17,8 @@ class PSideBarWidget extends StatelessWidget {
       decoration: BoxDecoration(
         color: context.theme.colorScheme.surfaceContainerLow,
         borderRadius: const BorderRadius.only(
-          topRight: Radius.circular(20),
-          bottomRight: Radius.circular(20),
+          topRight: Radius.circular(AppRadii.card),
+          bottomRight: Radius.circular(AppRadii.card),
         ),
       ),
       child: Column(
@@ -30,7 +30,7 @@ class PSideBarWidget extends StatelessWidget {
             decoration: BoxDecoration(
               color: context.theme.colorScheme.surfaceContainerLow,
               borderRadius: const BorderRadius.only(
-                topRight: Radius.circular(16),
+                topRight: Radius.circular(AppRadii.card),
               ),
             ),
           ),
@@ -156,7 +156,7 @@ class PSideBarWidget extends StatelessWidget {
             decoration: BoxDecoration(
               color: context.theme.colorScheme.surfaceContainerLow,
               borderRadius: const BorderRadius.only(
-                bottomRight: Radius.circular(16),
+                bottomRight: Radius.circular(AppRadii.card),
               ),
             ),
           ),
@@ -202,7 +202,7 @@ class PTabTileWidget extends StatelessWidget {
               height: 0,
               width: 0,
               decoration: BoxDecoration(
-                borderRadius: BorderRadius.circular(15),
+                borderRadius: BorderRadius.circular(AppRadii.card),
                 color: context.theme.primaryColor,
               ),
             ),
@@ -217,10 +217,7 @@ class PTabTileWidget extends StatelessWidget {
                       // c.currentTab(tab);
                       c.isExpand(true);
                     },
-                borderRadius: const BorderRadius.only(
-                  topLeft: Radius.circular(6),
-                  bottomLeft: Radius.circular(6),
-                ),
+                borderRadius: AppRadii.tabAll,
                 child: CustomCardWidget(
                   isBorder: isSelected,
                   borderColor: context.theme.colorScheme.outlineVariant,
@@ -228,14 +225,14 @@ class PTabTileWidget extends StatelessWidget {
                       ? context.theme.colorScheme.primaryContainer
                       : Colors.transparent,
                   margin: const EdgeInsets.symmetric(horizontal: 12),
-                  borderRadius: BorderRadius.circular(12),
+                  borderRadius: AppRadii.tabAll,
                   // duration: const Duration(milliseconds: 200),
                   height: 40,
                   // margin: const EdgeInsets.only(left: 10),
                   // decoration: BoxDecoration(
                   //   borderRadius: const BorderRadius.only(
-                  //     topLeft: Radius.circular(6),
-                  //     bottomLeft: Radius.circular(6),
+                  //     topLeft: Radius.circular(AppRadii.badge),
+                  //     bottomLeft: Radius.circular(AppRadii.badge),
                   //   ),
                   //   color: isSelected
                   //       ? context.theme.primaryColor.withValues(alpha: 0.1)
@@ -321,7 +318,12 @@ class LogoutWidget extends StatelessWidget {
   Widget build(BuildContext context) {
     final colors = context.theme.colorScheme;
     return Padding(
-      padding: const EdgeInsets.fromLTRB(AppSpace.md, 0, AppSpace.md, AppSpace.sm),
+      padding: const EdgeInsets.fromLTRB(
+        AppSpace.md,
+        0,
+        AppSpace.md,
+        AppSpace.sm,
+      ),
       child: OutlinedButton.icon(
         onPressed: () {
           Get.back();
@@ -346,9 +348,7 @@ class LogoutWidget extends StatelessWidget {
           foregroundColor: colors.onSurface,
           minimumSize: const Size(double.infinity, 48),
           padding: const EdgeInsets.symmetric(vertical: 14),
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(AppRadii.md),
-          ),
+          shape: RoundedRectangleBorder(borderRadius: AppRadii.buttonAll),
         ),
       ),
     );

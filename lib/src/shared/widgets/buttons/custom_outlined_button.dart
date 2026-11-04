@@ -63,7 +63,7 @@ class CustomOutlinedButton extends StatelessWidget {
         foregroundColor: resolvedForeground,
         side: BorderSide(width: 1, color: resolvedBorder),
         shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(borderRadius ?? 12.0),
+          borderRadius: BorderRadius.circular(borderRadius ?? AppRadii.button),
         ),
       ),
       child: AnimatedSwitcher(

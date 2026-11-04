@@ -8,8 +8,11 @@ class AppUrl {
   static String version = "v1/";
   static String newVersion = "v2/";
 
-  static const String imageURL =
-      "https://s3-ap-south-1.amazonaws.com/privatedeals-main-storage/";
+  static const String imageURL = String.fromEnvironment(
+    'PRIVATE_DEALS_IMAGE_URL',
+    defaultValue:
+        'https://s3-ap-south-1.amazonaws.com/privatedeals-main-storage/',
+  );
 
   static String itDisclosures =
       "${baseUrl}core/documents/investment-disclosures.pdf";

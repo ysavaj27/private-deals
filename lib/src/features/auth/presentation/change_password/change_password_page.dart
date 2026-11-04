@@ -26,7 +26,7 @@ class ChangePasswordPage extends StatelessWidget {
           constraints: const BoxConstraints(
               maxWidth: 1300, minWidth: 400, minHeight: 600),
           decoration: BoxDecoration(
-            borderRadius: BorderRadius.circular(20),
+            borderRadius: BorderRadius.circular(AppRadii.card),
             color: Colors.white,
           ),
           child: Form(

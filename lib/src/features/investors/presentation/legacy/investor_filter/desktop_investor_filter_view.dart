@@ -12,7 +12,7 @@ class DesktopInvestorFilterView extends StatelessWidget {
       width: 600,
       decoration: BoxDecoration(
         color: context.theme.scaffoldBackgroundColor,
-        borderRadius: BorderRadius.circular(10),
+        borderRadius: BorderRadius.circular(AppRadii.control),
       ),
       padding: const EdgeInsets.symmetric(horizontal: 60, vertical: 33),
       child: Column(
