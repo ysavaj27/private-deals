@@ -202,6 +202,8 @@ class SellerHomePageCtrl extends GetxController {
         return 'Transactions';
       case WTabBarEnum.secondaryTransactions:
         return 'Transactions';
+      case WTabBarEnum.channelPartner:
+        return 'Relation Managers';
     }
   }
 }

@@ -291,12 +291,11 @@ class UnlistedTransactionCard extends StatelessWidget {
                 label: const Text('View details'),
               );
               final actions = isActionLoading
-                  ? const Padding(
-                      padding: EdgeInsets.all(8),
-                      child: SizedBox(
-                        width: 22,
-                        height: 22,
-                        child: CircularProgressIndicator(strokeWidth: 2),
+                  ? const Align(
+                      alignment: Alignment.centerLeft,
+                      child: Padding(
+                        padding: EdgeInsets.all(8),
+                        child: Loader(size: 22, centered: false),
                       ),
                     )
                   : PreIpoOrderActionBar(order: order, onAction: onAction);

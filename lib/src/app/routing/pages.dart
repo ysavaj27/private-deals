@@ -32,6 +32,7 @@ import 'package:private_deals/src/features/institution/companies/presentation/co
 import 'package:private_deals/src/features/institution/companies/presentation/create_company/create_company_page.dart';
 import 'package:private_deals/src/features/institution/companies/presentation/manage_promoters/manage_promoters_page.dart';
 import 'package:private_deals/src/features/institution/companies/presentation/manage_shareholders/manage_shareholders_page.dart';
+import 'package:private_deals/src/features/institution/companies/presentation/manage_events/manage_events_page.dart';
 import 'package:private_deals/src/features/institution/deals/presentation/deal_list/deal_list_page.dart';
 import 'package:private_deals/src/features/institution/deals/presentation/create_deal/create_deal_page.dart';
 import 'package:private_deals/src/features/institution/deals/presentation/bulk_deals_page.dart';
@@ -110,7 +111,11 @@ class Pages {
     privatePage(Routes.preIPOList, () => PreIPOListPage()),
     privatePushPage(Routes.addInvestorPage, () => AddInvestorPage()),
     privatePushPage(Routes.kycPage, () => KYCPage()),
-    privatePushPage(Routes.notificationPage, () => NotificationPage()),
+    privatePushPage(
+      Routes.notificationPage,
+      () => NotificationPage(),
+      scope: AccessScope.account,
+    ),
     privatePushPage(
       Routes.primaryDetailPage,
       () => PrimaryDetailPage(),
@@ -236,6 +241,7 @@ class Pages {
       'secondary-transactions',
       'profile',
       'change-password',
+      'channel-partner',
     ])
       privatePage(
         '/institution/$tab',
@@ -258,6 +264,11 @@ class Pages {
         scope: AccessScope.institution,
       ),
       privatePushPage(
+        '/institution/companies/$type/:slug/edit',
+        () => CreateCompanyPage(),
+        scope: AccessScope.institution,
+      ),
+      privatePushPage(
         '/institution/companies/$type/:slug/promoters',
         () => CompanyPromotersPage(),
         scope: AccessScope.institution,
@@ -265,6 +276,11 @@ class Pages {
       privatePushPage(
         '/institution/companies/$type/:slug/shareholders',
         () => CompanyShareholdersPage(),
+        scope: AccessScope.institution,
+      ),
+      privatePushPage(
+        '/institution/companies/$type/:slug/events',
+        () => CompanyEventsPage(),
         scope: AccessScope.institution,
       ),
     ],

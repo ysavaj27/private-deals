@@ -23,7 +23,7 @@ class _EditDealDialog extends StatefulWidget {
 
 class _EditDealState extends State<_EditDealDialog> {
   late final price = TextEditingController(
-    text: widget.deal.sharePrice.toString(),
+    text: _baseText(widget.deal.basePrice),
   );
   late final minimum = TextEditingController(
     text: widget.deal.minimumQty.toInt().toString(),
@@ -40,6 +40,12 @@ class _EditDealState extends State<_EditDealDialog> {
   bool get requiresSettlement =>
       !widget.deal.isBuyDeal &&
       widget.deal.company.type.toLowerCase() != 'secondary';
+
+  static String _baseText(double? value) {
+    if (value == null || value <= 0) return '';
+    if (value == value.roundToDouble()) return value.toInt().toString();
+    return value.toString();
+  }
 
   @override
   void dispose() {
@@ -61,7 +67,7 @@ class _EditDealState extends State<_EditDealDialog> {
       }
       final payload = DealPayloads.update(
         uuid: widget.deal.uuid,
-        finalPrice: price.text,
+        basePrice: price.text,
         minimumQuantity: minimum.text,
         totalQuantity: total.text,
         dealType: widget.deal.dealType,
@@ -105,15 +111,13 @@ class _EditDealState extends State<_EditDealDialog> {
               Text(widget.deal.company.brandName),
               const SizedBox(height: 12),
               const Text(
-                'Enter the final customer price. The processing fee will not be added again; the original base price stays unchanged.',
+                'Enter your base price. Landing price is calculated for each partner.',
               ),
               const SizedBox(height: 12),
               TextField(
                 enabled: !saving,
                 controller: price,
-                decoration: const InputDecoration(
-                  labelText: 'Final customer price (₹)',
-                ),
+                decoration: const InputDecoration(labelText: 'Base price (₹)'),
               ),
               const SizedBox(height: 12),
               TextField(

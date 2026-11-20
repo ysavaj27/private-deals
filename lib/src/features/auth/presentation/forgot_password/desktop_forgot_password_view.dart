@@ -247,41 +247,26 @@ class DOtpWidget extends StatelessWidget {
               ),
             ),
             const SizedBox(height: 45),
-            TitleTextField(
-              isDense: false,
-              isBorder: true,
-              borderColor: context.theme.dividerColor,
-              isAuthFocusBorder: true,
-              fillColor: Colors.transparent,
-              name: 'OTP',
-              autofocus: true,
-              keyboardType: TextInputType.number,
-              // maxLength: 6,
-              textInputAction: TextInputAction.done,
-              inputFormatters: [
-                FilteringTextInputFormatter.allow(RegExp('[0-9``]')),
-              ],
-              controller: c.otpCTRL,
-              validator: (p0) {
-                if (p0 == null || p0.isEmpty) {
-                  return 'Please enter otp';
-                } else if (int.tryParse(p0.trim()) == null) {
-                  return 'Please enter valid otp';
-                } else if (p0.trim().length != 6) {
-                  return 'Please enter 6 digit otp code';
-                }
-                return null;
-              },
-              prefixIcon: Icon(
-                Icons.phone_outlined,
-                size: 20,
-                color: context.theme.disabledColor,
+            SizedBox(
+              width: 320,
+              child: OtpTextField(
+                controller: c.otpCTRL,
+                validator: (p0) {
+                  if (p0 == null || p0.isEmpty) {
+                    return 'Please enter otp';
+                  } else if (int.tryParse(p0.trim()) == null) {
+                    return 'Please enter valid otp';
+                  } else if (p0.trim().length != 6) {
+                    return 'Please enter 6 digit otp code';
+                  }
+                  return null;
+                },
+                onCompleted: (p0) {
+                  if (c.dOtpKey.currentState?.validate() ?? false) {
+                    c.verifyOTP();
+                  }
+                },
               ),
-              onFieldSubmitted: (p0) {
-                if (c.dOtpKey.currentState?.validate() ?? false) {
-                  c.verifyOTP();
-                }
-              },
             ),
             SizedBox(height: 10),
             Align(

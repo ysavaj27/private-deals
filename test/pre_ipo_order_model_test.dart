@@ -18,7 +18,6 @@ void main() {
       },
       'shares': 10,
       'base_price': '99.00',
-      'distributer_price': '100.00',
       'share_price': '102.00',
       'payable_amount': '1020.00',
       'cancellation_reason': null,

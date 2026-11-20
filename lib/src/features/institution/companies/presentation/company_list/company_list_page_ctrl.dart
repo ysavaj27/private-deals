@@ -106,6 +106,13 @@ class CompanyListPageCtrl extends GetxController {
         return;
       }
 
+      // my-submissions is ownership-scoped; some payloads omit is_editable.
+      if (mySubmissions()) {
+        for (final company in items) {
+          company.isEditable = true;
+        }
+      }
+
       companies.assignAll(items);
       currentPage.value = targetPage;
       hasNextPage.value = items.length == pageSize;
@@ -121,22 +128,48 @@ class CompanyListPageCtrl extends GetxController {
     }
   }
 
+  Future<void> openEdit(CompanyModel company) async {
+    if (!company.isEditable) return;
+    final saved = await Get.toNamed(
+      InstitutionRoutes.companyAction(
+        InstitutionRoutes.editCompanyPage,
+        type: companyType.value,
+        slug: company.slug,
+      ),
+    );
+    if (saved == true && !isClosed) await fetchCompanies();
+  }
+
+  Future<void> openEvents(CompanyModel company) async {
+    if (!company.isEditable) return;
+    await Get.toNamed(
+      InstitutionRoutes.companyAction(
+        InstitutionRoutes.eventsPage,
+        type: companyType.value,
+        slug: company.slug,
+      ),
+    );
+  }
+
   Future<void> openShareholders(CompanyModel company) async {
     if (!company.isEditable) return;
     final saved = await Get.toNamed(
-      InstitutionRoutes.shareholdersPage
-          .replaceFirst(':type', companyType.value)
-          .replaceFirst(':slug', Uri.encodeComponent(company.slug)),
+      InstitutionRoutes.companyAction(
+        InstitutionRoutes.shareholdersPage,
+        type: companyType.value,
+        slug: company.slug,
+      ),
     );
     if (saved == true && !isClosed) await fetchCompanies();
   }
 
   Future<void> openPromoters(CompanyModel company) async {
     if (!company.isEditable) return;
-    final slug = company.slug;
-    var route = InstitutionRoutes.promotersPage
-        .replaceFirst(':type', companyType.value)
-        .replaceFirst(':slug', Uri.encodeComponent(slug));
+    final route = InstitutionRoutes.companyAction(
+      InstitutionRoutes.promotersPage,
+      type: companyType.value,
+      slug: company.slug,
+    );
     logger.d(route);
     final saved = await Get.toNamed(route);
 

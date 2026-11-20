@@ -1,3 +1,4 @@
+import 'package:private_deals/src/core/permissions/partner_role.dart';
 import 'package:private_deals/src/shared/app_exports.dart';
 
 class ChannelPartnerPageCtrl extends GetxController {
@@ -15,7 +16,12 @@ class ChannelPartnerPageCtrl extends GetxController {
     if (isLoading()) return;
     isLoading(true);
     error('');
-    var res = await ChannelPartnerApi.channelPartnerList();
+    final types = app.config.enumValues.partnerType;
+    var res = await ChannelPartnerApi.channelPartnerList(
+      partnerType: app.role == PartnerRole.institution
+          ? types.relationManager
+          : null,
+    );
     if (isClosed) return;
     isLoading(false);
     if (res.isSuccess && res.r != null) {

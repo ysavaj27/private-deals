@@ -13,6 +13,7 @@ import 'package:private_deals/src/features/institution/legacy/utils/widgets/dial
 import 'package:private_deals/src/features/institution/legacy/features/home/home_page.dart';
 import 'package:private_deals/src/features/institution/legacy/features/home/home_page_ctrl.dart';
 import 'package:private_deals/src/features/institution/legacy/features/home/phone_sidebar.dart';
+import 'package:private_deals/src/features/institution/legacy/router/routes/routes.dart';
 
 class PhoneHomePageView extends StatelessWidget {
   final Widget? child;
@@ -47,6 +48,16 @@ class PhoneHomePageView extends StatelessWidget {
           appBar: AppBar(
             title: Text(c.appBarName),
             actions: [
+              IconButton(
+                tooltip: 'Notifications',
+                onPressed: () {
+                  Get.toNamed(Routes.notificationPage);
+                },
+                icon: Icon(
+                  Icons.notifications_outlined,
+                  color: Theme.of(context).primaryColor,
+                ),
+              ),
               Obx(() {
                 return IconButton(
                   onPressed: () async {

@@ -1,6 +1,6 @@
 import 'package:private_deals/src/shared/functions/parse.dart';
 
-/// One T+N option from `GET /api/get-config` → `data.settlement_days`.
+/// One T+N option from static app config `settlement_days`.
 class SettlementOption {
   const SettlementOption({required this.value, required this.label});
 

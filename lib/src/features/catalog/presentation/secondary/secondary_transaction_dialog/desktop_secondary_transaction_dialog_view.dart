@@ -112,30 +112,11 @@ class DesktopSecondaryTransactionDialogView extends StatelessWidget {
                 ),
                 const SizedBox(height: 12),
                 Row(
-                  children: [
-                    Expanded(
-                      child: _DataText(
-                        title: "Investment amount",
-                        subTitle: c.investmentAmount.toCurrency,
-                      ),
-                    ),
-                    Expanded(
-                      child: _DataText(
-                        title:
-                            "Processing fees (${c.model.processingFeePercentage}%)",
-                        subTitle: c.processingFees.toCurrency,
-                      ),
-                    ),
-                  ],
-                ),
-                const SizedBox(height: 12),
-                Divider(color: AppColors.borderColor(context)),
-                Row(
                   mainAxisAlignment: MainAxisAlignment.end,
                   children: [
                     _DataText(
-                      title: "Payable amount",
-                      subTitle: c.payableAmount.toCurrency,
+                      title: "Investment amount",
+                      subTitle: c.investmentAmount.toCurrency,
                       emphasize: true,
                     ),
                   ],

@@ -35,9 +35,27 @@ void main() {
         return response({
           'status': 1,
           'data': {
-            'total_partners': 3,
             'total_commission_earned': 75000,
-            'list': [],
+            'list': [
+              {
+                'partner_id': 1,
+                'name': 'North',
+                'type': 'Distributor',
+                'commission_earned': 25000,
+              },
+              {
+                'partner_id': 2,
+                'name': 'East',
+                'type': 'Retailer',
+                'commission_earned': 25000,
+              },
+              {
+                'partner_id': 3,
+                'name': 'West',
+                'type': 'Relation Manager',
+                'commission_earned': 25000,
+              },
+            ],
           },
         });
       });
@@ -45,7 +63,8 @@ void main() {
       final oldLoad = controller.refreshData();
       await investorStarted.future;
       await controller.selectType(MyEarningTypeEnum.channelPartner);
-      expect(controller.partner().totalPartners, 3);
+      expect(controller.partner().list, hasLength(3));
+      expect(controller.partner().list.first.commissionEarned, 25000);
       expect(controller.isLoading(), false);
       investorResponse.complete(
         response({'status': 0, 'message': 'Old request failed'}),
@@ -110,57 +129,62 @@ void main() {
     },
   );
 
-  test('Pending refresh loads KYC, documents and fund transfers from v2',
-      () async {
-    final adapter = FakeAdapter(
-      (options) async => response({
-        'status': 1,
-        'data': {
-          'pending_kyc': {
-            'count': 4,
-            'investors': [
-              {'id': 1, 'name': 'Updated investor'},
-            ],
+  test(
+    'Pending refresh loads KYC, documents and fund transfers from v2',
+    () async {
+      final adapter = FakeAdapter(
+        (options) async => response({
+          'status': 1,
+          'data': {
+            'pending_kyc': {
+              'count': 4,
+              'investors': [
+                {'id': 1, 'name': 'Updated investor'},
+              ],
+            },
+            'pending_documents': {
+              'count': 2,
+              'documents': [
+                {
+                  'id': 11,
+                  'type': 'BuyMandate',
+                  'name': 'Buy Mandate',
+                  'company': {'brand_name': 'Northstar Technologies'},
+                  'investor': {'name': 'Priya Mehta'},
+                },
+              ],
+            },
+            'pending_fund_transfer': {
+              'count': 1,
+              'transactions': [
+                {
+                  'id': 21,
+                  'payable_amount': 250000,
+                  'company': {'brand_name': 'Summit Brands'},
+                  'investor': {'name': 'Aarav Shah'},
+                },
+              ],
+            },
           },
-          'pending_documents': {
-            'count': 2,
-            'documents': [
-              {
-                'id': 11,
-                'type': 'BuyMandate',
-                'name': 'Buy Mandate',
-                'company': {'brand_name': 'Northstar Technologies'},
-                'investor': {'name': 'Priya Mehta'},
-              },
-            ],
-          },
-          'pending_fund_transfer': {
-            'count': 1,
-            'transactions': [
-              {
-                'id': 21,
-                'payable_amount': 250000,
-                'company': {'brand_name': 'Summit Brands'},
-                'investor': {'name': 'Aarav Shah'},
-              },
-            ],
-          },
-        },
-      }),
-    );
-    dioConfig.dio.httpClientAdapter = adapter;
-    final controller = KycPendingInvestorPageCtrl();
-    await controller.refreshData();
-    expect(controller.pendingTask().pendingKyc.count, 4);
-    expect(controller.pendingTask().pendingDocuments.count, 2);
-    expect(controller.pendingTask().pendingFundTransfer.count, 1);
-    expect(controller.investors.single.name, 'Updated investor');
-    expect(controller.documents.single.company.brandName, 'Northstar Technologies');
-    expect(controller.fundTransfers.single.payableAmount, 250000);
-    expect(adapter.requests.single.path, AppUrl.wPendingTasks);
-    expect(AppUrl.wPendingTasks, contains('v2/'));
-    expect(controller.isLoading(), false);
-  });
+        }),
+      );
+      dioConfig.dio.httpClientAdapter = adapter;
+      final controller = KycPendingInvestorPageCtrl();
+      await controller.refreshData();
+      expect(controller.pendingTask().pendingKyc.count, 4);
+      expect(controller.pendingTask().pendingDocuments.count, 2);
+      expect(controller.pendingTask().pendingFundTransfer.count, 1);
+      expect(controller.investors.single.name, 'Updated investor');
+      expect(
+        controller.documents.single.company.brandName,
+        'Northstar Technologies',
+      );
+      expect(controller.fundTransfers.single.payableAmount, 250000);
+      expect(adapter.requests.single.path, AppUrl.wPendingTasks);
+      expect(AppUrl.wPendingTasks, contains('v2/'));
+      expect(controller.isLoading(), false);
+    },
+  );
 
   test(
     'MIS distinguishes business failure from empty success and can retry',

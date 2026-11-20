@@ -86,12 +86,15 @@ class CompanyApi {
     required String cin,
     required String companyName,
     required String type,
+    int? excludeCompanyId,
   }) async {
     try {
       Map<String, dynamic> body = {
         if (cin.isNotEmpty) 'cin': cin,
         if (companyName.isNotEmpty) 'company_name': companyName,
         'type': type,
+        if (excludeCompanyId != null && excludeCompanyId > 0)
+          'exclude_company_id': excludeCompanyId,
       };
       final res = await dioConfig.post(
         InstitutionEndpoints.checkCompanyDuplicate,
@@ -108,14 +111,25 @@ class CompanyApi {
     }
   }
 
+  static Map<String, dynamic> _sanitizeCompanyPayload(
+    Map<String, dynamic> buildPayload,
+  ) {
+    return Map<String, dynamic>.from(buildPayload)
+      ..remove('commission')
+      ..remove('processing_fee_percentage')
+      ..remove('approval_status')
+      ..remove('status')
+      ..remove('is_editable')
+      ..remove('fifty_two_week_high')
+      ..remove('fifty_two_week_low');
+  }
+
   static Future<BaseModel<CompanyModel>> createCompany(
     Map<String, dynamic> buildPayload, {
     MediaModel? logo,
   }) async {
     try {
-      buildPayload = Map<String, dynamic>.from(buildPayload)
-        ..remove('commission')
-        ..remove('processing_fee_percentage');
+      buildPayload = _sanitizeCompanyPayload(buildPayload);
       final bytes = logo?.uint8list;
       if (bytes != null && bytes.isNotEmpty) {
         buildPayload.addAll(
@@ -135,6 +149,37 @@ class CompanyApi {
       return BaseModel.fromJson(res.data, (p0) => CompanyModel.fromJson(p0));
     } catch (e, t) {
       logger.e("Error on Create Company API", error: e, stackTrace: t);
+
+      return BaseModel.fromError(e.toString());
+    }
+  }
+
+  static Future<BaseModel<CompanyModel>> updateCompany(
+    Map<String, dynamic> buildPayload, {
+    MediaModel? logo,
+  }) async {
+    try {
+      buildPayload = _sanitizeCompanyPayload(buildPayload)
+        ..remove('category');
+      final bytes = logo?.uint8list;
+      if (bytes != null && bytes.isNotEmpty) {
+        buildPayload.addAll(
+          await dioConfig.createBytesImage(
+            image: bytes,
+            imageName: logo!.name,
+            key: 'logo',
+          ),
+        );
+      }
+      final res = await dioConfig.post(
+        InstitutionEndpoints.updateCompany,
+        buildPayload,
+        false,
+      );
+
+      return BaseModel.fromJson(res.data, (p0) => CompanyModel.fromJson(p0));
+    } catch (e, t) {
+      logger.e("Error on Update Company API", error: e, stackTrace: t);
 
       return BaseModel.fromError(e.toString());
     }
@@ -184,6 +229,113 @@ class CompanyApi {
     } catch (e, t) {
       logger.e("Error on Create Company API", error: e, stackTrace: t);
 
+      return BaseModel.fromError(e.toString());
+    }
+  }
+
+  static Future<BaseModel<List<CompanyEventModel>>> getCompanyEvents({
+    required int companyId,
+  }) async {
+    try {
+      final res = await dioConfig.get(InstitutionEndpoints.companyEvents, {
+        'company_id': companyId,
+      });
+      return BaseModel.fromListJson(
+        res.data,
+        (data) => data.map((e) => CompanyEventModel.fromJson(e)).toList(),
+      );
+    } catch (e, t) {
+      logger.e('Error on Company Events list', error: e, stackTrace: t);
+      return BaseModel.fromError(e.toString());
+    }
+  }
+
+  static Future<BaseModel<CompanyEventModel>> createCompanyEvent({
+    required int companyId,
+    required String date,
+    required String title,
+    required String description,
+    MediaModel? file,
+  }) async {
+    try {
+      final body = <String, dynamic>{
+        'company_id': companyId,
+        'date': date,
+        'title': title,
+        'description': description,
+      };
+      final bytes = file?.uint8list;
+      if (bytes != null && bytes.isNotEmpty) {
+        body.addAll(
+          await dioConfig.createBytesImage(
+            image: bytes,
+            imageName: file!.name,
+            key: 'file',
+          ),
+        );
+      }
+      final res = await dioConfig.post(
+        InstitutionEndpoints.companyEvents,
+        body,
+        false,
+      );
+      return BaseModel.fromJson(
+        res.data,
+        (p0) => CompanyEventModel.fromJson(p0),
+      );
+    } catch (e, t) {
+      logger.e('Error creating company event', error: e, stackTrace: t);
+      return BaseModel.fromError(e.toString());
+    }
+  }
+
+  static Future<BaseModel<CompanyEventModel>> updateCompanyEvent({
+    required int id,
+    required String date,
+    required String title,
+    required String description,
+    MediaModel? file,
+  }) async {
+    try {
+      final body = <String, dynamic>{
+        'id': id,
+        'date': date,
+        'title': title,
+        'description': description,
+      };
+      final bytes = file?.uint8list;
+      if (bytes != null && bytes.isNotEmpty) {
+        body.addAll(
+          await dioConfig.createBytesImage(
+            image: bytes,
+            imageName: file!.name,
+            key: 'file',
+          ),
+        );
+      }
+      final res = await dioConfig.post(
+        InstitutionEndpoints.updateCompanyEvent,
+        body,
+        false,
+      );
+      return BaseModel.fromJson(
+        res.data,
+        (p0) => CompanyEventModel.fromJson(p0),
+      );
+    } catch (e, t) {
+      logger.e('Error updating company event', error: e, stackTrace: t);
+      return BaseModel.fromError(e.toString());
+    }
+  }
+
+  static Future<BaseModel> deleteCompanyEvent({required int id}) async {
+    try {
+      final res = await dioConfig.post(InstitutionEndpoints.deleteCompanyEvent, {
+        'id': id,
+      });
+      return BaseModel.fromMessage(res.data);
+    } catch (e, t) {
+      logger.e('Error deleting company event', error: e, stackTrace: t);
       return BaseModel.fromError(e.toString());
     }
   }

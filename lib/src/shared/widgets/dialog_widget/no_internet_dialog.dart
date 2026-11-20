@@ -51,9 +51,7 @@ class NoInternetDialog extends StatelessWidget {
                 }),
                 onPressed: () async {
                   if (await connectivity.check()) {
-                    await ConfigApi.config();
                     Get.offAllNamed('/init');
-                    // Get.back();
                   } else {
                     toast('No internet connection found');
                   }

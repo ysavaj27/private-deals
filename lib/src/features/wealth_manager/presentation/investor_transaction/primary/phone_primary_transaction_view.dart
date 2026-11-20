@@ -22,7 +22,10 @@ class PhonePrimaryTransactionView extends StatelessWidget {
             child: Obx(() {
               final Widget child;
               if (c.isLoading.isTrue) {
-                child = const Loader(key: ValueKey('tx-loading'));
+                child = const Center(
+                  key: ValueKey('tx-loading'),
+                  child: Loader(centered: false),
+                );
               } else if (c.finalList.isEmpty) {
                 child = NoDataView(
                   key: const ValueKey('tx-empty'),

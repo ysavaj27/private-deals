@@ -68,6 +68,12 @@ class DSideBarWidget extends StatelessWidget {
               tab: WTabBarEnum.portfolio,
             ),
             const SizedBox(height: 8),
+            DTabTileWidget(
+              icon: Icons.handshake_outlined,
+              title: 'Relation Managers',
+              tab: WTabBarEnum.channelPartner,
+            ),
+            const SizedBox(height: 8),
             const DEnquiriesMenu(),
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 22),

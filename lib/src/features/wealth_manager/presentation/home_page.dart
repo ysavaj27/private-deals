@@ -1,4 +1,5 @@
 import 'package:private_deals/src/features/auth/presentation/change_password/change_password_page.dart';
+import 'package:private_deals/src/features/auth/presentation/change_password/required_password_dialog.dart';
 import 'package:private_deals/src/features/account/presentation/profile_page.dart';
 import 'package:private_deals/src/features/wealth_manager/presentation/desktop_home_page_view.dart';
 import 'package:private_deals/src/features/wealth_manager/presentation/investor_transaction/investor_transaction_page.dart';
@@ -29,6 +30,7 @@ class HomePage extends StatelessWidget {
     // updates Obx-watched state.
     WidgetsBinding.instance.addPostFrameCallback((_) {
       if (Get.isRegistered<HomePageCtrl>()) c.setData();
+      RequiredPasswordReset.maybeShow();
     });
   }
 

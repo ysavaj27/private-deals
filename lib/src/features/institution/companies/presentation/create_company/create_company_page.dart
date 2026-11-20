@@ -18,14 +18,39 @@ class CreateCompanyPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: context.theme.scaffoldBackgroundColor,
-      appBar: AppBar(
-        title: Text("Create company"),
-        leading: BackButton(onPressed: onBackPressed),
-      ),
-      body: CreateCompanyForm(),
-    );
+    return Obx(() {
+      final loading = c.loading.value;
+      final loadError = c.loadError.value;
+      final saving = c.saving.value;
+
+      return Scaffold(
+        backgroundColor: context.theme.scaffoldBackgroundColor,
+        appBar: AppBar(
+          title: Text(c.pageTitle),
+          leading: BackButton(onPressed: saving ? null : onBackPressed),
+          automaticallyImplyLeading: !saving,
+        ),
+        body: loading
+            ? const Loader()
+            : loadError.isNotEmpty
+            ? Center(
+                child: Padding(
+                  padding: const EdgeInsets.all(24),
+                  child: Column(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      Text(loadError, textAlign: TextAlign.center),
+                      if (c.isEdit) ...[
+                        const SizedBox(height: 16),
+                        AppButton(label: 'Retry', onPressed: c.loadCompany),
+                      ],
+                    ],
+                  ),
+                ),
+              )
+            : CreateCompanyForm(),
+      );
+    });
   }
 }
 
@@ -74,7 +99,7 @@ class CreateCompanyForm extends StatelessWidget {
                     //   ),
                     // ),
                     _sectorDropdown(),
-                    if (c.companyType == CompanyType.unlisted)
+                    if (!c.isEdit && c.companyType == CompanyType.unlisted)
                       Obx(
                         () => AppTitleDropdown<UnListedShareCategoryEnum>(
                           // Remove this UnListedShareCategoryEnum.aToZ
@@ -144,7 +169,7 @@ class CreateCompanyForm extends StatelessWidget {
                   );
 
                   final save = AppButton(
-                    label: 'Create company',
+                    label: c.isEdit ? 'Save changes' : 'Create company',
                     isLoading: c.saving.value,
                     onPressed: c.canSave ? c.submit : null,
                     expanded: phone,
@@ -295,7 +320,9 @@ class _DuplicateNotice extends StatelessWidget {
           'This company already exists.'
               '${c.duplicateMatches.isEmpty ? '' : '\n${c.duplicateMatches.join('\n')}'}',
         DuplicateState.failed =>
-          'Could not check for duplicates. Retry before creating the company.',
+          c.isEdit
+              ? 'Could not check for duplicates. Retry before updating the company.'
+              : 'Could not check for duplicates. Retry before creating the company.',
       };
 
       final hasError =
@@ -366,7 +393,10 @@ class CompanyLogoPicker extends StatelessWidget {
       final colors = context.theme.colorScheme;
       final selected = c.logo.value;
       final bytes = selected?.uint8list;
-      final hasImage = bytes != null && bytes.isNotEmpty;
+      final hasNewImage = bytes != null && bytes.isNotEmpty;
+      final existingUrl = c.existingLogoUrl.value.trim();
+      final hasExisting = existingUrl.isNotEmpty;
+      final hasPreview = hasNewImage || hasExisting;
 
       final picking = c.pickingLogo.value;
       final disabled = picking || c.saving.value;
@@ -385,11 +415,22 @@ class CompanyLogoPicker extends StatelessWidget {
           borderRadius: BorderRadius.circular(AppRadii.badge),
           child: picking
               ? const Loader()
-              : hasImage
+              : hasNewImage
               ? Image.memory(
                   bytes,
                   fit: BoxFit.contain,
                   semanticLabel: 'Selected company logo',
+                  errorBuilder: (_, _, _) => Icon(
+                    Icons.broken_image_outlined,
+                    color: colors.error,
+                    size: 32,
+                  ),
+                )
+              : hasExisting
+              ? Image.network(
+                  existingUrl,
+                  fit: BoxFit.contain,
+                  semanticLabel: 'Current company logo',
                   errorBuilder: (_, _, _) => Icon(
                     Icons.broken_image_outlined,
                     color: colors.error,
@@ -408,17 +449,23 @@ class CompanyLogoPicker extends StatelessWidget {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Text(
-            hasImage ? 'Company logo selected' : 'Upload company logo',
+            hasNewImage
+                ? 'Company logo selected'
+                : hasExisting
+                ? 'Current company logo'
+                : 'Upload company logo',
             style: context.textTheme.titleSmall,
           ),
           const SizedBox(height: 6),
           Text(
-            'Optional. Choose a clear image, up to 2 MB.',
+            c.isEdit
+                ? 'Optional. Leave unchanged to keep the current logo, or choose a new image up to 2 MB.'
+                : 'Optional. Choose a clear image, up to 2 MB.',
             style: context.textTheme.bodySmall?.copyWith(
               color: colors.onSurfaceVariant,
             ),
           ),
-          if (hasImage && selected != null) ...[
+          if (hasNewImage && selected != null) ...[
             const SizedBox(height: 8),
             Text(
               selected.name,
@@ -435,14 +482,14 @@ class CompanyLogoPicker extends StatelessWidget {
               AppButton(
                 label: picking
                     ? 'Selecting...'
-                    : hasImage
+                    : hasPreview
                     ? 'Change logo'
                     : 'Choose logo',
                 icon: Icons.upload_outlined,
                 variant: AppButtonVariant.outline,
                 onPressed: disabled ? null : c.pickLogo,
               ),
-              if (hasImage)
+              if (hasNewImage)
                 AppButton(
                   label: 'Remove',
                   variant: AppButtonVariant.text,

@@ -19,7 +19,9 @@ class SessionNavigation {
           : AccessScope.enquiries;
     }
     if (path.startsWith('/institution/')) return AccessScope.institution;
-    if (path == '/account' || path == Routes.changePassword)
+    if (path == '/account' ||
+        path == Routes.changePassword ||
+        path == Routes.notificationPage)
       return AccessScope.account;
     if (path.contains('/private-equity') || path.contains('/startup-list'))
       return AccessScope.primary;
@@ -32,12 +34,19 @@ class SessionNavigation {
     return AccessScope.business;
   }
 
+  static bool isPasswordPromptHost(String route) {
+    final path = Uri.parse(route).path;
+    return path == '/wealth-manager/dashboard' ||
+        path == '/institution/dashboard';
+  }
+
   static AccessResult check(String route, {AccessScope? scope}) =>
       AccessPolicy.check(
         app.access,
         scope ?? scopeFor(route),
         changingPassword: Uri.parse(route).path == Routes.changePassword,
         channelPartners: route.contains('/channel-partner'),
+        passwordPromptHost: isPasswordPromptHost(route),
       );
 
   static String destination([String? desired]) {
@@ -48,7 +57,7 @@ class SessionNavigation {
       case AccessResult.retrySession:
         return '/session';
       case AccessResult.passwordChange:
-        return Routes.changePassword;
+        return home;
       case AccessResult.accountUnavailable:
         return '/access-denied?reason=account';
       case AccessResult.unsupportedRole:

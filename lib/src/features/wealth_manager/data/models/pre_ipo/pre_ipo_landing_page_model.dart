@@ -51,14 +51,15 @@ class PreIPOLandingPageModel {
       all: json["all"] == null
           ? []
           : List<CompanyModel>.from(
-              json["all"].map((x) => CompanyModel.fromJson(x))),
+              json["all"].map((x) => CompanyModel.fromJson(x)),
+            ),
       hotDeals: (json['hot_deals'] as List? ?? [])
           .map((e) => CompanyModel.fromJson(e))
           .toList(),
       exclusiveDeals: json['exclusive_deals'] != null
           ? (json['exclusive_deals'] as List)
-              .map((e) => CompanyModel.fromJson(e))
-              .toList()
+                .map((e) => CompanyModel.fromJson(e))
+                .toList()
           : [],
       liquidStocks: json["liquid_stocks"] == null
           ? []
@@ -85,15 +86,15 @@ class PreIPOLandingPageModel {
   }
 
   Map<String, dynamic> toJson() => {
-        "all": all.map((x) => x.toJson()).toList(),
-        "exclusive_deals": exclusiveDeals.map((x) => x.toJson()).toList(),
-        "hot_deals": hotDeals.map((x) => x.toJson()).toList(),
-        "liquid_stocks": liquidStocks.map((x) => x.toJson()).toList(),
-        "drhp": drhp.map((x) => x).toList(),
-        "trending": trending.map((x) => x.toJson()).toList(),
-        "top_gainers": topGainers.map((x) => x.toJson()).toList(),
-        "top_losers": topLosers.map((x) => x.toJson()).toList(),
-      };
+    "all": all.map((x) => x.toJson()).toList(),
+    "exclusive_deals": exclusiveDeals.map((x) => x.toJson()).toList(),
+    "hot_deals": hotDeals.map((x) => x.toJson()).toList(),
+    "liquid_stocks": liquidStocks.map((x) => x.toJson()).toList(),
+    "drhp": drhp.map((x) => x).toList(),
+    "trending": trending.map((x) => x.toJson()).toList(),
+    "top_gainers": topGainers.map((x) => x.toJson()).toList(),
+    "top_losers": topLosers.map((x) => x.toJson()).toList(),
+  };
 
   @override
   String toString() {
@@ -109,7 +110,6 @@ class ExclusiveDeal {
     required this.category,
     required this.bgColorCode,
     required this.sharePrice,
-    required this.distributerPrice,
     required this.basePrice,
     required this.priceUpdatedToday,
     required this.lastYearSharePrice,
@@ -123,7 +123,6 @@ class ExclusiveDeal {
   final String category;
   final dynamic bgColorCode;
   final double sharePrice;
-  final double distributerPrice;
   final double basePrice;
   final int priceUpdatedToday;
   final double lastYearSharePrice;
@@ -137,7 +136,6 @@ class ExclusiveDeal {
     String? category,
     CompanyModel? bgColorCode,
     double? sharePrice,
-    double? distributerPrice,
     double? basePrice,
     int? priceUpdatedToday,
     double? lastYearSharePrice,
@@ -151,7 +149,6 @@ class ExclusiveDeal {
       category: category ?? this.category,
       bgColorCode: bgColorCode ?? this.bgColorCode,
       sharePrice: sharePrice ?? this.sharePrice,
-      distributerPrice: distributerPrice ?? this.distributerPrice,
       basePrice: basePrice ?? this.basePrice,
       priceUpdatedToday: priceUpdatedToday ?? this.priceUpdatedToday,
       lastYearSharePrice: lastYearSharePrice ?? this.lastYearSharePrice,
@@ -168,7 +165,6 @@ class ExclusiveDeal {
       category: Parse.toStrings(json["category"]),
       bgColorCode: json["bg_color_code"],
       sharePrice: Parse.toDouble(json["share_price"]),
-      distributerPrice: Parse.toDouble(json["distributer_price"]),
       basePrice: Parse.toDouble(json["base_price"]),
       priceUpdatedToday: Parse.toInt(json["price_updated_today"]),
       lastYearSharePrice: Parse.toDouble(json["last_year_share_price"]),
@@ -184,23 +180,22 @@ class ExclusiveDeal {
   }
 
   Map<String, dynamic> toJson() => {
-        "id": id,
-        "brand_name": brandName,
-        "logo": logo,
-        "category": category,
-        "bg_color_code": bgColorCode,
-        "share_price": sharePrice,
-        "distributer_price": distributerPrice,
-        "base_price": basePrice,
-        "price_updated_today": priceUpdatedToday,
-        "last_year_share_price": lastYearSharePrice,
-        "share_prices": sharePrices.map((x) => x.toJson()).toList(),
-        "fundamentals": fundamentals?.toJson(),
-      };
+    "id": id,
+    "brand_name": brandName,
+    "logo": logo,
+    "category": category,
+    "bg_color_code": bgColorCode,
+    "share_price": sharePrice,
+    "base_price": basePrice,
+    "price_updated_today": priceUpdatedToday,
+    "last_year_share_price": lastYearSharePrice,
+    "share_prices": sharePrices.map((x) => x.toJson()).toList(),
+    "fundamentals": fundamentals?.toJson(),
+  };
 
   @override
   String toString() {
-    return "$id, $brandName, $logo, $category, $bgColorCode, $sharePrice, $distributerPrice, $basePrice, $priceUpdatedToday, $lastYearSharePrice, $sharePrices, $fundamentals, ";
+    return "$id, $brandName, $logo, $category, $bgColorCode, $sharePrice, $basePrice, $priceUpdatedToday, $lastYearSharePrice, $sharePrices, $fundamentals, ";
   }
 }
 
@@ -236,10 +231,10 @@ class Fundamentals {
   }
 
   Map<String, dynamic> toJson() => {
-        "lot_size": lotSize,
-        "fifty_two_week_high": fiftyTwoWeekHigh,
-        "fifty_two_week_low": fiftyTwoWeekLow,
-      };
+    "lot_size": lotSize,
+    "fifty_two_week_high": fiftyTwoWeekHigh,
+    "fifty_two_week_low": fiftyTwoWeekLow,
+  };
 
   @override
   String toString() {
@@ -267,9 +262,9 @@ class SharePrice {
   }
 
   Map<String, dynamic> toJson() => {
-        "price": price,
-        "date": date?.toIso8601String(),
-      };
+    "price": price,
+    "date": date?.toIso8601String(),
+  };
 
   @override
   String toString() {
@@ -311,10 +306,10 @@ class RecentlyViewedStock {
   }
 
   Map<String, dynamic> toJson() => {
-        "company_id": companyId,
-        "logo": logo,
-        "viewed_at": viewedAt?.toIso8601String(),
-      };
+    "company_id": companyId,
+    "logo": logo,
+    "viewed_at": viewedAt?.toIso8601String(),
+  };
 
   @override
   String toString() {
@@ -354,11 +349,11 @@ class Top {
   }
 
   Map<String, dynamic> toJson() => {
-        "id": id,
-        "name": name,
-        "logo": logo,
-        "percentage": percentage,
-      };
+    "id": id,
+    "name": name,
+    "logo": logo,
+    "percentage": percentage,
+  };
 
   @override
   String toString() {
@@ -367,10 +362,7 @@ class Top {
 }
 
 class PreIPONewsSectorModel {
-  PreIPONewsSectorModel({
-    required this.news,
-    required this.sectors,
-  });
+  PreIPONewsSectorModel({required this.news, required this.sectors});
 
   final List<NewsModel> news;
   final List<SectorModel> sectors;
@@ -397,10 +389,7 @@ class PreIPONewsSectorModel {
     );
   }
 
-  Map<String, dynamic> toJson() => {
-        "news": news,
-        "sectors": sectors,
-      };
+  Map<String, dynamic> toJson() => {"news": news, "sectors": sectors};
 
   @override
   String toString() {
@@ -413,12 +402,13 @@ class SecondaryLandingPageModel {
   final List<NewsModel> news;
   final List<SectorModel> sectors;
 
-  SecondaryLandingPageModel(
-      {required this.all, required this.news, required this.sectors});
+  SecondaryLandingPageModel({
+    required this.all,
+    required this.news,
+    required this.sectors,
+  });
 
-  SecondaryLandingPageModel copyWith({
-    List<CompanyModel> all = const [],
-  }) {
+  SecondaryLandingPageModel copyWith({List<CompanyModel> all = const []}) {
     return SecondaryLandingPageModel(all: all, news: news, sectors: sectors);
   }
 
@@ -427,7 +417,8 @@ class SecondaryLandingPageModel {
       all: json["all"] == null
           ? []
           : List<CompanyModel>.from(
-              json["all"].map((x) => CompanyModel.fromJson(x))),
+              json["all"].map((x) => CompanyModel.fromJson(x)),
+            ),
       sectors: json["sectors"] == null
           ? []
           : List<SectorModel>.from(
@@ -442,10 +433,10 @@ class SecondaryLandingPageModel {
   }
 
   Map<String, dynamic> toJson() => {
-        "all": all.map((x) => x.toJson()).toList(),
-        "news": news.map((x) => x.toJson()).toList(),
-        "sectors": sectors.map((x) => x.toJson()).toList(),
-      };
+    "all": all.map((x) => x.toJson()).toList(),
+    "news": news.map((x) => x.toJson()).toList(),
+    "sectors": sectors.map((x) => x.toJson()).toList(),
+  };
 
   @override
   String toString() {

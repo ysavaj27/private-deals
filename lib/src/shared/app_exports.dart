@@ -20,7 +20,7 @@ export 'package:circular_menu/circular_menu.dart';
 /// BACKEND
 export 'package:private_deals/src/features/auth/data/w_auth_api.dart';
 export 'package:private_deals/src/features/wealth_manager/data/api/channel_partner/channel_partner_api.dart';
-export 'package:private_deals/src/core/config/config_api.dart';
+export 'package:private_deals/src/core/config/static_app_config.dart';
 export 'package:private_deals/src/features/wealth_manager/data/api/dashboard/dashboard_api.dart';
 export 'package:private_deals/src/features/wealth_manager/data/api/document/document_api.dart';
 export 'package:private_deals/src/features/wealth_manager/data/api/kyc/w_kyc_api.dart';

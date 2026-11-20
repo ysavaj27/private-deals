@@ -11,8 +11,7 @@ class PreIPODetailPageCtrl extends GetxController
     implements CompanyDetailSectionsCtrl {
   final selectedOffer = Rxn<PreIPOOffer>();
 
-  double get purchasePrice =>
-      selectedOffer.value?.price ?? model().distributerPrice;
+  double get sharePrice => selectedOffer.value?.price ?? model().sharePrice;
 
   Future<void> selectOffer(PreIPOOffer offer, {required bool phone}) async {
     if (investing.value) return;
@@ -242,8 +241,8 @@ class PreIPODetailPageCtrl extends GetxController
             investorName: investor.displayName,
             isSelf: investor.isSelf,
             isMarket: true,
-            price: purchasePrice,
-            priceCTRL: TextEditingController(text: purchasePrice.toString()),
+            price: sharePrice,
+            priceCTRL: TextEditingController(text: sharePrice.toString()),
             quantityCTRL: TextEditingController(),
           ),
         );

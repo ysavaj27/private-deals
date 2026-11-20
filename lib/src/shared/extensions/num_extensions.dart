@@ -151,10 +151,6 @@ extension FancyNum on num {
 
   String get currency => "₹";
 
-  double get distributorPrice {
-    return ((this * (1 / 100)) + this).toPrecision(2);
-  }
-
   String get formattedDecimal {
     final doubleValue = double.tryParse(toString());
     if (doubleValue == null) return toString();
@@ -165,20 +161,6 @@ extension FancyNum on num {
     );
   }
 
-  // 2. Distributor Price + Gross Distributor Price
-  double get distributorPriceWithGross {
-    double grossDisPrice = distributorPrice * (2.5 / 100);
-    return grossDisPrice.toPrecision(2);
-  }
-
-  // 3. Final Price (Distributor Price + Gross Distributor Price + GST)
-  double get finalDistributorPrice {
-    double grossDisPrice = distributorPrice * (2.5 / 100);
-    double gst = grossDisPrice * (18 / 100);
-    return (gst).toPrecision(2);
-  }
-
-  // 2. Distributor Price + Gross Distributor Price
   double get aifManagementFees {
     double grossDisPrice = this * (2 / 100);
     return grossDisPrice.toPrecision(2);

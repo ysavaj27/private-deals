@@ -34,13 +34,6 @@ class PreviousSharePrice {
   String get priceText => _plainNumber(basePrice);
 }
 
-/// Wealth manager share price: the typed base plus the 1% institution fee,
-/// rounded to paise the same way the server builds `share_price`.
-double wealthManagerSharePrice(double basePrice) {
-  final paise = (basePrice * 100).round();
-  return (paise * 101).round() / 10000;
-}
-
 class PreviousPriceLookup {
   const PreviousPriceLookup({this.prices = const [], this.error = ''});
 
@@ -109,7 +102,7 @@ class UpdateSharePriceCtrl extends GetxController {
   final editingSettlementCompanyId = RxnInt();
   RxList<SharePriceDraft> get rows =>
       dealType.value == 'sell' ? sellRows : buyRows;
-  String get priceLabel => dealType.value == 'buy' ? 'Buy price' : 'Sell price';
+  String get priceLabel => 'Base price';
   bool get isSell => dealType.value == 'sell';
   List<SettlementOption> get settlementOptions => app.config.settlementDays;
 
@@ -259,15 +252,14 @@ class UpdateSharePriceCtrl extends GetxController {
     feedback.value = '';
   }
 
-  /// Minimum amount using the wealth manager price (base + 1%) × minimum qty.
+  /// Minimum amount is the typed base times minimum quantity.
   String? minTransactionLabel(SharePriceDraft row) {
     final price = double.tryParse(row.price.text.trim());
     final minimum = int.tryParse(row.minQty.text.trim());
     if (price == null || minimum == null || price <= 0 || minimum < 1) {
       return null;
     }
-    final amount = wealthManagerSharePrice(price) * minimum;
-    return 'Min transaction ${_inr.format(amount)}';
+    return 'Min transaction ${_inr.format(price * minimum)}';
   }
 
   /// Loads the latest saved price for this tab and writes it into the fields.
@@ -621,7 +613,6 @@ class UpdateSharePriceCtrl extends GetxController {
   double? _basePriceOf(DealModel deal) {
     final base = deal.basePrice;
     if (base != null && base > 0) return base;
-    if (deal.sharePrice > 0) return deal.sharePrice;
     return null;
   }
 
@@ -671,9 +662,9 @@ class UpdateSharePriceCtrl extends GetxController {
       final byPrice = _comparePrevious(aPrevious, bPrevious);
       if (byPrice != 0) return byPrice;
     }
-    final byName = _companyLabel(a.company).toLowerCase().compareTo(
-      _companyLabel(b.company).toLowerCase(),
-    );
+    final byName = _companyLabel(a.company)
+        .toLowerCase()
+        .compareTo(_companyLabel(b.company).toLowerCase());
     if (byName != 0) return byName;
     return a.company.id.compareTo(b.company.id);
   }

@@ -7,11 +7,18 @@ class InstitutionRoutes {
   static const unlistedShares = '/institution/unlisted-shares';
   static const companies = '/institution/companies/:type';
   static const deals = '/institution/deals/:section/:type';
+  static const editCompanyPage = '/institution/companies/:type/:slug/edit';
   static const promotersPage = '/institution/companies/:type/:slug/promoters';
   static const shareholdersPage =
       '/institution/companies/:type/:slug/shareholders';
+  static const eventsPage = '/institution/companies/:type/:slug/events';
   static String createCompany(String path) => '$path/create';
   static String createDeal(String path) => '$path/create';
+
+  static String companyAction(String template, {required String type, required String slug}) =>
+      template
+          .replaceFirst(':type', type)
+          .replaceFirst(':slug', Uri.encodeComponent(slug));
 }
 
 extension WTabBarRouteX on WTabBarEnum {

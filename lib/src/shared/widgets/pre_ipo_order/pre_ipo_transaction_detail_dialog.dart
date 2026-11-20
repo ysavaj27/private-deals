@@ -304,7 +304,6 @@ class _PreIpoTransactionDetailDialogState
         const SizedBox(height: 24),
         _section(context, 'Amount breakdown', [
           _field(context, 'Investor price', _money.format(row.sharePrice)),
-          _field(context, 'Deal price', _money.format(row.distributerPrice)),
           PreIpoOrderAmountDetails(order: row),
           const Divider(height: 24),
           _field(

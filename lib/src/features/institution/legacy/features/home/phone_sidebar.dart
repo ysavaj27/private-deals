@@ -88,6 +88,11 @@ class PSideBarWidget extends StatelessWidget {
             title: 'Portfolio',
             tab: WTabBarEnum.portfolio,
           ),
+          DTabTileWidget(
+            icon: Icons.handshake_outlined,
+            title: 'Relation Managers',
+            tab: WTabBarEnum.channelPartner,
+          ),
           const DEnquiriesMenu(),
         ],
       ),

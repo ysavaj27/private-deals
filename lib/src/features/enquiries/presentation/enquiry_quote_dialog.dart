@@ -97,8 +97,8 @@ class _EnquiryQuoteDialogState extends State<EnquiryQuoteDialog> {
                 const SizedBox(height: 8),
                 Text(
                   widget.replace
-                      ? 'Update quantity, offer price, and settlement for your counter-offer. The price you type is the base; the transaction price includes the processing fee.'
-                      : 'Propose different terms. The price you type is the base; the transaction price includes the processing fee.',
+                      ? 'Update quantity, base price, and settlement for your counter-offer.'
+                      : 'Propose different terms. The price you type is your base.',
                   style: Theme.of(context).textTheme.bodyMedium?.copyWith(
                     color: Theme.of(context).colorScheme.onSurfaceVariant,
                   ),

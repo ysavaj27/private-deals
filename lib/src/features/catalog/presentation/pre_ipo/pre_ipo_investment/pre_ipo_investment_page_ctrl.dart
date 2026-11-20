@@ -7,8 +7,6 @@ import 'package:private_deals/src/features/catalog/presentation/pre_ipo/pre_ipo_
 class PreIPOInvestmentPageCtrl extends GetxController
     with InvestorDraftLifecycle {
   final selectedOffer = Rxn<PreIPOOffer>();
-  double get purchasePrice =>
-      selectedOffer.value?.price ?? model().distributerPrice;
   double get sharePrice => selectedOffer.value?.price ?? model().sharePrice;
   Rxn<String> paymentMode = Rxn<String>();
   RxBool isSelected = false.obs;

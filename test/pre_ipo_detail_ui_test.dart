@@ -50,7 +50,6 @@ CompanyModel _company() {
     'sector': 'Technology',
     'category': 'Unlisted',
     'share_price': 1250,
-    'distributer_price': 1240,
     'about':
         'Northstar Technologies builds software and digital infrastructure for growing businesses. '
         'The company serves enterprise customers across India through a portfolio of cloud, payments and data products. '

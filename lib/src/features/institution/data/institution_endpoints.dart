@@ -1,10 +1,12 @@
-/// This family always uses v2; get-config.current_api_version does not override it.
+/// This family always uses v2; static app config does not override it.
 abstract final class InstitutionEndpoints {
   static const dashboard = 'v2/business/institution/dashboard';
-  static const profile = 'v2/business/institution/profile';
+  /// App uses `v2/business/additional-profile` (see AdditionalProfileApi).
+  static const profile = 'v2/business/additional-profile';
   static const company = 'v2/business/institution/company';
   static const checkCompanyDuplicate = '$company/check-duplicate';
   static const createCompany = company;
+  static const updateCompany = '$company/update';
   static const sectors = '$company/sectors';
   static const companyList = '$company/list';
   static const companyListLite = '$company/list-lite';
@@ -12,6 +14,9 @@ abstract final class InstitutionEndpoints {
   static const mySubmissions = '$company/my-submissions';
   static const addPromoters = '$company/promoters';
   static const addShareHolders = '$company/shareholders';
+  static const companyEvents = '$company/events';
+  static const updateCompanyEvent = '$companyEvents/update';
+  static const deleteCompanyEvent = '$companyEvents/delete';
   static const dealList = '$company/deals';
   static const createDeal = dealList;
   static const updateDeal = '$dealList/update';

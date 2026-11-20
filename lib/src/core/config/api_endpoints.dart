@@ -1,3 +1,8 @@
+/// API and media origins.
+///
+/// Set per environment with `--dart-define-from-file=tools/env/<env>.json`
+/// (`staging` | `demo` | `production`), or individual `--dart-define` flags.
+/// Defaults match production.
 class AppUrl {
   static const String baseUrl = String.fromEnvironment(
     'PRIVATE_DEALS_BASE_URL',
@@ -8,6 +13,7 @@ class AppUrl {
   static String version = "v1/";
   static String newVersion = "v2/";
 
+  /// S3 / media base. Also used as static config `s3-baseurl`.
   static const String imageURL = String.fromEnvironment(
     'PRIVATE_DEALS_IMAGE_URL',
     defaultValue:
@@ -20,7 +26,6 @@ class AppUrl {
   /// Master / config
   static String sector = "master/get-sector";
   static const String blog = "master/get-blog";
-  static String iConfig = "get-config";
 
   /// Catalog / landing
   static String home = "${version}get-home";
@@ -60,7 +65,7 @@ class AppUrl {
   static String wDashboard = "${version}business/dashboard";
   static String wPreIPODashboard = "${version}business/dashboard-pre-ipo";
   static String wInvestorEarning = "v2/business/earning/investor";
-  static String wPartnerEarning = "${version}business/earning/partner";
+  static String wPartnerEarning = "v2/business/earning/partner";
   static String wMis = "${version}business/invested-startup-mis";
   static String wNotification = "${version}business/notifications";
   static String wDocuments = "${newVersion}business/documents";

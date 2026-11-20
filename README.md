@@ -21,11 +21,26 @@ flutter pub get
 flutter run -d chrome --web-port 8080
 ```
 
-The default API origin is the existing Private Deals service. For a test server, pass a trailing-slash origin (the app appends `api/`):
+API and S3 origins are compile-time defines (defaults = production). Per-environment values live in `tools/env/`:
+
+| File | API | S3 |
+|------|-----|----|
+| `tools/env/production.json` | `https://www.privatedeals.in/` | `privatedeals-main-storage` |
+| `tools/env/staging.json` | `https://staging.privatedeals.in/` | `xrd-shuru-testing` |
+| `tools/env/demo.json` | `https://demo.privatedeals.in/` | `xrd-shuru-testing` |
 
 ```sh
-flutter run -d chrome --dart-define=PRIVATE_DEALS_BASE_URL=https://your-staging-host/
+# Preferred: load both PRIVATE_DEALS_BASE_URL and PRIVATE_DEALS_IMAGE_URL
+flutter run -d chrome --web-port 8080 \
+  --dart-define-from-file=tools/env/staging.json
+
+# Or set them individually (trailing slash on the API origin; app appends api/)
+flutter run -d chrome \
+  --dart-define=PRIVATE_DEALS_BASE_URL=https://staging.privatedeals.in/ \
+  --dart-define=PRIVATE_DEALS_IMAGE_URL=https://s3-ap-south-1.amazonaws.com/xrd-shuru-testing/
 ```
+
+Static app config (`s3-baseurl`) uses the same `PRIVATE_DEALS_IMAGE_URL` value — it is not fetched from the API.
 
 Keep `pubspec.lock` under version control. Dependencies were updated to compatible stable releases on 2026-10-08; the file picker uses the stable v13 API and reads selected files as bytes for browser uploads.
 
@@ -78,7 +93,7 @@ The exact `data.type` values are `Wealth Manager`, `Distributor`, `Retailer`, `R
 - Institution's nested **Enquiries** menu opens **My Inquiry** at `/wealth-manager/my-inquiries` (only its own buy/sell enquiries) and **All Enquiries** at `/institution/sell-enquiries` (incoming buy/sell requests with Institution approval, rejection, and quote actions). Both pages retain the Institution shell. See [inquiry-module.md](docs/inquiry-module.md).
 - Wealth Manager, Distributor, Retailer and Relation Manager use the Partner workspace at `/wealth-manager/dashboard`. Existing backend permissions still govern their individual operations.
 - Investor KYC opens in a dialog from `/wealth-manager/investors`; the standalone `/investors` and CML detail routes are removed. Relation Managers receive their parent-client scope from the backend. Completion uses `preipo_kyc_status == 1`.
-- `/account` and `/changePassword` are shared account pages. Every partner role loads and updates the display photo via `GET`/`POST v2/business/profile` (form-data field `logo` only). Other account fields stay read-only. Institution seller text profile stays on `GET`/`POST v2/business/institution/profile` and appears on company-detail deal dialogs for partners. Session restore still uses `GET v1/business/profile`.
+- `/account` and `/changePassword` are shared account pages. Every partner role loads and updates the display photo via `GET`/`POST v2/business/profile` (form-data field `logo` only). Other account fields stay read-only. The additional (seller) text profile for every partner type uses `GET`/`POST v2/business/additional-profile` and appears on company-detail deal dialogs for partners. Session restore still uses `GET v1/business/profile`.
 - Primary, secondary and unlisted catalog routes also require the matching product access flag. Flags never grant Institution access. Relation Managers cannot open channel-partner management.
 - Checkout URLs preserve their product section. Refreshing a quote-based checkout asks the user to reselect an available offer rather than reconstructing a price from the URL.
 - Company/deal routes enumerate `unlisted` and `secondary`; invalid types do not silently select another dashboard.
@@ -98,7 +113,7 @@ Browser persistence currently uses the inherited GetStorage bearer-token design.
 
 ## API boundaries and supported workflows
 
-Auth remains v1; investor KYC and Institution endpoints explicitly use v2. `get-config.current_api_version` does not rewrite these endpoints. Every backend request carries `headtoken`; authenticated requests also carry the Partner bearer token. These headers are not sent to unrelated third-party URLs.
+Auth remains v1; investor KYC and Institution endpoints explicitly use v2. App config is static (not fetched via get-config). Every backend request carries `headtoken`; authenticated requests also carry the Partner bearer token. These headers are not sent to unrelated third-party URLs.
 
 - Company catalog and **Only my submissions**, sectors, duplicate checking, create, promoters, and shareholders use `v2/business/institution/company/...`.
 - Company creation goes live immediately; commission and processing fee are server-managed. Company logo is optional; the retained image picker caps it at 2 MB. Ownership is taken from `is_editable` before promoter/shareholder editing; those APIs replace complete lists, including clearing them with `[]`.
@@ -108,7 +123,7 @@ Auth remains v1; investor KYC and Institution endpoints explicitly use v2. `get-
 - Investor KYC uses multipart `v2/business/investor/kyc/cml/read` and `/save` from the investor-list dialog. Read accepts a PDF up to 10 MB and maps `account_holder_name` into the editable name; it does not mark KYC complete. Save requires DP ID, client ID, PAN, name, account number and IFSC; bank name and DOB (`dd-mm-yyyy`) are optional. The KYC dialog requires a CML PDF before saving. Both client and self-investor saving are supported. After a successful save, the list reloads the server name and `preipo_kyc_status`. Business failures keep the dialog open with the returned message.
 - Partner portfolio upload uses `POST v2/business/portfolio/upload` and always sends `type` `company`. A listed company sends `company_id`. A company that is not on the platform omits `company_id` and sends `other_name`; that holding can take up to 48 hours to appear, while a listed company is available immediately. Shares must be at least 1 and the share price at least 0.01. The purchase date is optional (`dd-mm-yyyy`). Startup holdings and investor sessions do not use this endpoint. A failure shows the API message.
 
-The Institution dashboard contains supported workflow links. Pre-IPO transactions and enquiries use the v2 business/Institution endpoints. The Pending transaction filter includes mandates awaiting signature, and Institutions can open the server-provided mandate signing link. Legacy Seller dashboard metrics and standalone company price updates remain deferred. Institution seller profile editing uses `v2/business/institution/profile`. There is no role switcher and no active `/seller/` endpoint in the new app.
+The Institution dashboard contains supported workflow links. Pre-IPO transactions and enquiries use the v2 business/Institution endpoints. The Pending transaction filter includes mandates awaiting signature, and Institutions can open the server-provided mandate signing link. Legacy Seller dashboard metrics and standalone company price updates remain deferred. Additional profile editing uses `v2/business/additional-profile` for every partner type. There is no role switcher and no active `/seller/` endpoint in the new app.
 
 Catalog buy offers provide **Enquire to sell**, prefilled with their price, minimum quantity and a supported settlement cycle. This creates an open sell enquiry requiring counterparty acceptance; the supplied contract does not support immediate execution against that particular buy deal. Checkout preserves drafts when changing between phone and desktop widths. Transaction detail actions use the refreshed order and signing link, including when an earlier step was completed through WhatsApp.
 

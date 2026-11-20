@@ -1,4 +1,5 @@
 import 'package:private_deals/src/features/wealth_manager/data/models/pre_ipo/company_model.dart';
+import 'package:private_deals/src/features/wealth_manager/data/models/pre_ipo/pre_ipo_landing_page_model.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 void main() {
@@ -57,5 +58,20 @@ void main() {
       CompanyModel.fromJson({'seller_share_prices': null}).sellerSharePrices,
       isEmpty,
     );
+  });
+
+  test('chart history uses price and ignores share_price', () {
+    final company = CompanyModel.fromJson({
+      'share_prices': [
+        {'date': '2026-01-01', 'price': 100, 'share_price': 104.5},
+      ],
+    });
+    expect(company.sharePrices.single.price, 100);
+    final landing = ExclusiveDeal.fromJson({
+      'share_prices': [
+        {'date': '2026-01-01', 'price': 100, 'share_price': 104.5},
+      ],
+    });
+    expect(landing.sharePrices.single.price, 100);
   });
 }

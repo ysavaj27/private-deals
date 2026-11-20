@@ -200,7 +200,7 @@ Each row in `investors_list` needs `investor_id`, `name`, `profile_photo`, `amou
 
 If a live deal does not use a flat 2% of `investment_amount`, use that live rule instead, and keep both investors above zero. Then the totals above change with that rule.
 
-Do not create partner-earning rows. `GET /api/v1/business/earning/partner` can return zeros and an empty list.
+Do not create partner-earning rows. `GET /api/v2/business/earning/partner` can return a zero `total_commission_earned` and an empty list.
 
 ## What the app should show
 

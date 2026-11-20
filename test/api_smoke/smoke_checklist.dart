@@ -403,7 +403,7 @@ List<SmokeCase> smokeChecklist() => const [
         feature: 'Institution public profile',
         apiLabel: 'InstitutionProfileApi.getProfile',
         method: SmokeMethod.get,
-        pathSuffix: 'v2/business/institution/profile',
+        pathSuffix: 'v2/business/additional-profile',
         priority: SmokePriority.p3,
         role: SmokeRole.institution,
       ),

@@ -1,4 +1,5 @@
-/// Deliberately separate create/base pricing from update/final pricing.
+/// Create and update both send the typed base as `share_price`.
+/// The server computes each partner's landing price.
 class DealPayloads {
   static num price(String text) {
     final value = num.tryParse(text.trim());
@@ -25,7 +26,7 @@ class DealPayloads {
 
   static Map<String, dynamic> update({
     required String uuid,
-    required String finalPrice,
+    required String basePrice,
     required String minimumQuantity,
     required bool isHotDeal,
     String totalQuantity = '',
@@ -43,7 +44,7 @@ class DealPayloads {
     return {
       'uuid': uuid,
       if (dealType.isNotEmpty) 'deal_type': dealType,
-      'share_price': price(finalPrice),
+      'share_price': price(basePrice),
       'minimum_qty': min,
       if (total != null) 'available_quantity': total,
       if (status.isNotEmpty) 'status': status,

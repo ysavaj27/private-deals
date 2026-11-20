@@ -1,5 +1,6 @@
 import 'dart:io';
 import 'dart:ui' as ui;
+
 import 'package:flutter/rendering.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:private_deals/src/shared/app_exports.dart';
@@ -117,14 +118,13 @@ void main() {
     );
     earnings.partner(
       PartnerEarningModel.fromJson({
-        'total_partners': 1,
-        'total_investment': 10000000,
         'total_commission_earned': 80000,
         'list': [
           {
+            'partner_id': 1,
             'name': 'Summit Wealth Partners',
-            'partner_total_investment': 10000000,
-            'commission_earned_from_this_partner': 80000,
+            'type': 'Distributor',
+            'commission_earned': 80000,
           },
         ],
       }),
@@ -137,8 +137,7 @@ void main() {
           {
             'id': 1,
             'title': 'Quarterly business update',
-            'description':
-                'Operating performance, company milestones and financial highlights.',
+            'description': 'Operating performance, company milestones and financial highlights.',
             'created_at': '2026-09-30',
             'document': '',
           },
@@ -290,6 +289,10 @@ void main() {
     await tester.tap(find.text('From channel partners'));
     await tester.pumpAndSettle();
     expect(find.text('Summit Wealth Partners'), findsOneWidget);
+    expect(find.text('Distributor'), findsOneWidget);
+    expect(find.text('Channel partners'), findsOneWidget);
+    expect(find.text('Amount invested'), findsNothing);
+    expect(find.text('Total transactions'), findsNothing);
     expect(find.text('Aarav Shah'), findsNothing);
     await tester.enterText(find.byType(TextField), 'missing');
     await tester.pumpAndSettle();

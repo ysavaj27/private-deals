@@ -18,9 +18,13 @@ class Loader extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final indicator = SizedBox.square(
-      dimension: size,
-      child: CircularProgressIndicator(strokeWidth: 1, color: color),
+    // Keep the spinner square even when a flex/stack parent passes tight
+    // non-square constraints (Expanded would otherwise stretch SizedBox).
+    final indicator = UnconstrainedBox(
+      child: SizedBox.square(
+        dimension: size,
+        child: CircularProgressIndicator(strokeWidth: 1, color: color),
+      ),
     );
     return centered ? Center(child: indicator) : indicator;
   }

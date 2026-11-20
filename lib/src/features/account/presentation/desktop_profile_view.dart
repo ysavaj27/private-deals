@@ -1,3 +1,4 @@
+import 'package:private_deals/src/features/account/presentation/additional_profile_section.dart';
 import 'package:private_deals/src/features/account/presentation/profile_page_ctrl.dart';
 import 'package:private_deals/src/features/account/presentation/profile_photo_section.dart';
 import 'package:private_deals/src/features/wealth_manager/presentation/home_page_ctrl.dart';
@@ -122,6 +123,8 @@ class DesktopProfileView extends StatelessWidget {
                 ],
               ),
             ),
+            const SizedBox(height: AppSpace.xl),
+            const AdditionalProfileSection(),
           ],
         ),
       ),

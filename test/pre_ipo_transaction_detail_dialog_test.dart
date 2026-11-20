@@ -16,7 +16,6 @@ PreIpoOrderModel sampleOrder() => PreIpoOrderModel.fromJson({
   'investor': {'name': 'Example Investor'},
   'shares': 1500,
   'base_price': '15.00',
-  'distributer_price': '15.15',
   'share_price': '20.00',
   'investment_amount': '30000.00',
   'payable_amount': '30000.00',

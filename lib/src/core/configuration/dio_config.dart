@@ -279,15 +279,24 @@ class ApiInterceptor extends Interceptor {
       final isInvestor = path.contains('/v2/business/investor');
       final isProfilePhoto =
           path.endsWith('/business/profile') && options.method == 'POST';
+      // Available to every partner type (WM, Dist, Ret, RM, Institution).
+      final isAdditionalProfile = path.endsWith('/business/additional-profile');
+      final isNotifications = path.endsWith('/business/notifications');
+      final isInstitutionChannelPartner =
+          app.role == PartnerRole.institution &&
+          path.endsWith('/business/channel-partner');
       final isInstitutionCatalog =
           app.role == PartnerRole.institution &&
           CatalogApiAccess.supportsInstitution(
             options.method,
             path.substring(Uri.parse(AppUrl.baseApiURL).path.length),
           );
-      final scope = isProfilePhoto || isPassword
+      final scope =
+          isProfilePhoto || isPassword || isAdditionalProfile || isNotifications
           ? AccessScope.account
-          : path.contains('/business/institution/') || isInstitutionCatalog
+          : path.contains('/business/institution/') ||
+                isInstitutionCatalog ||
+                isInstitutionChannelPartner
           ? AccessScope.institution
           : path.contains('/business/enquiries/')
           ? AccessScope.enquiries

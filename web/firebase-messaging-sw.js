@@ -15,12 +15,20 @@ const messaging = firebase.messaging();
 
 messaging.onBackgroundMessage((payload) => {
   console.log('Received background message:', payload);
-  const notification = payload.notification || {};
-  const title = notification.title || 'Private Deals';
+
+  // Messages with a notification payload are already shown by the browser/FCM.
+  // Showing again creates a second toast (often with a different icon).
+  if (payload.notification) {
+    return;
+  }
+
+  const data = payload.data || {};
+  const title = data.title || 'Private Deals';
   const options = {
-    body: notification.body || '',
+    body: data.body || '',
     icon: '/icons/android-icon-192x192.png',
-    data: payload.data || {},
+    badge: '/icons/android-icon-96x96.png',
+    data,
   };
   return self.registration.showNotification(title, options);
 });

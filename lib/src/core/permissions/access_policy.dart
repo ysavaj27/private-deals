@@ -46,13 +46,19 @@ class AccessPolicy {
     AccessScope scope, {
     bool changingPassword = false,
     bool channelPartners = false,
+    bool passwordPromptHost = false,
   }) {
     if (user.storageUnavailable) return AccessResult.retrySession;
     if (!user.hasToken) return AccessResult.login;
     if (!user.validated) return AccessResult.retrySession;
     if (user.blocked || user.deleted) return AccessResult.accountUnavailable;
     if (user.role == PartnerRole.unknown) return AccessResult.unsupportedRole;
-    if (user.passwordChange && !changingPassword)
+    // The required-password dialog is shown on the role home dashboard.
+    // Every other route still stops until the password is changed.
+    final onRequiredPasswordHome =
+        passwordPromptHost &&
+        (scope == AccessScope.business || scope == AccessScope.institution);
+    if (user.passwordChange && !changingPassword && !onRequiredPasswordHome)
       return AccessResult.passwordChange;
     if (channelPartners && user.role == PartnerRole.relationManager)
       return AccessResult.forbidden;

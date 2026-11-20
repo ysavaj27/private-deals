@@ -18,7 +18,6 @@ class CompanyModel {
   String about;
   List<ShareHolderYearModel> shareHolders;
   double sharePrice;
-  double distributerPrice;
   double basePrice;
   String minInvestmentType;
   double minInvestment;
@@ -87,7 +86,6 @@ class CompanyModel {
     this.priceUpdatedToday = false,
     this.shareHolders = const [],
     this.sharePrice = 0,
-    this.distributerPrice = 0,
     this.basePrice = 0,
     this.customData = const [],
     this.sharePrices = const [],
@@ -117,38 +115,37 @@ class CompanyModel {
       about: Parse.toStrings(json["about"]),
       shareHolders: json['share_holders'] != null
           ? (json['share_holders'] as List)
-              .map((e) => ShareHolderYearModel.fromJson(e))
-              .toList()
+                .map((e) => ShareHolderYearModel.fromJson(e))
+                .toList()
           : [],
       sharePrice: Parse.toDouble(json['share_price']),
-      distributerPrice: Parse.toDouble(json['distributer_price']),
       basePrice: Parse.toDouble(json['base_price']),
       minInvestment: Parse.toDouble(json['min_investment_amount']),
       minInvestmentType: Parse.toStrings(json["min_investment_type"]),
       customData: json['custom_data'] != null
           ? (json['custom_data'] as List)
-              .map((e) => CustomDataModel.fromJson(e))
-              .toList()
+                .map((e) => CustomDataModel.fromJson(e))
+                .toList()
           : [],
       sharePrices: json['share_prices'] != null
           ? (json['share_prices'] as List)
-              .map((e) => SharePriceModel.fromJson(e))
-              .toList()
+                .map((e) => SharePriceModel.fromJson(e))
+                .toList()
           : [],
       fundamentals: FundamentalsModel.fromJson(json['fundamentals'] ?? {}),
       transaction: PreIPOTransactionModel.fromJson(json['transaction'] ?? {}),
       promoters: json['promoters'] != null
           ? (json['promoters'] as List)
-              .map((e) => PromoterModel.fromJson(e))
-              .toList()
+                .map((e) => PromoterModel.fromJson(e))
+                .toList()
           : [],
       events: json['events'] != null
           ? (json['events'] as List).map((e) => EventModel.fromJson(e)).toList()
           : [],
       peerRatios: json['peerratio'] != null
           ? (json['peerratio'] as List)
-              .map((e) => PeerRatioModel.fromJson(e))
-              .toList()
+                .map((e) => PeerRatioModel.fromJson(e))
+                .toList()
           : [],
       deals: _parseDeals(json['deals']),
       sellerSharePrices: (json['seller_share_prices'] as List? ?? [])
@@ -162,36 +159,33 @@ class CompanyModel {
   }
 
   Map<String, dynamic> toJson() => {
-        "id": id,
-        "logo": logo,
-        "brand_name": brandName,
-        "uuid": uuid,
-        "slug": slug,
-        "sector": sector,
-        "category": category,
-        "is_drhp": isDrhp,
-        "company_name": companyName,
-        "min_investment_type": minInvestmentType,
-        "min_investment_amount": minInvestment,
-        "about": about,
-        "share_holders":
-            List<dynamic>.from(shareHolders.map((x) => x.toJson())),
-        "share_price": sharePrice,
-        "distributer_price": distributerPrice,
-        "base_price": basePrice,
-        "transaction": transaction.toJson(),
-        "custom_data": List<dynamic>.from(customData.map((x) => x.toJson())),
-        "share_prices": List<dynamic>.from(sharePrices.map((x) => x.toJson())),
-        "fundamentals": fundamentals.toJson(),
-        "promoters": List<dynamic>.from(promoters.map((x) => x.toJson())),
-        "events": List<dynamic>.from(events.map((x) => x.toJson())),
-        "news": List<dynamic>.from(news.map((x) => x.toJson())),
-        "deals": List<dynamic>.from(deals.map((x) => x.toJson())),
-        "seller_share_prices":
-            sellerSharePrices.map((e) => e.toJson()).toList(),
-        "peerratio": List<dynamic>.from(peerRatios.map((x) => x.toJson())),
-        "price_updated_today": priceUpdatedToday,
-      };
+    "id": id,
+    "logo": logo,
+    "brand_name": brandName,
+    "uuid": uuid,
+    "slug": slug,
+    "sector": sector,
+    "category": category,
+    "is_drhp": isDrhp,
+    "company_name": companyName,
+    "min_investment_type": minInvestmentType,
+    "min_investment_amount": minInvestment,
+    "about": about,
+    "share_holders": List<dynamic>.from(shareHolders.map((x) => x.toJson())),
+    "share_price": sharePrice,
+    "base_price": basePrice,
+    "transaction": transaction.toJson(),
+    "custom_data": List<dynamic>.from(customData.map((x) => x.toJson())),
+    "share_prices": List<dynamic>.from(sharePrices.map((x) => x.toJson())),
+    "fundamentals": fundamentals.toJson(),
+    "promoters": List<dynamic>.from(promoters.map((x) => x.toJson())),
+    "events": List<dynamic>.from(events.map((x) => x.toJson())),
+    "news": List<dynamic>.from(news.map((x) => x.toJson())),
+    "deals": List<dynamic>.from(deals.map((x) => x.toJson())),
+    "seller_share_prices": sellerSharePrices.map((e) => e.toJson()).toList(),
+    "peerratio": List<dynamic>.from(peerRatios.map((x) => x.toJson())),
+    "price_updated_today": priceUpdatedToday,
+  };
 
   static List<DealModel> _parseDeals(dynamic value) {
     // Landing pages can still return the original flat deal list.
@@ -217,36 +211,30 @@ class ShareHolderYearModel {
   int year;
   List<ShareHolderModel> shareholders;
 
-  ShareHolderYearModel({
-    required this.year,
-    required this.shareholders,
-  });
+  ShareHolderYearModel({required this.year, required this.shareholders});
 
   factory ShareHolderYearModel.fromJson(Map<String, dynamic> json) {
     return ShareHolderYearModel(
       year: Parse.toInt(json['year']),
       shareholders: json['shareholders'] != null
           ? (json['shareholders'] as List)
-              .map((e) => ShareHolderModel.fromJson(e))
-              .toList()
+                .map((e) => ShareHolderModel.fromJson(e))
+                .toList()
           : [],
     );
   }
 
   Map<String, dynamic> toJson() => {
-        "year": year,
-        "shareholders": List<dynamic>.from(shareholders.map((x) => x.toJson())),
-      };
+    "year": year,
+    "shareholders": List<dynamic>.from(shareholders.map((x) => x.toJson())),
+  };
 }
 
 class ShareHolderModel {
   String name;
   double percentage;
 
-  ShareHolderModel({
-    this.name = '',
-    this.percentage = 0.0,
-  });
+  ShareHolderModel({this.name = '', this.percentage = 0.0});
 
   factory ShareHolderModel.fromJson(Map<String, dynamic> json) {
     return ShareHolderModel(
@@ -255,20 +243,14 @@ class ShareHolderModel {
     );
   }
 
-  Map<String, dynamic> toJson() => {
-        "name": name,
-        "percentage": percentage,
-      };
+  Map<String, dynamic> toJson() => {"name": name, "percentage": percentage};
 }
 
 class CustomDataModel {
   String label;
   List<List<dynamic>> values;
 
-  CustomDataModel({
-    this.label = "",
-    this.values = const [],
-  });
+  CustomDataModel({this.label = "", this.values = const []});
 
   bool get isData => values.isNotEmpty && values.length >= 2;
 
@@ -281,37 +263,27 @@ class CustomDataModel {
     );
   }
 
-  Map<String, dynamic> toJson() => {
-        "label": label,
-        "values": values,
-      };
+  Map<String, dynamic> toJson() => {"label": label, "values": values};
 }
 
 class SharePriceModel {
   DateTime date;
   double price;
-  double distributerPrice;
 
-  SharePriceModel({
-    required this.date,
-    this.price = 0,
-    this.distributerPrice = 0,
-  });
+  SharePriceModel({required this.date, this.price = 0});
 
   factory SharePriceModel.fromJson(Map<String, dynamic> json) {
     return SharePriceModel(
       date: Parse.toDateTime(json['date']),
       price: Parse.toDouble(json['price']),
-      distributerPrice: Parse.toDouble(json['distributer_price']),
     );
   }
 
   Map<String, dynamic> toJson() => {
-        "date":
-            "${date.year.toString().padLeft(4, '0')}-${date.month.toString().padLeft(2, '0')}-${date.day.toString().padLeft(2, '0')}",
-        "price": price,
-        "distributer_price": distributerPrice,
-      };
+    "date":
+        "${date.year.toString().padLeft(4, '0')}-${date.month.toString().padLeft(2, '0')}-${date.day.toString().padLeft(2, '0')}",
+    "price": price,
+  };
 }
 
 class PromoterModel {
@@ -337,11 +309,11 @@ class PromoterModel {
   }
 
   Map<String, dynamic> toJson() => {
-        "name": name,
-        "designation": designation,
-        "experience": experience,
-        "url": url,
-      };
+    "name": name,
+    "designation": designation,
+    "experience": experience,
+    "url": url,
+  };
 }
 
 class EventModel {
@@ -367,11 +339,11 @@ class EventModel {
   }
 
   Map<String, dynamic> toJson() => {
-        "date": date.toIso8601String(),
-        "title": title,
-        "description": description,
-        "file": file,
-      };
+    "date": date.toIso8601String(),
+    "title": title,
+    "description": description,
+    "file": file,
+  };
 }
 
 class PeerRatioModel {
@@ -402,12 +374,12 @@ class PeerRatioModel {
 
   // Method to convert PeerRatioModel to JSON
   Map<String, dynamic> toJson() => {
-        "perticular": perticular,
-        "revenue": revenue,
-        "eps": eps,
-        "market_cap": marketCap,
-        "pe": pe,
-      };
+    "perticular": perticular,
+    "revenue": revenue,
+    "eps": eps,
+    "market_cap": marketCap,
+    "pe": pe,
+  };
 }
 
 class NewsModel {
@@ -428,22 +400,22 @@ class NewsModel {
   });
 
   factory NewsModel.fromJson(Map<String, dynamic> json) => NewsModel(
-        image: Parse.parseUrl(json["image"]),
-        title: Parse.toStrings(json["title"]),
-        platformName: Parse.toStrings(json["platform_name"]),
-        description: Parse.toStrings(json["description"]),
-        link: Parse.toStrings(json["link"]),
-        createdAt: Parse.toDateTime(json["created_at"]),
-      );
+    image: Parse.parseUrl(json["image"]),
+    title: Parse.toStrings(json["title"]),
+    platformName: Parse.toStrings(json["platform_name"]),
+    description: Parse.toStrings(json["description"]),
+    link: Parse.toStrings(json["link"]),
+    createdAt: Parse.toDateTime(json["created_at"]),
+  );
 
   Map<String, dynamic> toJson() => {
-        "image": image,
-        "title": title,
-        "platform_namee": platformName,
-        "description": description,
-        "link": link,
-        "created_at": createdAt.toIso8601String(),
-      };
+    "image": image,
+    "title": title,
+    "platform_namee": platformName,
+    "description": description,
+    "link": link,
+    "created_at": createdAt.toIso8601String(),
+  };
 }
 
 class FundamentalsModel {
@@ -619,8 +591,9 @@ class DealModel {
       minimumQty: Parse.toInt(json['minimum_qty']),
       settlementDays: parsedDays == 0 ? null : parsedDays,
       settlementLabel: label.isEmpty ? null : label,
-      processingFeePercentage:
-          Parse.toDouble(json['processing_fee_percentage']),
+      processingFeePercentage: Parse.toDouble(
+        json['processing_fee_percentage'],
+      ),
       status: Parse.toStrings(json['status']),
     );
   }
@@ -635,7 +608,8 @@ class DealModel {
         ? Map<String, dynamic>.from(json['partner'] as Map)
         : <String, dynamic>{};
 
-    final sellerHasIdentity = Parse.toInt(seller['id']) > 0 ||
+    final sellerHasIdentity =
+        Parse.toInt(seller['id']) > 0 ||
         Parse.toStrings(seller['company_name'] ?? seller['name']).isNotEmpty ||
         Parse.toStrings(seller['logo'] ?? seller['profile_photo']).isNotEmpty;
     if (sellerHasIdentity) return seller;
@@ -671,13 +645,14 @@ class SellerSharePriceModel {
   final int totalQty;
   final SharePriceSellerModel seller;
 
-  SellerSharePriceModel(
-      {required this.date,
-      required this.sellPrice,
-      this.buyPrice = 0.0,
-      required this.minQty,
-      this.totalQty = 0,
-      required this.seller});
+  SellerSharePriceModel({
+    required this.date,
+    required this.sellPrice,
+    this.buyPrice = 0.0,
+    required this.minQty,
+    this.totalQty = 0,
+    required this.seller,
+  });
 
   factory SellerSharePriceModel.fromJson(Map<String, dynamic> json) =>
       SellerSharePriceModel(
@@ -690,13 +665,13 @@ class SellerSharePriceModel {
       );
 
   Map<String, dynamic> toJson() => {
-        'date': date,
-        'sell_price': sellPrice,
-        'buy_price': buyPrice,
-        'min_qty': minQty,
-        'total_qty': totalQty,
-        'seller': seller.toJson(),
-      };
+    'date': date,
+    'sell_price': sellPrice,
+    'buy_price': buyPrice,
+    'min_qty': minQty,
+    'total_qty': totalQty,
+    'seller': seller.toJson(),
+  };
 }
 
 /// Public Institution/seller profile strings from company detail deals.
@@ -738,25 +713,27 @@ class PartnerPublicProfile {
     if (json == null) return const PartnerPublicProfile();
     return PartnerPublicProfile(
       yearsOfExperience: Parse.toStrings(json['years_of_experience']).trim(),
-      totalTradesExecuted: Parse.toStrings(json['total_trades_executed']).trim(),
+      totalTradesExecuted: Parse.toStrings(json['total_trades_executed'])
+          .trim(),
       totalInvestorBase: Parse.toStrings(json['total_investor_base']).trim(),
       verifiedStatus: Parse.toStrings(json['verified_status']).trim(),
-      companiesPreviouslyListed:
-          Parse.toStrings(json['companies_previously_listed']).trim(),
+      companiesPreviouslyListed: Parse.toStrings(
+        json['companies_previously_listed'],
+      ).trim(),
       geographicPresence: Parse.toStrings(json['geographic_presence']).trim(),
       approach: Parse.toStrings(json['approach']).trim(),
     );
   }
 
   Map<String, dynamic> toJson() => {
-        'years_of_experience': yearsOfExperience,
-        'total_trades_executed': totalTradesExecuted,
-        'total_investor_base': totalInvestorBase,
-        'verified_status': verifiedStatus,
-        'companies_previously_listed': companiesPreviouslyListed,
-        'geographic_presence': geographicPresence,
-        'approach': approach,
-      };
+    'years_of_experience': yearsOfExperience,
+    'total_trades_executed': totalTradesExecuted,
+    'total_investor_base': totalInvestorBase,
+    'verified_status': verifiedStatus,
+    'companies_previously_listed': companiesPreviouslyListed,
+    'geographic_presence': geographicPresence,
+    'approach': approach,
+  };
 }
 
 class SharePriceSellerModel {
@@ -786,9 +763,7 @@ class SharePriceSellerModel {
       SharePriceSellerModel(
         id: Parse.toInt(json['id']),
         uuid: Parse.toStrings(json['uuid']),
-        companyName: Parse.toStrings(
-          json['company_name'] ?? json['name'],
-        ),
+        companyName: Parse.toStrings(json['company_name'] ?? json['name']),
         logo: resolveLogo(json['logo'] ?? json['profile_photo']),
         profile: PartnerPublicProfile.fromJson(
           json['profile'] is Map
@@ -798,10 +773,10 @@ class SharePriceSellerModel {
       );
 
   Map<String, dynamic> toJson() => {
-        'id': id,
-        'uuid': uuid,
-        'company_name': companyName,
-        'logo': logo,
-        'profile': profile.toJson(),
-      };
+    'id': id,
+    'uuid': uuid,
+    'company_name': companyName,
+    'logo': logo,
+    'profile': profile.toJson(),
+  };
 }

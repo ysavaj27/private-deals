@@ -69,6 +69,12 @@ class CustomAppBar extends StatelessWidget {
                   ),
                 ),
                 const SizedBox(width: 12),
+                HeaderAction(
+                  icon: Icons.notifications_outlined,
+                  tooltip: 'Notifications',
+                  onPressed: onPressed,
+                ),
+                const SizedBox(width: 12),
                 Obx(() {
                   final mode = init.themeModes();
 

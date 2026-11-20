@@ -122,7 +122,7 @@ class Gender {
       };
 }
 
-/// One entry from get-config `enum.document_type` (client document types only).
+/// One entry from static config `enum.document_type` (client document types only).
 class DocumentTypeOption {
   final String value;
   final String label;
@@ -130,7 +130,7 @@ class DocumentTypeOption {
   const DocumentTypeOption({required this.value, required this.label});
 }
 
-/// Dynamic document types from get-config. Do not hardcode SSA/PAN/etc.
+/// Document types from static app config. Do not hardcode SSA/PAN/etc.
 class DocumentType {
   final List<DocumentTypeOption> options;
 

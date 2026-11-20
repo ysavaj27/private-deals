@@ -16,6 +16,7 @@ import 'package:private_deals/src/features/institution/support/functions/parse.d
     as seller;
 import 'package:private_deals/src/features/institution/support/plugins/cache_image.dart'
     as seller_image;
+import 'package:private_deals/src/features/account/presentation/additional_profile_ctrl.dart';
 import 'package:private_deals/src/features/institution/legacy/features/auth/profile/profile_page_ctrl.dart';
 import 'package:private_deals/src/features/institution/legacy/features/auth/profile/profile_page.dart';
 import 'session_and_api_test.dart' show FakeAdapter, identity, response;
@@ -55,12 +56,12 @@ void main() {
   }
 
   test(
-    'seller profile uses v2 business profile photo and institution text APIs',
+    'seller profile uses v2 business profile photo and additional-profile APIs',
     () async {
       await app.setUser(prefUser: identity());
       final adapter = FakeAdapter((request) async {
         if (request.path.contains('/seller/')) return response({}, 401);
-        if (request.path.contains('/institution/profile')) {
+        if (request.path.contains('/additional-profile')) {
           return response({
             'status': 1,
             'message': 'Profile',
@@ -87,13 +88,14 @@ void main() {
       });
       dioConfig.dio.httpClientAdapter = adapter;
       final controller = SellerProfilePageCtrl();
+      final additional = AdditionalProfileCtrl();
       expect(await controller.refreshProfile(), isTrue);
-      expect(await controller.refreshPublicProfile(), isTrue);
+      expect(await additional.refreshPublicProfile(), isTrue);
       expect(
         adapter.requests.map((r) => r.uri.path),
         containsAll([
           '/api/v2/business/profile',
-          '/api/v2/business/institution/profile',
+          '/api/v2/business/additional-profile',
         ]),
       );
       expect(app.token, 'test-token-7');
@@ -103,8 +105,8 @@ void main() {
         controller.profile.value.logo,
         'https://images.example.com/storage/avatar.png?sig=1',
       );
-      expect(controller.publicProfile.value.yearsOfExperience, '12');
-      expect(controller.publicProfile.value.verifiedStatus, 'Verified Seller');
+      expect(additional.publicProfile.value.yearsOfExperience, '12');
+      expect(additional.publicProfile.value.verifiedStatus, 'Verified Seller');
       controller.edit();
       expect(controller.editing.value, isTrue);
       // No logo selected yet — save must not hit the update endpoint.
@@ -112,13 +114,14 @@ void main() {
       expect(adapter.requests.where((r) => r.method == 'POST').isEmpty, isTrue);
       controller.cancel();
       expect(controller.editing.value, isFalse);
+      additional.onClose();
     },
   );
 
   test('profile photo update posts only logo form field on v2', () async {
     await app.setUser(prefUser: identity());
     final adapter = FakeAdapter((request) async {
-      if (request.path.contains('/institution/profile')) {
+      if (request.path.contains('/additional-profile')) {
         return response({
           'status': 1,
           'message': 'Profile',
@@ -178,10 +181,10 @@ void main() {
     expect(app.wUser.profilePhoto, 'https://cdn.example.com/new-logo.png');
   });
 
-  test('institution public profile save posts all seven fields', () async {
+  test('additional profile save posts all seven fields', () async {
     await app.setUser(prefUser: identity());
     final adapter = FakeAdapter((request) async {
-      if (request.path.contains('/institution/profile') &&
+      if (request.path.contains('/additional-profile') &&
           request.method == 'POST') {
         return response({
           'status': 1,
@@ -197,7 +200,7 @@ void main() {
           },
         });
       }
-      if (request.path.contains('/institution/profile')) {
+      if (request.path.contains('/additional-profile')) {
         return response({
           'status': 1,
           'message': 'Profile',
@@ -218,7 +221,7 @@ void main() {
       });
     });
     dioConfig.dio.httpClientAdapter = adapter;
-    final controller = SellerProfilePageCtrl();
+    final controller = AdditionalProfileCtrl();
     await controller.refreshPublicProfile();
     controller.editPublicProfile();
     controller.yearsOfExperienceCtrl.text = ' 10 ';
@@ -226,7 +229,7 @@ void main() {
     expect(controller.publicEditing.value, isFalse);
     expect(controller.publicProfile.value.yearsOfExperience, '10');
     final post = adapter.requests.lastWhere(
-      (r) => r.method == 'POST' && r.uri.path.contains('/institution/profile'),
+      (r) => r.method == 'POST' && r.uri.path.contains('/additional-profile'),
     );
     expect(post.data, {
       'years_of_experience': '10',
@@ -237,6 +240,7 @@ void main() {
       'geographic_presence': '',
       'approach': '',
     });
+    controller.onClose();
   });
 
   for (final width in [390.0, 1280.0]) {
@@ -248,7 +252,7 @@ void main() {
       await app.setUser(prefUser: {...identity(), 'name': 'Test institution'});
       final adapter = FakeAdapter((request) async {
         if (request.path.contains('/seller/')) return response({}, 401);
-        if (request.path.contains('/institution/profile')) {
+        if (request.path.contains('/additional-profile')) {
           return response({
             'status': 1,
             'message': 'Profile',
@@ -277,10 +281,7 @@ void main() {
       expect(app.token, 'test-token-7');
       expect(
         adapter.requests.map((r) => r.uri.path),
-        containsAll([
-          '/api/v2/business/profile',
-          '/api/v2/business/institution/profile',
-        ]),
+        contains('/api/v2/business/profile'),
       );
       expect(find.text('Test institution'), findsWidgets);
       if (width >= 1280) {
@@ -290,6 +291,10 @@ void main() {
         await tester.pumpAndSettle();
         expect(find.text('Seller profile'), findsOneWidget);
       }
+      expect(
+        adapter.requests.map((r) => r.uri.path),
+        contains('/api/v2/business/additional-profile'),
+      );
       expect(tester.takeException(), isNull);
       await tester.pumpWidget(const SizedBox.shrink());
     });
@@ -300,7 +305,7 @@ void main() {
     final pending = Completer<ResponseBody>();
     final requested = Completer<void>();
     dioConfig.dio.httpClientAdapter = FakeAdapter((request) {
-      if (request.path.contains('/institution/profile')) {
+      if (request.path.contains('/additional-profile')) {
         return Future.value(
           response({
             'status': 1,

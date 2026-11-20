@@ -433,7 +433,7 @@ void main() {
       await MyEarningApi.wPartnerEarningList();
       expect(
         adapter.requests.any(
-          (r) => pathMatches(r.path, 'v1/business/earning/partner'),
+          (r) => pathMatches(r.path, 'v2/business/earning/partner'),
         ),
         isTrue,
       );

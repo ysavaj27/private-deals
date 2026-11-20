@@ -22,7 +22,9 @@ class DesktopPreIPOBuyTransactionView extends StatelessWidget {
         const SizedBox(height: 18),
         Expanded(
           child: Obx(() {
-            if (c.isLoading.isTrue) return const Loader();
+            if (c.isLoading.isTrue) {
+              return const Center(child: Loader(centered: false));
+            }
             if (c.finalList.isEmpty) {
               return NoDataView(onPressed: c.getData);
             }
@@ -64,7 +66,9 @@ class PhonePreIPOBuyTransactionView extends StatelessWidget {
         const SizedBox(height: 12),
         Expanded(
           child: Obx(() {
-            if (c.isLoading.isTrue) return const Loader();
+            if (c.isLoading.isTrue) {
+              return const Center(child: Loader(centered: false));
+            }
             if (c.finalList.isEmpty) {
               return NoDataView(onPressed: c.getData);
             }

@@ -1,12 +1,9 @@
 import 'package:private_deals/src/features/auth/data/w_auth_api.dart';
-import 'package:private_deals/src/features/institution/data/api/institution_profile_api.dart';
 import 'package:private_deals/src/features/institution/data/models/common/enums.dart';
 import 'package:private_deals/src/features/investors/data/investor_model.dart';
 import 'package:private_deals/src/features/investors/data/w_investors_api.dart';
-import 'package:private_deals/src/features/wealth_manager/data/models/pre_ipo/company_model.dart';
 import 'dart:ui' as ui;
 
-import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:private_deals/src/features/institution/data/models/common/media_model.dart';
 import 'package:private_deals/src/features/institution/legacy/backend/model/user/user_model.dart';
@@ -23,21 +20,6 @@ class SellerProfilePageCtrl extends GetxController {
   /// Display photo via `GET`/`POST v2/business/profile` (logo form field only).
   final canEdit = true;
   final editing = false.obs;
-
-  /// Public seller profile shown to partners on company detail deals.
-  final publicProfile = const PartnerPublicProfile().obs;
-  final publicEditing = false.obs;
-  final publicLoading = false.obs;
-  final publicSaving = false.obs;
-  final publicError = ''.obs;
-
-  final yearsOfExperienceCtrl = TextEditingController();
-  final totalTradesExecutedCtrl = TextEditingController();
-  final totalInvestorBaseCtrl = TextEditingController();
-  final verifiedStatusCtrl = TextEditingController();
-  final companiesPreviouslyListedCtrl = TextEditingController();
-  final geographicPresenceCtrl = TextEditingController();
-  final approachCtrl = TextEditingController();
 
   static UserModel _profileFromBusiness(Map<String, dynamic> data) {
     return UserModel.fromJson({
@@ -65,20 +47,7 @@ class SellerProfilePageCtrl extends GetxController {
   void onInit() {
     super.onInit();
     refreshProfile();
-    refreshPublicProfile();
     refreshSelfKyc();
-  }
-
-  @override
-  void onClose() {
-    yearsOfExperienceCtrl.dispose();
-    totalTradesExecutedCtrl.dispose();
-    totalInvestorBaseCtrl.dispose();
-    verifiedStatusCtrl.dispose();
-    companiesPreviouslyListedCtrl.dispose();
-    geographicPresenceCtrl.dispose();
-    approachCtrl.dispose();
-    super.onClose();
   }
 
   Future<bool> refreshProfile() async {
@@ -105,16 +74,6 @@ class SellerProfilePageCtrl extends GetxController {
     } finally {
       if (!isClosed) loading.value = false;
     }
-  }
-
-  void _bindPublicForm(PartnerPublicProfile data) {
-    yearsOfExperienceCtrl.text = data.yearsOfExperience;
-    totalTradesExecutedCtrl.text = data.totalTradesExecuted;
-    totalInvestorBaseCtrl.text = data.totalInvestorBase;
-    verifiedStatusCtrl.text = data.verifiedStatus;
-    companiesPreviouslyListedCtrl.text = data.companiesPreviouslyListed;
-    geographicPresenceCtrl.text = data.geographicPresence;
-    approachCtrl.text = data.approach;
   }
 
   /// Loads KYC status for the seller's own investor. A successful save reloads
@@ -160,85 +119,6 @@ class SellerProfilePageCtrl extends GetxController {
       }
     } finally {
       if (!isClosed) kycLoading.value = false;
-    }
-  }
-
-  Future<bool> refreshPublicProfile() async {
-    if (publicLoading.value || isClosed) return false;
-    publicLoading.value = true;
-    try {
-      final result = await InstitutionProfileApi.getProfile();
-      if (isClosed) return false;
-      if (!result.isSuccess || result.r == null) {
-        publicError.value = result.m.isEmpty
-            ? 'Unable to load seller profile. Please retry.'
-            : result.m;
-        return false;
-      }
-      publicProfile.value = result.r!;
-      _bindPublicForm(result.r!);
-      publicError.value = '';
-      return true;
-    } catch (_) {
-      if (!isClosed) {
-        publicError.value = 'Unable to load seller profile. Please retry.';
-      }
-      return false;
-    } finally {
-      if (!isClosed) publicLoading.value = false;
-    }
-  }
-
-  void editPublicProfile() {
-    if (publicSaving.value || publicLoading.value) return;
-    publicError.value = '';
-    _bindPublicForm(publicProfile.value);
-    publicEditing.value = true;
-  }
-
-  void cancelPublicProfile() {
-    if (publicSaving.value) return;
-    _bindPublicForm(publicProfile.value);
-    publicError.value = '';
-    publicEditing.value = false;
-  }
-
-  Future<void> savePublicProfile() async {
-    if (publicSaving.value || publicLoading.value) return;
-    publicSaving.value = true;
-    publicError.value = '';
-    try {
-      final payload = {
-        'years_of_experience': yearsOfExperienceCtrl.text.trim(),
-        'total_trades_executed': totalTradesExecutedCtrl.text.trim(),
-        'total_investor_base': totalInvestorBaseCtrl.text.trim(),
-        'verified_status': verifiedStatusCtrl.text.trim(),
-        'companies_previously_listed':
-            companiesPreviouslyListedCtrl.text.trim(),
-        'geographic_presence': geographicPresenceCtrl.text.trim(),
-        'approach': approachCtrl.text.trim(),
-      };
-      final result = await InstitutionProfileApi.saveProfile(payload);
-      if (isClosed) return;
-      if (!result.isSuccess || result.r == null) {
-        publicError.value = result.m.isEmpty
-            ? 'Unable to save seller profile. Please retry.'
-            : result.m;
-        return;
-      }
-      publicProfile.value = result.r!;
-      _bindPublicForm(result.r!);
-      publicEditing.value = false;
-      toast(
-        result.m.isEmpty ? 'Profile saved' : result.m,
-        MessageEnum.success,
-      );
-    } catch (_) {
-      if (!isClosed) {
-        publicError.value = 'Unable to save seller profile. Please retry.';
-      }
-    } finally {
-      if (!isClosed) publicSaving.value = false;
     }
   }
 

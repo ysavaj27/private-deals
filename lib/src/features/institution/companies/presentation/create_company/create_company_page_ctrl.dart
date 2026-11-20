@@ -149,6 +149,7 @@ class CreateCompanyCtrl extends GetxController {
 
   ///LOGO realted variable
   final logo = Rxn<MediaModel>();
+  final existingLogoUrl = ''.obs;
   final pickingLogo = false.obs;
   final logoError = ''.obs;
 
@@ -162,6 +163,9 @@ class CreateCompanyCtrl extends GetxController {
         bytes.lengthInBytes <= maxLogoBytes;
   }
 
+  bool get hasLogoPreview =>
+      hasValidLogo || existingLogoUrl.value.trim().isNotEmpty;
+
   final formKey = GlobalKey<FormState>();
 
   final fields = <String, TextEditingController>{};
@@ -170,15 +174,27 @@ class CreateCompanyCtrl extends GetxController {
   final sectorId = Rxn<int>();
   final category = Rxn<UnListedShareCategoryEnum>();
 
-  // final type = CompanyType.unlisted.obs;
   late final CompanyRouteContext companyRoute;
+  late final bool isEdit;
+  late final String editSlug;
+
+  int companyId = 0;
 
   CompanyType get companyType => companyRoute.type;
 
-  String get pageTitle => companyType == CompanyType.unlisted
-      ? 'Create Pre-IPO company'
-      : 'Create LP Secondary company';
+  String get pageTitle {
+    if (isEdit) {
+      return companyType == CompanyType.unlisted
+          ? 'Edit Pre-IPO company'
+          : 'Edit LP Secondary company';
+    }
+    return companyType == CompanyType.unlisted
+        ? 'Create Pre-IPO company'
+        : 'Create LP Secondary company';
+  }
 
+  final loading = false.obs;
+  final loadError = ''.obs;
   final sectorsLoading = false.obs;
   final sectorsError = ''.obs;
   final saving = false.obs;
@@ -206,19 +222,25 @@ class CreateCompanyCtrl extends GetxController {
   ].join('\u0000');
 
   bool get canSave =>
+      !loading.value &&
+      loadError.value.isEmpty &&
       !saving.value &&
       !pickingLogo.value &&
       (logo.value == null || hasValidLogo) &&
       !sectorsLoading.value &&
       sectorId.value != null &&
       duplicateState.value == DuplicateState.clear &&
-      _checkedIdentity == identityKey;
+      _checkedIdentity == identityKey &&
+      (!isEdit || companyId > 0);
 
   @override
   void onInit() {
     super.onInit();
 
     companyRoute = CompanyRouteContext.fromPath(Get.currentRoute);
+    final slug = Get.parameters['slug']?.trim() ?? '';
+    isEdit = Get.currentRoute.contains('/edit') && slug.isNotEmpty;
+    editSlug = slug;
 
     for (final field in allFields) {
       fields[field.key] = TextEditingController(text: field.initial);
@@ -228,6 +250,9 @@ class CreateCompanyCtrl extends GetxController {
     fields['company_name']!.addListener(scheduleDuplicateCheck);
 
     fetchSectors();
+    if (isEdit) {
+      loadCompany();
+    }
   }
 
   Future<void> fetchSectors() async {
@@ -241,6 +266,7 @@ class CreateCompanyCtrl extends GetxController {
       if (isClosed) return;
       if (result.isSuccess) {
         sectors.assignAll(result.r ?? []);
+        if (isEdit) _resolveSector();
       } else {
         sectorsError.value = result.m.isEmpty
             ? 'Unable to load sectors.'
@@ -255,11 +281,105 @@ class CreateCompanyCtrl extends GetxController {
     }
   }
 
-  // void changeType(CompanyType? value) {
-  //   if (value == null || value == type.value) return;
-  //   type.value = value;
-  //   scheduleDuplicateCheck();
-  // }
+  Future<void> loadCompany() async {
+    if (!isEdit || editSlug.isEmpty) return;
+
+    loading.value = true;
+    loadError.value = '';
+
+    try {
+      final result = await CompanyApi.getCompanyDetail(slug: editSlug);
+      if (isClosed) return;
+
+      if (!result.isSuccess || result.r == null) {
+        loadError.value = result.m.isEmpty
+            ? 'Unable to load company details.'
+            : result.m;
+        return;
+      }
+
+      final company = result.r!;
+      // List already gated ownership; detail often omits is_editable.
+      // Server rejects unauthorized updates.
+      applyCompany(company);
+      scheduleDuplicateCheck();
+    } catch (_) {
+      if (!isClosed) {
+        loadError.value = 'Unable to load company details. Please retry.';
+      }
+    } finally {
+      if (!isClosed) loading.value = false;
+    }
+  }
+
+  int? _loadedSectorId;
+  String _loadedSectorName = '';
+
+  void applyCompany(CompanyModel company) {
+    companyId = company.id;
+    existingLogoUrl.value = company.logo;
+    logo.value = null;
+    logoError.value = '';
+
+    _loadedSectorId = company.sector.id > 0 ? company.sector.id : null;
+    _loadedSectorName = company.sector.name;
+    _resolveSector();
+
+    final f = company.fundamentals;
+    _setField('cin', company.cin);
+    _setField('brand_name', company.brandName);
+    _setField('company_name', company.companyName);
+    _setField('about', company.about);
+    // Required fields must stay non-empty after prefill or Save stays disabled.
+    _setField(
+      'min_investment_amount',
+      _numberText(company.minInvestmentAmount, keepZero: true),
+    );
+    _setField('lot_size', _numberText(f.lotSize, keepZero: true));
+    _setField('market_cap', _numberText(f.marketCap, keepZero: true));
+    _setField('pe_ratio', _numberText(f.peRatio, keepZero: true));
+    _setField('pb_ratio', _numberText(f.pbRatio, keepZero: true));
+    _setField('debt_to_equity', _numberText(f.debtToEquity, keepZero: true));
+    _setField('roe', _numberText(f.roe, keepZero: true));
+    _setField('book_value', _numberText(f.bookValue, keepZero: true));
+    _setField('face_value', _numberText(f.faceValue, keepZero: true));
+    _setField('alternative_names', company.alternativeNames);
+    _setField('list_order', company.listOrder);
+    _setField('depository', f.depository);
+    _setField('pan_number', f.panNumber);
+    _setField('isin_number', f.isinNumber);
+    _setField('rta', f.rta == 'N/A' ? '' : f.rta);
+    _setField(
+      'total_shares',
+      f.totalShares > 0 ? f.totalShares.toString() : '',
+    );
+  }
+
+  void _resolveSector() {
+    if (_loadedSectorId != null) {
+      sectorId.value = _loadedSectorId;
+      return;
+    }
+    if (_loadedSectorName.isEmpty || sectors.isEmpty) return;
+    final match = sectors.firstWhereOrNull(
+      (sector) =>
+          sector.name.toLowerCase() == _loadedSectorName.toLowerCase() ||
+          sector.slug.toLowerCase() == _loadedSectorName.toLowerCase(),
+    );
+    if (match != null) sectorId.value = match.id;
+  }
+
+  void _setField(String key, String value) {
+    fields[key]?.text = value;
+  }
+
+  String _numberText(num value, {bool keepZero = false}) {
+    if (value == 0) return keepZero ? '0' : '';
+    if (value is int || value == value.roundToDouble()) {
+      return value.round().toString();
+    }
+    return value.toString();
+  }
 
   void scheduleDuplicateCheck() {
     _duplicateTimer?.cancel();
@@ -296,6 +416,7 @@ class CreateCompanyCtrl extends GetxController {
         cin: text('cin').toUpperCase(),
         companyName: text('company_name'),
         type: companyType.value,
+        excludeCompanyId: isEdit && companyId > 0 ? companyId : null,
       );
 
       if (result.isSuccess) {
@@ -429,7 +550,9 @@ class CreateCompanyCtrl extends GetxController {
     final body = <String, dynamic>{
       'type': companyType.value,
       'sector': sectorId.value!,
-      if (category.value != null) 'category': category.value!.apiCategory,
+      if (!isEdit && category.value != null)
+        'category': category.value!.apiCategory,
+      if (isEdit) 'id': companyId,
     };
 
     for (final field in allFields) {
@@ -438,7 +561,7 @@ class CreateCompanyCtrl extends GetxController {
 
       if (field.numeric) {
         final number = num.parse(value);
-        body[field.key] = field.key == 'market_cap' ? number : number;
+        body[field.key] = number;
       } else {
         body[field.key] =
             ['cin', 'pan_number', 'isin_number'].contains(field.key)
@@ -451,7 +574,7 @@ class CreateCompanyCtrl extends GetxController {
   }
 
   Future<void> submit() async {
-    if (saving.value || pickingLogo.value) return;
+    if (saving.value || pickingLogo.value || loading.value) return;
 
     final formValid = formKey.currentState?.validate() ?? false;
     final logoValid = validateLogo();
@@ -464,10 +587,15 @@ class CreateCompanyCtrl extends GetxController {
     submitError.value = '';
 
     try {
-      var res = await CompanyApi.createCompany(
-        buildPayload(),
-        logo: selectedLogo,
-      );
+      final res = isEdit
+          ? await CompanyApi.updateCompany(
+              buildPayload(),
+              logo: selectedLogo,
+            )
+          : await CompanyApi.createCompany(
+              buildPayload(),
+              logo: selectedLogo,
+            );
       if (isClosed) return;
       if (res.isSuccess) {
         Get.back(result: true);
@@ -477,8 +605,9 @@ class CreateCompanyCtrl extends GetxController {
       }
     } catch (_) {
       if (!isClosed) {
-        submitError.value =
-            'Unable to create company. Please check your details and retry.';
+        submitError.value = isEdit
+            ? 'Unable to update company. Please check your details and retry.'
+            : 'Unable to create company. Please check your details and retry.';
       }
     } finally {
       if (!isClosed) saving.value = false;

@@ -223,33 +223,6 @@ class OTPWidget extends StatelessWidget {
                   }
                 },
               ),
-
-              // TitleTextField(
-              //   isBorder: true,
-              //   isDense: true,
-              //   borderColor: context.theme.dividerColor,
-              //   isAuthFocusBorder: true,
-              //   fillColor: Colors.transparent,
-              //   name: "OTP",
-              //   maxLength: 6,
-              //   keyboardType: TextInputType.number,
-              //   inputFormatters: [
-              //     FilteringTextInputFormatter.allow(RegExp('[0-9``]')),
-              //   ],
-              //   controller: c.otpCTRL,
-              //   validator: (p0) {
-              //     if (p0 == null || p0.isEmpty) {
-              //       return 'Please enter otp';
-              //     } else if (int.tryParse(p0.trim()) == null) {
-              //       return 'Please enter valid otp';
-              //     } else if (p0.trim().length != 6) {
-              //       return 'Please enter 6 digit otp code';
-              //     }
-              //     return null;
-              //   },
-              //   prefixIcon: Icon(Icons.phone_outlined,
-              //       color: context.theme.disabledColor, size: 20),
-              // ),
               Align(
                 alignment: Alignment.centerRight,
                 child: TextButton(

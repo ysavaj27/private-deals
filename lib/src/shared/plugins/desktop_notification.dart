@@ -7,7 +7,7 @@ import 'package:windows_notification/windows_notification.dart';
 
 class DesktopNotification {
   static final _winNotifyPlugin =
-      WindowsNotification(applicationId: "Shuru up");
+      WindowsNotification(applicationId: "Private Deals");
 
   static Future<void> showNotification(String path, String name) async {
     try {

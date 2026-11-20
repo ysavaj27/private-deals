@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:private_deals/src/shared/models/settlement_option.dart';
 
-/// Dropdown bound to `get-config` settlement options. Sends [SettlementOption.value].
+/// Dropdown bound to static config settlement options. Sends [SettlementOption.value].
 class SettlementDaysDropdown extends StatelessWidget {
   const SettlementDaysDropdown({
     super.key,

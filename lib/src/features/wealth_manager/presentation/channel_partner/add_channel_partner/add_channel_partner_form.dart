@@ -211,7 +211,7 @@ class _AddChannelPartnerFormState extends State<AddChannelPartnerForm> {
                             if (c.partnerType() != types.relationManager)
                               TitleTextField(
                                 name: 'Commission (%)',
-                                hintText: 'e.g. 2.5',
+                                hintText: 'e.g. 5',
                                 isRequired: true,
                                 controller: c.commissionCTRL,
                                 keyboardType:
@@ -224,16 +224,30 @@ class _AddChannelPartnerFormState extends State<AddChannelPartnerForm> {
                                   ),
                                 ],
                                 validator: (v) {
-                                  final value = double.tryParse(v ?? '');
-                                  return value == null ||
-                                          !value.isFinite ||
-                                          value < 0 ||
-                                          value >= 100
-                                      ? 'Enter a percentage from 0 to below 100'
-                                      : null;
+                                  final value = double.tryParse(
+                                    v?.trim() ?? '',
+                                  );
+                                  if (value == null ||
+                                      !value.isFinite ||
+                                      value < 0 ||
+                                      value > 100) {
+                                    return 'Enter a percentage from 0 to 100';
+                                  }
+                                  return null;
                                 },
                               ),
                           ]),
+                          if (c.partnerType() != types.relationManager) ...[
+                            const SizedBox(height: 12),
+                            Text(
+                              'Enter this Wealth Manager’s commission % (0 to 100).\n'
+                              'This is their share on company prices — a higher % means a higher price for their team.\n'
+                              'Example: 5 means 5% commission for this Wealth Manager.',
+                              style: theme.textTheme.bodySmall?.copyWith(
+                                color: colors.onSurfaceVariant,
+                              ),
+                            ),
+                          ],
                           if (c.partnerType() == types.relationManager) ...[
                             const SizedBox(height: 12),
                             Text(

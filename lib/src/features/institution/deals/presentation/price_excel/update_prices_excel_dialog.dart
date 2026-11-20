@@ -690,7 +690,7 @@ class _PriceListHeader extends StatelessWidget {
           ),
           SizedBox(
             width: 120,
-            child: Text('Buyer sees', style: style, textAlign: TextAlign.end),
+            child: Text('Landing', style: style, textAlign: TextAlign.end),
           ),
         ],
       ),
@@ -829,7 +829,7 @@ class _CreateRowTile extends StatelessWidget {
               ),
               const SizedBox(height: 6),
               Text(
-                'Buyer sees',
+                'Landing',
                 style: textTheme.labelSmall?.copyWith(
                   color: colors.onSurfaceVariant,
                 ),

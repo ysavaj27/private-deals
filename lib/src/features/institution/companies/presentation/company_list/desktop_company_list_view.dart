@@ -9,6 +9,7 @@ import 'package:private_deals/src/features/institution/support/plugins/logger.da
 import 'package:private_deals/src/shared/institution_widgets/app_button.dart';
 import 'package:private_deals/src/shared/institution_widgets/app_text_field.dart';
 
+import 'package:private_deals/src/features/institution/companies/presentation/company_list/company_list_actions.dart';
 import 'package:private_deals/src/features/institution/companies/presentation/company_list/company_list_page.dart';
 import 'package:private_deals/src/features/institution/companies/presentation/company_list/company_list_page_ctrl.dart';
 import 'package:private_deals/src/shared/theme/app_tokens.dart';
@@ -277,30 +278,11 @@ class DesktopCompanyListView extends StatelessWidget {
                                     ),
                                   ),
                                   DataCell(
-                                    Row(
-                                      mainAxisAlignment:
-                                          MainAxisAlignment.center,
-
-                                      children: [
-                                        if (company.isEditable)
-                                          IconButton(
-                                            tooltip: 'Manage promoters',
-                                            icon: const Icon(
-                                              Icons.groups_outlined,
-                                            ),
-                                            onPressed: () =>
-                                                c.openPromoters(company),
-                                          ),
-                                        if (company.isEditable)
-                                          IconButton(
-                                            tooltip: 'Manage shareholders',
-                                            icon: const Icon(
-                                              Icons.pie_chart_outline,
-                                            ),
-                                            onPressed: () =>
-                                                c.openShareholders(company),
-                                          ),
-                                      ],
+                                    Center(
+                                      child: CompanyListActionsMenu(
+                                        controller: c,
+                                        company: company,
+                                      ),
                                     ),
                                   ),
                                 ],

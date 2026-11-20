@@ -27,7 +27,9 @@ void main() {
     Get.testMode = true;
     app.persist = false;
     await app.clear();
-    await app.setUser(prefUser: identity('Wealth Manager'));
+    await app.setUser(
+      prefUser: {...identity('Wealth Manager'), 'commission': 5},
+    );
     app.validated(true);
     app.configModel(
       ConfigModel.fromJson({
@@ -389,6 +391,67 @@ void main() {
       expect(tester.takeException(), isNull);
     },
   );
+
+  testWidgets(
+    'Institution can create Relation Manager only without commission',
+    (tester) async {
+      await app.setUser(prefUser: identity('Institution'));
+      app.validated(true);
+      final adapter = FakeAdapter(
+        (_) async => response({'status': 1, 'message': 'Partner added'}),
+      );
+      dioConfig.dio.httpClientAdapter = adapter;
+      await show(tester, form: true);
+      await tester.ensureVisible(find.text('Select partner type'));
+      await tester.tap(find.byType(DropdownButtonFormField<String>).last);
+      await tester.pumpAndSettle();
+      expect(find.text('Relation Manager').last, findsOneWidget);
+      expect(find.text('Distributor'), findsNothing);
+      expect(find.text('Retailer'), findsNothing);
+      await tester.tap(find.text('Relation Manager').last);
+      await tester.pumpAndSettle();
+      expect(find.textContaining('Commission is not required'), findsOneWidget);
+      final form = Get.find<AddChannelPartnerDialogCtrl>();
+      form.nameCTRL.text = 'Inst RM';
+      form.emailCTRL.text = 'rm@example.com';
+      form.mobileCTRL.text = '9876543212';
+      form.passwordCTRL.text = 'test-password';
+      form.gender('Male');
+      await tester.pumpAndSettle();
+      await tester.tap(find.widgetWithText(FilledButton, 'Add partner').last);
+      await tester.pumpAndSettle();
+      expect(adapter.requests, isNotEmpty);
+      expect(
+        adapter.requests.single.data,
+        containsPair('partner_type', 'Relation Manager'),
+      );
+      expect(adapter.requests.single.data, isNot(contains('commission')));
+      if (find.byTooltip('Dismiss notification').evaluate().isNotEmpty) {
+        await tester.tap(find.byTooltip('Dismiss notification'));
+        await tester.pumpAndSettle();
+      }
+    },
+  );
+
+  test('Institution list requests Relation Manager partner_type', () async {
+    await app.setUser(prefUser: identity('Institution'));
+    app.validated(true);
+    final adapter = FakeAdapter(
+      (_) async => response({
+        'status': 1,
+        'message': 'ok',
+        'data': <Map<String, dynamic>>[],
+      }),
+    );
+    dioConfig.dio.httpClientAdapter = adapter;
+    final ctrl = ChannelPartnerPageCtrl();
+    await ctrl.getData();
+    expect(adapter.requests, isNotEmpty);
+    expect(
+      adapter.requests.single.uri.queryParameters['partner_type'],
+      'Relation Manager',
+    );
+  });
 
   testWidgets('Capture channel partner previews when requested', (
     tester,

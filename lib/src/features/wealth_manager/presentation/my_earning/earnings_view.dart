@@ -1,4 +1,5 @@
 import 'package:private_deals/src/shared/app_exports.dart';
+
 import 'my_earning_page_ctrl.dart';
 import '../widgets/workspace_widgets.dart';
 
@@ -19,36 +20,40 @@ class _EarningsViewState extends State<EarningsView> {
     final loading = c.isLoading();
     final rows =
         <
-          ({
-            String name,
-            String photo,
-            String subtitle,
-            double investment,
-            int? transactions,
-            double commission,
-          })
-        >[
-            if (fromInvestors)
-              for (final item in c.investor().investorsList)
-                (
-                  name: item.name,
-                  photo: item.profilePhoto,
-                  subtitle: 'Investor',
-                  investment: item.amountInvested,
-                  transactions: item.totalTransactions,
-                  commission: item.commissionEarned,
-                )
-            else
-              for (final item in c.partner().list)
-                (
-                  name: item.name,
-                  photo: '',
-                  subtitle: 'Channel partner',
-                  investment: item.partnerTotalInvestment,
-                  transactions: null,
-                  commission: item.commissionEarnedFromThisPartner,
-                ),
-          ].where((item) => item.name.toLowerCase().contains(_query)).toList()
+              ({
+                String name,
+                String photo,
+                String subtitle,
+                double? investment,
+                int? transactions,
+                double commission,
+              })
+            >[
+              if (fromInvestors)
+                for (final item in c.investor().investorsList)
+                  (
+                    name: item.name,
+                    photo: item.profilePhoto,
+                    subtitle: 'Investor',
+                    investment: item.amountInvested,
+                    transactions: item.totalTransactions,
+                    commission: item.commissionEarned,
+                  )
+              else
+                for (final item in c.partner().list)
+                  (
+                    name: item.name,
+                    photo: '',
+                    subtitle: item.type.trim().isEmpty
+                        ? 'Channel partner'
+                        : item.type.trim(),
+                    investment: null,
+                    transactions: null,
+                    commission: item.commissionEarned,
+                  ),
+            ]
+            .where((item) => item.name.toLowerCase().contains(_query))
+            .toList()
           ..sort(
             (a, b) => _highestFirst
                 ? b.commission.compareTo(a.commission)
@@ -57,8 +62,7 @@ class _EarningsViewState extends State<EarningsView> {
     final unavailable = loading || c.error().isNotEmpty;
     return WorkspacePage(
       title: 'My Earnings',
-      subtitle:
-          'A clear view of the investments and commissions across your network.',
+      subtitle: 'A clear view of the investments and commissions across your network.',
       onRefresh: c.refreshData,
       loading: loading,
       error: c.error(),
@@ -83,27 +87,25 @@ class _EarningsViewState extends State<EarningsView> {
         const SizedBox(height: AppSpace.lg),
         WorkspaceMetrics(
           children: [
-            WorkspaceMetric(
-              label: fromInvestors
-                  ? 'Total transactions'
-                  : 'Total channel partners',
-              value: unavailable
-                  ? '—'
-                  : '${fromInvestors ? c.investor().totalTransactions : c.partner().totalPartners}',
-              icon: fromInvestors
-                  ? Icons.receipt_long_outlined
-                  : Icons.people_outline_rounded,
-            ),
-            WorkspaceMetric(
-              label: 'Amount invested',
-              value: unavailable
-                  ? '—'
-                  : (fromInvestors
-                            ? c.investor().amountInvested
-                            : c.partner().totalInvestment)
-                        .toFormattedPrice,
-              icon: Icons.account_balance_outlined,
-            ),
+            if (fromInvestors) ...[
+              WorkspaceMetric(
+                label: 'Total transactions',
+                value: unavailable ? '—' : '${c.investor().totalTransactions}',
+                icon: Icons.receipt_long_outlined,
+              ),
+              WorkspaceMetric(
+                label: 'Amount invested',
+                value: unavailable
+                    ? '—'
+                    : c.investor().amountInvested.toFormattedPrice,
+                icon: Icons.account_balance_outlined,
+              ),
+            ] else
+              WorkspaceMetric(
+                label: 'Channel partners',
+                value: unavailable ? '—' : '${c.partner().list.length}',
+                icon: Icons.people_outline_rounded,
+              ),
             WorkspaceMetric(
               label: 'Commission earned',
               value: unavailable
@@ -209,19 +211,20 @@ class _EarningsViewState extends State<EarningsView> {
                   const SizedBox(height: AppSpace.xs),
                   Text(
                     item.subtitle,
-                    style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                      color: colors.onSurfaceVariant,
-                    ),
+                    style: Theme.of(context).textTheme.bodySmall
+                        ?.copyWith(color: colors.onSurfaceVariant),
                   ),
                 ],
               ),
             ),
           ],
         );
-        final investment = WorkspaceDetail(
-          label: 'Amount invested',
-          value: item.investment.toFormattedPrice,
-        );
+        final investment = item.investment == null
+            ? null
+            : WorkspaceDetail(
+                label: 'Amount invested',
+                value: item.investment!.toFormattedPrice,
+              );
         final transactions = item.transactions == null
             ? null
             : WorkspaceDetail(
@@ -245,12 +248,14 @@ class _EarningsViewState extends State<EarningsView> {
                     Row(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        Expanded(child: investment),
-                        if (transactions != null) ...[
+                        if (investment != null) ...[
+                          Expanded(child: investment),
                           const SizedBox(width: AppSpace.md),
-                          Expanded(child: transactions),
                         ],
-                        const SizedBox(width: AppSpace.md),
+                        if (transactions != null) ...[
+                          Expanded(child: transactions),
+                          const SizedBox(width: AppSpace.md),
+                        ],
                         Expanded(child: commission),
                       ],
                     ),
@@ -261,7 +266,7 @@ class _EarningsViewState extends State<EarningsView> {
                 children: [
                   Expanded(flex: 3, child: identity),
                   const SizedBox(width: AppSpace.lg),
-                  Expanded(flex: 2, child: investment),
+                  if (investment != null) Expanded(flex: 2, child: investment),
                   if (transactions != null)
                     Expanded(flex: 2, child: transactions),
                   Expanded(flex: 2, child: commission),

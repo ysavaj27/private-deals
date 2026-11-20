@@ -40,7 +40,7 @@ class InitConfig extends GetxService {
     await app.getLoginCounts();
     await _getDeviceInfo();
     await _getPackageInfo();
-    await ConfigApi.config();
+    app.configModel(ConfigModel.fromJson(kStaticAppConfig));
     getTheme();
   }
 

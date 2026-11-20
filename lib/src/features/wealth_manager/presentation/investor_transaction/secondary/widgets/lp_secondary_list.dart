@@ -19,7 +19,9 @@ class LpSecondaryTransactionList extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Obx(() {
-      if (ctrl.isLoading.isTrue) return const Loader();
+      if (ctrl.isLoading.isTrue) {
+        return const Center(child: Loader(centered: false));
+      }
       if (ctrl.finalList.isEmpty) {
         return NoDataView(onPressed: ctrl.getData);
       }

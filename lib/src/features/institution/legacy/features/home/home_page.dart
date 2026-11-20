@@ -6,6 +6,7 @@ import 'package:private_deals/src/features/wealth_manager/presentation/portfolio
 import 'package:get/get.dart';
 import 'package:private_deals/src/features/institution/data/models/common/enums.dart';
 import 'package:private_deals/src/features/auth/presentation/change_password/change_password_page.dart';
+import 'package:private_deals/src/features/auth/presentation/change_password/required_password_dialog.dart';
 import 'package:private_deals/src/features/institution/legacy/features/auth/profile/profile_page.dart';
 import 'package:private_deals/src/features/institution/companies/presentation/company_list/company_list_page.dart';
 import 'package:private_deals/src/features/institution/legacy/features/company/update_share_price/update_share_price_page.dart';
@@ -20,6 +21,7 @@ import 'package:private_deals/src/shared/theme/app_tokens.dart';
 import 'package:private_deals/src/features/catalog/presentation/primary/primary_landing_page.dart';
 import 'package:private_deals/src/features/catalog/presentation/secondary/secondary_landing_page.dart';
 import 'package:private_deals/src/features/catalog/presentation/pre_ipo/pre_ipo_landing_page/pre_ipo_landing_page.dart';
+import 'package:private_deals/src/features/wealth_manager/presentation/channel_partner/channel_partner_page.dart';
 
 class HomePage extends StatelessWidget {
   final Widget? child;
@@ -30,6 +32,7 @@ class HomePage extends StatelessWidget {
     // updates Obx-watched state.
     WidgetsBinding.instance.addPostFrameCallback((_) {
       if (Get.isRegistered<SellerHomePageCtrl>()) c.setData();
+      RequiredPasswordReset.maybeShow();
     });
   }
 
@@ -86,6 +89,7 @@ class MainWidgets extends StatelessWidget {
           message: 'LP Secondary transactions will be available soon.',
           icon: Icons.receipt_long_outlined,
         ),
+        WTabBarEnum.channelPartner => ChannelPartnerPage(),
       };
       return AnimatedSwitcher(
         duration: AppMotion.duration(context, AppMotion.normal),

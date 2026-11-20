@@ -1,6 +1,11 @@
 import 'package:flutter_test/flutter_test.dart';
+import 'package:get/get.dart';
+import 'package:private_deals/src/app/routing/session_navigation.dart';
 import 'package:private_deals/src/core/permissions/partner_role.dart';
 import 'package:private_deals/src/core/permissions/access_policy.dart';
+import 'package:private_deals/src/core/session/auth_session.dart';
+
+import 'session_and_api_test.dart' show identity;
 
 void main() {
   for (final role in PartnerRole.values) {
@@ -101,9 +106,73 @@ void main() {
       AccessResult.passwordChange,
     );
     expect(
+      AccessPolicy.check(user, AccessScope.business, passwordPromptHost: true),
+      AccessResult.allowed,
+    );
+    expect(
+      AccessPolicy.check(user, AccessScope.primary, passwordPromptHost: true),
+      AccessResult.passwordChange,
+    );
+    expect(
       AccessPolicy.check(user, AccessScope.account, changingPassword: true),
       AccessResult.allowed,
     );
+    const institution = AccessSnapshot(
+      hasToken: true,
+      validated: true,
+      role: PartnerRole.institution,
+      passwordChange: true,
+    );
+    expect(
+      AccessPolicy.check(
+        institution,
+        AccessScope.institution,
+        passwordPromptHost: true,
+      ),
+      AccessResult.allowed,
+    );
+    expect(
+      AccessPolicy.check(
+        institution,
+        AccessScope.business,
+        passwordPromptHost: true,
+      ),
+      AccessResult.forbidden,
+    );
+  });
+  test('Required password opens the home dashboard', () async {
+    TestWidgetsFlutterBinding.ensureInitialized();
+    Get.testMode = true;
+    app.persist = false;
+    await app.clear();
+    await app.setUser(
+      prefUser: {...identity('Wealth Manager'), 'ask_password_change': 1},
+    );
+    expect(
+      SessionNavigation.check('/wealth-manager/dashboard'),
+      AccessResult.allowed,
+    );
+    expect(
+      SessionNavigation.check('/wealth-manager/investors'),
+      AccessResult.passwordChange,
+    );
+    expect(
+      SessionNavigation.destination('/wealth-manager/investors'),
+      '/wealth-manager/dashboard',
+    );
+    await app.setUser(
+      prefUser: {...identity('Institution', 8), 'ask_password_change': 1},
+    );
+    expect(
+      SessionNavigation.check('/institution/dashboard'),
+      AccessResult.allowed,
+    );
+    expect(
+      SessionNavigation.check('/institution/companies'),
+      AccessResult.passwordChange,
+    );
+    expect(SessionNavigation.destination(), '/institution/dashboard');
+    await app.clear();
   });
   test('Product flags and relation manager exclusions', () {
     const user = AccessSnapshot(

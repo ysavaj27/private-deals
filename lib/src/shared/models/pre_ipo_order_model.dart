@@ -12,7 +12,6 @@ class PreIpoOrderModel {
   final List<String>? action;
   final String? signLink;
   final int shares;
-  final double distributerPrice;
   final double sharePrice;
   final double payableAmount;
   final String? cancellationReason;
@@ -53,7 +52,6 @@ class PreIpoOrderModel {
     this.action,
     this.signLink,
     this.shares = 0,
-    this.distributerPrice = 0,
     this.sharePrice = 0,
     this.payableAmount = 0,
     this.cancellationReason,
@@ -192,7 +190,6 @@ class PreIpoOrderModel {
       action: actions,
       signLink: _nullableString(json['sign_link']),
       shares: Parse.toInt(json['shares']),
-      distributerPrice: Parse.toDouble(json['distributer_price']),
       sharePrice: Parse.toDouble(json['share_price']),
       payableAmount: Parse.toDouble(
         json['payable_amount'] ?? json['investment_amount'],

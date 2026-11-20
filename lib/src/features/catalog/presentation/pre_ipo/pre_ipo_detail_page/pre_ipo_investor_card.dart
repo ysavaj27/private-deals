@@ -140,8 +140,8 @@ class PreIPOInvestorCard extends StatelessWidget {
                             return "Please enter amount";
                           } else if (double.tryParse(p0) == null) {
                             return 'Enter valid amount';
-                          } else if (double.parse(p0) < c.purchasePrice) {
-                            return 'Min price ${c.purchasePrice}';
+                          } else if (double.parse(p0) < c.sharePrice) {
+                            return 'Min price ${c.sharePrice}';
                           } else if (c.isQty.isFalse &&
                               model.totalPrice() < c.minTicketSize) {
                             return 'Min ticket size is ${c.minTicketSize.toCurrency}';

@@ -122,6 +122,8 @@ extension WTabBarRouteX on WTabBarEnum {
         return 'unlisted-transactions';
       case WTabBarEnum.secondaryTransactions:
         return 'secondary-transactions';
+      case WTabBarEnum.channelPartner:
+        return 'channel-partner';
     }
   }
 

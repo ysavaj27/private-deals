@@ -365,7 +365,7 @@ class _PartnerCard extends StatelessWidget {
                   for (final metric in [
                     ('Investors', '${p.investorCount}'),
                     ('Amount invested', _partnerAmount(p.totalInvested)),
-                    ('Startups', '${p.noOfStartups}'),
+                    ('Companies', '${p.noOfStartups}'),
                     ('Commission earned', _partnerAmount(p.commissionEarned)),
                   ])
                     SizedBox(

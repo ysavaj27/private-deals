@@ -1,4 +1,5 @@
 import 'dart:typed_data';
+
 import 'package:flutter_test/flutter_test.dart';
 import 'package:private_deals/src/features/institution/data/deal_payloads.dart';
 import 'package:private_deals/src/features/institution/data/institution_endpoints.dart';
@@ -20,6 +21,14 @@ void main() {
       InstitutionEndpoints.bulkDeals,
       'v2/business/institution/company/deals/bulk',
     );
+    expect(
+      InstitutionEndpoints.updateCompany,
+      'v2/business/institution/company/update',
+    );
+    expect(
+      InstitutionEndpoints.companyEvents,
+      'v2/business/institution/company/events',
+    );
   });
   test('Company financial inputs exclude server-managed fees', () {
     final fields = [
@@ -32,9 +41,8 @@ void main() {
   });
   test('Institution direct links preserve company and deal type', () {
     expect(
-      CompanyRouteContext.fromPath(
-        '/institution/companies/secondary/create',
-      ).type,
+      CompanyRouteContext.fromPath('/institution/companies/secondary/create')
+          .type,
       CompanyType.secondary,
     );
     expect(
@@ -42,21 +50,17 @@ void main() {
       CompanyType.unlisted,
     );
     expect(
-      DealRouteContext.fromPath(
-        '/institution/deals/hot/unlisted/create',
-      ).isHotDeal,
+      DealRouteContext.fromPath('/institution/deals/hot/unlisted/create')
+          .isHotDeal,
       isTrue,
     );
     expect(
-      DealRouteContext.fromPath(
-        '/institution/deals/manage/secondary/create',
-      ).isHotDeal,
+      DealRouteContext.fromPath('/institution/deals/manage/secondary/create')
+          .isHotDeal,
       isFalse,
     );
     expect(
-      DealRouteContext.fromPath(
-        '/institution/deals/manage/secondary',
-      ).type,
+      DealRouteContext.fromPath('/institution/deals/manage/secondary').type,
       CompanyType.secondary,
     );
     expect(
@@ -78,7 +82,7 @@ void main() {
     expect(deal.sharePrice, 101);
     final update = DealPayloads.update(
       uuid: 'owned',
-      finalPrice: '105',
+      basePrice: '105',
       minimumQuantity: '1',
       isHotDeal: true,
     );
@@ -89,7 +93,7 @@ void main() {
     expect(
       DealPayloads.update(
         uuid: 'owned',
-        finalPrice: '105',
+        basePrice: '105',
         minimumQuantity: '1',
         isHotDeal: false,
       )['is_hot_deal'],

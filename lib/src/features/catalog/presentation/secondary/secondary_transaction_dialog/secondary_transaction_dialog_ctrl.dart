@@ -31,11 +31,6 @@ class SecondaryTransactionDialogCtrl extends GetxController {
 
   double get investmentAmount => shares.value * model.sharePrice;
 
-  double get processingFees =>
-      investmentAmount * (model.processingFeePercentage / 100);
-
-  double get payableAmount => investmentAmount + processingFees;
-
   // Function to decrement the sell quantity
   int decrementSellQuantity() {
     // If the current sell quantity is less than or equal to the minQty, return minQty

@@ -43,38 +43,12 @@ class PhonePreIPOInvestmentView extends StatelessWidget {
                     ),
                     const SizedBox(width: 17),
                     Expanded(
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Text(
-                            c.model().brandName,
-                            style: const TextStyle(
-                              fontSize: 24,
-                              fontWeight: FontWeight.w600,
-                            ),
-                          ),
-                          const SizedBox(height: 8),
-                          Wrap(
-                            spacing: 12,
-                            runSpacing: 4,
-                            children: [
-                              Text(
-                                "Distributor price",
-                                style: TextStyle(
-                                  fontSize: 12,
-                                  color: context
-                                      .theme
-                                      .colorScheme
-                                      .onSurfaceVariant,
-                                ),
-                              ),
-                              Text(
-                                c.purchasePrice.fixDigit,
-                                style: const TextStyle(fontSize: 13),
-                              ),
-                            ],
-                          ),
-                        ],
+                      child: Text(
+                        c.model().brandName,
+                        style: const TextStyle(
+                          fontSize: 24,
+                          fontWeight: FontWeight.w600,
+                        ),
                       ),
                     ),
                   ],
@@ -118,31 +92,6 @@ class PhonePreIPOInvestmentView extends StatelessWidget {
                     ),
                   );
                 }),
-                // SizedBox(height: 5),
-                // Align(
-                //   alignment: Alignment.centerRight,
-                //   child: Text.rich(
-                //     TextSpan(
-                //       children: [
-                //         TextSpan(
-                //           text: "Distributor price ",
-                //           style: TextStyle(
-                //             fontSize: 14,
-                //             fontWeight: FontWeight.w600,
-                //             color: context.theme.colorScheme.onSurfaceVariant,
-                //           ),
-                //         ),
-                //         TextSpan(
-                //           text: '${c.purchasePrice.toCurrency} ',
-                //           style: const TextStyle(
-                //             fontSize: 14,
-                //             fontWeight: FontWeight.w600,
-                //           ),
-                //         ),
-                //       ],
-                //     ),
-                //   ),
-                // ),
                 Expanded(
                   child: Form(
                     autovalidateMode: AutovalidateMode.onUserInteraction,
@@ -401,8 +350,8 @@ class CardView extends StatelessWidget {
                             return "Please enter amount";
                           } else if (double.tryParse(p0) == null) {
                             return 'Enter valid amount';
-                          } else if (double.parse(p0) < c.purchasePrice) {
-                            return 'Min price ${c.purchasePrice}';
+                          } else if (double.parse(p0) < c.sharePrice) {
+                            return 'Min price ${c.sharePrice}';
                           } else if (c.isQty.isFalse &&
                               model.totalPrice() < c.minTicketSize) {
                             return 'Min ticket size is ${c.minTicketSize.toCurrency}';

@@ -212,7 +212,7 @@ class _DealListViewState extends State<DealListView> {
                                       ),
                                       DataCell(
                                         Text(
-                                          '₹${deal.sharePrice.toStringAsFixed(2)} (final)\nBase: ${deal.basePrice?.toStringAsFixed(2) ?? '—'}',
+                                          'Landing: ₹${deal.sharePrice.toStringAsFixed(2)}\nBase: ${deal.basePrice?.toStringAsFixed(2) ?? '—'}',
                                           style: context.textTheme.titleSmall,
                                         ),
                                       ),
@@ -356,7 +356,7 @@ class _MobileDealItem extends StatelessWidget {
                     context,
                     width,
                     deal.priceLabel,
-                    '₹${deal.sharePrice.toStringAsFixed(2)} (final)\nBase: ${deal.basePrice?.toStringAsFixed(2) ?? '—'}',
+                    'Landing: ₹${deal.sharePrice.toStringAsFixed(2)}\nBase: ${deal.basePrice?.toStringAsFixed(2) ?? '—'}',
                   ),
                   _field(context, width, 'Min qty', '${deal.minimumQty}'),
                   if (deal.settlementLabel != null)

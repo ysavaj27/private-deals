@@ -1,3 +1,4 @@
+import 'package:private_deals/src/features/account/presentation/additional_profile_section.dart';
 import 'package:private_deals/src/features/account/presentation/profile_page_ctrl.dart';
 import 'package:private_deals/src/features/account/presentation/profile_photo_section.dart';
 import 'package:private_deals/src/features/auth/presentation/login/login_page.dart';
@@ -58,6 +59,8 @@ class PhoneProfileView extends StatelessWidget {
             hintText: "Enter Commission",
             controller: c.commissionCTRL,
           ),
+          const SizedBox(height: AppSpace.xxl),
+          const AdditionalProfileSection(),
           const SizedBox(height: AppSpace.xxl),
           Text('Settings', style: context.textTheme.titleLarge),
           const SizedBox(height: AppSpace.md),

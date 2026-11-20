@@ -10,10 +10,13 @@ class CompanyModel {
   String category;
   String type;
   String cin;
+  String about;
+  double minInvestmentAmount;
+  String alternativeNames;
+  String listOrder;
   bool isDrhp;
   String bgColorCode;
   double sharePrice;
-  double distributerPrice;
   double basePrice;
   double myBasePrice;
   bool priceUpdatedToday;
@@ -36,10 +39,13 @@ class CompanyModel {
     this.category = "",
     this.type = "",
     this.cin = "",
+    this.about = "",
+    this.minInvestmentAmount = 0.0,
+    this.alternativeNames = "",
+    this.listOrder = "",
     this.isDrhp = false,
     this.bgColorCode = "",
     this.sharePrice = 0.0,
-    this.distributerPrice = 0.0,
     this.basePrice = 0.0,
     this.myBasePrice = 0.0,
     this.priceUpdatedToday = false,
@@ -55,6 +61,34 @@ class CompanyModel {
        fundamentals = fundamentals ?? FundamentalsModel();
 
   factory CompanyModel.fromJson(Map<String, dynamic> json) {
+    final fundamentalsMap = <String, dynamic>{
+      if (json['fundamentals'] is Map)
+        ...Map<String, dynamic>.from(json['fundamentals'] as Map),
+    };
+    // Detail payloads sometimes put create-form fields at the root.
+    const fallbackKeys = [
+      'lot_size',
+      'market_cap',
+      'pe_ratio',
+      'pb_ratio',
+      'debt_to_equity',
+      'roe',
+      'book_value',
+      'face_value',
+      'depository',
+      'pan_number',
+      'isin_number',
+      'rta',
+      'total_shares',
+      'cin',
+      'cin_number',
+    ];
+    for (final key in fallbackKeys) {
+      if (!fundamentalsMap.containsKey(key) && json[key] != null) {
+        fundamentalsMap[key] = json[key];
+      }
+    }
+    final fundamentals = FundamentalsModel.fromJson(fundamentalsMap);
     return CompanyModel(
       id: Parse.toInt(json['id']),
       uuid: Parse.toStrings(json['uuid']),
@@ -64,23 +98,30 @@ class CompanyModel {
       logo: Parse.parseUrl(json['logo']),
       category: Parse.toStrings(json['category']),
       type: Parse.toStrings(json['type']),
-      cin: Parse.toStrings(json['cin']),
+      cin: Parse.toStrings(json['cin']).isNotEmpty
+          ? Parse.toStrings(json['cin'])
+          : fundamentals.cinNumber,
+      about: Parse.toStrings(json['about']),
+      minInvestmentAmount: Parse.toDouble(
+        json['min_investment_amount'] ?? json['min_investment'],
+      ),
+      alternativeNames: Parse.toStrings(json['alternative_names']),
+      listOrder: Parse.toStrings(json['list_order']),
       isDrhp: Parse.toBool(json['is_drhp']),
       bgColorCode: Parse.toStrings(json['bg_color_code']),
       sharePrice: Parse.toDouble(json['share_price']),
-      distributerPrice: Parse.toDouble(json['distributer_price']),
       basePrice: Parse.toDouble(json['base_price']),
       myBasePrice: Parse.toDouble(json['my_base_price']),
       priceUpdatedToday: Parse.toBool(json['price_updated_today']),
       lastYearSharePrice: Parse.toDouble(json['last_year_share_price']),
       minInvestmentType: Parse.toStrings(json['min_investment_type']),
       isFavorite: Parse.toBool(json['is_favorite']),
-      isEditable: Parse.toBool(json['is_editable']),
+      isEditable: _parseEditableFlag(json['is_editable']),
       shareHolders: (json['share_holders'] as List? ?? [])
           .map((e) => ShareholderYearModel.fromJson(e))
           .toList(),
       sector: SectorModel.fromJson(json['sector']),
-      fundamentals: FundamentalsModel.fromJson(json['fundamentals']),
+      fundamentals: fundamentals,
       promoters: json['promoters'] != null
           ? (json['promoters'] as List)
                 .map((e) => PromoterModel.fromJson(e))
@@ -100,10 +141,13 @@ class CompanyModel {
       "category": category,
       "type": type,
       "cin": cin,
+      "about": about,
+      "min_investment_amount": minInvestmentAmount,
+      "alternative_names": alternativeNames,
+      "list_order": listOrder,
       "is_drhp": isDrhp,
       "bg_color_code": bgColorCode,
       "share_price": sharePrice,
-      "distributer_price": distributerPrice,
       "base_price": basePrice,
       "my_base_price": myBasePrice,
       "price_updated_today": priceUpdatedToday,
@@ -123,6 +167,14 @@ class CompanyModel {
   String get myBasePriceLabel => myBasePrice > 0
       ? '₹${myBasePrice.toStringAsFixed(2)}'
       : 'Price Upload Pending';
+
+  /// Accepts bool, 0/1, and common string forms from list/detail payloads.
+  static bool _parseEditableFlag(dynamic value) {
+    if (value == true || value == 1) return true;
+    if (value == false || value == 0 || value == null) return false;
+    final text = value.toString().trim().toLowerCase();
+    return text == '1' || text == 'true' || text == 'yes';
+  }
 }
 
 class SectorModel {
@@ -154,12 +206,36 @@ class FundamentalsModel {
   double fiftyTwoWeekHigh;
   double fiftyTwoWeekLow;
   String depository;
+  String panNumber;
+  String isinNumber;
+  String cinNumber;
+  String rta;
+  double marketCap;
+  double peRatio;
+  double pbRatio;
+  double debtToEquity;
+  double roe;
+  double bookValue;
+  double faceValue;
+  int totalShares;
 
   FundamentalsModel({
     this.lotSize = 0.0,
     this.fiftyTwoWeekHigh = 0.0,
     this.fiftyTwoWeekLow = 0.0,
     this.depository = "",
+    this.panNumber = "",
+    this.isinNumber = "",
+    this.cinNumber = "",
+    this.rta = "",
+    this.marketCap = 0.0,
+    this.peRatio = 0.0,
+    this.pbRatio = 0.0,
+    this.debtToEquity = 0.0,
+    this.roe = 0.0,
+    this.bookValue = 0.0,
+    this.faceValue = 0.0,
+    this.totalShares = 0,
   });
 
   factory FundamentalsModel.fromJson(Map<String, dynamic>? json) {
@@ -170,6 +246,18 @@ class FundamentalsModel {
       fiftyTwoWeekHigh: Parse.toDouble(json['fifty_two_week_high']),
       fiftyTwoWeekLow: Parse.toDouble(json['fifty_two_week_low']),
       depository: Parse.toStrings(json['depository']),
+      panNumber: Parse.toStrings(json['pan_number']),
+      isinNumber: Parse.toStrings(json['isin_number']),
+      cinNumber: Parse.toStrings(json['cin_number'] ?? json['cin']),
+      rta: Parse.toStrings(json['rta']),
+      marketCap: Parse.toDouble(json['market_cap']),
+      peRatio: Parse.toDouble(json['pe_ratio']),
+      pbRatio: Parse.toDouble(json['pb_ratio']),
+      debtToEquity: Parse.toDouble(json['debt_to_equity']),
+      roe: Parse.toDouble(json['roe']),
+      bookValue: Parse.toDouble(json['book_value']),
+      faceValue: Parse.toDouble(json['face_value']),
+      totalShares: Parse.toInt(json['total_shares']),
     );
   }
 
@@ -179,6 +267,18 @@ class FundamentalsModel {
       "fifty_two_week_high": fiftyTwoWeekHigh,
       "fifty_two_week_low": fiftyTwoWeekLow,
       "depository": depository,
+      "pan_number": panNumber,
+      "isin_number": isinNumber,
+      "cin_number": cinNumber,
+      "rta": rta,
+      "market_cap": marketCap,
+      "pe_ratio": peRatio,
+      "pb_ratio": pbRatio,
+      "debt_to_equity": debtToEquity,
+      "roe": roe,
+      "book_value": bookValue,
+      "face_value": faceValue,
+      "total_shares": totalShares,
     };
   }
 }
@@ -208,6 +308,71 @@ class CompanyDuplicateModel {
       "matches": matches.map((e) => e.toString()).toList(),
     };
   }
+}
+
+class CompanyEventModel {
+  int id;
+  DateTime date;
+  String title;
+  String description;
+  String file;
+  String fileUrl;
+
+  CompanyEventModel({
+    this.id = 0,
+    DateTime? date,
+    this.title = '',
+    this.description = '',
+    this.file = '',
+    this.fileUrl = '',
+  }) : date = date ?? DateTime.now();
+
+  factory CompanyEventModel.fromJson(Map<String, dynamic> json) {
+    final fileUrl = Parse.parseUrl(json['file_url'] ?? json['file']);
+    return CompanyEventModel(
+      id: Parse.toInt(json['id']),
+      date: _parseEventDate(json['date']),
+      title: Parse.toStrings(json['title']),
+      description: Parse.toStrings(json['description']),
+      file: Parse.toStrings(json['file']),
+      fileUrl: fileUrl,
+    );
+  }
+
+  /// Institution events use PHP `d-m-Y`; ISO strings are also accepted.
+  static DateTime _parseEventDate(dynamic raw) {
+    final text = Parse.toStrings(raw).trim();
+    if (text.isEmpty) return DateTime(0);
+
+    final parts = text.split(RegExp(r'[/-]'));
+    if (parts.length == 3) {
+      final day = int.tryParse(parts[0]);
+      final month = int.tryParse(parts[1]);
+      final year = int.tryParse(parts[2]);
+      if (day != null &&
+          month != null &&
+          year != null &&
+          day >= 1 &&
+          day <= 31 &&
+          month >= 1 &&
+          month <= 12) {
+        return DateTime(year, month, day);
+      }
+    }
+
+    return Parse.toDateTime(raw);
+  }
+
+  Map<String, dynamic> toJson() => {
+    'id': id,
+    'date': date.toIso8601String(),
+    'title': title,
+    'description': description,
+    'file': file,
+    'file_url': fileUrl,
+  };
+
+  String get downloadUrl => fileUrl.isNotEmpty ? fileUrl : file;
 }
 
 class PromoterModel {

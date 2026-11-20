@@ -103,6 +103,7 @@ enum WTabBarEnum {
   changePassword,
   preIPOTransactions,
   secondaryTransactions,
+  channelPartner,
 }
 
 enum ActionEnum { share, edit, delete }

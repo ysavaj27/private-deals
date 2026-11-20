@@ -11,6 +11,7 @@ import 'package:private_deals/src/features/institution/legacy/utils/functions/di
 import 'package:private_deals/src/features/institution/legacy/utils/widgets/delete_dialog_widget.dart';
 import 'package:private_deals/src/features/institution/legacy/utils/widgets/dialog_widget/logout_dialog.dart';
 
+import 'package:private_deals/src/features/account/presentation/additional_profile_ctrl.dart';
 import 'package:private_deals/src/features/institution/legacy/features/auth/profile/profile_page.dart';
 import 'package:private_deals/src/features/institution/legacy/features/auth/profile/profile_page_ctrl.dart';
 import 'package:private_deals/src/shared/theme/app_tokens.dart';
@@ -52,7 +53,8 @@ class PhoneProfileView extends StatelessWidget {
           onRefresh: () async {
             await Future.wait([
               controller.refreshProfile(),
-              controller.refreshPublicProfile(),
+              if (Get.isRegistered<AdditionalProfileCtrl>())
+                Get.find<AdditionalProfileCtrl>().refreshPublicProfile(),
             ]);
             controller.logo.value = null;
           },

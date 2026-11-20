@@ -9,6 +9,21 @@ elif [[ -x .flutter-sdk/bin/flutter ]]; then
 else
   flutter_bin=flutter
 fi
+
+# Optional first arg or ENV=… selects tools/env/<name>.json (API + S3 URLs).
+# Usage: ./tools/build_web.sh [staging|demo|production] [extra flutter args...]
+#    or: ENV=staging ./tools/build_web.sh
+env_name="${ENV:-production}"
+if [[ "${1:-}" == "staging" || "${1:-}" == "demo" || "${1:-}" == "production" ]]; then
+  env_name="$1"
+  shift
+fi
+env_file="tools/env/${env_name}.json"
+if [[ ! -f "$env_file" ]]; then
+  echo "Missing env file: $env_file" >&2
+  exit 1
+fi
+
 # Read the top-level pubspec version, allowing quotes and a trailing comment.
 app_version="$(awk '/^version:[[:space:]]*/ {
   sub(/^version:[[:space:]]*/, "")
@@ -32,12 +47,17 @@ for argument in "$@"; do
       echo "Set the release version in pubspec.yaml instead of using $argument." >&2
       exit 1
       ;;
+    --dart-define-from-file|--dart-define-from-file=*)
+      echo "Pass staging|demo|production (or ENV=…) instead of --dart-define-from-file; this wrapper loads tools/env/${env_name}.json." >&2
+      exit 1
+      ;;
   esac
 done
 # Every build needs its own identity, even when pubspec.yaml is unchanged.
 # Randomness also separates builds started in the same second/on different Macs.
 release_id="$app_version-$(date -u +%Y%m%d%H%M%S)-$(od -An -N8 -tx1 /dev/urandom | tr -d ' \n')"
-"$flutter_bin" build web --release "$@"
+echo "Building web ($env_name) with $env_file"
+"$flutter_bin" build web --release --dart-define-from-file="$env_file" "$@"
 node --input-type=module - "$release_id" <<'NODE'
 import { readFileSync, writeFileSync } from 'node:fs';
 const path = 'build/web/version.json';

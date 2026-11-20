@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:get/get.dart';
+import 'package:private_deals/src/features/account/presentation/additional_profile_ctrl.dart';
+import 'package:private_deals/src/features/account/presentation/additional_profile_section.dart';
 import 'package:private_deals/src/features/institution/legacy/backend/model/user/user_model.dart';
-import 'package:private_deals/src/features/wealth_manager/data/models/pre_ipo/company_model.dart';
-import 'package:private_deals/src/shared/plugins/loader.dart';
 
 import 'package:private_deals/src/features/institution/legacy/features/auth/profile/phone_profile_view.dart';
 import 'package:private_deals/src/features/institution/legacy/features/auth/profile/profile_page_ctrl.dart';
@@ -11,37 +11,6 @@ import 'package:private_deals/src/features/investors/presentation/complete_inves
 import 'package:private_deals/src/shared/theme/app_tokens.dart';
 import 'package:private_deals/src/shared/widgets/app_page_header.dart';
 import 'package:private_deals/src/shared/widgets/app_toast.dart';
-
-List<Widget> _optionalProfileFields(PartnerPublicProfile data) {
-  final fields = <({String label, String value})>[
-    if (data.yearsOfExperience.isNotEmpty)
-      (label: 'Years of Experience', value: data.yearsOfExperience),
-    if (data.totalTradesExecuted.isNotEmpty)
-      (label: 'Total Trades Executed', value: data.totalTradesExecuted),
-    if (data.totalInvestorBase.isNotEmpty)
-      (label: 'Total Investor Base', value: data.totalInvestorBase),
-    if (data.verifiedStatus.isNotEmpty)
-      (
-        label: 'Verified User / Verified Seller Status',
-        value: data.verifiedStatus,
-      ),
-    if (data.companiesPreviouslyListed.isNotEmpty)
-      (
-        label: 'Companies Previously Listed / Transacted on the Platform',
-        value: data.companiesPreviouslyListed,
-      ),
-    if (data.geographicPresence.isNotEmpty)
-      (label: 'Cities / Geographic Presence', value: data.geographicPresence),
-    if (data.approach.isNotEmpty)
-      (label: 'How We Do It / Our Approach', value: data.approach),
-  ];
-  return [
-    for (var i = 0; i < fields.length; i++) ...[
-      if (i > 0) const SizedBox(height: 16),
-      _ProfileField(label: fields[i].label, value: fields[i].value),
-    ],
-  ];
-}
 
 // ==================== PAGE ====================
 
@@ -77,7 +46,8 @@ class ProfileDetailView extends StatelessWidget {
           onRefresh: () async {
             await Future.wait([
               controller.refreshProfile(),
-              controller.refreshPublicProfile(),
+              if (Get.isRegistered<AdditionalProfileCtrl>())
+                Get.find<AdditionalProfileCtrl>().refreshPublicProfile(),
             ]);
             controller.logo.value = null;
           },
@@ -117,7 +87,7 @@ class ProfileDetailView extends StatelessWidget {
                     ),
                 ],
                 const SizedBox(height: 20),
-                _PublicSellerProfileSection(controller: controller),
+                const AdditionalProfileSection(),
                 const SizedBox(height: 20),
                 _ProfileSection(
                   title: 'Company details',
@@ -235,208 +205,6 @@ class ProfileDetailPage extends StatelessWidget {
     return Scaffold(
       appBar: AppBar(title: const Text('My profile')),
       body: const ProfileDetailView(showPageTitle: false),
-    );
-  }
-}
-
-// ==================== PUBLIC SELLER PROFILE ====================
-
-class _PublicSellerProfileSection extends StatelessWidget {
-  const _PublicSellerProfileSection({required this.controller});
-
-  final SellerProfilePageCtrl controller;
-
-  @override
-  Widget build(BuildContext context) {
-    return Obx(() {
-      final editing = controller.publicEditing.value;
-      final saving = controller.publicSaving.value;
-      final loading = controller.publicLoading.value;
-      final error = controller.publicError.value;
-      final data = controller.publicProfile.value;
-
-      return Card(
-        margin: EdgeInsets.zero,
-        clipBehavior: Clip.antiAlias,
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.stretch,
-          children: [
-            Padding(
-              padding: EdgeInsets.all(context.isPhone ? 16 : 20),
-              child: Row(
-                children: [
-                  Icon(
-                    Icons.storefront_outlined,
-                    size: 22,
-                    color: context.theme.colorScheme.primary,
-                  ),
-                  const SizedBox(width: 12),
-                  Expanded(
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text(
-                          'Seller profile',
-                          style: context.textTheme.titleMedium,
-                        ),
-                        const SizedBox(height: 4),
-                        Text(
-                          'Shown to partners on company detail before they invest.',
-                          style: context.textTheme.bodySmall?.copyWith(
-                            color: context.theme.colorScheme.onSurfaceVariant,
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-                  if (!editing)
-                    OutlinedButton.icon(
-                      onPressed: loading || saving
-                          ? null
-                          : controller.editPublicProfile,
-                      icon: const Icon(Icons.edit_outlined, size: 18),
-                      label: const Text('Edit'),
-                    ),
-                ],
-              ),
-            ),
-            const Divider(height: 1),
-            Padding(
-              padding: EdgeInsets.all(context.isPhone ? 16 : 20),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.stretch,
-                children: [
-                  if (error.isNotEmpty) ...[
-                    Text(
-                      error,
-                      style: TextStyle(color: context.theme.colorScheme.error),
-                    ),
-                    if (!editing)
-                      Align(
-                        alignment: Alignment.centerLeft,
-                        child: TextButton(
-                          onPressed: loading || saving
-                              ? null
-                              : controller.refreshPublicProfile,
-                          child: const Text('Retry'),
-                        ),
-                      ),
-                    const SizedBox(height: 12),
-                  ],
-                  if (editing) ...[
-                    _PublicProfileField(
-                      label: 'Years of Experience',
-                      controller: controller.yearsOfExperienceCtrl,
-                      maxLength: 255,
-                    ),
-                    _PublicProfileField(
-                      label: 'Total Trades Executed',
-                      controller: controller.totalTradesExecutedCtrl,
-                      maxLength: 255,
-                    ),
-                    _PublicProfileField(
-                      label: 'Total Investor Base',
-                      controller: controller.totalInvestorBaseCtrl,
-                      maxLength: 255,
-                    ),
-                    _PublicProfileField(
-                      label: 'Verified User / Verified Seller Status',
-                      controller: controller.verifiedStatusCtrl,
-                      maxLength: 255,
-                      hint: 'e.g. Verified Seller',
-                    ),
-                    _PublicProfileField(
-                      label: 'Companies Previously Listed / Transacted on the Platform',
-                      controller: controller.companiesPreviouslyListedCtrl,
-                      maxLength: 5000,
-                      maxLines: 3,
-                    ),
-                    _PublicProfileField(
-                      label: 'Cities / Geographic Presence',
-                      controller: controller.geographicPresenceCtrl,
-                      maxLength: 5000,
-                      maxLines: 2,
-                    ),
-                    _PublicProfileField(
-                      label: 'How We Do It / Our Approach',
-                      controller: controller.approachCtrl,
-                      maxLength: 5000,
-                      maxLines: 4,
-                    ),
-                    const SizedBox(height: 8),
-                    Wrap(
-                      spacing: 8,
-                      runSpacing: 8,
-                      children: [
-                        FilledButton(
-                          onPressed: saving
-                              ? null
-                              : controller.savePublicProfile,
-                          child: Text(saving ? 'Saving…' : 'Save'),
-                        ),
-                        TextButton(
-                          onPressed: saving
-                              ? null
-                              : controller.cancelPublicProfile,
-                          child: const Text('Cancel'),
-                        ),
-                      ],
-                    ),
-                  ] else if (loading && data.isEmpty) ...[
-                    const Padding(
-                      padding: EdgeInsets.symmetric(vertical: 12),
-                      child: Loader(),
-                    ),
-                  ] else if (data.isEmpty) ...[
-                    Text(
-                      'No seller profile yet. Add details partners will see on your deals.',
-                      style: context.textTheme.bodyMedium?.copyWith(
-                        color: context.theme.colorScheme.onSurfaceVariant,
-                      ),
-                    ),
-                  ] else ...[
-                    ..._optionalProfileFields(data),
-                  ],
-                ],
-              ),
-            ),
-          ],
-        ),
-      );
-    });
-  }
-}
-
-class _PublicProfileField extends StatelessWidget {
-  const _PublicProfileField({
-    required this.label,
-    required this.controller,
-    required this.maxLength,
-    this.maxLines = 1,
-    this.hint,
-  });
-
-  final String label;
-  final TextEditingController controller;
-  final int maxLength;
-  final int maxLines;
-  final String? hint;
-
-  @override
-  Widget build(BuildContext context) {
-    return Padding(
-      padding: const EdgeInsets.only(bottom: 16),
-      child: TextField(
-        controller: controller,
-        maxLength: maxLength,
-        maxLines: maxLines,
-        decoration: InputDecoration(
-          labelText: label,
-          hintText: hint,
-          alignLabelWithHint: maxLines > 1,
-          border: const OutlineInputBorder(),
-        ),
-      ),
     );
   }
 }

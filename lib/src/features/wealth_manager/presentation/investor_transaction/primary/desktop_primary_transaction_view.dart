@@ -17,7 +17,9 @@ class DesktopPrimaryTransactionView extends StatelessWidget {
         const SizedBox(height: 18),
         Expanded(
           child: Obx(() {
-            if (c.isLoading.isTrue) return const Loader();
+            if (c.isLoading.isTrue) {
+              return const Center(child: Loader(centered: false));
+            }
             if (c.list.isEmpty) {
               return NoDataView(onPressed: c.getData);
             }

@@ -108,9 +108,15 @@ class ChannelPartnerApi {
     }
   }
 
-  static Future<BaseModel<List<PartnerUser>>> channelPartnerList() async {
+  static Future<BaseModel<List<PartnerUser>>> channelPartnerList({
+    String? partnerType,
+  }) async {
     try {
-      var res = await dioConfig.get(AppUrl.wChannelPartnerList, {});
+      final query = <String, dynamic>{};
+      if (partnerType != null && partnerType.isNotEmpty) {
+        query['partner_type'] = partnerType;
+      }
+      var res = await dioConfig.get(AppUrl.wChannelPartnerList, query);
       BaseModel<List<PartnerUser>> baseModel = BaseModel.fromListJson(
         res.data,
         (p0) => p0.map((e) => PartnerUser.fromJson(e)).toList(),

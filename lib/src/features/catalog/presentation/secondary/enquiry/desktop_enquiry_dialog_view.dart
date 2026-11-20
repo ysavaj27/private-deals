@@ -135,7 +135,7 @@ class _EnquiryDialogState extends State<DesktopEnquiryDialogView> {
                     Expanded(
                       child: Obx(
                         () => _LabeledField(
-                          label: "Offer price (base)",
+                          label: "Offer price",
                           controller: c.offerPriceCtrl,
                           enabled: !c.isLoading.value,
                           hint: "e.g. 250.50",
@@ -149,11 +149,6 @@ class _EnquiryDialogState extends State<DesktopEnquiryDialogView> {
                       ),
                     ),
                   ],
-                ),
-
-                const SizedBox(height: 8),
-                const Text(
-                  'The transaction price includes the processing fee.',
                 ),
 
                 Obx(() {

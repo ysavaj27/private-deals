@@ -5,6 +5,7 @@ import 'package:private_deals/src/features/institution/legacy/features/home/cust
 import 'package:private_deals/src/features/institution/legacy/features/home/desktop_sidebar.dart';
 import 'package:private_deals/src/features/institution/legacy/features/home/home_page.dart';
 import 'package:private_deals/src/features/institution/legacy/features/home/home_page_ctrl.dart';
+import 'package:private_deals/src/features/wealth_manager/presentation/notification/notification_page.dart';
 import 'package:private_deals/src/shared/theme/app_tokens.dart';
 
 class DesktopHomePageView extends StatelessWidget {
@@ -19,7 +20,7 @@ class DesktopHomePageView extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       key: _scaffoldKey,
-      endDrawer: SizedBox(),
+      endDrawer: const NotificationDrawer(),
       body: Stack(
         children: [
           Column(

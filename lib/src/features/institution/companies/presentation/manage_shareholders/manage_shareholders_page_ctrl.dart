@@ -82,10 +82,6 @@ class CompanyShareholdersCtrl extends GetxController {
         loadError.value = 'Unable to load company shareholders. Please retry.';
         return;
       }
-      if (!company.isEditable) {
-        loadError.value = 'This company cannot be edited.';
-        return;
-      }
       companyId = company.id;
       companyName.value = company.brandName;
       _removed.addAll(years);

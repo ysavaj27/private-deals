@@ -23,9 +23,7 @@ Auth: header `headtoken`; after login also `Authorization: Bearer <token>`.
 
 ## Master / config
 
-- GET /api/get-config
-  - `enum.document_type` is the client document-type filter only (no SSA/PAN/Aadhaar/cheque).
-  - App does not read removed keys: `secondary_banners`, `preipo_banners`, `app_version`, `build`, `app_tutorial_video`, `investment_process`, `calendly_url`.
+- App config is static (`lib/src/core/config/static_app_config.dart`); `GET /api/get-config` is no longer called.
 - GET /api/master/get-blog
 - GET /api/master/get-sector
 
@@ -99,7 +97,7 @@ Auth: header `headtoken`; after login also `Authorization: Bearer <token>`.
 
 ## Ops (earnings/MIS/tasks/docs/notif)
 
-- GET /api/v1/business/earning/partner
+- GET /api/v2/business/earning/partner
 - GET /api/v2/business/earning/investor
 - GET /api/v1/business/invested-startup-mis
 - GET /api/v1/business/notifications
@@ -112,28 +110,33 @@ Auth: header `headtoken`; after login also `Authorization: Bearer <token>`.
 
 - GET /api/v2/business/institution/company/deals
 - GET /api/v2/business/institution/company/detail
+- GET /api/v2/business/institution/company/events
 - GET /api/v2/business/institution/company/list
 - GET /api/v2/business/institution/company/list-lite
 - GET /api/v2/business/institution/company/my-submissions
 - GET /api/v2/business/institution/company/sectors
 - GET /api/v2/business/institution/pre-ipo/transaction
 - GET /api/v2/business/institution/pre-ipo/transaction/detail
-- GET /api/v2/business/institution/profile
+- GET /api/v2/business/additional-profile
 - POST /api/v2/business/institution/company
 - POST /api/v2/business/institution/company/check-duplicate
 - POST /api/v2/business/institution/company/deals
 - POST /api/v2/business/institution/company/deals/bulk
 - POST /api/v2/business/institution/company/deals/delete
 - POST /api/v2/business/institution/company/deals/update
+- POST /api/v2/business/institution/company/events
+- POST /api/v2/business/institution/company/events/delete
+- POST /api/v2/business/institution/company/events/update
 - POST /api/v2/business/institution/company/prices/excel
 - POST /api/v2/business/institution/company/promoters
 - POST /api/v2/business/institution/company/shareholders
+- POST /api/v2/business/institution/company/update
 - POST /api/v2/business/institution/pre-ipo/transaction/approve
 - POST /api/v2/business/institution/pre-ipo/transaction/confirm-payment
 - POST /api/v2/business/institution/pre-ipo/transaction/confirm-share-transfer
 - POST /api/v2/business/institution/pre-ipo/transaction/payment-receipt
 - POST /api/v2/business/institution/pre-ipo/transaction/reject
-- POST /api/v2/business/institution/profile
+- POST /api/v2/business/additional-profile
 
 ## Investor leftovers (still called from WM UI)
 

@@ -8,6 +8,7 @@ import 'package:private_deals/src/features/institution/support/plugins/loader.da
 import 'package:private_deals/src/shared/institution_widgets/app_button.dart';
 import 'package:private_deals/src/shared/institution_widgets/app_text_field.dart';
 
+import 'package:private_deals/src/features/institution/companies/presentation/company_list/company_list_actions.dart';
 import 'package:private_deals/src/features/institution/companies/presentation/company_list/company_list_page.dart';
 import 'package:private_deals/src/features/institution/companies/presentation/company_list/company_list_page_ctrl.dart';
 import 'package:private_deals/src/shared/theme/app_tokens.dart';
@@ -162,27 +163,10 @@ class PhoneCompanyListView extends StatelessWidget {
                                   ],
                                 ),
                               ),
-                              if (company.isEditable)
-                                PopupMenuButton<String>(
-                                  tooltip: 'Manage company',
-                                  onSelected: (value) {
-                                    if (value == 'promoters') {
-                                      c.openPromoters(company);
-                                    } else {
-                                      c.openShareholders(company);
-                                    }
-                                  },
-                                  itemBuilder: (_) => const [
-                                    PopupMenuItem(
-                                      value: 'promoters',
-                                      child: Text('Manage promoters'),
-                                    ),
-                                    PopupMenuItem(
-                                      value: 'shareholders',
-                                      child: Text('Manage shareholders'),
-                                    ),
-                                  ],
-                                ),
+                              CompanyListActionsMenu(
+                                controller: c,
+                                company: company,
+                              ),
                             ],
                           ),
                           const SizedBox(height: 16),
